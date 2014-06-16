@@ -4,3 +4,6 @@ dependencies:
   image: any
   logging: any
   mongo_dart: any
+  rest_dart:
+    path: ../rest_dart
+  sqljocky: any
