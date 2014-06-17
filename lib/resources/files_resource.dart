@@ -12,15 +12,29 @@ class FilesResource extends RestResource {
   FilesResource(this._pool): super(_RESOURCE_PATH_REGEX) {
     this._model = new FilesModel(this._pool);
     SetMethodHandler("GET", _GetMethod);
+    SetMethodHandler("POST", _PostMethod);
   }
   
   
-  Future _GetMethod(ContentType type, String path, Map<String, String> args) {
-    return this._model.GetAllFields().then((e) {
+  Future _GetMethod(RestRequest request) {
+    return this._model.GetAllFiles().then((e) {
       Map<String, Object> output = new Map<String, Object>();
       output["files"] = e;
       return JSON.encode(output);
     });
   }
 
+  Future _PostMethod(RestRequest request) {
+    return this._model.CreateFile(request.dataContentType, request.data).then((e) {
+      Map<String, Object> output = new Map<String, Object>();
+      output["files"] = e;
+      return JSON.encode(output);
+    }).catchError((e) {
+      if(e is EntityExistsException) {
+        throw new RestException(HttpStatus.CONFLICT,"The submitted file already exists");
+      } else {
+        throw e;
+      }
+    });
+  }
 }

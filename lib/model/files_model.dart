@@ -5,12 +5,55 @@ class FilesModel {
   
   mysql.ConnectionPool _pool;
 
+ 
   FilesModel(this._pool) {
     
   }
   
   
-  Future GetAllFields() {
+  static String FILES_DIR = 'files'; 
+  static String THUMBS_DIR = 'thumbs'; 
+  
+  Future<int> CreateFile(ContentType ct, List<int> data) {
+    this._log.info("Creating file");
+    return new Future.sync(() {
+      SHA256 sha = new SHA256();
+      sha.add(data);
+      List<int> hash = sha.close();
+      String hash_string = CryptoUtils.bytesToHex(hash);
+
+      this._log.info("File hash: " + hash_string);
+          
+      return this._pool.prepare("SELECT COUNT(*) AS count FROM files WHERE hash = ?").then((query) {
+        return query.execute([hash]).then((results) {
+          return results.forEach((row) {
+            if(row.count>0) {
+              throw new EntityExistsException(hash_string);
+            }
+          }); 
+        });
+      }).then((_) {
+        Directory file_dir = new Directory(Directory.current.path + "/" + FILES_DIR);
+        if(!file_dir.existsSync()) {
+          file_dir.createSync(recursive: true);
+        }
+        File file = new File(file_dir.path + "/" + hash_string);
+        if(file.existsSync()) {
+          file.deleteSync(recursive: false);
+        }
+        file.writeAsBytesSync(data, mode: FileMode.WRITE, flush: true);
+      }).then((_) { 
+        return this._pool.prepare("INSERT INTO files (hash,mime_type) VALUES (?,?)").then((query) {
+          return query.execute([hash,ct.toString()]).then((results) {
+            return results.insertId;
+          });
+        });
+      });
+    });
+  }
+  
+  
+  Future GetAllFiles() {
     this._log.info("Getting all files");
     
     return new Future.sync(() {
