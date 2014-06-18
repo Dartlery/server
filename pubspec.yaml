@@ -4,6 +4,7 @@ dependencies:
   crypto: any
   image: any
   logging: any
+  mime: any
   mongo_dart: any
   rest_dart:
     path: ../rest_dart
