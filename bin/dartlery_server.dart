@@ -20,11 +20,11 @@ void main() {
   
   RestServer rest = new RestServer();
   
-  rest.AddDefaultContentType(new ContentType("application", "json", charset: "utf-8"));
+  rest.addDefaultAvailableContentType(new ContentType("application", "json", charset: "utf-8"));
 
-  rest.AddResource(new FilesResource(pool));
+  rest.addResource(new FilesResource(pool));
   
-  rest.Start();
+  rest.start();
   
 }
 

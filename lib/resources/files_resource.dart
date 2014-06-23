@@ -11,8 +11,8 @@ class FilesResource extends RestResource {
 
   FilesResource(this._pool): super(_RESOURCE_PATH_REGEX) {
     this._model = new FilesModel(this._pool);
-    SetMethodHandler("GET", _GetMethod);
-    SetMethodHandler("POST", _PostMethod);
+    setMethodHandler("GET", _GetMethod);
+    setMethodHandler("POST", _PostMethod);
   }
   
   
