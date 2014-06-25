@@ -23,6 +23,7 @@ void main() {
   rest.addDefaultAvailableContentType(new ContentType("application", "json", charset: "utf-8"));
 
   rest.addResource(new FilesResource(pool));
+  rest.addResource(new StaticResource());
   
   rest.start();
   

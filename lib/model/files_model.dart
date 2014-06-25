@@ -17,13 +17,25 @@ class FilesModel {
   Future<int> CreateFile(ContentType ct, List<int> data) {
     this._log.info("Creating file");
     return new Future.sync(() {
+      // Verify submitted mime type
+      if(data.length >= mime.defaultMagicNumbersMaxLength) {
+        String mime_str = mime.lookupMimeType("genereicfilename",
+            headerBytes: data.sublist(0,mime.defaultMagicNumbersMaxLength));
+        if(mime_str==null) {
+          this._log.warning("No mime type for uploaded data!");
+        } else { 
+          ContentType type = ContentType.parse(mime_str);
+          this._log.warning("Uploaded data claims to be ${ct}, but validation says it's ${mime_str}");
+        }
+      }
+      
       SHA256 sha = new SHA256();
       sha.add(data);
       List<int> hash = sha.close();
       String hash_string = CryptoUtils.bytesToHex(hash);
 
       this._log.info("File hash: " + hash_string);
-          
+      
       return this._pool.prepare("SELECT COUNT(*) AS count FROM files WHERE hash = ?").then((query) {
         return query.execute([hash]).then((results) {
           return results.forEach((row) {
@@ -33,11 +45,11 @@ class FilesModel {
           }); 
         });
       }).then((_) {
-        Directory file_dir = new Directory(Directory.current.path + "/" + FILES_DIR);
+        Directory file_dir = new Directory(path.join(Directory.current.path,FILES_DIR));
         if(!file_dir.existsSync()) {
           file_dir.createSync(recursive: true);
         }
-        File file = new File(file_dir.path + "/" + hash_string);
+        File file = new File(path.join(file_dir.path,hash_string));
         if(file.existsSync()) {
           file.deleteSync(recursive: false);
         }

@@ -13,6 +13,7 @@ class FilesResource extends RestResource {
     this._model = new FilesModel(this._pool);
     setMethodHandler("GET", _GetMethod);
     setMethodHandler("POST", _PostMethod);
+    this.addAcceptableContentType(ContentType.JSON,HttpMethod.POST);
   }
   
   
