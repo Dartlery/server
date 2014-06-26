@@ -11,8 +11,9 @@ class FilesModel {
   }
   
   
-  static String FILES_DIR = 'files'; 
-  static String THUMBS_DIR = 'thumbs'; 
+  static const String FILES_DIR = 'files'; 
+  static const String THUMBS_DIR = 'thumbs';
+  static const String STATIC_DIR = 'static';
   
   Future<int> CreateFile(ContentType ct, List<int> data, String tags) {
     this._log.info("Creating file");
@@ -45,7 +46,7 @@ class FilesModel {
           }); 
         });
       }).then((_) {
-        Directory file_dir = new Directory(path.join(Directory.current.path,FILES_DIR));
+        Directory file_dir = new Directory(path.join(Directory.current.path,STATIC_DIR,FILES_DIR));
         if(!file_dir.existsSync()) {
           file_dir.createSync(recursive: true);
         }
