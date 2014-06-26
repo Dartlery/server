@@ -14,7 +14,7 @@ class FilesModel {
   static String FILES_DIR = 'files'; 
   static String THUMBS_DIR = 'thumbs'; 
   
-  Future<int> CreateFile(ContentType ct, List<int> data) {
+  Future<int> CreateFile(ContentType ct, List<int> data, String tags) {
     this._log.info("Creating file");
     return new Future.sync(() {
       // Verify submitted mime type

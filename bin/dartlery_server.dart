@@ -25,7 +25,7 @@ void main() {
   rest.addResource(new FilesResource(pool));
   rest.addResource(new StaticResource());
   
-  rest.start();
+  rest.start(port: 8888);
   
 }
 
