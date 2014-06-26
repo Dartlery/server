@@ -26,16 +26,22 @@ class FilesResource extends RestResource {
   }
 
   Future _PostMethod(RestRequest request) {
-    return this._model.CreateFile(request.dataContentType, request.data).then((e) {
-      Map<String, Object> output = new Map<String, Object>();
-      output["files"] = e;
-      return JSON.encode(output);
-    }).catchError((e) {
-      if(e is EntityExistsException) {
-        throw new RestException(HttpStatus.CONFLICT,"The submitted file already exists");
-      } else {
-        throw e;
-      }
+    List files = JSON.decode(request.getDataAsString());
+    files.forEach((Map file) {
+      
+      
+      return this._model.CreateFile(request.dataContentType, request.data).then((e) {
+        Map<String, Object> output = new Map<String, Object>();
+        output["files"] = e;
+        return JSON.encode(output);
+      }).catchError((e) {
+        if(e is EntityExistsException) {
+          throw new RestException(HttpStatus.CONFLICT,"The submitted file already exists");
+        } else {
+          throw e;
+        }
+      });
+      
     });
   }
 }
