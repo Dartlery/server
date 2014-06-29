@@ -13,3 +13,4 @@ import 'package:dartlery_server/model/model.dart';
 
 part 'files_resource.dart';
 part 'static_resource.dart';
+part 'admin_resource.dart';

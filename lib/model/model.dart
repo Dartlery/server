@@ -9,6 +9,10 @@ import 'package:crypto/crypto.dart';
 import 'package:sqljocky/sqljocky.dart' as mysql;
 import 'package:logging/logging.dart';
 
+import 'package:dartlery_server/dartlery.dart';
+
 part 'entity_exists_exception.dart';
 
+part 'settings_model.dart';
 part 'files_model.dart';
+part 'admin_model.dart';

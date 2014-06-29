@@ -2,7 +2,7 @@ part of resources;
 
 
 class FilesResource extends RestResource {
-  static const String _RESOURCE_PATH_REGEX = r'^/files/?$';
+  static const String _RESOURCE_PATH_REGEX = r'^/files/([^/]*)/?$';
 
   //ADatabase _db;
   mysql.ConnectionPool _pool;
@@ -11,17 +11,29 @@ class FilesResource extends RestResource {
 
   FilesResource(this._pool): super(_RESOURCE_PATH_REGEX) {
     this._model = new FilesModel(this._pool);
-    setMethodHandler("GET", _getMethod);
-    setMethodHandler("POST", _postMethod);
+    setMethodHandler(HttpMethod.GET, _getMethod);
+    setMethodHandler(HttpMethod.POST, _postMethod);
+    setMethodHandler(HttpMethod.PUT, _putMethod);
     this.addAcceptableContentType(ContentType.JSON,HttpMethod.POST);
   }
   
   
   Future _getMethod(RestRequest request) {
-    return this._model.GetAllFiles().then((e) {
-      Map<String, Object> output = new Map<String, Object>();
-      output["files"] = e;
-      return JSON.encode(output);
+    return new Future.sync(() {
+      int id = -1;
+      if(request.regexMatch.group(1)!="") {
+        try {
+          id = int.parse(request.regexMatch.group(1));
+        } on FormatException catch(e) {
+          throw new RestException(HttpStatus.BAD_REQUEST,"File ids must be numeric");
+        }
+      }
+      
+      return this._model.getFiles(id).then((e) {
+        Map<String, Object> output = new Map<String, Object>();
+        output["files"] = e;
+        return JSON.encode(output);
+      });
     });
   }
 
@@ -42,6 +54,10 @@ class FilesResource extends RestResource {
     });
   }
   
+  Future _putMethod(RestRequest request) {
+  }
+  }
+  
   Future _createFile(Map file) {
     return new Future.sync(() {
       ContentType ct = ContentType.parse(file["content_type"]);
@@ -51,7 +67,7 @@ class FilesResource extends RestResource {
         tags = file["tags"];
       }
       
-      return this._model.CreateFile(ct, data,tags).then((e) {
+      return this._model.createFile(ct, data,tags).then((e) {
         Map<String, Object> output = new Map<String, Object>();
         output["files"] = e;  
         return output;

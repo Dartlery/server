@@ -3,32 +3,41 @@ part of model;
 class FilesModel {
   final Logger _log = new Logger('FilesModel');
   
+  final List<String> _allowedMimeTypes = new List<String>();
+  
   mysql.ConnectionPool _pool;
 
  
   FilesModel(this._pool) {
-    
+    _allowedMimeTypes.add("image/jpeg");
+    _allowedMimeTypes.add("image/gif");
+    _allowedMimeTypes.add("image/png");
   }
   
+ 
   
-  static const String FILES_DIR = 'files'; 
-  static const String THUMBS_DIR = 'thumbs';
-  static const String STATIC_DIR = 'static';
-  
-  Future<int> CreateFile(ContentType ct, List<int> data, String tags) {
+  Future<int> createFile(ContentType ct, List<int> data, String tags) {
     this._log.info("Creating file");
     return new Future.sync(() {
       // Verify submitted mime type
       if(data.length >= mime.defaultMagicNumbersMaxLength) {
-        String mime_str = mime.lookupMimeType("genereicfilename",
+        String mime_str = mime.lookupMimeType("genericfilename",
             headerBytes: data.sublist(0,mime.defaultMagicNumbersMaxLength));
+        
         if(mime_str==null) {
           this._log.warning("No mime type for uploaded data!");
-        } else { 
+          mime_str = ct.toString();
+        } else {
           ContentType type = ContentType.parse(mime_str);
           this._log.warning("Uploaded data claims to be ${ct}, but validation says it's ${mime_str}");
         }
+        
+        if(!this._allowedMimeTypes.contains(mime_str)) {
+            throw new FileTypeNotSupportedException("Provided file type is not allowed: ${mime_str}");        
+        }
       }
+      
+      
       
       SHA256 sha = new SHA256();
       sha.add(data);
@@ -46,7 +55,8 @@ class FilesModel {
           }); 
         });
       }).then((_) {
-        Directory file_dir = new Directory(path.join(Directory.current.path,STATIC_DIR,FILES_DIR));
+        // Write the file to the file system
+        Directory file_dir = new Directory(path.join(Directory.current.path,SettingsModel.STATIC_DIR,SettingsModel.FILES_DIR));
         if(!file_dir.existsSync()) {
           file_dir.createSync(recursive: true);
         }
@@ -55,6 +65,9 @@ class FilesModel {
           file.deleteSync(recursive: false);
         }
         file.writeAsBytesSync(data, mode: FileMode.WRITE, flush: true);
+      }).then((_) {
+        // Create the thumbnail
+        Thumbnailer.createThumbnailForBits(hash_string, data);
       }).then((_) { 
         return this._pool.prepare("INSERT INTO files (hash,mime_type) VALUES (?,?)").then((query) {
           return query.execute([hash,ct.toString()]).then((results) {
@@ -65,30 +78,54 @@ class FilesModel {
     });
   }
   
+  static const String STATIC_FILE_URL = "http://127.0.0.1:8888/static/files/";
+  static const String STATIC_THUMBS_URL = "http://127.0.0.1:8888/static/thumbs/";
   
-  Future GetAllFiles() {
+  static const String _GET_ALL_FILES_SQL = "SELECT files.id, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image ORDER by id DESC, tag";
+  static const String _GET_ONE_FILE_SQL = "SELECT files.id, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image WHERE id= ? ORDER by id DESC, tag";
+  
+  Future getFiles([int id = -1]) {
     this._log.info("Getting all files");
-    
+    String sql;
+    List args = new List();
+    if(id==-1) {
+      sql = _GET_ALL_FILES_SQL;
+    } else {
+      sql = _GET_ONE_FILE_SQL;
+      args.add(id);
+    }
     return new Future.sync(() {
-      List<Map> output = new List<Map>();      
-    
-      for(int i = 0; i < 5; i++) {
-        Map<String,Object> file = new Map<String,Object>();
-        file["id"] = i;
-        file["source"] = "http://www.gravatar.com/avatar/bb56104632b355716a430ddef589fd15.png";
-        file["thumbnail_source"] = "http://www.gravatar.com/avatar/bb56104632b355716a430ddef589fd15.png";
-        List<String> tags = new List<String>();
-        tags.add("tag1");
-        tags.add("tag2");
-        tags.add("tag3");
-        tags.add("tag4");
-        
-        file["tags"] = tags;
-        
-        output.add(file);      
-      }
-      
-      return output;
+      List<Map> output = new List<Map>();
+      return this._pool.prepare(sql).then((query) {
+        return query.execute(args).then((results) {
+          int last_id = -1;
+          Map<String,Object> file = null;
+          List<String> tags = null;
+          return results.forEach((row) {
+            if(last_id==-1||row.id!=last_id) {
+              if(file!=null) {
+                file["tags"] = tags;
+                output.add(file);   
+              }
+              tags = new List<String>();
+              file = new Map<String,Object>();
+              file["id"] = row.id;
+              file["source"] = STATIC_FILE_URL + row.hash.toString().toLowerCase();
+              file["thumbnail_source"] = STATIC_THUMBS_URL + row.hash.toString().toLowerCase();;
+            }
+            if(row.tag!=null) {
+              tags.add(row.tag);
+            }
+          }).then((_) {
+            if(file!=null) {
+              file["tags"] = tags;
+              output.add(file);   
+            }
+          }); 
+        });
+      }).then((_) {
+        return output;
+      });
     });
   }  
 }
