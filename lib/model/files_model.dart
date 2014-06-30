@@ -14,11 +14,29 @@ class FilesModel {
     _allowedMimeTypes.add("image/png");
   }
   
- 
+  Future<int> updateFile(int id, {ContentType ct: null, List<String> tags}) { 
+    this._log.info("Update requested for file ${id}");
+    return new Future.sync(() {
+      
+    });
+  }
   
-  Future<int> createFile(ContentType ct, List<int> data, String tags) {
+  Future setTags(int id, List<String> tags) {
+    this._log.info("Setting tags for file ${id}");
+    return new Future.sync(() {
+      if(tags==null||tags.length==0) {
+        return;
+      }
+      
+      
+    });
+  }
+  
+  Future<int> createFile(ContentType ct, List<int> data, List<String> tags) {
     this._log.info("Creating file");
     return new Future.sync(() {
+      
+      
       // Verify submitted mime type
       if(data.length >= mime.defaultMagicNumbersMaxLength) {
         String mime_str = mime.lookupMimeType("genericfilename",
@@ -74,6 +92,14 @@ class FilesModel {
             return results.insertId;
           });
         });
+      }).then((id) {
+        if(tags!=null&&tags.length>0) {
+          return this.setTags(id, tags).then((_) {
+            return id;
+          });
+        } else {
+          return id;
+        }
       });
     });
   }

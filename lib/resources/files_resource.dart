@@ -55,7 +55,8 @@ class FilesResource extends RestResource {
   }
   
   Future _putMethod(RestRequest request) {
-  }
+    String data_string = request.getDataAsString();
+    List files = JSON.decode(data_string);
   }
   
   Future _createFile(Map file) {
@@ -81,4 +82,7 @@ class FilesResource extends RestResource {
     });
   }
   
+  Future _updateFile(Map file) {
+    
+  }
 }
