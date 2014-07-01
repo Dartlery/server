@@ -2,6 +2,8 @@ part of resources;
 
 
 class FilesResource extends RestResource {
+  final Logger _log = new Logger('FilesResource');
+  
   static const String _RESOURCE_PATH_REGEX = r'^/files/([^/]*)/?$';
 
   //ADatabase _db;
@@ -13,7 +15,7 @@ class FilesResource extends RestResource {
     this._model = new FilesModel(this._pool);
     setMethodHandler(HttpMethod.GET, _getMethod);
     setMethodHandler(HttpMethod.POST, _postMethod);
-    setMethodHandler(HttpMethod.PUT, _putMethod);
+    //setMethodHandler(HttpMethod.PUT, _putMethod);
     this.addAcceptableContentType(ContentType.JSON,HttpMethod.POST);
   }
   
@@ -49,26 +51,45 @@ class FilesResource extends RestResource {
       };
     }
     
-    return Future.forEach(files, _createFile).then((e) {
-      return e;
+    return this._pool.startTransaction().then((mysql.Transaction tran) {
+      return Future.forEach(files, (Map file) {
+        if(file.containsKey("id")) {
+          return _updateFile(file, tran);
+        } else {
+          return _createFile(file, tran);
+        }
+      }).then((e) {
+        return tran.commit().then((_) {
+          return e;
+        });
+      }).catchError((e, st) {
+        this._log.severe(e.toString(), e, st);
+        tran.rollback();
+        throw e;
+      });
     });
   }
   
   Future _putMethod(RestRequest request) {
     String data_string = request.getDataAsString();
     List files = JSON.decode(data_string);
+    
+    return this._pool.startTransaction().then((mysql.Transaction tran) {
+      
+      
+    });
   }
   
-  Future _createFile(Map file) {
+  Future _createFile(Map file, mysql.Transaction tran) {
     return new Future.sync(() {
       ContentType ct = ContentType.parse(file["content_type"]);
       List<int> data = crypto.CryptoUtils.base64StringToBytes(file["data"]);
-      String tags = "";
+      List<String> tags = new List<String>();
       if(file.containsKey("tags")) {
         tags = file["tags"];
       }
       
-      return this._model.createFile(ct, data,tags).then((e) {
+      return this._model.createFile(ct, data, tags, tran).then((e) {
         Map<String, Object> output = new Map<String, Object>();
         output["files"] = e;  
         return output;
@@ -82,7 +103,7 @@ class FilesResource extends RestResource {
     });
   }
   
-  Future _updateFile(Map file) {
+  Future _updateFile(Map file, mysql.Transaction tran) {
     
   }
 }

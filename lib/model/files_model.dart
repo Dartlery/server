@@ -1,14 +1,11 @@
 part of model;
 
-class FilesModel {
+class FilesModel extends ADatabaseModel {
   final Logger _log = new Logger('FilesModel');
   
   final List<String> _allowedMimeTypes = new List<String>();
   
-  mysql.ConnectionPool _pool;
-
- 
-  FilesModel(this._pool) {
+  FilesModel(pool): super(pool) {
     _allowedMimeTypes.add("image/jpeg");
     _allowedMimeTypes.add("image/gif");
     _allowedMimeTypes.add("image/png");
@@ -21,18 +18,33 @@ class FilesModel {
     });
   }
   
-  Future setTags(int id, List<String> tags) {
+  static const String _DELETE_TAGS_SQL = "DELETE FROM tags WHERE image = ?";
+  static const String _SET_TAGS_SQL = "INSERT INTO tags (image,tag) VALUES (?,?)";
+  
+  Future setTags(int id, List<String> tags, mysql.Transaction transaction) {
     this._log.info("Setting tags for file ${id}");
     return new Future.sync(() {
       if(tags==null||tags.length==0) {
-        return;
+        return null;
       }
-      
-      
+      return transaction.prepare(_DELETE_TAGS_SQL);
+    }).then((mysql.Query query) {
+      if(query==null) {
+        return null;
+      }
+      return query.execute([id]).then((_) {
+        return transaction.prepare(_SET_TAGS_SQL);
+      }).then((mysql.Query  t_query) {
+        List args = new List();
+        for(String tag in tags) {
+          args.add([id,tag]);
+        }
+        return t_query.executeMulti(args);
+      });
     });
   }
   
-  Future<int> createFile(ContentType ct, List<int> data, List<String> tags) {
+  Future<int> createFile(ContentType ct, List<int> data, List<String> tags, mysql.Transaction tran) {
     this._log.info("Creating file");
     return new Future.sync(() {
       
@@ -64,7 +76,7 @@ class FilesModel {
 
       this._log.info("File hash: " + hash_string);
       
-      return this._pool.prepare("SELECT COUNT(*) AS count FROM files WHERE hash = ?").then((query) {
+      return tran.prepare("SELECT COUNT(*) AS count FROM files WHERE hash = ?").then((query) {
         return query.execute([hash]).then((results) {
           return results.forEach((row) {
             if(row.count>0) {
@@ -87,19 +99,15 @@ class FilesModel {
         // Create the thumbnail
         Thumbnailer.createThumbnailForBits(hash_string, data);
       }).then((_) { 
-        return this._pool.prepare("INSERT INTO files (hash,mime_type) VALUES (?,?)").then((query) {
+        return tran.prepare("INSERT INTO files (hash,mime_type) VALUES (?,?)").then((query) {
           return query.execute([hash,ct.toString()]).then((results) {
             return results.insertId;
           });
         });
       }).then((id) {
-        if(tags!=null&&tags.length>0) {
-          return this.setTags(id, tags).then((_) {
-            return id;
-          });
-        } else {
+        return this.setTags(id, tags, tran).then((_) {
           return id;
-        }
+        });
       });
     });
   }
