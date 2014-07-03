@@ -11,11 +11,9 @@ class FilesModel extends ADatabaseModel {
     _allowedMimeTypes.add("image/png");
   }
   
-  Future<int> updateFile(int id, {ContentType ct: null, List<String> tags}) { 
+  Future<int> updateFile(int id, mysql.Transaction tran, {List<String> tags}) { 
     this._log.info("Update requested for file ${id}");
-    return new Future.sync(() {
-      
-    });
+    return this.setTags(id, tags, tran); 
   }
   
   static const String _DELETE_TAGS_SQL = "DELETE FROM tags WHERE image = ?";
@@ -37,7 +35,9 @@ class FilesModel extends ADatabaseModel {
       }).then((mysql.Query  t_query) {
         List args = new List();
         for(String tag in tags) {
-          args.add([id,tag]);
+          if(tag!=null&&tag!="") {
+            args.add([id,tag]);
+          }
         }
         return t_query.executeMulti(args);
       });
@@ -146,6 +146,7 @@ class FilesModel extends ADatabaseModel {
               file["id"] = row.id;
               file["source"] = STATIC_FILE_URL + row.hash.toString().toLowerCase();
               file["thumbnail_source"] = STATIC_THUMBS_URL + row.hash.toString().toLowerCase();;
+              last_id = row.id;
             }
             if(row.tag!=null) {
               tags.add(row.tag);

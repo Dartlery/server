@@ -41,14 +41,20 @@ class FilesResource extends RestResource {
 
   Future _postMethod(RestRequest request) {
     String data_string = request.getDataAsString();
-    List files = JSON.decode(data_string);
+    var temp = JSON.decode(data_string);
+    if(!(temp is List)) {
+      throw new RestException(HttpStatus.BAD_REQUEST,"Submitted data must contain a List of files");
+    }
+    List files = temp;
     for(Map file in files) {
-      if(!file.containsKey("content_type")) {
-        throw new RestException(HttpStatus.BAD_REQUEST,"One of the submitted files has no content type");
-      };
-      if(!file.containsKey("data")) {
-        throw new RestException(HttpStatus.BAD_REQUEST,"One of the submitted files has no data");
-      };
+      if(!file.containsKey("id")) {
+        if(!file.containsKey("content_type")) {
+          throw new RestException(HttpStatus.BAD_REQUEST,"One of the submitted files has no content type");
+        };
+        if(!file.containsKey("data")) {
+          throw new RestException(HttpStatus.BAD_REQUEST,"One of the submitted files has no data");
+        };
+      }
     }
     
     return this._pool.startTransaction().then((mysql.Transaction tran) {
@@ -104,6 +110,14 @@ class FilesResource extends RestResource {
   }
   
   Future _updateFile(Map file, mysql.Transaction tran) {
-    
+    return new Future.sync(() {
+      int id = int.parse(file["id"]);
+      List<String> tags =new List<String>();
+      if(file.containsKey("tags")) {
+        tags = file["tags"];
+      }
+      
+      return this._model.updateFile(id, tran, tags: tags);
+    });
   }
 }
