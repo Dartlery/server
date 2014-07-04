@@ -15,10 +15,28 @@ class FilesResource extends RestResource {
     this._model = new FilesModel(this._pool);
     setMethodHandler(HttpMethod.GET, _getMethod);
     setMethodHandler(HttpMethod.POST, _postMethod);
-    //setMethodHandler(HttpMethod.PUT, _putMethod);
+    setMethodHandler(HttpMethod.PUT, _putMethod);
     this.addAcceptableContentType(ContentType.JSON,HttpMethod.POST);
   }
   
+  
+  Future _putMethod(RestRequest request) {
+    return this._pool.startTransaction().then((mysql.Transaction tran) {
+      return tran.prepare("SELECT * FROM files").then((mysql.Query query) {
+        return query.execute().then((result) {
+          // Do something?
+        }).then((_) {
+          this._log.info("Closing");
+          query.close();
+        });
+      }).then((_) {
+        this._log.info("Rolling");
+        return tran.rollback().then((_) {
+          this._log.info("Rolled");
+        });
+      });
+    });
+  }
   
   Future _getMethod(RestRequest request) {
     return new Future.sync(() {
@@ -73,16 +91,6 @@ class FilesResource extends RestResource {
         tran.rollback();
         throw e;
       });
-    });
-  }
-  
-  Future _putMethod(RestRequest request) {
-    String data_string = request.getDataAsString();
-    List files = JSON.decode(data_string);
-    
-    return this._pool.startTransaction().then((mysql.Transaction tran) {
-      
-      
     });
   }
   
