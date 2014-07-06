@@ -102,8 +102,13 @@ class FilesResource extends RestResource {
       if(file.containsKey("tags")) {
         tags = file["tags"];
       }
+      String name = null;
+      if(file.containsKey("name")) {
+        name = file["name"];
+      }
       
-      return this._model.createFile(ct, data, tags, tran).then((e) {
+      
+      return this._model.createFile(data, tags, tran, name: name, ct: ct).then((e) {
         Map<String, Object> output = new Map<String, Object>();
         output["files"] = e;  
         return output;
@@ -124,8 +129,12 @@ class FilesResource extends RestResource {
       if(file.containsKey("tags")) {
         tags = file["tags"];
       }
+      String name = null;
+      if(file.containsKey("name")) {
+        name = file["name"];
+      }
       
-      return this._model.updateFile(id, tran, tags: tags);
+      return this._model.updateFile(id, tran, tags: tags, name: name);
     });
   }
 }

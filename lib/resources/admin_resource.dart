@@ -7,7 +7,7 @@ class AdminResource extends RestResource {
   
   AdminModel _model;
 
-  AdminResource(this._pool): super(_RESOURCE_PATH_REGEX) {
+  AdminResource(this._pool): super(regex: _RESOURCE_PATH_REGEX) {
     this._model = new AdminModel(this._pool);
     setMethodHandler("GET", _getMethod);
   }

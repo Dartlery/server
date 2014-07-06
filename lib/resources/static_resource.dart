@@ -6,4 +6,13 @@ class StaticResource extends RestStaticFileResource {
   StaticResource(): super(_RESOURCE_PATH_REGEX,"static") {
     
   }
+  
+  @override
+  String adjustFilePath(String filename) {
+    if(filename.length>2) {
+      return path.join(filename.substring(0,2),filename);
+    } else {
+      return filename;
+    }
+  }
 }

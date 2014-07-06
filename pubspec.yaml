@@ -2,7 +2,8 @@ name: dartlery_server
 description: A sample command-line application
 dependencies:
   crypto: any
-  image: any
+  image:
+    path: ../image
   logging: any
   mime: any
   mongo_dart: any

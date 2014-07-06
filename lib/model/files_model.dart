@@ -11,8 +11,10 @@ class FilesModel extends ADatabaseModel {
     _allowedMimeTypes.add("image/png");
   }
   
-  Future<int> updateFile(int id, mysql.Transaction tran, {List<String> tags}) { 
+  Future<int> updateFile(int id, mysql.Transaction tran, {List<String> tags: null, String name: null}) { 
     this._log.info("Update requested for file ${id}");
+    
+    
     return this.setTags(id, tags, tran); 
   }
   
@@ -39,16 +41,18 @@ class FilesModel extends ADatabaseModel {
             args.add([id,tag]);
           }
         }
-        return t_query.executeMulti(args);
+        return t_query.executeMulti(args).then((_) {
+          t_query.close();
+        });
+      }).then((_) {
+        query.close();
       });
     });
   }
   
-  Future<int> createFile(ContentType ct, List<int> data, List<String> tags, mysql.Transaction tran) {
+  Future<int> createFile(List<int> data, List<String> tags, mysql.Transaction tran, {String name: null, ContentType ct: null}) {
     this._log.info("Creating file");
     return new Future.sync(() {
-      
-      
       // Verify submitted mime type
       if(data.length >= mime.defaultMagicNumbersMaxLength) {
         String mime_str = mime.lookupMimeType("genericfilename",
@@ -56,6 +60,9 @@ class FilesModel extends ADatabaseModel {
         
         if(mime_str==null) {
           this._log.warning("No mime type for uploaded data!");
+          if(ct==null) {
+            throw new Exception("Could not determine MIME type of file, and no content type was provided in submitted data");
+          }
           mime_str = ct.toString();
         } else {
           ContentType type = ContentType.parse(mime_str);
@@ -74,6 +81,10 @@ class FilesModel extends ADatabaseModel {
       List<int> hash = sha.close();
       String hash_string = CryptoUtils.bytesToHex(hash);
 
+      if(hash_string=="e81091c76538f4c202df25a31d4b7d646567b0a9d6be0c35595d6457c50e393d") {
+        this._log.finest("Trouble image found");
+      }
+      
       this._log.info("File hash: " + hash_string);
       
       return tran.prepare("SELECT COUNT(*) AS count FROM files WHERE hash = ?").then((query) {
@@ -83,10 +94,12 @@ class FilesModel extends ADatabaseModel {
               throw new EntityExistsException(hash_string);
             }
           }); 
+        }).then((_) {
+          query.close();
         });
       }).then((_) {
         // Write the file to the file system
-        Directory file_dir = new Directory(path.join(Directory.current.path,SettingsModel.STATIC_DIR,SettingsModel.FILES_DIR));
+        Directory file_dir = new Directory(path.join(Directory.current.path,SettingsModel.STATIC_DIR,SettingsModel.FILES_DIR, hash_string.substring(0,2)));
         if(!file_dir.existsSync()) {
           file_dir.createSync(recursive: true);
         }
@@ -99,9 +112,20 @@ class FilesModel extends ADatabaseModel {
         // Create the thumbnail
         Thumbnailer.createThumbnailForBits(hash_string, data);
       }).then((_) { 
-        return tran.prepare("INSERT INTO files (hash,mime_type) VALUES (?,?)").then((query) {
-          return query.execute([hash,ct.toString()]).then((results) {
+        return tran.prepare("INSERT INTO files (hash,mime_type,name) VALUES (?,?,?)").then((query) {
+          List args = new List();
+          args.add(hash);
+          args.add(ct.toString());
+          if(name==null) {
+            args.add(null);
+          } else {
+            args.add(name);
+          }
+          return query.execute(args).then((results) {
             return results.insertId;
+          }).then((insertId) {
+            query.close();
+            return insertId;
           });
         });
       }).then((id) {
@@ -115,8 +139,8 @@ class FilesModel extends ADatabaseModel {
   static const String STATIC_FILE_URL = "http://127.0.0.1:8888/static/files/";
   static const String STATIC_THUMBS_URL = "http://127.0.0.1:8888/static/thumbs/";
   
-  static const String _GET_ALL_FILES_SQL = "SELECT files.id, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image ORDER by id DESC, tag";
-  static const String _GET_ONE_FILE_SQL = "SELECT files.id, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image WHERE id= ? ORDER by id DESC, tag";
+  static const String _GET_ALL_FILES_SQL = "SELECT files.id, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image ORDER by id DESC, tag ASC";
+  static const String _GET_ONE_FILE_SQL = "SELECT files.id, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image WHERE id= ? ORDER by id DESC, tag ASC";
   
   Future getFiles([int id = -1]) {
     this._log.info("Getting all files");
@@ -144,6 +168,10 @@ class FilesModel extends ADatabaseModel {
               tags = new List<String>();
               file = new Map<String,Object>();
               file["id"] = row.id;
+              if(row.name!=null&&row.name.toString()!="") {
+                file["name"] = row.name;
+              }
+
               file["source"] = STATIC_FILE_URL + row.hash.toString().toLowerCase();
               file["thumbnail_source"] = STATIC_THUMBS_URL + row.hash.toString().toLowerCase();;
               last_id = row.id;
@@ -157,6 +185,8 @@ class FilesModel extends ADatabaseModel {
               output.add(file);   
             }
           }); 
+        }).then((_) {
+          query.close();
         });
       }).then((_) {
         return output;

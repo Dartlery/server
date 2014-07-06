@@ -1,11 +1,15 @@
 part of dartlery;
 
 class Thumbnailer {
+  static final Logger _log = new Logger('Thumbnailer');
+  
   static void createThumbnailForBits(String name, List<int> data) {
-    io.Directory file_dir = new io.Directory(path.join(io.Directory.current.path,SettingsModel.STATIC_DIR,SettingsModel.THUMBS_DIR));
+    io.Directory file_dir = new io.Directory(path.join(io.Directory.current.path,SettingsModel.STATIC_DIR,SettingsModel.THUMBS_DIR,name.substring(0,2)));
     if(!file_dir.existsSync()) {
       file_dir.createSync(recursive: true);
     }
+    
+    _log.info("Creating thumbnail for ${name}");
     
     image.Image source_image = image.decodeImage(data);
     
@@ -25,7 +29,8 @@ class Thumbnailer {
       new_width = (SettingsModel.thumbnailMaxDimension * ratio).round();
     }
     
-    thumbnail = image.copyResize(source_image,new_width,new_height,image.CUBIC);
+    thumbnail = image.copyResize(source_image,new_width,new_height,image.AVERAGE);
+    
     
     
     
@@ -35,5 +40,7 @@ class Thumbnailer {
     }
     
     thumb_file.writeAsBytesSync(image.encodePng(thumbnail, level: 9));
+    // Suposedly this kicks the GC into gear
+    print("gc");
   }
 }

@@ -24,6 +24,7 @@ void main() {
 
   rest.addResource(new FilesResource(pool));
   rest.addResource(new StaticResource());
+  rest.addResource(new ImportResource(pool));
   
   rest.start(port: 8888);
   
@@ -31,4 +32,7 @@ void main() {
 
 void RecordLog(LogRecord rec) {
   print('${rec.time}: ${rec.level.name}: (${rec.loggerName}) ${rec.message}');
+  if(rec.stackTrace!=null) {
+    print('${rec.time}: ${rec.level.name}: (${rec.loggerName}) ${rec.stackTrace.toString()}');
+  }
 }
