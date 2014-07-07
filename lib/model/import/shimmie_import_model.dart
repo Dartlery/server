@@ -26,7 +26,10 @@ class ShimmieImportModel extends AImportModel {
             File source_file;
             List<String> tags;
             int current_id;
+            int i = 0;
             return Future.forEach(result_list,  (row) {
+              i++;
+              this._log.info("Importing file ${i}/${result_list.length}");
             //return results.forEach((mysql.Row row) {
               current_id = row.id;
               return new Future.sync(() {
@@ -72,6 +75,7 @@ class ShimmieImportModel extends AImportModel {
                 throw new Exception("No files found to import");
               }
             }).then((_) {
+              this._log.info("Importing complete, committing");
               tran.commit();
               return imported_files;
             }).catchError((e, st) {
