@@ -117,7 +117,7 @@ class FilesModel extends ADatabaseModel {
           args.add(hash);
           args.add(ct.toString());
           if(name==null) {
-            args.add(null);
+            args.add("");
           } else {
             args.add(name);
           }
@@ -139,8 +139,8 @@ class FilesModel extends ADatabaseModel {
   static const String STATIC_FILE_URL = "http://127.0.0.1:8888/static/files/";
   static const String STATIC_THUMBS_URL = "http://127.0.0.1:8888/static/thumbs/";
   
-  static const String _GET_ALL_FILES_SQL = "SELECT files.id, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image ORDER by id DESC, tag ASC";
-  static const String _GET_ONE_FILE_SQL = "SELECT files.id, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image WHERE id= ? ORDER by id DESC, tag ASC";
+  static const String _GET_ALL_FILES_SQL = "SELECT files.id, name, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image ORDER by id DESC, tag ASC";
+  static const String _GET_ONE_FILE_SQL = "SELECT files.id, name, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image WHERE id= ? ORDER by id DESC, tag ASC";
   
   Future getFiles([int id = -1]) {
     this._log.info("Getting all files");

@@ -10,7 +10,9 @@ class StaticResource extends RestStaticFileResource {
   @override
   String adjustFilePath(String filename) {
     if(filename.length>2) {
-      return path.join(filename.substring(0,2),filename);
+      
+      
+      return path.join(path.dirname(filename),path.basename(filename).substring(0,2),path.basename(filename));
     } else {
       return filename;
     }
