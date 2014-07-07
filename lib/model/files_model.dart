@@ -142,12 +142,12 @@ class FilesModel extends ADatabaseModel {
   static const String _GET_ALL_FILES_SQL = "SELECT files.id, name, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image ORDER by id DESC, tag ASC";
   static const String _GET_ONE_FILE_SQL = "SELECT files.id, name, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image WHERE id= ? ORDER by id DESC, tag ASC";
   
-  Future getFiles([int id = -1]) {
+  Future getFiles({int id: -1, int limit: 30}) {
     this._log.info("Getting all files");
     String sql;
     List args = new List();
     if(id==-1) {
-      sql = _GET_ALL_FILES_SQL;
+      sql = _GET_ALL_FILES_SQL + " LIMIT 0, ${limit}";
     } else {
       sql = _GET_ONE_FILE_SQL;
       args.add(id);
@@ -169,7 +169,7 @@ class FilesModel extends ADatabaseModel {
               file = new Map<String,Object>();
               file["id"] = row.id;
               if(row.name!=null&&row.name.toString()!="") {
-                file["name"] = row.name;
+                file["name"] = row.name.toString();
               }
 
               file["source"] = STATIC_FILE_URL + row.hash.toString().toLowerCase();

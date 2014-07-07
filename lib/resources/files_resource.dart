@@ -49,7 +49,7 @@ class FilesResource extends RestResource {
         }
       }
       
-      return this._model.getFiles(id).then((e) {
+      return this._model.getFiles(id: id, limit: 99999999).then((e) {
         Map<String, Object> output = new Map<String, Object>();
         output["files"] = e;
         return JSON.encode(output);
