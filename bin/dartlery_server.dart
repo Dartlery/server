@@ -6,27 +6,34 @@ import 'package:rest_dart/rest_dart.dart';
 import 'package:dartlery_server/dartlery.dart';
 import 'package:dartlery_server/resources/resources.dart';
 
-import 'package:sqljocky/sqljocky.dart' as mysql;
+
+
+
 
 void main() {
   
+  
   Logger.root.level = Level.CONFIG;
   Logger.root.onRecord.listen(RecordLog);
-
   
-  mysql.ConnectionPool pool  = 
-      new mysql.ConnectionPool(host: 'localhost', port: 3306,
-          user: 'dartlery',password: 'Y6N9pZxBKLbKcwf5', db: 'dartlery', max: 5);
+  final Logger _log = new Logger('main');
   
-  RestServer rest = new RestServer();
+  try {
   
-  rest.addDefaultAvailableContentType(new ContentType("application", "json", charset: "utf-8"));
-
-  rest.addResource(new FilesResource(pool));
-  rest.addResource(new StaticResource());
-  rest.addResource(new ImportResource(pool));
+    loadConfigFile();
+    
+    RestServer rest = new RestServer();
+    
+    rest.addDefaultAvailableContentType(new ContentType("application", "json", charset: "utf-8"));
   
-  rest.start(port: 8888);
+    rest.addResource(new FilesResource());
+    rest.addResource(new StaticResource());
+    rest.addResource(new ImportResource());
+    
+    rest.start(port: 8888);
+  } catch(e,st) {
+    _log.severe("Error while starting Dartlery server",e,st);
+  }
   
 }
 
@@ -36,3 +43,4 @@ void RecordLog(LogRecord rec) {
     print('${rec.time}: ${rec.level.name}: (${rec.loggerName}) ${rec.stackTrace.toString()}');
   }
 }
+

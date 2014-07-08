@@ -6,13 +6,7 @@ class FilesResource extends RestResource {
   
   static const String _RESOURCE_PATH_REGEX = r'^/files/([^/]*)/?$';
 
-  //ADatabase _db;
-  mysql.ConnectionPool _pool;
-  
-  FilesModel _model;
-
-  FilesResource(this._pool): super(_RESOURCE_PATH_REGEX) {
-    this._model = new FilesModel(this._pool);
+  FilesResource(): super(_RESOURCE_PATH_REGEX) {
     setMethodHandler(HttpMethod.GET, _getMethod);
     setMethodHandler(HttpMethod.POST, _postMethod);
     setMethodHandler(HttpMethod.PUT, _putMethod);
@@ -40,6 +34,8 @@ class FilesResource extends RestResource {
   
   Future _getMethod(RestRequest request) {
     return new Future.sync(() {
+      mysql.ConnectionPool pool = getConnectionPool();
+      FilesModel model = new FilesModel();
       int id = -1;
       if(request.regexMatch.group(1)!="") {
         try {
@@ -49,7 +45,7 @@ class FilesResource extends RestResource {
         }
       }
       
-      return this._model.getFiles(id).then((e) {
+      return model.getFiles(id).then((e) {
         Map<String, Object> output = new Map<String, Object>();
         output["files"] = e;
         return JSON.encode(output);

@@ -1,14 +1,9 @@
 part of model;
 
-class FilesModel extends ADatabaseModel {
+class FilesModel {
   final Logger _log = new Logger('FilesModel');
   
-  final List<String> _allowedMimeTypes = new List<String>();
-  
-  FilesModel(pool): super(pool) {
-    _allowedMimeTypes.add("image/jpeg");
-    _allowedMimeTypes.add("image/gif");
-    _allowedMimeTypes.add("image/png");
+  FilesModel(): super() {
   }
   
   Future<int> updateFile(int id, mysql.Transaction tran, {List<String> tags: null, String name: null}) { 

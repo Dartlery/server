@@ -10,6 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:logging/logging.dart';
 import 'package:rest_dart/rest_dart.dart';
 
+import 'package:dartlery_server/dartlery.dart';
 import 'package:dartlery_server/model/model.dart';
 
 part 'files_resource.dart';

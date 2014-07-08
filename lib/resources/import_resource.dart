@@ -5,9 +5,7 @@ class ImportResource extends RestResource {
 
   List<String> _supportedImporters = new List<String>();
   
-  mysql.ConnectionPool _pool;
-  
-  ImportResource(this._pool): super(_RESOURCE_PATH_REGEX) {
+  ImportResource(): super(_RESOURCE_PATH_REGEX) {
     this._supportedImporters.add("shimmie");
     
     setMethodHandler(HttpMethod.GET, _getMethod);
