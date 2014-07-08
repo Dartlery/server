@@ -15,18 +15,21 @@ class FilesResource extends RestResource {
   
   
   Future _putMethod(RestRequest request) {
-    return this._pool.startTransaction().then((mysql.Transaction tran) {
-      return tran.prepare("SELECT * FROM files").then((mysql.Query query) {
-        return query.execute().then((result) {
-          // Do something?
+    return new Future.sync(() {
+      mysql.ConnectionPool pool = getConnectionPool();
+      return pool.startTransaction().then((mysql.Transaction tran) {
+        return tran.prepare("SELECT * FROM files").then((mysql.Query query) {
+          return query.execute().then((result) {
+            // Do something?
+          }).then((_) {
+            this._log.info("Closing");
+            query.close();
+          });
         }).then((_) {
-          this._log.info("Closing");
-          query.close();
-        });
-      }).then((_) {
-        this._log.info("Rolling");
-        return tran.rollback().then((_) {
-          this._log.info("Rolled");
+          this._log.info("Rolling");
+          return tran.rollback().then((_) {
+            this._log.info("Rolled");
+          });
         });
       });
     });
@@ -45,7 +48,7 @@ class FilesResource extends RestResource {
         }
       }
       
-      return model.getFiles(id).then((e) {
+      return model.getFiles(pool, id: id, limit: 30).then((e) {
         Map<String, Object> output = new Map<String, Object>();
         output["files"] = e;
         return JSON.encode(output);
@@ -54,38 +57,41 @@ class FilesResource extends RestResource {
   }
 
   Future _postMethod(RestRequest request) {
-    String data_string = request.getDataAsString();
-    var temp = JSON.decode(data_string);
-    if(!(temp is List)) {
-      throw new RestException(HttpStatus.BAD_REQUEST,"Submitted data must contain a List of files");
-    }
-    List files = temp;
-    for(Map file in files) {
-      if(!file.containsKey("id")) {
-        if(!file.containsKey("content_type")) {
-          throw new RestException(HttpStatus.BAD_REQUEST,"One of the submitted files has no content type");
-        };
-        if(!file.containsKey("data")) {
-          throw new RestException(HttpStatus.BAD_REQUEST,"One of the submitted files has no data");
-        };
+    return new Future.sync(() {
+      String data_string = request.getDataAsString();
+      var temp = JSON.decode(data_string);
+      if(!(temp is List)) {
+        throw new RestException(HttpStatus.BAD_REQUEST,"Submitted data must contain a List of files");
       }
-    }
-    
-    return this._pool.startTransaction().then((mysql.Transaction tran) {
-      return Future.forEach(files, (Map file) {
-        if(file.containsKey("id")) {
-          return _updateFile(file, tran);
-        } else {
-          return _createFile(file, tran);
+      List files = temp;
+      for(Map file in files) {
+        if(!file.containsKey("id")) {
+          if(!file.containsKey("content_type")) {
+            throw new RestException(HttpStatus.BAD_REQUEST,"One of the submitted files has no content type");
+          };
+          if(!file.containsKey("data")) {
+            throw new RestException(HttpStatus.BAD_REQUEST,"One of the submitted files has no data");
+          };
         }
-      }).then((e) {
-        return tran.commit().then((_) {
-          return e;
+      }
+      
+      mysql.ConnectionPool pool = getConnectionPool();
+      return pool.startTransaction().then((mysql.Transaction tran) {
+        return Future.forEach(files, (Map file) {
+          if(file.containsKey("id")) {
+            return _updateFile(file, tran);
+          } else {
+            return _createFile(file, tran);
+          }
+        }).then((e) {
+          return tran.commit().then((_) {
+            return e;
+          });
+        }).catchError((e, st) {
+          this._log.severe(e.toString(), e, st);
+          tran.rollback();
+          throw e;
         });
-      }).catchError((e, st) {
-        this._log.severe(e.toString(), e, st);
-        tran.rollback();
-        throw e;
       });
     });
   }
@@ -103,8 +109,9 @@ class FilesResource extends RestResource {
         name = file["name"];
       }
       
-      
-      return this._model.createFile(data, tags, tran, name: name, ct: ct).then((e) {
+      FilesModel model = new FilesModel();
+
+      return model.createFile(data, tags, tran, name: name, ct: ct).then((e) {
         Map<String, Object> output = new Map<String, Object>();
         output["files"] = e;  
         return output;
@@ -129,8 +136,10 @@ class FilesResource extends RestResource {
       if(file.containsKey("name")) {
         name = file["name"];
       }
-      
-      return this._model.updateFile(id, tran, tags: tags, name: name);
+
+      FilesModel model = new FilesModel();
+
+      return model.updateFile(id, tran, tags: tags, name: name);
     });
   }
 }

@@ -5,6 +5,7 @@ import 'package:rest_dart/rest_dart.dart';
 
 import 'package:dartlery_server/dartlery.dart';
 import 'package:dartlery_server/resources/resources.dart';
+import 'package:dartlery_server/model/model.dart';
 
 
 
@@ -22,7 +23,10 @@ void main() {
   
     loadConfigFile();
     
+    SettingsModel settings = new SettingsModel();
+    
     RestServer rest = new RestServer();
+    
     
     rest.addDefaultAvailableContentType(new ContentType("application", "json", charset: "utf-8"));
   

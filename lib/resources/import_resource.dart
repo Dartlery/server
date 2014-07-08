@@ -51,8 +51,8 @@ class ImportResource extends RestResource {
         throw new RestException(HttpStatus.BAD_REQUEST,"Submitted data must contain an image_folder");
       }
       
-      ShimmieImportModel model =  new ShimmieImportModel(this._pool);
-      model.beginImport(data["host"], data["db"], data["user"], data["password"], data["image_folder"]);
+      ShimmieImportModel model =  new ShimmieImportModel();
+      model.beginImport(getConnectionPool(), data["host"], data["db"], data["user"], data["password"], data["image_folder"]);
       
     });
   } 

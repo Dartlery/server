@@ -1,14 +1,13 @@
 part of model;
 
 abstract class AImportModel {
-  mysql.ConnectionPool _pool;
   FilesModel _filesModel;
   
   
-  AImportModel(this._pool) {
-    this._filesModel = new FilesModel(this._pool);
+  AImportModel() {
+    this._filesModel = new FilesModel();
   }
   
-  Future beginImport(String host, String db, String user, String password, String image_folder, {int port: 3306});
+  Future beginImport(mysql.ConnectionPool destination_pool, String host, String db, String user, String password, String image_folder, {int port: 3306});
   
 }

@@ -3,12 +3,9 @@ part of model;
 class ShimmieImportModel extends AImportModel {
   final Logger _log = new Logger('ShimmieImportModel');
   
-  
-  ShimmieImportModel(pool): super(pool);
-  
   static const String _SHIMMIE_FILE_LIST = "SELECT i.*, t.tag FROM images i LEFT JOIN image_tags it ON i.id = it.image_id LEFT JOIN tags t ON t.id = it.tag_id ORDER BY i.id ASC, t.tag ASC";
   
-  Future beginImport(String host, String db, String user, String password, String image_folder, {int port: 3306}) {
+  Future beginImport(mysql.ConnectionPool destination_pool, String host, String db, String user, String password, String image_folder, {int port: 3306}) {
     List imported_files = new List();
     
     return new Future.sync(() {
@@ -18,7 +15,7 @@ class ShimmieImportModel extends AImportModel {
 
       return shimmie_pool.query(_SHIMMIE_FILE_LIST).then((mysql.Results results) {
         return results.toList().then((result_list) {
-          return this._pool.startTransaction().then((mysql.Transaction tran) {
+          return destination_pool.startTransaction().then((mysql.Transaction tran) {
             int last_id = -1;
             String name;
             String hash;

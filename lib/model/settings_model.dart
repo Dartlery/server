@@ -7,12 +7,17 @@ class SettingsModel {
   static const String THUMBS_DIR = 'thumbs';
   static const String STATIC_DIR = 'static';
 
-  final List<String> allowedMimeTypes = new List<String>();
+  static final List<String> allowedMimeTypes = new List<String>();
+  
+  static bool _staticInitialized = false; 
   
   SettingsModel() {
-    allowedMimeTypes.add("image/jpeg");
-    allowedMimeTypes.add("image/gif");
-    allowedMimeTypes.add("image/png");
+    if(!_staticInitialized) {
+      allowedMimeTypes.add("image/jpeg");
+      allowedMimeTypes.add("image/gif");
+      allowedMimeTypes.add("image/png");
+      _staticInitialized = true;
+    }
   }
   
   

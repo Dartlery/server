@@ -64,7 +64,7 @@ class FilesModel {
           this._log.warning("Uploaded data claims to be ${ct}, but validation says it's ${mime_str}");
         }
         
-        if(!this._allowedMimeTypes.contains(mime_str)) {
+        if(!SettingsModel.allowedMimeTypes.contains(mime_str)) {
             throw new FileTypeNotSupportedException("Provided file type is not allowed: ${mime_str}");        
         }
       }
@@ -137,19 +137,20 @@ class FilesModel {
   static const String _GET_ALL_FILES_SQL = "SELECT files.id, name, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image ORDER by id DESC, tag ASC";
   static const String _GET_ONE_FILE_SQL = "SELECT files.id, name, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image WHERE id= ? ORDER by id DESC, tag ASC";
   
-  Future getFiles([int id = -1]) {
-    this._log.info("Getting all files");
+  Future getFiles(mysql.ConnectionPool pool, {int id: -1, int limit: 30}) {
     String sql;
     List args = new List();
     if(id==-1) {
-      sql = _GET_ALL_FILES_SQL;
+      this._log.info("Getting all files");
+      sql = _GET_ALL_FILES_SQL + " LIMIT 0, ${limit}";
     } else {
-      sql = _GET_ONE_FILE_SQL;
+      this._log.info("Getting file ${id}");
       args.add(id);
+      sql = _GET_ONE_FILE_SQL;
     }
     return new Future.sync(() {
       List<Map> output = new List<Map>();
-      return this._pool.prepare(sql).then((query) {
+      return pool.prepare(sql).then((query) {
         return query.execute(args).then((results) {
           int last_id = -1;
           Map<String,Object> file = null;
@@ -164,7 +165,7 @@ class FilesModel {
               file = new Map<String,Object>();
               file["id"] = row.id;
               if(row.name!=null&&row.name.toString()!="") {
-                file["name"] = row.name;
+                file["name"] = row.name.toString();
               }
 
               file["source"] = STATIC_FILE_URL + row.hash.toString().toLowerCase();
