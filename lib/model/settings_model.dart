@@ -7,6 +7,8 @@ class SettingsModel {
   static const String THUMBS_DIR = 'thumbs';
   static const String STATIC_DIR = 'static';
 
+  static const String API_URL = "http://127.0.0.1:8888/";
+  
   static final List<String> allowedMimeTypes = new List<String>();
   
   static bool _staticInitialized = false; 

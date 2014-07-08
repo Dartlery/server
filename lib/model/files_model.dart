@@ -131,18 +131,22 @@ class FilesModel {
     });
   }
   
-  static const String STATIC_FILE_URL = "http://127.0.0.1:8888/static/files/";
-  static const String STATIC_THUMBS_URL = "http://127.0.0.1:8888/static/thumbs/";
+  static String STATIC_FILE_URL = SettingsModel.API_URL + "static/files/";
+  static String STATIC_THUMBS_URL = SettingsModel.API_URL + "static/thumbs/";
   
-  static const String _GET_ALL_FILES_SQL = "SELECT files.id, name, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image ORDER by id DESC, tag ASC";
+  static const String _GET_ALL_FILES_SQL = '''SELECT f.id, name, HEX(hash) hash, tag 
+FROM (SELECT * FROM files ORDER BY id LIMIT 0, ?) f 
+LEFT JOIN tags ON f.id = tags.image ORDER by id DESC, tag ASC''';
+  
   static const String _GET_ONE_FILE_SQL = "SELECT files.id, name, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image WHERE id= ? ORDER by id DESC, tag ASC";
   
   Future getFiles(mysql.ConnectionPool pool, {int id: -1, int limit: 30}) {
     String sql;
     List args = new List();
     if(id==-1) {
-      this._log.info("Getting all files");
-      sql = _GET_ALL_FILES_SQL + " LIMIT 0, ${limit}";
+      this._log.info("Getting all files (limited to ${limit})");
+      sql = _GET_ALL_FILES_SQL;
+      args.add(limit);
     } else {
       this._log.info("Getting file ${id}");
       args.add(id);
@@ -170,6 +174,8 @@ class FilesModel {
 
               file["source"] = STATIC_FILE_URL + row.hash.toString().toLowerCase();
               file["thumbnail_source"] = STATIC_THUMBS_URL + row.hash.toString().toLowerCase();;
+              file["link"] = SettingsModel.API_URL +"files/" + row.id.toString();
+                  
               last_id = row.id;
             }
             if(row.tag!=null) {

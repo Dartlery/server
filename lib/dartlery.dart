@@ -25,7 +25,7 @@ void loadConfigFile() {
   if(!(temp is Map)) {
     throw new Exception("config.json not formatted properly, must be a map");
   }
-  dbSettings = temp;
+  dbSettings = temp["mysql"];
 
 }
 
