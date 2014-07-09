@@ -45,7 +45,15 @@ class FilesModel {
     });
   }
   
-  Future<int> stageFile(List<int> data, List<String> tags, mysql.Transaction tran, {String name: null, ContentType ct: null}) {
+  static const String _BEGIN_STAGING_BATCH_SQL = "INSERT INTO staging_batch (started,folder) VALUES (CURRENT_TIMESTAMP,?)";
+  
+  Future<int> beginStagingBatch(mysql.Transaction tran) {
+    return tran.prepareExecute(_BEGIN_STAGING_BATCH_SQL, [Directory.systemTemp.createTempSync("dartlery_staging")]).then((mysql.Results results) {
+      return results.insertId;
+    });
+  }
+  
+  Future<int> createFile(List<int> data, List<String> tags, mysql.Transaction tran, {String name: null, ContentType ct: null}) {
     this._log.info("Creating file");
     return new Future.sync(() {
       // Verify submitted mime type
