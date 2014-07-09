@@ -45,7 +45,7 @@ class FilesModel {
     });
   }
   
-  Future<int> createFile(List<int> data, List<String> tags, mysql.Transaction tran, {String name: null, ContentType ct: null}) {
+  Future<int> stageFile(List<int> data, List<String> tags, mysql.Transaction tran, {String name: null, ContentType ct: null}) {
     this._log.info("Creating file");
     return new Future.sync(() {
       // Verify submitted mime type
