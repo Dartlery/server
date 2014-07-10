@@ -45,14 +45,6 @@ class FilesModel {
     });
   }
   
-  static const String _BEGIN_STAGING_BATCH_SQL = "INSERT INTO staging_batch (started,folder) VALUES (CURRENT_TIMESTAMP,?)";
-  
-  Future<int> beginStagingBatch(mysql.Transaction tran) {
-    return tran.prepareExecute(_BEGIN_STAGING_BATCH_SQL, [Directory.systemTemp.createTempSync("dartlery_staging")]).then((mysql.Results results) {
-      return results.insertId;
-    });
-  }
-  
   Future<int> createFile(List<int> data, List<String> tags, mysql.Transaction tran, {String name: null, ContentType ct: null}) {
     this._log.info("Creating file");
     return new Future.sync(() {
@@ -142,19 +134,37 @@ class FilesModel {
   static String STATIC_FILE_URL = SettingsModel.API_URL + "static/files/";
   static String STATIC_THUMBS_URL = SettingsModel.API_URL + "static/thumbs/";
   
-  static const String _GET_ALL_FILES_SQL = '''SELECT f.id, name, HEX(hash) hash, tag 
-FROM (SELECT * FROM files ORDER BY id LIMIT 0, ?) f 
-LEFT JOIN tags ON f.id = tags.image ORDER by id DESC, tag ASC''';
+  static const String _GET_ALL_FILES_SQL_1 = 'SELECT f.id, name, HEX(hash) hash, tag FROM (SELECT * FROM files ';
+  static const String _GET_ALL_FILES_SQL_2 = 'ORDER BY id DESC LIMIT ?, ?) f LEFT JOIN tags ON f.id = tags.image ORDER by f.id DESC, tag ASC';
   
   static const String _GET_ONE_FILE_SQL = "SELECT files.id, name, HEX(hash) hash, tag FROM files LEFT JOIN tags ON files.id = tags.image WHERE id= ? ORDER by id DESC, tag ASC";
   
-  Future getFiles(mysql.ConnectionPool pool, {int id: -1, int limit: 30}) {
+  Future getFiles(mysql.ConnectionPool pool, {int id: -1, int limit: 60, int offset: 0, String search: null}) {
     String sql;
     List args = new List();
     if(id==-1) {
-      this._log.info("Getting all files (limited to ${limit})");
-      sql = _GET_ALL_FILES_SQL;
+      StringBuffer builder = new StringBuffer();
+      builder.write(_GET_ALL_FILES_SQL_1);
+      if(search!=null&&search.trim()!="") {
+        this._log.info("Searching for files matching ${search} (offset: ${offset} limit: ${limit})");
+        List<String> search_args = search.split(" ");
+        builder.write(" WHERE ");
+        bool first = true;
+        for(String arg in search_args) {
+          if(!first) {
+            builder.write(" AND ");
+          }
+          builder.write(" EXISTS (SELECT 1 FROM tags WHERE image = id AND tag = ?) ");
+          args.add(arg);
+          first = false;
+        }
+      } else {
+        this._log.info("Getting all files (limited to ${limit})");
+      }
+      builder.write(_GET_ALL_FILES_SQL_2);
+      args.add(offset);
       args.add(limit);
+      sql = builder.toString();
     } else {
       this._log.info("Getting file ${id}");
       args.add(id);

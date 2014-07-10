@@ -48,10 +48,28 @@ class FilesResource extends RestResource {
         }
       }
       
-      return model.getFiles(pool, id: id, limit: 30).then((e) {
+      int limit = 30;
+      int offset = 0;
+      String search;
+      
+      if(request.args.containsKey("limit")) {
+        String tmp = request.args["limit"];
+        limit = int.parse(tmp, onError:(source) => throw new RestException(HttpStatus.BAD_REQUEST,"limit must be a valid integer"));
+      }
+      if(request.args.containsKey("offset")) {
+        String tmp = request.args["offset"];
+        offset = int.parse(tmp, onError:(source) => throw new RestException(HttpStatus.BAD_REQUEST,"offset must be a valid integer"));
+      }
+      if(request.args.containsKey("search")) {
+        search = request.args["search"];
+      }
+      
+      return model.getFiles(pool, id: id, limit: limit, offset: offset, search: search).then((e) {
         Map<String, Object> output = new Map<String, Object>();
         output["files"] = e;
         return JSON.encode(output);
+      }).whenComplete(() {
+        pool.close();
       });
     });
   }
@@ -91,6 +109,8 @@ class FilesResource extends RestResource {
           this._log.severe(e.toString(), e, st);
           tran.rollback();
           throw e;
+        }).whenComplete(() {
+          pool.close();
         });
       });
     });
