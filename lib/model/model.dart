@@ -12,6 +12,7 @@ import 'package:logging/logging.dart';
 import 'package:dartlery_server/dartlery.dart';
 
 part 'exception/entity_exists_exception.dart';
+part 'exception/validation_exception.dart';
 
 part 'a_model.dart';
 part 'a_database_model.dart';

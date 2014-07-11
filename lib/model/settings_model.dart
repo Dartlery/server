@@ -1,7 +1,9 @@
 part of model;
 
 class SettingsModel {
-  static int thumbnailMaxDimension = 200;
+  static const int thumbnailMaxDimension = 200;
+  
+  static const int maxFilesReturned = 100;
   
   static const String FILES_DIR = 'files'; 
   static const String THUMBS_DIR = 'thumbs';

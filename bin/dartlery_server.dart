@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:logging/logging.dart';
-import 'package:rest_dart/rest_dart.dart';
+import 'package:rest_server/rest_server.dart';
 
 import 'package:dartlery_server/dartlery.dart';
 import 'package:dartlery_server/resources/resources.dart';
@@ -27,6 +27,8 @@ void main() {
     
     RestServer rest = new RestServer();
     
+    rest.accessControlAllowOrigin = "*";
+    rest.accessControlAllowHeaders = "Content-Type";
     
     rest.addDefaultAvailableContentType(new ContentType("application", "json", charset: "utf-8"));
   
@@ -34,7 +36,7 @@ void main() {
     rest.addResource(new StaticResource());
     rest.addResource(new ImportResource());
     
-    rest.start(port: 8888);
+    rest.start(address: new InternetAddress("127.0.0.1"), port: 8888);
   } catch(e,st) {
     _log.severe("Error while starting Dartlery server",e,st);
   }

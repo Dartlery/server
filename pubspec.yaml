@@ -8,6 +8,6 @@ dependencies:
   mime: any
   mongo_dart: any
   path: any
-  rest_dart:
-    path: ../rest_dart
+  rest_server:
+    path: ../rest_server/
   sqljocky: any

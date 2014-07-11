@@ -8,7 +8,7 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:sqljocky/sqljocky.dart' as mysql;
 import 'package:path/path.dart' as path;
 import 'package:logging/logging.dart';
-import 'package:rest_dart/rest_dart.dart';
+import 'package:rest_server/rest_server.dart';
 
 import 'package:dartlery_server/dartlery.dart';
 import 'package:dartlery_server/model/model.dart';

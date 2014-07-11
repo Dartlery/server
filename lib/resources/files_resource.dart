@@ -2,7 +2,7 @@ part of resources;
 
 
 class FilesResource extends RestResource {
-  final Logger _log = new Logger('FilesResource');
+  static final Logger _log = new Logger('FilesResource');
   
   static const String _RESOURCE_PATH_REGEX = r'^/files/([^/]*)/?$';
 
@@ -10,30 +10,17 @@ class FilesResource extends RestResource {
     setMethodHandler(HttpMethod.GET, _getMethod);
     setMethodHandler(HttpMethod.POST, _postMethod);
     setMethodHandler(HttpMethod.PUT, _putMethod);
+    this.addAcceptRange("files");
     this.addAcceptableContentType(ContentType.JSON,HttpMethod.POST);
   }
   
   
-  Future _putMethod(RestRequest request) {
-    return new Future.sync(() {
-      mysql.ConnectionPool pool = getConnectionPool();
-      return pool.startTransaction().then((mysql.Transaction tran) {
-        return tran.prepare("SELECT * FROM files").then((mysql.Query query) {
-          return query.execute().then((result) {
-            // Do something?
-          }).then((_) {
-            this._log.info("Closing");
-            query.close();
-          });
-        }).then((_) {
-          this._log.info("Rolling");
-          return tran.rollback().then((_) {
-            this._log.info("Rolled");
-          });
-        });
+    Future _putMethod(RestRequest request) {
+      return new Future.sync(() {
+        mysql.ConnectionPool pool = getConnectionPool();
+            pool.close();
       });
-    });
-  }
+    }
   
   Future _getMethod(RestRequest request) {
     return new Future.sync(() {
@@ -51,25 +38,51 @@ class FilesResource extends RestResource {
       int limit = 30;
       int offset = 0;
       String search;
+      List<String> sort = new List<String>();
       
-      if(request.args.containsKey("limit")) {
-        String tmp = request.args["limit"];
-        limit = int.parse(tmp, onError:(source) => throw new RestException(HttpStatus.BAD_REQUEST,"limit must be a valid integer"));
+      if(request.range!=null) {
+        offset = request.range.start;
+        limit = request.range.count;
+        if(limit>SettingsModel.maxFilesReturned) {
+          limit = SettingsModel.maxFilesReturned;
+        }
       }
-      if(request.args.containsKey("offset")) {
-        String tmp = request.args["offset"];
-        offset = int.parse(tmp, onError:(source) => throw new RestException(HttpStatus.BAD_REQUEST,"offset must be a valid integer"));
-      }
+      
       if(request.args.containsKey("search")) {
         search = request.args["search"];
       }
       
-      return model.getFiles(pool, id: id, limit: limit, offset: offset, search: search).then((e) {
+      if(request.args.containsKey("sort")&&request.args["sort"]!="") {
+        sort.addAll(request.args["sort"].split("|"));
+      }
+
+      
+      return model.getFiles(pool, id: id, limit: limit, offset: offset, search: search, order_by: sort).then((e) {
         Map<String, Object> output = new Map<String, Object>();
-        output["files"] = e;
+        output["files"] = e["files"];
+        
+        if(e["count"]>0) {
+          if(request.range!=null) {
+            if(output["files"].length==0) {
+              request.response.httpResponse.headers.add(HttpHeaders.CONTENT_RANGE, "files ${SettingsModel.maxFilesReturned}/${e['count']-1}");
+              throw new RestException(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE,"The requested range could not be satisfied");
+            }
+            request.response.setRange("files", request.range.start, request.range.start + output["files"].length - 1, e["count"] - 1);
+          } else {
+            request.response.setRange("files", 0, output["files"].length - 1, e["count"] - 1);
+          }
+        }
+        
         return JSON.encode(output);
+      }).catchError((e,st) {
+        if(e is ValidationException) {
+          throw new RestException(HttpStatus.BAD_REQUEST, e.message);
+        } else {
+          throw e;
+        }
       }).whenComplete(() {
-        pool.close();
+        //  TODO: This crashes the server when there is an invalid sort, eh?
+          pool.close();
       });
     });
   }
@@ -106,7 +119,7 @@ class FilesResource extends RestResource {
             return e;
           });
         }).catchError((e, st) {
-          this._log.severe(e.toString(), e, st);
+          _log.severe(e.toString(), e, st);
           tran.rollback();
           throw e;
         }).whenComplete(() {
