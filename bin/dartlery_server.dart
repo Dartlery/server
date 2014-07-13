@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:rest_server/rest_server.dart';
+import 'package:sqljocky/sqljocky.dart' as mysql;
 
 import 'package:dartlery_server/dartlery.dart';
 import 'package:dartlery_server/resources/resources.dart';
@@ -32,9 +33,11 @@ void main() {
     
     rest.addDefaultAvailableContentType(new ContentType("application", "json", charset: "utf-8"));
   
-    rest.addResource(new FilesResource());
+    mysql.ConnectionPool pool = getConnectionPool();
+    
+    rest.addResource(new FilesResource(pool));
     rest.addResource(new StaticResource());
-    rest.addResource(new ImportResource());
+    rest.addResource(new ImportResource(pool));
     
     rest.start(address: new InternetAddress("127.0.0.1"), port: 8888);
   } catch(e,st) {
@@ -50,3 +53,7 @@ void RecordLog(LogRecord rec) {
   }
 }
 
+mysql.ConnectionPool getConnectionPool() {
+  return new mysql.ConnectionPool(host: dbSettings["host"], port: dbSettings["port"],
+          user: dbSettings["user"],password: dbSettings["password"], db: dbSettings["db"], max: 5);
+}

@@ -6,7 +6,9 @@ class FilesResource extends RestResource {
   
   static const String _RESOURCE_PATH_REGEX = r'^/files/([^/]*)/?$';
 
-  FilesResource(): super(_RESOURCE_PATH_REGEX) {
+  mysql.ConnectionPool _pool;
+  
+  FilesResource(this._pool): super(_RESOURCE_PATH_REGEX) {
     setMethodHandler(HttpMethod.GET, _getMethod);
     setMethodHandler(HttpMethod.POST, _postMethod);
     setMethodHandler(HttpMethod.PUT, _putMethod);
@@ -17,19 +19,15 @@ class FilesResource extends RestResource {
   
     Future _putMethod(RestRequest request) {
       return new Future.sync(() {
-        mysql.ConnectionPool pool = getConnectionPool();
-        
-          return pool.prepare("SELECT name FROM files").then((mysql.Query query) {
-            return query.execute().then((result) {
-              return result.first.then((row) {
-                return row.first;
-              });
-            }).then((_) {
-             _log.info("Closing");
+        return _pool.prepare("SELECT name FROM files").then((mysql.Query query) {
+          return query.execute().then((result) {
+            return result.first.then((row) {
+              return row.first;
             });
           }).then((_) {
-            pool.close();
+           _log.info("Closing");
           });
+        });
       });
     }
   
@@ -37,7 +35,6 @@ class FilesResource extends RestResource {
   
   Future _getMethod(RestRequest request) {
     return new Future.sync(() {
-      mysql.ConnectionPool pool = getConnectionPool();
       FilesModel model = new FilesModel();
       int id = -1;
       if(request.regexMatch.group(1)!="") {
@@ -70,19 +67,20 @@ class FilesResource extends RestResource {
       }
 
       
-      return model.getFiles(pool, id: id, limit: limit, offset: offset, search: search, order_by: sort).then((e) {
+      return model.getFiles(_pool, id: id, limit: limit, offset: offset, search: search, order_by: sort).then((e) {
         Map<String, Object> output = new Map<String, Object>();
         output["files"] = e["files"];
         
         if(e["count"]>0) {
+          List files = output["files"]; 
           if(request.range!=null) {
-            if(output["files"].length==0) {
+            if(files.length==0) {
               request.response.httpResponse.headers.add(HttpHeaders.CONTENT_RANGE, "files ${SettingsModel.maxFilesReturned}/${e['count']-1}");
               throw new RestException(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE,"The requested range could not be satisfied");
             }
-            request.response.setRange("files", request.range.start, request.range.start + output["files"].length - 1, e["count"] - 1);
+            request.response.setRange("files", request.range.start, request.range.start + files.length - 1, e["count"] - 1);
           } else {
-            request.response.setRange("files", 0, output["files"].length - 1, e["count"] - 1);
+            request.response.setRange("files", 0, files.length - 1, e["count"] - 1);
           }
         }
         
@@ -93,9 +91,6 @@ class FilesResource extends RestResource {
         } else {
           throw e;
         }
-      }).whenComplete(() {
-        //  TODO: This crashes the server when there is an invalid sort, eh?
-          pool.close();
       });
     });
   }
@@ -119,8 +114,7 @@ class FilesResource extends RestResource {
         }
       }
       
-      mysql.ConnectionPool pool = getConnectionPool();
-      return pool.startTransaction().then((mysql.Transaction tran) {
+      return _pool.startTransaction().then((mysql.Transaction tran) {
         return Future.forEach(files, (Map file) {
           if(file.containsKey("id")) {
             return _updateFile(file, tran);
@@ -135,8 +129,6 @@ class FilesResource extends RestResource {
           _log.severe(e.toString(), e, st);
           tran.rollback();
           throw e;
-        }).whenComplete(() {
-          pool.close();
         });
       });
     });

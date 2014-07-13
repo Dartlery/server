@@ -65,10 +65,10 @@ class FilesModel {
       return query.execute([id]).then((_) {
         return transaction.prepare(_SET_TAGS_SQL);
       }).then((mysql.Query t_query) {
-        return t_query.executeMulti(args).then((_) {
+        return t_query.executeMulti(args).whenComplete(() {
           t_query.close();
         });
-      }).then((_) {
+      }).whenComplete(() {
         query.close();
       });
     });
@@ -113,8 +113,8 @@ class FilesModel {
               throw new EntityExistsException(hash_string);
             }
           });
-        }).then((_) {
-          //query.close();
+        }).whenComplete(() {
+          query.close();
         });
       }).then((_) {
         // Write the file to the file system
@@ -143,8 +143,9 @@ class FilesModel {
           return query.execute(args).then((results) {
             return results.insertId;
           }).then((insertId) {
-            //query.close();
             return insertId;
+          }).whenComplete(() {
+            query.close();
           });
         });
       }).then((id) {
@@ -292,7 +293,7 @@ class FilesModel {
             }
           });
         }).whenComplete(() {
-          //query.close();
+          query.close();
         });
       }).then((_) {
         return output;

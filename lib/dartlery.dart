@@ -29,7 +29,3 @@ void loadConfigFile() {
 
 }
 
-mysql.ConnectionPool getConnectionPool() {
-  return new mysql.ConnectionPool(host: dbSettings["host"], port: dbSettings["port"],
-          user: dbSettings["user"],password: dbSettings["password"], db: dbSettings["db"], max: 5);
-}

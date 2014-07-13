@@ -5,7 +5,9 @@ class ImportResource extends RestResource {
 
   List<String> _supportedImporters = new List<String>();
   
-  ImportResource(): super(_RESOURCE_PATH_REGEX) {
+  mysql.ConnectionPool _pool;
+  
+  ImportResource(this._pool): super(_RESOURCE_PATH_REGEX) {
     this._supportedImporters.add("shimmie");
     
     setMethodHandler(HttpMethod.GET, _getMethod);
@@ -52,7 +54,7 @@ class ImportResource extends RestResource {
       }
       
       ShimmieImportModel model =  new ShimmieImportModel();
-      model.beginImport(getConnectionPool(), data["host"], data["db"], data["user"], data["password"], data["image_folder"]);
+      model.beginImport(_pool, data["host"], data["db"], data["user"], data["password"], data["image_folder"]);
       
     });
   } 
