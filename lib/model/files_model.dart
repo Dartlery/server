@@ -206,7 +206,7 @@ class FilesModel {
             output["count"] = row.first;
           });
         }).whenComplete(() {
-          //query.close();
+          query.close();
         });
       });
     }).then((_) {
