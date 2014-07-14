@@ -18,21 +18,18 @@ class FilesResource extends RestResource {
   
   
     Future _putMethod(RestRequest request) {
-      return this._pool.startTransaction().then((mysql.Transaction tran) {
-        return tran.prepare("SELECT name FROM files").then((mysql.Query query) {
-          return query.execute().then((result) {
-            return result.toList();
-            // Do something?
+      return new Future.sync(() {
+          return _pool.prepare("SELECT name FROM files").then((mysql.Query query) {
+            return query.execute().then((result) {
+              // Do something?
+              return result.toList();
+            }).then((_) {
+              _log.info("Closing");
+              query.close();
+            });
           }).then((_) {
-            _log.info("Closing");
-            query.close();
+            _pool.close();
           });
-        }).then((_) {
-          _log.info("Rolling");
-          return tran.rollback().then((_) {
-            _log.info("Rolled");
-          });
-        });
       });
     }
   

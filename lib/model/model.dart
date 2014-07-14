@@ -18,8 +18,11 @@ part 'a_model.dart';
 part 'a_database_model.dart';
 
 part 'settings_model.dart';
+part 'tags_model.dart';
+part 'tag_groups_model.dart';
 part 'files_model.dart';
 part 'admin_model.dart';
 
 part 'import/a_import_model.dart';
 part 'import/shimmie_import_model.dart';
+

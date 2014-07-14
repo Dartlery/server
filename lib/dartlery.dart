@@ -11,6 +11,7 @@ import 'package:logging/logging.dart';
 import 'package:dartlery_server/model/model.dart';
 
 part 'src/thumbnailer.dart';
+part 'src/query_builder.dart';
 
 Map dbSettings;
 

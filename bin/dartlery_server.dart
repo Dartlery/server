@@ -29,13 +29,15 @@ void main() {
     RestServer rest = new RestServer();
     
     rest.accessControlAllowOrigin = "*";
-    rest.accessControlAllowHeaders = "Content-Type";
+    rest.accessControlAllowHeaders = "Content-Type,Range";
     
     rest.addDefaultAvailableContentType(new ContentType("application", "json", charset: "utf-8"));
   
     mysql.ConnectionPool pool = getConnectionPool();
     
     rest.addResource(new FilesResource(pool));
+    rest.addResource(new TagsResource(pool));
+    rest.addResource(new TagGroupsResource(pool));
     rest.addResource(new StaticResource());
     rest.addResource(new ImportResource(pool));
     

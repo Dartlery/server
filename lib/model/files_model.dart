@@ -9,72 +9,29 @@ class FilesModel {
   static final String STATIC_FILE_URL = SettingsModel.API_URL + "static/files/";
   static final String STATIC_THUMBS_URL = SettingsModel.API_URL + "static/thumbs/";
 
-  static const String _DELETE_TAGS_SQL = "DELETE FROM tags WHERE image = ?";
-  static const String _SET_TAGS_SQL = "INSERT INTO tags (image,tag) VALUES (?,?)";
 
   static const String _GET_TAGS_WRAPPER_SQL_START = 'SELECT f.id, f.name, f.source, HEX(hash) hash, tag FROM (';
   static const String _GET_TAGS_WRAPPER_SQL_END = ') f LEFT JOIN tags ON f.id = tags.image ';
   static const String _GET_TAGS_WRAPPER_ORDER_SQL = ' , tag ASC ';
   
-  static const String _GET_COUNT_WRAPPER_START = "SELECT COUNT(*) FROM (";
-  static const String _GET_COUNT_WRAPPER_END = ") qwzbk";
 
-  static const String _GET_SINGLE_FILE_SQL = 'SELECT * FROM files WHERE id = ?';
-
-  static const String _GET_FILES_SQL = 'SELECT * FROM files ';
   static const String _GET_FILES_ORDER_SQL = ' ORDER BY id ASC ';
   static const String _GET_FILES_LIMIT_SQL = ' LIMIT ?, ?';
 
   static const String _GET_FILES_INCLUDE_TAG_SQL = " EXISTS (SELECT 1 FROM tags WHERE image = id AND tag = ?) ";
   static const String _GET_FILES_EXCLUDE_TAG_SQL = " NOT EXISTS (SELECT 1 FROM tags WHERE image = id AND tag = ?) ";
 
-  static const String VALID_TAG_REGEXP_STRING = r"^[^-].*$";
   static const String VALID_SEARCH_ARG_REGEXP_STRING = r"^[-]?[a-zA-Z0-9_]+$";
-  static final RegExp VALID_TAG_REGEXP = new RegExp(VALID_TAG_REGEXP_STRING);
   static final RegExp VALID_SEARCH_ARG_REGEXP = new RegExp(VALID_SEARCH_ARG_REGEXP_STRING);
 
   Future<int> updateFile(int id, mysql.Transaction tran, {List<String> tags: null, String name: null, String source: null}) {
     this._log.info("Update requested for file ${id}");
 
-    return this.setTags(id, tags, tran);
+    return TagsModel.setTags(id, tags, tran);
   }
 
 
-  Future setTags(int id, List<String> tags, mysql.Transaction transaction) {
-    this._log.info("Setting tags for file ${id}");
-    List args = new List();
-    return new Future.sync(() {
-      if (tags == null || tags.length == 0) {
-        return null;
-      }
-      for (String tag in tags) {
-        if (tag != null && tag != "") {
-          if (!VALID_TAG_REGEXP.hasMatch(tag)) {
-            throw new Exception("Invalid tag: ${tag}");
-          }
-          args.add([id, tag]);
-        }
-      }
 
-
-      return transaction.prepare(_DELETE_TAGS_SQL);
-    }).then((mysql.Query query) {
-      if (query == null) {
-        return null;
-      }
-      return query.execute([id]).then((_) {
-        return transaction.prepare(_SET_TAGS_SQL);
-      }).then((mysql.Query t_query) {
-        return Future.forEach(args, (arg) {
-          return t_query.execute(arg);
-        }).whenComplete(() {
-          t_query.close();
-        });
-      }).whenComplete(() {
-        query.close();
-      });
-    });
-  }
 
   Future<int> createFile(List<int> data, List<String> tags, mysql.Transaction tran, {String name: null, ContentType ct: null}) {
     this._log.info("Creating file");
@@ -153,7 +110,7 @@ class FilesModel {
           });
         });
       }).then((id) {
-        return this.setTags(id, tags, tran).then((_) {
+        return TagsModel.setTags(id, tags, tran).then((_) {
           return id;
         });
       });
@@ -161,34 +118,29 @@ class FilesModel {
   }
 
   Future getFiles(mysql.RetainedConnection con, {int id: -1, int limit: 60, int offset: 0, String search: null, List<String> order_by: null}) {
-    String sql;
     List args = new List();
     Map output = new Map();
     List<Map> files = new List<Map>();
     output["files"] = files;
-    StringBuffer builder = new StringBuffer();
+    
+    QueryBuilder sql = new QueryBuilder("SELECT","files","f");
+    sql.addField("*");
+
     return new Future.sync(() {
       if (id == -1) {
-        builder.write(_GET_FILES_SQL);
         if (search != null && search.trim() != "") {
           this._log.info("Searching for files matching ${search} (offset: ${offset} limit: ${limit})");
           List<String> search_args = search.split(" ");
-          builder.write(" WHERE ");
           bool first = true;
           for (String search_arg in search_args) {
             if (!VALID_SEARCH_ARG_REGEXP.hasMatch(search_arg)) {
               throw new Exception("Invalid search arg: ${search_arg}");
             }
 
-            if (!first) {
-              builder.write(" AND ");
-            }
             if (search_arg.startsWith("-")) {
-              builder.write(_GET_FILES_EXCLUDE_TAG_SQL);
-              args.add(search_arg.substring(1));
+              sql.addCriteria(_GET_FILES_EXCLUDE_TAG_SQL,search_arg.substring(1));
             } else {
-              builder.write(_GET_FILES_INCLUDE_TAG_SQL);
-              args.add(search_arg);
+              sql.addCriteria(_GET_FILES_INCLUDE_TAG_SQL,(search_arg));
             }
 
 
@@ -200,12 +152,10 @@ class FilesModel {
         //builder.write(_GET_FILES_SQL_END);
       } else {
         this._log.info("Getting file ${id}");
-        builder.write(_GET_SINGLE_FILE_SQL);
-        args.add(id);
+        sql.addCriteria("id = ?",id);
       }
-      sql = builder.toString();
 
-      return con.prepare(_GET_COUNT_WRAPPER_START + sql + _GET_COUNT_WRAPPER_END).then((query) {
+      return con.prepare(sql.getCountQuery()).then((query) {
         return query.execute(args).then((results) {
           return results.single.then((count) {
             output["count"] = count[0];
@@ -215,16 +165,8 @@ class FilesModel {
         });
       });
     }).then((_) {
-      StringBuffer order_string = new StringBuffer();
       if(order_by!=null&&order_by.length>0) {
-        order_string.write(" ORDER BY ");
-        bool first = true;
         for(String order in order_by) {
-          if(!first) {
-            order_string.write(",");
-          } else {
-            first = false;
-          }
           bool asc = true;
           if(order.startsWith("-")) {
             asc = false;
@@ -232,6 +174,7 @@ class FilesModel {
           }
           switch(order) {
             case "id":
+              sql.
               order_string.write(" id ");
               break;
             default:

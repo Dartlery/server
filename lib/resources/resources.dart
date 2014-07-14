@@ -17,3 +17,5 @@ part 'files_resource.dart';
 part 'static_resource.dart';
 part 'admin_resource.dart';
 part 'import_resource.dart';
+part 'tags_resource.dart';
+part 'tag_groups_resource.dart';
