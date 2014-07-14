@@ -18,19 +18,23 @@ class FilesResource extends RestResource {
   
   
     Future _putMethod(RestRequest request) {
-      return new Future.sync(() {
-        return _pool.prepare("SELECT name FROM files").then((mysql.Query query) {
+      return this._pool.startTransaction().then((mysql.Transaction tran) {
+        return tran.prepare("SELECT name FROM files").then((mysql.Query query) {
           return query.execute().then((result) {
-            return result.first.then((row) {
-              return row.first;
-            });
+            return result.toList();
+            // Do something?
           }).then((_) {
-           _log.info("Closing");
+            _log.info("Closing");
+            query.close();
+          });
+        }).then((_) {
+          _log.info("Rolling");
+          return tran.rollback().then((_) {
+            _log.info("Rolled");
           });
         });
       });
     }
-  
   
   
   Future _getMethod(RestRequest request) {
@@ -66,25 +70,28 @@ class FilesResource extends RestResource {
         sort.addAll(request.args["sort"].split("|"));
       }
 
-      
-      return model.getFiles(_pool, id: id, limit: limit, offset: offset, search: search, order_by: sort).then((e) {
-        Map<String, Object> output = new Map<String, Object>();
-        output["files"] = e["files"];
-        
-        if(e["count"]>0) {
-          List files = output["files"]; 
-          if(request.range!=null) {
-            if(files.length==0) {
-              request.response.httpResponse.headers.add(HttpHeaders.CONTENT_RANGE, "files ${SettingsModel.maxFilesReturned}/${e['count']-1}");
-              throw new RestException(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE,"The requested range could not be satisfied");
+      return _pool.getConnection().then((mysql.RetainedConnection con) {
+        return model.getFiles(con, id: id, limit: limit, offset: offset, search: search, order_by: sort).then((e) {
+          Map<String, Object> output = new Map<String, Object>();
+          output["files"] = e["files"];
+          
+          if(e["count"]>0) {
+            List files = output["files"]; 
+            if(request.range!=null) {
+              if(files.length==0) {
+                request.response.httpResponse.headers.add(HttpHeaders.CONTENT_RANGE, "files ${SettingsModel.maxFilesReturned}/${e['count']-1}");
+                throw new RestException(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE,"The requested range could not be satisfied");
+              }
+              request.response.setRange("files", request.range.start, request.range.start + files.length - 1, e["count"] - 1);
+            } else {
+              request.response.setRange("files", 0, files.length - 1, e["count"] - 1);
             }
-            request.response.setRange("files", request.range.start, request.range.start + files.length - 1, e["count"] - 1);
-          } else {
-            request.response.setRange("files", 0, files.length - 1, e["count"] - 1);
           }
-        }
-        
-        return JSON.encode(output);
+          
+          return JSON.encode(output);
+        }).whenComplete(() {
+          con.release();
+        });
       }).catchError((e,st) {
         if(e is ValidationException) {
           throw new RestException(HttpStatus.BAD_REQUEST, e.message);
@@ -127,8 +134,9 @@ class FilesResource extends RestResource {
           });
         }).catchError((e, st) {
           _log.severe(e.toString(), e, st);
-          tran.rollback();
-          throw e;
+          return tran.rollback().then((_) {
+            throw e;
+          });
         });
       });
     });

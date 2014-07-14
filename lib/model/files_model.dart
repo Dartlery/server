@@ -28,8 +28,8 @@ class FilesModel {
   static const String _GET_FILES_INCLUDE_TAG_SQL = " EXISTS (SELECT 1 FROM tags WHERE image = id AND tag = ?) ";
   static const String _GET_FILES_EXCLUDE_TAG_SQL = " NOT EXISTS (SELECT 1 FROM tags WHERE image = id AND tag = ?) ";
 
-  static const String VALID_TAG_REGEXP_STRING = "^[a-zA-Z0-9_]+\$";
-  static const String VALID_SEARCH_ARG_REGEXP_STRING = "^[-]?[a-zA-Z0-9_]+\$";
+  static const String VALID_TAG_REGEXP_STRING = r"^[^-].*$";
+  static const String VALID_SEARCH_ARG_REGEXP_STRING = r"^[-]?[a-zA-Z0-9_]+$";
   static final RegExp VALID_TAG_REGEXP = new RegExp(VALID_TAG_REGEXP_STRING);
   static final RegExp VALID_SEARCH_ARG_REGEXP = new RegExp(VALID_SEARCH_ARG_REGEXP_STRING);
 
@@ -65,7 +65,9 @@ class FilesModel {
       return query.execute([id]).then((_) {
         return transaction.prepare(_SET_TAGS_SQL);
       }).then((mysql.Query t_query) {
-        return t_query.executeMulti(args).whenComplete(() {
+        return Future.forEach(args, (arg) {
+          return t_query.execute(arg);
+        }).whenComplete(() {
           t_query.close();
         });
       }).whenComplete(() {
@@ -108,9 +110,11 @@ class FilesModel {
 
       return tran.prepare("SELECT COUNT(*) AS count FROM files WHERE hash = ?").then((query) {
         return query.execute([hash]).then((results) {
-          return results.forEach((row) {
-            if (row.count > 0) {
-              throw new EntityExistsException(hash_string);
+          return results.toList().then((result_list) {
+            for(mysql.Row row in result_list) {
+              if (row.count > 0) {
+                throw new EntityExistsException(hash_string);
+              }
             }
           });
         }).whenComplete(() {
@@ -156,7 +160,7 @@ class FilesModel {
     });
   }
 
-  Future getFiles(mysql.ConnectionPool pool, {int id: -1, int limit: 60, int offset: 0, String search: null, List<String> order_by: null}) {
+  Future getFiles(mysql.RetainedConnection con, {int id: -1, int limit: 60, int offset: 0, String search: null, List<String> order_by: null}) {
     String sql;
     List args = new List();
     Map output = new Map();
@@ -201,10 +205,10 @@ class FilesModel {
       }
       sql = builder.toString();
 
-      return pool.prepare(_GET_COUNT_WRAPPER_START + sql + _GET_COUNT_WRAPPER_END).then((query) {
+      return con.prepare(_GET_COUNT_WRAPPER_START + sql + _GET_COUNT_WRAPPER_END).then((query) {
         return query.execute(args).then((results) {
-          return results.first.then((row) {
-            output["count"] = row.first;
+          return results.single.then((count) {
+            output["count"] = count[0];
           });
         }).whenComplete(() {
           query.close();
@@ -255,7 +259,7 @@ class FilesModel {
       
       sql = _GET_TAGS_WRAPPER_SQL_START  + builder.toString() + order_string.toString() + _GET_TAGS_WRAPPER_ORDER_SQL;
       
-      return pool.prepare(sql).then((query) {
+      return con.prepare(sql).then((query) {
         return query.execute(args).then((results) {
           int last_id = -1;
           Map<String, Object> file = null;

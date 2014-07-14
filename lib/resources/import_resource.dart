@@ -1,6 +1,8 @@
 part of resources;
 
 class ImportResource extends RestResource {
+  static final Logger _log = new Logger('ImportResource');
+  
   static const String _RESOURCE_PATH_REGEX = r'^/import/([^/]*)/?$';
 
   List<String> _supportedImporters = new List<String>();
@@ -54,7 +56,18 @@ class ImportResource extends RestResource {
       }
       
       ShimmieImportModel model =  new ShimmieImportModel();
-      model.beginImport(_pool, data["host"], data["db"], data["user"], data["password"], data["image_folder"]);
+      
+      return this._pool.startTransaction().then((mysql.Transaction tran) {
+        return model.beginImport(tran, data["host"], data["db"], data["user"], data["password"], data["image_folder"]).then((_) {
+          _log.info("Importing complete, committing");
+          return tran.commit();
+        }).catchError((e, st) {
+          _log.severe(e.toString(), e, st);
+          return tran.rollback().then((_) {
+            throw e;
+          });
+        });
+      });
       
     });
   } 
