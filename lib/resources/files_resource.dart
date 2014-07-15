@@ -50,6 +50,7 @@ class FilesResource extends RestResource {
       int offset = 0;
       String search;
       List<String> sort = new List<String>();
+      List<String> expand = new List<String>();
       
       if(request.range!=null) {
         offset = request.range.start;
@@ -66,9 +67,14 @@ class FilesResource extends RestResource {
       if(request.args.containsKey("sort")&&request.args["sort"]!="") {
         sort.addAll(request.args["sort"].split("|"));
       }
+      
+      if(request.args.containsKey("expand")) {
+        expand.addAll(request.args["expand"].split(","));
+      }
+
 
       return _pool.getConnection().then((mysql.RetainedConnection con) {
-        return model.getFiles(con, id: id, limit: limit, offset: offset, search: search, order_by: sort).then((e) {
+        return model.getFiles(con, id: id, limit: limit, offset: offset, search: search, order_by: sort, expand: expand).then((e) {
           Map<String, Object> output = new Map<String, Object>();
           output["files"] = e["files"];
           

@@ -15,6 +15,16 @@ part 'src/query_builder.dart';
 
 Map dbSettings;
 
+List removeDuplicates(List input) {
+  List output = new List();
+  for(dynamic thing in input) {
+    if(!output.contains(thing)) {
+      output.add(thing);
+    }
+  }
+  return output;
+}
+
 void loadConfigFile() {
   io.File config_file = new io.File("config.json");
   if(!config_file.existsSync()) {
