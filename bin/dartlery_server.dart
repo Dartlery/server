@@ -29,7 +29,8 @@ void main() {
     RestServer rest = new RestServer();
     
     rest.accessControlAllowOrigin = "*";
-    rest.accessControlAllowHeaders = "Content-Type,Range";
+    rest.accessControlAllowHeaders = "${HttpHeaders.CONTENT_TYPE},${HttpHeaders.RANGE}";
+    rest.accessControlExposeHeaders = HttpHeaders.CONTENT_RANGE;
     
     rest.addDefaultAvailableContentType(new ContentType("application", "json", charset: "utf-8"));
   

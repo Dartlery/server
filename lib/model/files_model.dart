@@ -12,7 +12,7 @@ class FilesModel {
   static const String _GET_FILES_INCLUDE_TAG_SQL = " EXISTS (SELECT 1 FROM tags WHERE image = id AND tag = ?) ";
   static const String _GET_FILES_EXCLUDE_TAG_SQL = " NOT EXISTS (SELECT 1 FROM tags WHERE image = id AND tag = ?) ";
 
-  static const String VALID_SEARCH_ARG_REGEXP_STRING = r"^[-]?[a-zA-Z0-9_]+$";
+  static const String VALID_SEARCH_ARG_REGEXP_STRING = r"^[-]?[a-zA-Z0-9_-]+$";
   static final RegExp VALID_SEARCH_ARG_REGEXP = new RegExp(VALID_SEARCH_ARG_REGEXP_STRING);
 
   Future<int> updateFile(int id, mysql.Transaction tran, {List<String> tags: null, String name: null, String source: null}) {
@@ -134,6 +134,9 @@ class FilesModel {
           List<String> search_args = search.split(" ");
           bool first = true;
           for (String search_arg in search_args) {
+            if(search_arg==null||search_arg=="") {
+              continue;
+            }
             if (!VALID_SEARCH_ARG_REGEXP.hasMatch(search_arg)) {
               throw new Exception("Invalid search arg: ${search_arg}");
             }
@@ -193,7 +196,7 @@ class FilesModel {
 
       
       return con.prepare(sql.getCountQuery()).then((query) {
-        return query.execute(args).then((results) {
+        return query.execute(sql.getArgs()).then((results) {
           return results.single.then((count) {
             output["count"] = count[0];
           });
