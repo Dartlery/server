@@ -1,0 +1,15 @@
+<!-- uploader.html -->
+<link rel="import" href="packages/polymer/polymer.html">
+<polymer-element name="dartlery-tag-list">
+  <template>
+    <style>
+      :host {
+      }
+    </style>
+    <div class="header">Tags</div> 
+    <template repeat="{{tag in tags}}">
+      <div><a href="#search={{tag}}">{{tag}}</a></div>
+    </template>
+  </template>
+  <script type="application/dart" src="dartlery_tag_list.dart"></script>
+</polymer-element>

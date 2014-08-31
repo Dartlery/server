@@ -1,4 +1,4 @@
-part of dartlery;
+part of server;
 
 class Thumbnailer {
   static final Logger _log = new Logger('Thumbnailer');

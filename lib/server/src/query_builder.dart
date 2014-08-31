@@ -1,4 +1,4 @@
-part of dartlery;
+part of server;
 
 class QueryBuilder {
   static final Logger _log = new Logger('QueryBuilder');

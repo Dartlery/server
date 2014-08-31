@@ -1,0 +1,31 @@
+<!-- uploader.html -->
+<link rel="import" href="packages/polymer/polymer.html">
+<polymer-element name="dartlery-mass-tagger">
+  <template>
+    <style>
+      :host {
+        text-align:left;
+        border:solid 1px black;
+      }
+      div.tag {
+        border-radius:3pt;
+        background-color:red;
+        margin:1pt;
+        padding:2pt;
+        width:auto;
+        cursor:pointer;
+        border: solid 2pt red;
+      }
+      div.tag:hover {
+        border-color:black;
+      }
+    </style>
+    TAGGER
+    <template repeat="{{tag in tags}}">
+      <div class="tag">{{tag}}</div>
+    </template>
+    <button>Save</button>
+    <button>Reset</button>
+  </template>
+  <script type="application/dart" src="dartlery_mass_tagger.dart"></script>
+</polymer-element>

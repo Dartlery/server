@@ -10,12 +10,12 @@ import 'package:path/path.dart' as path;
 import 'package:logging/logging.dart';
 import 'package:rest_server/rest_server.dart';
 
-import 'package:dartlery_server/dartlery.dart';
-import 'package:dartlery_server/model/model.dart';
+import 'package:dartlery/server/server.dart';
+import 'package:dartlery/server/model/model.dart';
 
-part 'files_resource.dart';
-part 'static_resource.dart';
-part 'admin_resource.dart';
-part 'import_resource.dart';
-part 'tags_resource.dart';
-part 'tag_groups_resource.dart';
+part 'src/files_resource.dart';
+part 'src/static_resource.dart';
+part 'src/admin_resource.dart';
+part 'src/import_resource.dart';
+part 'src/tags_resource.dart';
+part 'src/tag_groups_resource.dart';

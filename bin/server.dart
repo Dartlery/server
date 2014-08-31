@@ -4,9 +4,9 @@ import 'package:logging/logging.dart';
 import 'package:rest_server/rest_server.dart';
 import 'package:sqljocky/sqljocky.dart' as mysql;
 
-import 'package:dartlery_server/dartlery.dart';
-import 'package:dartlery_server/resources/resources.dart';
-import 'package:dartlery_server/model/model.dart';
+import 'package:dartlery/server/server.dart';
+import 'package:dartlery/server/resources/resources.dart';
+import 'package:dartlery/server/model/model.dart';
 
 
 

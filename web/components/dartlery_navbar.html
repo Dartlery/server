@@ -1,0 +1,188 @@
+<!-- uploader.html -->
+<link rel="import" href="packages/polymer/polymer.html">
+<polymer-element name="dartlery-navbar"> <template>
+<style>
+:host {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 25pt;
+  text-align: right;
+  background-color: #dddddd;
+  border-bottom: solid 1px #bbbbbb;
+  z-index: 9001;
+}
+
+#title {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  font-size: 15pt;
+  font-weight: bold;
+  line-height: 24pt;
+  vertical-align: middle;
+  padding-left: 6pt;
+  color: black;
+}
+
+
+#nav_buttons {
+  position: absolute;
+  top: 3pt;
+  right: 35%;
+  left:100px;
+  text-align:right;
+  margin-right: 31pt;
+  border-right: solid 1pt #bbbbbb;
+} 
+
+
+.nav_button {
+  float:right;
+  line-height: 19pt;
+  border-left: solid 1pt #bbbbbb;
+  padding-left: 5pt;
+  padding-right: 5pt;
+  cursor: pointer;
+}
+
+.nav_button:hover {
+  background-color: #bbbbbb;
+  color: white;
+}
+
+#uploader input {
+  display: none;
+}
+
+#upload_progress {
+  position: absolute;
+  top: 25pt;
+  right: 35%;
+  margin-right: 6pt;
+  border: solid 1pt #bbbbbb;
+  border-radius: 5pt;
+  text-align: left;
+  background-color: #dddddd;
+  overflow: auto;
+  padding: 3pt;
+}
+
+div.upload {
+  padding: 2pt;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+div.upload:hover {
+  background-color: #bbbbbb;
+  color: white;
+}
+
+#upload_progress progress {
+  width: 25pt;
+  margin-right: 3pt;
+}
+
+#search {
+  position: absolute;
+  width: 35%;
+  right: 28pt;
+  margin-top: 3pt;
+  top: 0;
+  height: 100%;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+#search input {
+  width: 100%;
+  color: #58585b;
+}
+
+div.shade {
+  position: absolute;
+  height: 1pt;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d2d2d2;
+}
+
+div#menu_button {
+  position: absolute;
+  width: 25pt;
+  right: 0;
+  top: 0;
+}
+
+div#menu_button:hover {
+  background-color: #bbbbbb;
+}
+
+div#menu_button img {
+  height: 19pt;
+  margin-top: 3pt;
+  margin-right: 3pt;
+}
+
+div#menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 25pt;
+  display: block;
+  white-space: nowrap;
+  background-color: #dddddd;
+  border: solid 1pt #bbbbbb;
+}
+
+div#menu a {
+  cursor: pointer;
+  display: none;
+  text-decoration: none;
+  color: black;
+  padding: 3pt;
+}
+
+div#menu a:hover {
+  background-color: #bbbbbb;
+  color: white;
+}
+</style>
+<div id="navbar">
+  <div id="title"><a href="#">Dartlery</a></div>
+  <div id="nav_buttons">
+  
+  <div id="uploader" class="nav_button" on-click="{{uploadClick}}">
+    <div>Upload...</div>
+    <input type="file" style="display: none" id="file_picker" multiple
+      on-change="{{filePickerChange}}" />
+  </div>
+    <div id="tagger" class="nav_button" on-click="{{taggerClick}}">
+    <div>Tag...</div>
+  </div>
+  
+  </div>
+  <div id="upload_progress">
+    <template repeat="{{upload in uploads}}">
+    <div class="upload">
+      <progress max="100" value="{{upload.progress}}"></progress>
+      {{upload.fileName}}
+    </div>
+    </template>
+  </div>
+  <div id="search">
+    <input type="search" placeholder="Search..." on-keypress="{{searchKeyPress}}"  />
+  </div>
+  <div id="menu_button">
+    <img src="emblem-system.svg" />
+  </div>
+  <div id="menu">
+    <a href="#admin/groups">Tag Groups</a> <a href="#admin/settings">Settings</a>
+  </div>
+</div>
+<div class="shade"></div>
+</template> <script type="application/dart" src="dartlery_navbar.dart"></script> </polymer-element>

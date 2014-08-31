@@ -1,4 +1,4 @@
-library dartlery;
+library server;
 
 import 'dart:io' as io;
 import 'dart:convert';
@@ -8,7 +8,7 @@ import 'package:image/image.dart' as image;
 import 'package:path/path.dart' as path;
 import 'package:logging/logging.dart';
 
-import 'package:dartlery_server/model/model.dart';
+import 'package:dartlery/server/model/model.dart';
 
 part 'src/thumbnailer.dart';
 part 'src/query_builder.dart';

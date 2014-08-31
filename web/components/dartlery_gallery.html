@@ -1,0 +1,125 @@
+<!-- uploader.html -->
+<link rel="import" href="packages/polymer/polymer.html">
+<link rel="import" href="dartlery_mass_tagger.html">
+<link rel="import" href="dartlery_paginator.html">
+<link rel="import" href="dartlery_spinner.html">
+<polymer-element name="dartlery-gallery"> <template>
+<style>
+:host {
+  position: absolute;
+  left: 10pt;
+  top: 10pt;
+  border: solid 0px black;
+  right: 10pt;
+  text-align: center;
+}
+div#gallery {
+  margin-left:200pt;
+
+}
+div.thumbnail {
+  height: 200px;
+  width: 200px;
+  line-height: 200px;
+  float: left;
+  text-align: center;
+  padding: 5pt;
+  border-radius: 5pt;
+  border: solid 1pt white;
+}
+
+div.thumbnail a.thumbnail {
+  display:block;
+  height:200px;
+  width:200px;
+}
+div.thumbnail:hover {
+  border: solid 1pt #bbbbbb;
+  background-color: #dddddd;
+}
+
+div.thumbnail img {
+  max-height: 100%;
+  max-width: 100%;
+  border: solid 1px black;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+div.thumbnail_tags {
+  padding: 3pt;
+  line-height: initial;
+  display: none;
+  max-width: 200px;
+  text-align: justify;
+}
+
+div.thumbnail:hover div.thumbnail_tags {
+  display:block;
+}
+
+div.thumbnail_tags span {
+  white-space: nowrap;
+}
+
+#paginator {
+  display:none;
+  position: fixed;
+  bottom: 20pt;
+  left: 20%;
+  right: 20%;
+}
+
+a.search_term {
+  font-weight: bold;
+}
+#tagger {
+  position:fixed;
+  left:10pt;
+  top:40pt;
+  bottom:10pt;
+  width:200pt;
+  
+}
+#spinner {
+  position:fixed;
+  top:50%;
+  left:50%;
+  height:100pt;
+  margin-top:-50pt;
+  width:100pt;
+  margin-left:-50pt;
+  display:none;
+}
+</style>
+<div id="gallery">
+  <template repeat="{{image in images}}">
+  <div class="thumbnail">
+    <a href="#files/{{image['id']}}" class="thumbnail" on-click="{{thumbnailClicked}}">
+      <img src="{{image['thumbnail']}}" alt="{{image['id']}}" />
+    </a>
+    <div class="thumbnail_tags">
+      <template repeat="{{tag in image['tags']}}">
+        <span>
+          <template if="{{currentSearchTags.contains(tag)}}">
+            <a class="search_term" href="#files?search={{tag}}">{{tag}}</a>
+            <a href="#files?search={{this.removeSearch(tag).trim()}}">[X]</a>
+          </template>
+          <template if="{{!currentSearchTags.contains(tag)}}">
+            <a href="#files?search={{tag}}">{{tag}}</a>
+          </template>
+          
+          <template if="{{!currentInclusiveSearchTags.contains(tag)}}">
+            <a href="#files?search={{this.adjustSearch(tag,true).trim()}}">[+]</a>
+          </template>
+          <a href="#files?search={{this.adjustSearch(tag,false).trim()}}">[-]</a>
+        </span> 
+      </template>
+    </div>
+  </div>
+  </template>
+</div>
+<dartlery-mass-tagger id="tagger"></dartlery-mass-tagger>
+<dartlery-paginator id="paginator"></dartlery-paginator>
+<dartlery-spinner id="spinner"></dartlery-spinner>
+</template> <script type="application/dart" src="dartlery_gallery.dart"></script> </polymer-element>

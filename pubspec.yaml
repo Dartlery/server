@@ -1,13 +1,15 @@
-name: dartlery_server
-description: A sample command-line application
+name: dartlery
 dependencies:
+  browser: any
   crypto: any
   image:
-    path: ../image
   logging: any
   mime: any
   mongo_dart: any
-  path: any
+  polymer: any
   rest_server:
     path: ../rest_server/
   sqljocky: any
+transformers:
+- polymer:
+    entry_points: web/dartlery.html
