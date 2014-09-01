@@ -19,7 +19,7 @@ class ImportResource extends RestResource {
   
   
   Future _getMethod(RestRequest request) {
-    return new Future.sync(() {
+    return new Future(() {
       Map output = new Map();
       output["importers"] = this._supportedImporters;
       return JSON.encode(output);
@@ -27,7 +27,7 @@ class ImportResource extends RestResource {
   }
   
   Future _postMethod(RestRequest request) {
-    return new Future.sync(() {
+    return new Future(() {
       String data_string = request.getDataAsString();
       var temp; 
       try {

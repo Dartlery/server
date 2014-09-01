@@ -18,7 +18,7 @@ class FilesResource extends RestResource {
   
   
     Future _putMethod(RestRequest request) {
-      return new Future.sync(() {
+      return new Future(() {
           return _pool.prepare("SELECT name FROM files").then((mysql.Query query) {
             return query.execute().then((result) {
               // Do something?
@@ -35,7 +35,7 @@ class FilesResource extends RestResource {
   
   
   Future _getMethod(RestRequest request) {
-    return new Future.sync(() {
+    return new Future(() {
       FilesModel model = new FilesModel();
       int id = -1;
       if(request.regexMatch.group(1)!="") {
@@ -106,7 +106,7 @@ class FilesResource extends RestResource {
   }
 
   Future _postMethod(RestRequest request) {
-    return new Future.sync(() {
+    return new Future(() {
       String data_string = request.getDataAsString();
       var temp = JSON.decode(data_string);
       if(!(temp is List)) {
@@ -146,7 +146,7 @@ class FilesResource extends RestResource {
   }
   
   Future _createFile(Map file, mysql.Transaction tran) {
-    return new Future.sync(() {
+    return new Future(() {
       ContentType ct = ContentType.parse(file["content_type"]);
       List<int> data = crypto.CryptoUtils.base64StringToBytes(file["data"]);
       List<String> tags = new List<String>();
@@ -175,7 +175,7 @@ class FilesResource extends RestResource {
   }
   
   Future _updateFile(Map file, mysql.Transaction tran) {
-    return new Future.sync(() {
+    return new Future(() {
       int id = int.parse(file["id"]);
       List<String> tags =new List<String>();
       if(file.containsKey("tags")) {

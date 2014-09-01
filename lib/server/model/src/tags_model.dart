@@ -16,7 +16,7 @@ class TagsModel {
   static Future<List> getTags(mysql.RetainedConnection con, {int limit: 50, List<String> order_by: null, List<String> expand: null}) {
     Map output = new Map();
     List tags = new List();
-    return new Future.sync(() {
+    return new Future(() {
       QueryBuilder sql = new QueryBuilder(QueryBuilder.SELECT,"tags","t");
       sql.addField("t.tag");
       
@@ -93,7 +93,7 @@ class TagsModel {
   static Future setTags(int id, List<String> tags, mysql.Transaction transaction) {
     _log.info("Setting tags for file ${id}");
     List args = new List();
-    return new Future.sync(() {
+    return new Future(() {
       if (tags == null || tags.length == 0) {
         return null;
       }

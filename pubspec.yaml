@@ -2,11 +2,13 @@ name: dartlery
 dependencies:
   browser: any
   crypto: any
-  image:
+  image: any
   logging: any
   mime: any
   mongo_dart: any
   polymer: any
+  rest_client:
+    path: ../rest_client
   rest_server:
     path: ../rest_server/
   sqljocky: any

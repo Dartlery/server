@@ -26,7 +26,7 @@ class FilesModel {
 
   Future<int> createFile(List<int> data, List<String> tags, mysql.Transaction tran, {String name: null, ContentType ct: null}) {
     this._log.info("Creating file");
-    return new Future.sync(() {
+    return new Future(() {
       // Verify submitted mime type
       if (data.length >= mime.defaultMagicNumbersMaxLength) {
         String mime_str = mime.lookupMimeType("genericfilename", headerBytes: data.sublist(0, mime.defaultMagicNumbersMaxLength));
@@ -127,7 +127,7 @@ class FilesModel {
     
     tag_query.addJoin("LEFT","tags",["f.id = t.image"],"t");
 
-    return new Future.sync(() {
+    return new Future(() {
       if (id == -1) {
         if (search != null && search.trim() != "") {
           this._log.info("Searching for files matching ${search} (offset: ${offset} limit: ${limit})");

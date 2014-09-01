@@ -8,7 +8,7 @@ class ShimmieImportModel extends AImportModel {
   Future beginImport(mysql.Transaction tran, String host, String db, String user, String password, String image_folder, {int port: 3306}) {
     List imported_files = new List();
     
-    return new Future.sync(() {
+    return new Future(() {
       mysql.ConnectionPool shimmie_pool  = 
         new mysql.ConnectionPool(host: host, port: port,
             user: user, password: password, db: db, max: 5);
@@ -27,10 +27,10 @@ class ShimmieImportModel extends AImportModel {
             i++;
           //return results.forEach((mysql.Row row) {
             current_id = row.id;
-            return new Future.sync(() {
+            return new Future(() {
               if(last_id==-1||last_id!=current_id) {
                 _log.info("Progress: ${i}/${result_list.length}");
-                return new Future.sync(() {
+                return new Future(() {
                   if(last_id!=-1) {
                     _log.info("Writing imported file: ${hash}");
                     return this._filesModel.createFile(source_file.readAsBytesSync(), tags, tran, name: name).then((o) {

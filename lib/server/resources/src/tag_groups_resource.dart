@@ -15,7 +15,7 @@ class TagGroupsResource extends RestResource {
   }
 
   Future _getMethod(RestRequest request) {
-    return new Future.sync(() {
+    return new Future(() {
       TagGroupsModel model = new TagGroupsModel();
       String name = null;
       if (request.regexMatch.group(1) != "") {
@@ -23,7 +23,7 @@ class TagGroupsResource extends RestResource {
       }
 
       return _pool.getConnection().then((mysql.RetainedConnection con) {
-        return new Future.sync(() {
+        return new Future(() {
           if (name == null) {
             return model.getGroups(con);
           }
@@ -43,7 +43,7 @@ class TagGroupsResource extends RestResource {
   }
 
   Future _postMethod(RestRequest request) {
-    return new Future.sync(() {
+    return new Future(() {
       String data_string = request.getDataAsString();
       var temp = JSON.decode(data_string);
       if (!(temp is List)) {
@@ -85,7 +85,7 @@ class TagGroupsResource extends RestResource {
   }
 
   Future _createFile(Map file, mysql.Transaction tran) {
-    return new Future.sync(() {
+    return new Future(() {
       ContentType ct = ContentType.parse(file["content_type"]);
       List<int> data = crypto.CryptoUtils.base64StringToBytes(file["data"]);
       List<String> tags = new List<String>();
@@ -114,7 +114,7 @@ class TagGroupsResource extends RestResource {
   }
 
   Future _updateFile(Map file, mysql.Transaction tran) {
-    return new Future.sync(() {
+    return new Future(() {
       int id = int.parse(file["id"]);
       List<String> tags = new List<String>();
       if (file.containsKey("tags")) {

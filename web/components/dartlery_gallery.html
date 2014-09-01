@@ -95,24 +95,24 @@ a.search_term {
 <div id="gallery">
   <template repeat="{{image in images}}">
   <div class="thumbnail">
-    <a href="#files/{{image['id']}}" class="thumbnail" on-click="{{thumbnailClicked}}">
-      <img src="{{image['thumbnail']}}" alt="{{image['id']}}" />
+    <a _href="#files/{{image['id']}}" class="thumbnail" on-click="{{thumbnailClicked}}">
+      <img _src="{{image['thumbnail']}}" alt="{{image['id']}}" />
     </a>
     <div class="thumbnail_tags">
       <template repeat="{{tag in image['tags']}}">
         <span>
           <template if="{{currentSearchTags.contains(tag)}}">
-            <a class="search_term" href="#files?search={{tag}}">{{tag}}</a>
-            <a href="#files?search={{this.removeSearch(tag).trim()}}">[X]</a>
+            <a class="search_term" _href="#files?search={{tag}}">{{tag}}</a>
+            <a _href="#files?search={{this.removeSearch(tag).trim()}}">[X]</a>
           </template>
           <template if="{{!currentSearchTags.contains(tag)}}">
-            <a href="#files?search={{tag}}">{{tag}}</a>
+            <a _href="#files?search={{tag}}">{{tag}}</a>
           </template>
           
           <template if="{{!currentInclusiveSearchTags.contains(tag)}}">
-            <a href="#files?search={{this.adjustSearch(tag,true).trim()}}">[+]</a>
+            <a _href="#files?search={{this.adjustSearch(tag,true).trim()}}">[+]</a>
           </template>
-          <a href="#files?search={{this.adjustSearch(tag,false).trim()}}">[-]</a>
+          <a _href="#files?search={{this.adjustSearch(tag,false).trim()}}">[-]</a>
         </span> 
       </template>
     </div>

@@ -15,10 +15,10 @@ class TagsResource extends RestResource {
   }
 
   Future _getMethod(RestRequest request) {
-    return new Future.sync(() {
+    return new Future(() {
       int limit = 50;
       return _pool.getConnection().then((mysql.RetainedConnection con) {
-        return new Future.sync(() {
+        return new Future(() {
           List<String> order_by = new List<String>();
           List<String> expand = new List<String>();
           

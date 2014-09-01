@@ -11,7 +11,7 @@ class TagGroupsModel {
   
   Future<List> getGroups(mysql.RetainedConnection con) {
     List<String> output = new List<String>();
-    return new Future.sync(() {
+    return new Future(() {
       return con.prepareExecute(GET_TAG_GROUPS_SQL, []).then((mysql.Results results) {
         return results.forEach((row) {
           output.add(row.tag_group);
@@ -27,7 +27,7 @@ class TagGroupsModel {
   Future setTagGroup(String group, List<String> tags, mysql.Transaction transaction) {
     this._log.info("Setting tags for group ${group}");
     List args = new List();
-    return new Future.sync(() {
+    return new Future(() {
       if (tags == null || tags.length == 0) {
         return null;
       }
@@ -68,7 +68,7 @@ class TagGroupsModel {
     List<Map> files = new List<Map>();
     output["files"] = files;
     StringBuffer builder = new StringBuffer();
-    return new Future.sync(() {
+    return new Future(() {
       if (id == -1) {
         builder.write(_GET_FILES_SQL);
         if (search != null && search.trim() != "") {

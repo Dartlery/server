@@ -24,11 +24,15 @@ const String SERVER_ADDRESS = "http://localhost:8888/";
 
 
 void viewFile(String id) {
-  window.location.hash = "files=${id}";
+    window.location.hash = "files=${id}";
 }
 
 void searchFor(String query) {
-  window.location.hash = "#files?search=${query.trim()}";
+  if(query=="") {
+    window.location.hash = "#files";
+  } else{
+    window.location.hash = "#files?search=${query.trim()}";
+  }
 }
 
 void clearErrorOutput() {

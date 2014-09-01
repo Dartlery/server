@@ -17,7 +17,7 @@ class Upload extends Observable {
   
   Future startUpload() {
     Completer comp = new Completer();
-    new Future.sync(() {
+    new Future(() {
       if(_fileData==null) {
         return this._getFileData().then((data) {
           this._fileData = data;

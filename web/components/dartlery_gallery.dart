@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:polymer/polymer.dart';
 import 'package:dartlery/client/client.dart';
-//import 'package:rest_client/rest_client.dart';
+import 'package:rest_client/rest_client.dart';
 
 import 'dartlery_mass_tagger.dart';
 
@@ -76,7 +76,7 @@ class DartleryGalleryElement extends PolymerElement {
   }
 
   Future refresh() {
-    return new Future.sync(() {
+    return new Future(() {
       return loadImages(paginator.currentPageInt);
     });
   }
