@@ -3,6 +3,8 @@ dependencies:
   browser: any
   crypto: any
   image: any
+  json_schema_output:
+    path: ../dart_json_schema_output/
   logging: any
   mime: any
   mongo_dart: any

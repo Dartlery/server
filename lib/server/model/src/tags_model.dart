@@ -13,90 +13,88 @@ class TagsModel {
     return _VALID_TAG_REGEXP.hasMatch(tag);
   }
   
-  static Future<List> getTags(mysql.RetainedConnection con, {int limit: 50, List<String> order_by: null, List<String> expand: null}) {
+  static Future<Map> getTags(mysql.RetainedConnection con, {int limit: 50, List<String> order_by: null, List<String> expand: null}) async {
     Map output = new Map();
     List tags = new List();
-    return new Future(() {
-      QueryBuilder sql = new QueryBuilder(QueryBuilder.SELECT,"tags","t");
-      sql.addField("t.tag");
+    
+    QueryBuilder sql = new QueryBuilder(QueryBuilder.SELECT,"tags","t");
+    sql.addField("t.tag");
       
-      bool expand_count = false;
+    bool expand_count = false;
 
-      if(expand.length>0) {
-        for(String name in expand) {
-          switch(name) {
-            case "count":
-              expand_count = true;
-              sql.addField("COUNT(*) AS count");
-              break;
-            default:
-              throw new ValidationException("Cannot expand ${name}");
-          }
+    if(expand.length>0) {
+      for(String name in expand) {
+        switch(name) {
+          case "count":
+            expand_count = true;
+            sql.addField("COUNT(*) AS count");
+            break;
+          default:
+            throw new ValidationException("Cannot expand ${name}");
         }
       }
+    }
       
-      if(order_by.length>0) {
-        for(String order in order_by) {
-          bool asc = true;
-          if(order.startsWith("-")) {
-            asc=false;
-            order = order.substring(1);
-          }
-          String new_order;
-          switch(order) {
-            case "count":
-              new_order = "COUNT(*)";
-              break;
-            case "tag":
-              new_order = "t.tag";
-              break;
-            default:
-              throw new ValidationException("Cannot order by ${order}");
-          }
-          sql.addOrder(new_order,asc);
+    if(order_by.length>0) {
+      for(String order in order_by) {
+        bool asc = true;
+        if(order.startsWith("-")) {
+          asc=false;
+          order = order.substring(1);
         }
+        String new_order;
+        switch(order) {
+          case "count":
+            new_order = "COUNT(*)";
+            break;
+          case "tag":
+            new_order = "t.tag";
+            break;
+          default:
+            throw new ValidationException("Cannot order by ${order}");
+        }
+        sql.addOrder(new_order,asc);
       }
+    }
       
-      sql.addOrder("t.tag");
-      sql.addGroupBy("t.tag");
-      sql.setLimit(0, limit);
+    sql.addOrder("t.tag");
+    sql.addGroupBy("t.tag");
+    sql.setLimit(0, limit);
       
-      return con.prepareExecute(sql.toString(),[]).then((results) {
-        return results.forEach((row) {
-          Map tag = new Map();
-          tag["tag"] = row.tag;
-          if(expand_count) {
-            tag["count"] = row.count;
-          }
-          tags.add(tag);
-        });
-      }).then((_) {
-        output["tags"] = tags;
-        
-        return con.prepare(sql.getCountQuery()).then((query) {
-          return query.execute().then((results) {
-            return results.single.then((count) {
-              output["count"] = count[0];
-            });
-          }).whenComplete(() {
-            query.close();
-          });
-        });
-
-      });
-    }).then((_) {
-      return output;
+    mysql.Results results = await con.prepareExecute(sql.toString(),[]); 
+    await results.forEach((row) {
+      Map tag = new Map();
+      tag["tag"] = row.tag;
+      if(expand_count) {
+        tag["count"] = row.count;
+      }
+      tags.add(tag);
     });
+    
+    output["tags"] = tags;
+        
+    mysql.Query query = await con.prepare(sql.getCountQuery());
+    try {
+      mysql.Results results = await query.execute();
+    
+      return results.single.then((count) {
+        output["count"] = count[0];
+      });
+    } finally {
+      query.close();
+    }
+    return output;
   }
   
   
-  static Future setTags(int id, List<String> tags, mysql.Transaction transaction) {
+  static setTags(int id, List<String> tags, mysql.Transaction transaction) async {
     _log.info("Setting tags for file ${id}");
     List args = new List();
-    return new Future(() {
-      if (tags == null || tags.length == 0) {
-        return null;
-      }
+    
+    mysql.Query query;
+    if (tags == null || tags.length == 0) {
+      return null;
+    } else {
       for (String tag in tags) {
         if (tag != null && tag != "") {
           if (!isValidTag(tag)) {
@@ -105,25 +103,23 @@ class TagsModel {
           args.add([id, tag]);
         }
       }
-
-
-      return transaction.prepare(_DELETE_TAGS_SQL);
-    }).then((mysql.Query query) {
-      if (query == null) {
-        return null;
+      query = await transaction.prepare(_DELETE_TAGS_SQL);
+    }
+    try {
+      await query.execute([id]);
+    } finally {
+      query.close();
+    }
+    
+    mysql.Query t_query = await transaction.prepare(_SET_TAGS_SQL);
+    try {
+      for(dynamic arg in args) {
+        await t_query.execute(arg);
       }
-      return query.execute([id]).then((_) {
-        return transaction.prepare(_SET_TAGS_SQL);
-      }).then((mysql.Query t_query) {
-        return Future.forEach(args, (arg) {
-          return t_query.execute(arg);
-        }).whenComplete(() {
-          t_query.close();
-        });
-      }).whenComplete(() {
-        query.close();
-      });
-    });
+    } finally {
+      t_query.close();
+    }
+    
   }
   
 

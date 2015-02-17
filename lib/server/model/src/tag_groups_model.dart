@@ -9,55 +9,48 @@ class TagGroupsModel {
   static const String GET_TAG_GROUPS_SQL = "SELECT DISTINCT tag_group FROM tag_groups ORDER BY tag_group";
   static const String GET_TAG_GROUP_SQL = "SELECT tag_group, tag FROM tag_groups ORDER BY tag WHERE tag_group = ?";
   
-  Future<List> getGroups(mysql.RetainedConnection con) {
+  Future<List> getGroups(mysql.RetainedConnection con) async {
     List<String> output = new List<String>();
-    return new Future(() {
-      return con.prepareExecute(GET_TAG_GROUPS_SQL, []).then((mysql.Results results) {
-        return results.forEach((row) {
-          output.add(row.tag_group);
-        }).then((_) {
-          return output;
-        });
-      });
+    mysql.Results results = await con.prepareExecute(GET_TAG_GROUPS_SQL, []);
+    await results.forEach((row) {
+      output.add(row.tag_group);
     });
+    return output;
   }
   
 
   
-  Future setTagGroup(String group, List<String> tags, mysql.Transaction transaction) {
+  setTagGroup(String group, List<String> tags, mysql.Transaction transaction) async {
     this._log.info("Setting tags for group ${group}");
     List args = new List();
-    return new Future(() {
-      if (tags == null || tags.length == 0) {
-        return null;
-      }
-      for (String tag in tags) {
-        if (tag != null && tag != "") {
-          if (!TagsModel.isValidTag(tag)) {
-            throw new Exception("Invalid tag: ${tag}");
-          }
-          args.add([id, tag]);
+    
+    if (tags == null || tags.length == 0) {
+      return null;
+    }
+    for (String tag in tags) {
+      if (tag != null && tag != "") {
+        if (!TagsModel.isValidTag(tag)) {
+          throw new Exception("Invalid tag: ${tag}");
         }
+        args.add([id, tag]);
       }
-
-
-      return transaction.prepare(_DELETE_TAGS_SQL);
-    }).then((mysql.Query query) {
-      if (query == null) {
-        return null;
+    }
+    
+    mysql.Query query = await transaction.prepare(_DELETE_TAGS_SQL);
+    try {
+      await query.execute([id]);
+    } finally {
+      query.close();
+    }
+    
+    mysql.Query t_query = await transaction.prepare(_SET_TAGS_SQL); 
+    try {
+      for(dynamic arg in args) {
+        await t_query.execute(arg);
       }
-      return query.execute([id]).then((_) {
-        return transaction.prepare(_SET_TAGS_SQL);
-      }).then((mysql.Query t_query) {
-        return Future.forEach(args, (arg) {
-          return t_query.execute(arg);
-        }).whenComplete(() {
-          t_query.close();
-        });
-      }).whenComplete(() {
-        query.close();
-      });
-    });
+    } finally {
+      t_query.close();
+    }
   }
 
 

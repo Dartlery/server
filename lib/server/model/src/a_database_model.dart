@@ -6,11 +6,11 @@ abstract class ADatabaseModel extends AModel {
   ADatabaseModel(this._pool);
   
   
-  Future<mysql.Query> _prepare(String sql, {mysql.Transaction transaction:null}) {
+  Future<mysql.Query> _prepare(String sql, {mysql.Transaction transaction:null}) async {
     if(transaction==null) {
-      return this._pool.prepare(sql);
+      return await this._pool.prepare(sql);
     } else {
-      return transaction.prepare(sql);
+      return await transaction.prepare(sql);
     }
   }
 }

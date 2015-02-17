@@ -7,15 +7,14 @@ class AdminModel {
     
   }
   
-  Future recreateAllThumbnails() {
-    return this._pool.prepare("SELECT COUNT(*) AS count FROM files WHERE hash = ?").then((query) {
-      return query.execute([hash]).then((results) {
-        return results.forEach((row) {
-          if(row.count>0) {
-            throw new EntityExistsException(hash_string);
-          }
-        }); 
-      });
+  recreateAllThumbnails() async {
+    mysql.Query query = await this._pool.prepare("SELECT COUNT(*) AS count FROM files WHERE hash = ?");
+    dynamic results = await query.execute([hash]);
+    
+      return results.forEach((row) {
+        if(row.count>0) {
+          throw new EntityExistsException(hash_string);
+        }
     });
   }
 }
