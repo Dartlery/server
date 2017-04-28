@@ -65,8 +65,6 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String metadataField = "metadata";
   static const String tagsField = "tags";
   static const String fileField = "file";
-  static const String checksumField = "checksum";
-  static const String fileThumbnailField = "fileThumbnail";
 
   @override
   Item createObject(Map<String, dynamic> data) {

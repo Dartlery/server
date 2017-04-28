@@ -9,6 +9,8 @@ import 'package:logging/logging.dart';
 import 'package:angular2/router.dart';
 import '../src/a_error_thing.dart';
 import 'package:dartlery_shared/global.dart';
+import 'package:dartlery/api/api.dart';
+import 'package:mime/mime.dart';
 
 @Component(
     selector: 'item-upload',
@@ -22,14 +24,16 @@ import 'package:dartlery_shared/global.dart';
           <h3 header>Upload</h3>
             <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
             <p>
-              <input type="file" />
+              <material-input [(ngModel)]="tags" ngControl="tags"
+                    floatingLabel required  label="Tags"></material-input><br/>
+              <input type="file" (change)="fileChanged(\$event)" />
               <error-output [error]="errorMessage"></error-output>
               <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
           </p>
             </form>
           <div footer style="text-align: right">
             <material-yes-no-buttons yesHighlighted
-            yesText="Login" (yes)="onSubmit()"
+            yesText="Upload" (yes)="onSubmit()"
             noText="Cancel" (no)="visible = false"
             [pending]="processing" [yesDisabled]="!loginForm.valid">
             </material-yes-no-buttons>
@@ -40,20 +44,52 @@ import 'package:dartlery_shared/global.dart';
 class ItemUploadComponent extends AErrorThing {
   static final Logger _log = new Logger("ItemUploadComponent");
 
-  String userName = "";
+  String tags;
 
-  String password = "";
+  MediaMessage msg;
+
+  bool loading = false;
+
+  Future<Null> fileChanged(Event e) async {
+    try {
+      loading = true;
+      processing = true;
+      FileUploadInputElement input = e.target;
+
+      if (input.files.length == 0) return;
+      final File file = input.files[0];
+
+      final FileReader reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      await for (dynamic fileEvent in reader.onLoad) {
+        try {
+          _log.fine(fileEvent);
+          msg = new MediaMessage();
+          msg.bytes = reader.result;
+        } finally {
+          loading = false;
+          processing = false;
+        }
+      }
+    } catch(e,st) {
+      window.alert(e.toString());
+
+    }
+  }
+
   bool _visible = false;
+
+
+  String fileUpload;
 
   @Output()
   EventEmitter<bool> visibleChange = new EventEmitter<bool>();
 
-  final Router _router;
-  final AuthenticationService _auth;
+  final ApiService _api;
 
   bool processing = false;
 
-  ItemUploadComponent(this._auth, this._router);
+  ItemUploadComponent(this._api);
 
 
   bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
@@ -76,40 +112,38 @@ class ItemUploadComponent extends AErrorThing {
   Future<Null> onSubmit() async {
     errorMessage = "";
     processing = true;
+    if(msg==null)
+      return;
     try {
-      await _auth.authenticate(userName, password);
+      final CreateItemRequest request  = new CreateItemRequest();
+      request.item = new Item();
+      request.item.tags = <Tag>[];
+      for(String tag in tags.split(" ")) {
+        if(StringTools.isNullOrWhitespace(tag))
+          continue;
+
+        final Tag newTag = new Tag();
+        newTag.id = tag;
+        request.item.tags.add(newTag);
+      }
+      request.file = msg;
+
+      await _api.items.createItem(request);
+
       visible = false;
     } on Exception catch (e, st) {
       setErrorMessage(e, st);
     } catch (e, st) {
       _log.severe(e, st);
-      final HttpRequest request = e.target;
-      if (request != null) {
-        String message;
-        switch (request.status) {
-          case 401:
-            message = "Login incorrect";
-            break;
-          case httpStatusServerNeedsSetup:
-            await _router.navigate([setupRoute.name]);
-            break;
-          default:
-            message = "${request.status} - ${request.statusText} - ${request
-                .responseText}";
-            break;
-        }
-        errorMessage = message;
-      } else {
-        errorMessage = "Unknown error while authenticating";
-      }
+        errorMessage = e.toString();
     } finally {
       processing = false;
     }
   }
 
   void reset() {
-    userName = "";
-    password = "";
+    msg = null;
+
     errorMessage = "";
   }
 

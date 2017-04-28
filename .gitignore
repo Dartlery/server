@@ -25,3 +25,4 @@ images/
 server.options
 server.snapshot
 setup.lock
+server/files/

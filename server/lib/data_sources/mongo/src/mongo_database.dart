@@ -26,19 +26,17 @@ class MongoDatabase {
 
 
   Future<DbCollection> getItemsCollection() async {
-    await db.createIndex(_itemsCollection,
-        keys: {"checksum": 1}, name: "ChecksumIndex", unique: true);
     final DbCollection output =
     await getIdCollection(_itemsCollection);
     return output;
   }
   Future<DbCollection> getTagsCollection() async {
     await db.createIndex(_tagsCollection,
+        keys: {idField: 1, "category": 1}, name: "IdIndex", unique: true);
+    await db.createIndex(_tagsCollection,
         keys: {r"fullName": "text"}, name: "TagTextIndex");
     final DbCollection output =  db.collection(_tagsCollection);
 
-    await db.createIndex(_tagsCollection,
-        keys: { idField: 1}, name: "ReadableIdIndex", unique: true);
 
     return output;
   }

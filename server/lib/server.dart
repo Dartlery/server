@@ -76,7 +76,7 @@ class Server {
       pathToBuild = join(rootDirectory, hostedFilesPath);
 
       final Handler staticImagesHandler = createStaticHandler(pathToBuild,
-          listDirectories: false,
+          listDirectories: true,
           serveFilesOutsidePath: false,
           useHeaderBytesForContentType: true);
 
@@ -111,7 +111,7 @@ class Server {
 
       final Router<dynamic> root = router()
         ..add('/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)
-        ..add("/images/", <String>['GET', 'OPTIONS'], staticImagesHandler,
+        ..add("/files/", <String>['GET', 'OPTIONS'], staticImagesHandler,
             exactMatch: false)
         ..add(
             '/api/',

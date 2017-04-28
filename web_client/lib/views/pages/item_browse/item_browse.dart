@@ -30,13 +30,10 @@ import '../src/a_page.dart';
       <auth-status (authedChanged)="onAuthChanged(\$event)"></auth-status>
       <div *ngIf="noItemsFound&&!processing" class="no-items">No Items Found</div>
       <span *ngFor="let i of items" >
-      <a [routerLink]="['Item', {id: i.id}]" class="item_card">
-          <paper-material class="item_card" data-id="{{i.id}}" title="{{i.name}}" class="container">
-              <iron-image class="fit" sizing="cover" style="height:100%;width:100%;"
-                    src="{{getThumbnailForImage(i.thumbnail)}}"></iron-image>
-                    <div class="item_title">
-                        <div>{{i.name}}</div>
-                    </div>
+      <a [routerLink]="['Item', {id: i}]" class="item_card">
+          <paper-material class="item_card" data-id="{{i}}" title="{{i}}" class="container">
+              <iron-image class="fit" sizing="contain" 
+                    src="{{getThumbnailForImage(i)}}"></iron-image>
             </paper-material>
       </a>
       </span>
@@ -75,7 +72,8 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   bool get noItemsFound => items.isEmpty;
 
   String getThumbnailForImage(String value) {
-    return getImageUrl(value, ImageType.thumbnail);
+    final String output = getImageUrl(value, ImageType.thumbnail);
+    return output;
   }
 
   @override
