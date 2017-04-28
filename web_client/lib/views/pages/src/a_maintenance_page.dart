@@ -33,7 +33,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   AMaintenancePage(this.dataType, this._pageControl, this.api,
       AuthenticationService _auth, Router router)
-      : super(_pageControl, _auth, router) {
+      : super(_auth, router) {
     _pageControl.setAvailablePageActions(
         <PageActions>[PageActions.Refresh, PageActions.Add]);
     _pageActionSubscription =

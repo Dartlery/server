@@ -8,6 +8,8 @@ abstract class AErrorThing {
 
   String get errorMessage => _errorMessage;
 
+  bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
+
   set errorMessage(String message) {
     _errorMessage = message;
     if (StringTools.isNotNullOrWhitespace(message))
@@ -18,4 +20,8 @@ abstract class AErrorThing {
     loggerImpl.severe(e, st);
     _errorMessage = e.toString();
   }
+
+
+
+
 }

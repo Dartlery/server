@@ -7,7 +7,7 @@ import 'package:dartlery/services/services.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:angular2/router.dart';
-import '../src/a_error_thing.dart';
+import '../src/a_api_error_thing.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:mime/mime.dart';
@@ -27,7 +27,7 @@ import 'package:mime/mime.dart';
               <material-input [(ngModel)]="tags" ngControl="tags"
                     floatingLabel required  label="Tags"></material-input><br/>
               <input type="file" (change)="fileChanged(\$event)" />
-              <error-output [error]="errorMessage"></error-output>
+              <error-output [error]="apiError"></error-output>
               <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
           </p>
             </form>
@@ -41,7 +41,7 @@ import 'package:mime/mime.dart';
           </div>
       </material-dialog>
     </modal>''')
-class ItemUploadComponent extends AErrorThing {
+class ItemUploadComponent extends AApiErrorThing {
   static final Logger _log = new Logger("ItemUploadComponent");
 
   String tags;
@@ -52,12 +52,13 @@ class ItemUploadComponent extends AErrorThing {
 
   Future<Null> fileChanged(Event e) async {
     try {
-      loading = true;
-      processing = true;
       FileUploadInputElement input = e.target;
 
       if (input.files.length == 0) return;
       final File file = input.files[0];
+
+      loading = true;
+      processing = true;
 
       final FileReader reader = new FileReader();
       reader.readAsArrayBuffer(file);
@@ -87,12 +88,8 @@ class ItemUploadComponent extends AErrorThing {
 
   final ApiService _api;
 
-  bool processing = false;
+  ItemUploadComponent(this._api, Router router, AuthenticationService auth): super(router, auth);
 
-  ItemUploadComponent(this._api);
-
-
-  bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
 
   @override
   Logger get loggerImpl => _log;
@@ -110,11 +107,9 @@ class ItemUploadComponent extends AErrorThing {
   }
 
   Future<Null> onSubmit() async {
-    errorMessage = "";
-    processing = true;
     if(msg==null)
       return;
-    try {
+    await performApiCall(() async {
       final CreateItemRequest request  = new CreateItemRequest();
       request.item = new Item();
       request.item.tags = <Tag>[];
@@ -131,14 +126,7 @@ class ItemUploadComponent extends AErrorThing {
       await _api.items.createItem(request);
 
       visible = false;
-    } on Exception catch (e, st) {
-      setErrorMessage(e, st);
-    } catch (e, st) {
-      _log.severe(e, st);
-        errorMessage = e.toString();
-    } finally {
-      processing = false;
-    }
+    });
   }
 
   void reset() {

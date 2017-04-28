@@ -38,7 +38,7 @@ class SetupPage extends APage implements OnInit {
   AuthenticationService _auth;
 
   SetupPage(this._pageControl, this._api, this._auth, this._router)
-      : super(_pageControl, _auth, _router) {
+      : super(_auth, _router) {
     _pageControl.setPageTitle("Setup");
   }
 

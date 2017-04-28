@@ -18,7 +18,7 @@ class TagResource extends AResource {
   final TagModel _tagModel;
   TagResource(this._tagModel);
 
-  @ApiMethod(method: 'GET', path: '$setupApiPath/search/{query}')
+  @ApiMethod(method: 'GET', path: '$tagApiPath/search/{query}')
   Future<List<Tag>> search(String query) async {
     return catchExceptionsAwait(() async {
       return await _tagModel.search(query);

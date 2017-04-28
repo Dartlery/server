@@ -190,6 +190,60 @@ class ItemModel extends AIdBasedModel<Item> {
     return result;
   }
 
+  static const List<String> supportedMimeTypes = const <String> [
+    "image/jpeg", "image/gif"
+  ];
+
+  String getMimeType(List<int> data) {
+    List<int> lookupBytes;
+    if (data.length > 10) {
+      lookupBytes = data.sublist(0, 10);
+    } else {
+      lookupBytes = data;
+    }
+    return lookupMimeType("", headerBytes: lookupBytes);
+  }
+
+  Future<Null> generateThumbnail(String hash, String mime, List<int> data) async {
+    if (!thumbnailDir.existsSync()) thumbnailDir.createSync(recursive: true);
+    List<int> thumbnailData;
+    switch (mime) {
+      case "image/jpeg":
+      case "image/gif":
+        final Image image = decodeImage(data);
+        if (image.width > 300) {
+          final Image thumbnail = copyResize(image, 300, -1, AVERAGE);
+          thumbnailData = encodeJpg(thumbnail, quality: 90);
+        } else {
+          thumbnailData = data;
+        }
+        break;
+      default:
+        throw new Exception("MIME type not supported: $mime");
+    }
+
+    final File thumbnailFile =
+    new File(path.join(thumbnailImagePath, hash));
+
+    if (thumbnailFile.existsSync()) thumbnailFile.deleteSync();
+    thumbnailFile.createSync();
+
+    final RandomAccessFile thumbnailRaf =
+        await thumbnailFile.open(mode: FileMode.WRITE_ONLY);
+
+    try {
+      _log.fine("Writing to ${thumbnailFile.path}");
+      await thumbnailRaf.writeFrom(thumbnailData);
+    } finally {
+    try {
+    await thumbnailRaf.close();
+    } catch (e2, st) {
+    _log.warning(e2, st);
+    }
+    }
+
+  }
+
   Future<String> _prepareFileUploads(Item item) async {
     final _PrepareFileResult result =
         await _prepareFileUpload(item.fileData);
@@ -202,7 +256,13 @@ class ItemModel extends AIdBasedModel<Item> {
         originalFileDir.createSync(recursive: true);
       if (!thumbnailDir.existsSync()) thumbnailDir.createSync(recursive: true);
 
+
       final List<int> data = result.data;
+      final String mime = getMimeType(data);
+
+      if(!supportedMimeTypes.contains(mime)) {
+        throw new InvalidInputException("Mime type not supported: $mime");
+      }
 
       final File file = new File(path.join(originalFilePath, result.hash));
       final bool fileExists = await file.exists();
@@ -219,58 +279,25 @@ class ItemModel extends AIdBasedModel<Item> {
           //throw new Exception("File already exists on server");
       }
 
-      List<int> lookupBytes;
-      if (data.length > 10) {
-        lookupBytes = data.sublist(0, 10);
-      } else {
-        lookupBytes = data;
-      }
-      final String mime = lookupMimeType("", headerBytes: lookupBytes);
-
-      List<int> thumbnailData;
-      switch (mime) {
-        case "image/jpeg":
-          final Image image = decodeImage(data);
-          if (image.width > 300) {
-            final Image thumbnail = copyResize(image, 300, -1, AVERAGE);
-            thumbnailData = encodeJpg(thumbnail, quality: 90);
-          } else {
-            thumbnailData = data;
-          }
-          break;
-        default:
-          throw new Exception("MIME type not supported: $mime");
-      }
-
-      final File thumbnailFile =
-          new File(path.join(thumbnailImagePath, result.hash));
-
-      if (thumbnailFile.existsSync()) thumbnailFile.deleteSync();
-      thumbnailFile.createSync();
-
       final RandomAccessFile imageRaf =
           await file.open(mode: FileMode.WRITE_ONLY);
-      final RandomAccessFile thumbnailRaf =
-          await thumbnailFile.open(mode: FileMode.WRITE_ONLY);
       try {
         _log.fine("Writing to ${file.path}");
         await imageRaf.writeFrom(data);
         filesWritten.add(file.path);
-        _log.fine("Writing to ${thumbnailFile.path}");
-        await thumbnailRaf.writeFrom(thumbnailData);
-        filesWritten.add(thumbnailFile.path);
       } finally {
         try {
           await imageRaf.close();
         } catch (e2, st) {
           _log.warning(e2, st);
         }
-        try {
-          await thumbnailRaf.close();
-        } catch (e2, st) {
-          _log.warning(e2, st);
-        }
       }
+      try {
+          await generateThumbnail(result.hash, mime, data);
+      } catch(e,st) {
+        _log.warning("Error while generating thumbnail for ${result.hash}",e,st);
+      }
+      
       return result.hash;
     } catch (e, st) {
       // TODO: Verify that when an item is deleted, that its files ends up going with them IF no other items reference that file

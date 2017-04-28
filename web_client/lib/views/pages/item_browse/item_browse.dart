@@ -32,7 +32,7 @@ import '../src/a_page.dart';
       <span *ngFor="let i of items" >
       <a [routerLink]="['Item', {id: i}]" class="item_card">
           <paper-material class="item_card" data-id="{{i}}" title="{{i}}" class="container">
-              <iron-image class="fit" sizing="contain" 
+              <iron-image class="fit" sizing="cover" 
                     src="{{getThumbnailForImage(i)}}"></iron-image>
             </paper-material>
       </a>
@@ -57,7 +57,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   StreamSubscription<bool> _authChangedSubscription;
   ItemBrowseComponent(
       this._api, this._routeParams, this._pageControl, this._router, this._auth)
-      : super(_pageControl, _auth, _router) {
+      : super( _auth, _router) {
     _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
     _pageActionSubscription =
         _pageControl.pageActionRequested.listen(onPageActionRequested);
