@@ -1,9 +1,8 @@
-server
-======
+# dartalog
 
-Dart-powered gallery
+A web app built using polymer.dart.
 
 
-KNOWN ISSUES
-Submitting an invalid sort order provokes a bug in sqljocky that causes a bad socket state to crash the server.
-Submitting  
+TODO:
+
+Implement customizable workflows for items.

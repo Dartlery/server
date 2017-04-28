@@ -1,0 +1,53 @@
+<auth-status (authorizedChanged)="authorizationChanged($event)" require="admin" [showMessage]="true"></auth-status>
+
+<div *ngIf="userAuthorized">
+    <div *ngIf="noItemsFound&&!processing" class="no-items">No Item Types Found</div>
+    <material-expansionpanel-set *ngIf="!noItemsFound">
+        <material-expansionpanel name="{{i.name}}" *ngFor="let i of items" (save)="onSubmit()"
+                                 [expanded]="i.uuid==''"
+                                 [saveDisabled]="!editForm.valid" (open)="selectItem(i)" (close)="cancelEdit()" (cancel)="cancelEdit()">
+            <div style="column-width: 200pt;">
+                <form (ngSubmit)="onSubmit()" #editForm="ngForm">
+                    <material-input [(ngModel)]="model.readableId" ngControl="readableId" floatingLabel required autoFocus
+                                    label="ID"></material-input>
+                    <br/>
+                    <material-input [(ngModel)]="model.name" ngControl="name" floatingLabel required
+                                    label="Name"></material-input>
+                    <br/>
+                    Fields
+                    <select [(ngModel)]="selectedField" ngControl="fieldUuids">
+                        <option></option>
+                        <option *ngFor="let f of fields.values" [ngValue]="f">
+                            {{f.name}}
+                        </option>
+                    </select>
+                    <material-button (trigger)="addField()" raised >Add</material-button>
+                    <ol>
+                        <reorder-list  (reorder)="onReorder($event)">
+                            <material-list-item *ngFor="let f of model.fieldUuids" (trigger)="removeField(f)" reorderItem>
+                                {{fields[f]?.name??f}}
+                            </material-list-item>
+                        </reorder-list>
+                    </ol>
+
+
+                    <span *ngIf="hasErrorMessage" class="error_output">
+                    <glyph icon="error_outline"></glyph>
+                    {{errorMessage}}
+                </span>
+                    <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+                </form>
+            </div>
+        </material-expansionpanel>
+        <material-expansionpanel name="Templates" [showSaveCancel]="false">
+            <div>
+                <material-list>
+                    <material-list-item *ngFor="let t of templates" (trigger)="selectTemplate(t)">
+                        {{t.name}}
+                    </material-list-item>
+                </material-list>
+            </div>
+        </material-expansionpanel>
+    </material-expansionpanel-set>
+
+</div>

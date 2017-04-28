@@ -1,0 +1,501 @@
+{
+ "kind": "discovery#restDescription",
+ "etag": "d72b4da6d31c21991934f4157e355753bc709010",
+ "discoveryVersion": "v1",
+ "id": "gallery:0.1",
+ "name": "gallery",
+ "version": "0.1",
+ "revision": "0",
+ "description": "Item REST API",
+ "protocol": "rest",
+ "baseUrl": "http://localhost:3278/api/gallery/0.1/",
+ "basePath": "/api/gallery/0.1/",
+ "rootUrl": "http://localhost:3278/",
+ "servicePath": "api/gallery/0.1/",
+ "parameters": {},
+ "schemas": {
+  "CreateItemRequest": {
+   "id": "CreateItemRequest",
+   "type": "object",
+   "properties": {
+    "item": {
+     "$ref": "Item"
+    },
+    "files": {
+     "type": "array",
+     "items": {
+      "$ref": "MediaMessage"
+     }
+    }
+   }
+  },
+  "Item": {
+   "id": "Item",
+   "type": "object",
+   "properties": {
+    "file": {
+     "type": "string"
+    },
+    "fileThumbnail": {
+     "type": "string"
+    },
+    "tags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    },
+    "metadata": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "Tag": {
+   "id": "Tag",
+   "type": "object",
+   "properties": {
+    "category": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "MediaMessage": {
+   "id": "MediaMessage",
+   "type": "object",
+   "properties": {
+    "bytes": {
+     "type": "array",
+     "items": {
+      "type": "integer",
+      "format": "int32"
+     }
+    },
+    "updated": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "contentType": {
+     "type": "string"
+    },
+    "cacheControl": {
+     "type": "string"
+    },
+    "contentEncoding": {
+     "type": "string"
+    },
+    "contentLanguage": {
+     "type": "string"
+    },
+    "md5Hash": {
+     "type": "string"
+    },
+    "metadata": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "IdResponse": {
+   "id": "IdResponse",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "location": {
+     "type": "string"
+    }
+   }
+  },
+  "PaginatedResponse": {
+   "id": "PaginatedResponse",
+   "type": "object",
+   "properties": {
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemSummary"
+     }
+    }
+   }
+  },
+  "ItemSummary": {
+   "id": "ItemSummary",
+   "type": "object",
+   "properties": {
+    "uuid": {
+     "type": "string"
+    },
+    "typeUuid": {
+     "type": "string"
+    },
+    "thumbnail": {
+     "type": "string"
+    }
+   }
+  },
+  "UpdateItemRequest": {
+   "id": "UpdateItemRequest",
+   "type": "object",
+   "properties": {
+    "item": {
+     "$ref": "Item"
+    },
+    "files": {
+     "type": "array",
+     "items": {
+      "$ref": "MediaMessage"
+     }
+    }
+   }
+  },
+  "PasswordChangeRequest": {
+   "id": "PasswordChangeRequest",
+   "type": "object",
+   "properties": {
+    "currentPassword": {
+     "type": "string",
+     "required": true
+    },
+    "newPassword": {
+     "type": "string",
+     "required": true
+    }
+   }
+  },
+  "User": {
+   "id": "User",
+   "type": "object",
+   "properties": {
+    "password": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "type": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "SetupRequest": {
+   "id": "SetupRequest",
+   "type": "object",
+   "properties": {
+    "adminUser": {
+     "type": "string"
+    },
+    "adminPassword": {
+     "type": "string"
+    }
+   }
+  },
+  "SetupResponse": {
+   "id": "SetupResponse",
+   "type": "object",
+   "properties": {
+    "adminUser": {
+     "type": "boolean"
+    }
+   }
+  }
+ },
+ "methods": {},
+ "resources": {
+  "items": {
+   "methods": {
+    "createItem": {
+     "id": "GalleryApi.items.createItem",
+     "path": "items/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "CreateItemRequest"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "delete": {
+     "id": "GalleryApi.items.delete",
+     "path": "items/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "getVisibleSummaries": {
+     "id": "GalleryApi.items.getVisibleSummaries",
+     "path": "items/",
+     "httpMethod": "GET",
+     "parameters": {
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [],
+     "response": {
+      "$ref": "PaginatedResponse"
+     }
+    },
+    "getById": {
+     "id": "GalleryApi.items.getById",
+     "path": "items/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "Item"
+     }
+    },
+    "searchVisible": {
+     "id": "GalleryApi.items.searchVisible",
+     "path": "search/{query}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "query": {
+       "type": "string",
+       "description": "Path parameter: 'query'.",
+       "required": true,
+       "location": "path"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "query"
+     ],
+     "response": {
+      "$ref": "PaginatedResponse"
+     }
+    },
+    "updateItem": {
+     "id": "GalleryApi.items.updateItem",
+     "path": "items/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "UpdateItemRequest"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "users": {
+   "methods": {
+    "changePassword": {
+     "id": "GalleryApi.users.changePassword",
+     "path": "users/{uuid}/password/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "request": {
+      "$ref": "PasswordChangeRequest"
+     }
+    },
+    "create": {
+     "id": "GalleryApi.users.create",
+     "path": "users/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "User"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "delete": {
+     "id": "GalleryApi.users.delete",
+     "path": "users/{uuid}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ]
+    },
+    "getById": {
+     "id": "GalleryApi.users.getById",
+     "path": "users/{uuid}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "response": {
+      "$ref": "User"
+     }
+    },
+    "getMe": {
+     "id": "GalleryApi.users.getMe",
+     "path": "current_user/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "User"
+     }
+    },
+    "update": {
+     "id": "GalleryApi.users.update",
+     "path": "users/{uuid}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "request": {
+      "$ref": "User"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "setup": {
+   "methods": {
+    "apply": {
+     "id": "GalleryApi.setup.apply",
+     "path": "setup/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "SetupRequest"
+     },
+     "response": {
+      "$ref": "SetupResponse"
+     }
+    },
+    "get": {
+     "id": "GalleryApi.setup.get",
+     "path": "setup/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "SetupResponse"
+     }
+    }
+   },
+   "resources": {}
+  }
+ }
+}

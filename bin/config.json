@@ -1,9 +1,0 @@
-{
-  "mysql": {
-    "host": "localhost",
-    "port": 3306,
-    "db": "dartlery",
-    "user": "dartlery",
-    "password": "Y6N9pZxBKLbKcwf5"
-  }
-}

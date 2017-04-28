@@ -1,0 +1,80 @@
+<auth-status [(authorized)]="userLoggedIn"></auth-status>
+<paper-drawer-panel responsive-width="1920px">
+    <paper-header-panel drawer>
+        <paper-toolbar>
+            <div *ngIf="userLoggedIn">{{currentUser.name}}
+                <material-button raised
+                                 (trigger)="clearAuthentication()"
+                                 class="blue" >
+                    Log Out
+                </material-button>
+            </div>
+            <material-button raised
+                             (trigger)="promptForAuthentication()"
+                             class="blue" *ngIf="!userLoggedIn" >
+                Log In
+            </material-button>
+        </paper-toolbar>
+        <div class="sideMenu">
+            <a [routerLink]="['Home']">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Browse Items</paper-item-body>
+                </paper-item>
+            </a>
+            <auth-status (authorizedChanged)="userIsCurator=$event" require="curator"></auth-status>
+
+            <a [routerLink]="['ItemAdd']" *ngIf="userIsCurator">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Add Item</paper-item-body>
+                </paper-item>
+            </a>
+            <a [routerLink]="['Collections']" *ngIf="userIsCurator">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Collections</paper-item-body>
+                </paper-item>
+            </a>
+
+            <auth-status (authorizedChanged)="userIsAdmin=$event" require="admin"></auth-status>
+            <a [routerLink]="['Fields']" *ngIf="userIsAdmin">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Fields</paper-item-body>
+                </paper-item>
+            </a>
+            <a [routerLink]="['ItemTypes']" *ngIf="userIsAdmin">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Item Types</paper-item-body>
+                </paper-item>
+            </a>
+            <a [routerLink]="['Users']" *ngIf="userIsAdmin">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Users</paper-item-body>
+                </paper-item>
+            </a>
+        </div>
+    </paper-header-panel>
+    <paper-header-panel main>
+        <paper-toolbar class="container">
+            <material-button icon paper-drawer-toggle><glyph icon="menu"></glyph></material-button>
+
+            <span class="title" style="margin-left:0pt;">{{pageTitle}}</span>
+
+            <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" leadingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>
+            <!--<material-button *ngIf="showAddButton" icon (trigger)="addClicked()"><glyph icon="add"></glyph></material-button>-->
+            <material-button *ngIf="showRefreshButton" icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
+        </paper-toolbar>
+        <div>
+            <router-outlet></router-outlet>
+            <paginator></paginator>
+            <material-fab *ngIf="showAddButton" raised (trigger)="addClicked()" style="position: fixed; right: 8pt; bottom: 8pt;z-index:10;" class="red">
+                <glyph icon="add"></glyph>
+            </material-fab>
+        </div>
+    </paper-header-panel>
+</paper-drawer-panel>
+<login-form [(visible)]="isLoginOpen" id="userAuthElement"></login-form>
