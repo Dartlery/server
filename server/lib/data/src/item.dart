@@ -5,12 +5,11 @@ import 'package:rpc/rpc.dart';
 
 @ApiMessage(includeSuper: true)
 class Item extends AIdData {
-  String file;
-  String fileThumbnail;
-
   List<Tag> tags;
 
   Map<String,String> metadata = <String,String>{};
+
+  List<int> fileData;
 
   Item();
 }

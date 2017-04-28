@@ -21,7 +21,7 @@ class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory> with AT
 
   static TagCategory staticCreateObject(Map data) {
     final TagCategory output = new TagCategory();
-    AMongoIdDataSource.setUuidForData(output, data);
+    AMongoIdDataSource.setIdForData(output, data);
     return output;
   }
 

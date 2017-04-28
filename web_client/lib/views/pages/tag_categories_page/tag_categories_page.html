@@ -1,7 +1,7 @@
 <auth-status (authorizedChanged)="authorizationChanged($event)" require="admin" [showMessage]="true"></auth-status>
 
 <div *ngIf="userAuthorized">
-    <div *ngIf="noItemsFound&&!processing" class="no-items">No Collections Found</div>
+    <div *ngIf="noItemsFound&&!processing" class="no-items">No Tag Categories Found</div>
     <material-expansionpanel-set *ngIf="!noItemsFound">
         <material-expansionpanel name="{{i.name}}" *ngFor="let i of items" (save)="onSubmit()"
                                  [expanded]="i.uuid==''"

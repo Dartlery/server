@@ -23,7 +23,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   @override
   User createObject(Map data) {
     final User output = new User();
-    AMongoIdDataSource.setUuidForData(output, data);
+    AMongoIdDataSource.setIdForData(output, data);
     output.name = data[nameField];
     output.type = data[typeField];
     return output;
@@ -40,7 +40,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
 
   @override
   Future<Option<String>> getPasswordHash(String username) async {
-    final SelectorBuilder selector = where.eq(readableIdField, username);
+    final SelectorBuilder selector = where.eq(idField, username);
     final Option<String> data = await genericFindOne(selector);
     return data.map((Map user) {
       if (user.containsKey(passwordField)) return user[passwordField];
@@ -49,7 +49,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
 
   @override
   Future<Null> setPassword(String uuid, String password) async {
-    final SelectorBuilder selector = where.eq(uuidField, uuid);
+    final SelectorBuilder selector = where.eq(idField, uuid);
 
     final ModifierBuilder modifier = modify.set(passwordField, password);
     await genericUpdate(selector, modifier, multiUpdate: false);

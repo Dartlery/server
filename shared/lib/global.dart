@@ -16,10 +16,6 @@ const String galleryApiPath = "api/$galleryApiName/$galleryApiVersion/";
 
 const int defaultPerPage = 60;
 
-const String fileUploadPrefix =
-    "upload:"; // Chosen because it easily subdivides into the most digits
-const String hostedFilesPrefix = "file:";
-
 const String hostedFilesOriginalsPath = "${hostedFilesPath}originals/";
 const String hostedFilesPath = "files/";
 
@@ -43,8 +39,6 @@ final Map<String, String> globalFieldTypes = <String, String>{
   hiddenFieldTypeId: 'Hidden',
   multiValueStringTypeID: "Multi-value String",
 };
-
-final RegExp fileUploadRegex = new RegExp("$fileUploadPrefix(\\d+)");
 
 final List<String> _reservedWords = <String>[
   'id',

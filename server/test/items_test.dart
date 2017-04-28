@@ -15,7 +15,6 @@ GalleryApi get api => server.galleryApi;
 Map<String,User> users;
 void main() {
   CreateItemRequest request;
-  Item item;
 
   setUp(() async {
     if (server != null) throw new Exception("Server already exists");
@@ -23,27 +22,9 @@ void main() {
     server = await setUpServer();
 
     users = await createTestUsers(api);
-    item = createItem();
-
-    final MediaMessage msg = new MediaMessage();
-
-    final File f = new File("test\\test.jpg");
-    RandomAccessFile raf;
-    try {
-      raf = await f.open();
-      msg.bytes = <int>[];
-      final int length = await raf.length();
-      msg.bytes = await raf.read(length);
-    } finally {
-      if(raf!=null)
-        await raf.close();
-    }
 
 
-    request = new CreateItemRequest();
-    request.item = item;
-    request.files = <MediaMessage>[msg];
-    request.item.file = "${fileUploadPrefix}0";
+    request = await createItemRequest();
   });
 
   tearDown(() async {
@@ -59,7 +40,7 @@ void main() {
   {
 
     test("create()", () async {
-      expect(api.items.create(item), throwsNotImplementedException);
+      expect(api.items.create(request.item), throwsNotImplementedException);
     }, skip: "Not quite working?");
 
     test("createItem()", () async {
@@ -69,7 +50,7 @@ void main() {
 
     test("getById()", () async {
       final IdResponse response  = await api.items.createItem(request);
-      item = await api.items.getById(response.id);
+      final Item item = await api.items.getById(response.id);
       expect(item, isNotNull);
     });
 
@@ -79,7 +60,7 @@ void main() {
       Item item = await api.items.getById(response.id);
       expect(item.tags.length, 3);
 
-      final Tag newTag  = new Tag.withValues("TestTagName", null);
+      final Tag newTag  = new Tag.withValues("TestTagName");
       item.tags = <Tag>[newTag];
 
       final UpdateItemRequest updateItemRequest = new UpdateItemRequest();

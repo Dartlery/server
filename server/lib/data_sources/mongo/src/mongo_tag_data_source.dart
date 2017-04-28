@@ -5,15 +5,19 @@ import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
-import 'a_mongo_id_data_source.dart';
+import 'a_mongo_two_id_data_source.dart';
 import 'constants.dart';
 
-class MongoTagDataSource extends AMongoIdDataSource<Tag> with ATagDataSource {
+class MongoTagDataSource extends AMongoTwoIdDataSource<Tag> with ATagDataSource {
   static final Logger _log = new Logger('MongoTagDataSource');
 
   static const String categoryField = 'category';
+  static const String fullNameField = "fullName";
 
   MongoTagDataSource(MongoDbConnectionPool pool): super(pool);
+
+  @override
+  String get secondIdField => categoryField;
 
   @override
   Tag createObject(Map data) {
@@ -22,7 +26,7 @@ class MongoTagDataSource extends AMongoIdDataSource<Tag> with ATagDataSource {
 
   static Tag staticCreateObject(Map data) {
     final Tag output = new Tag();
-    AMongoIdDataSource.setUuidForData(output, data);
+    AMongoTwoIdDataSource.setIdForData(output, data);
     output.category = data[categoryField];
     return output;
   }
@@ -30,15 +34,15 @@ class MongoTagDataSource extends AMongoIdDataSource<Tag> with ATagDataSource {
 
 
   @override
-  Future<IdDataList<Tag>> getByUuids(List<String> uuids) async {
-    _log.info("Getting all tags for UUIDs");
+  Future<IdDataList<Tag>> getByIds(List<String> ids) async {
+    _log.info("Getting all tags for IDs");
 
-    if (uuids == null) return new IdDataList<Tag>();
+    if (ids == null) return new IdDataList<Tag>();
 
     SelectorBuilder query;
 
-    for (String uuid in uuids) {
-      final SelectorBuilder sb = where.eq(uuidField, uuid);
+    for (String uuid in ids) {
+      final SelectorBuilder sb = where.eq(idField, uuid);
       if (query == null) {
         query = sb;
       } else {
@@ -50,7 +54,7 @@ class MongoTagDataSource extends AMongoIdDataSource<Tag> with ATagDataSource {
 
     final IdDataList<Tag> output = new IdDataList<Tag>.copy(results);
 
-    output.sortBytList(uuids);
+    output.sortBytList(ids);
 
     return output;
   }
@@ -65,7 +69,8 @@ class MongoTagDataSource extends AMongoIdDataSource<Tag> with ATagDataSource {
   }
 
   static void staticUpdateMap(Tag tag, Map data) {
-    AMongoIdDataSource.staticUpdateMap(tag, data);
+    AMongoTwoIdDataSource.staticUpdateMap(tag, data);
     data[categoryField] = tag.category;
+    data[fullNameField] = tag.fullName;
   }
 }

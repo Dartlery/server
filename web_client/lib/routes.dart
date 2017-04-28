@@ -1,15 +1,10 @@
 import 'package:angular2/router.dart';
 import 'package:dartlery/views/pages/pages.dart';
 
-const Route collectionsRoute = const Route(
-  path: '/collections',
-  name: 'Collections',
-  component: CollectionsPage,
-);
-const Route fieldsRoute = const Route(
-  path: '/fields',
-  name: 'Fields',
-  component: FieldsPage,
+const Route tagCategoriesRoute = const Route(
+  path: '/tagCategories',
+  name: 'TagCategories',
+  component: TagCategoriesPage,
 );
 const Route homeRoute = const Route(
     path: '/',
@@ -18,9 +13,6 @@ const Route homeRoute = const Route(
     useAsDefault: true);
 
 const String idRouteParameter = "id";
-
-const Route itemAddRoute =
-    const Route(path: '/items/add', name: 'ItemAdd', component: ItemAddPage);
 
 const Route itemsPageRoute = const Route(
     path: '/items/:$pageRouteParameter',
@@ -37,11 +29,6 @@ const Route itemsSearchRoute = const Route(
     name: 'ItemsSearch',
     component: ItemBrowseComponent);
 
-const Route itemTypesRoute = const Route(
-  path: '/item_types',
-  name: 'ItemTypes',
-  component: ItemTypesPage,
-);
 
 const Route itemViewRoute = const Route(
   path: '/item/:$idRouteParameter',
@@ -58,11 +45,8 @@ const List<Route> routes = const <Route>[
   itemsPageRoute,
   itemsSearchRoute,
   itemsSearchPageRoute,
-  itemAddRoute,
   itemViewRoute,
-  collectionsRoute,
-  fieldsRoute,
-  itemTypesRoute,
+  tagCategoriesRoute,
   setupRoute,
   usersRoute
 ];

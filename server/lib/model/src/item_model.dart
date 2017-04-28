@@ -16,7 +16,7 @@ import 'package:path/path.dart' as path;
 
 import 'a_file_upload_model.dart';
 
-class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
+class ItemModel extends AIdBasedModel<Item> {
   static final Logger _log = new Logger('ItemModel');
   static final RegExp legalIdCharacters = new RegExp("[a-zA-Z0-9_\-]");
 
@@ -62,8 +62,7 @@ class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
 
   @override
   Future<String> create(Item item,
-      {List<List<int>> files,
-      bool bypassAuthentication: false,
+      {bool bypassAuthentication: false,
       bool keepUuid: false}) async {
     await validateCreatePrivileges();
 
@@ -71,11 +70,9 @@ class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
 
     await validate(item);
 
-    await _prepareFileUploads(item, files);
     await _handleTags(item.tags);
-
+    item.id = await _prepareFileUploads(item);
     //TODO: More thorough cleanup of files in case of failure
-
     final String itemId = await itemDataSource.create(item.id, item);
     return itemId;
   }
@@ -117,16 +114,17 @@ class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
   }
 
   @override
-  Future<String> update(String uuid, Item item,
-      {List<List<int>> files, bool bypassAuthentication: false}) async {
-    if (!bypassAuthentication) await validateUpdatePrivileges(uuid);
-
-    await _prepareFileUploads(item, files);
+  Future<String> update(String id, Item item,
+      {bool bypassAuthentication: false}) async {
+    if (!bypassAuthentication) await validateUpdatePrivileges(id);
 
     await _handleTags(item.tags);
+    if(item.fileData!=null) {
+      item.id = await _prepareFileUploads(item);
+    }
 
     return await super
-        .update(uuid, item, bypassAuthentication: bypassAuthentication);
+        .update(id, item, bypassAuthentication: bypassAuthentication);
   }
 
   @override
@@ -135,8 +133,10 @@ class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
     //TODO: add dynamic field validation
     await super.validateFields(item, fieldErrors);
 
-    if(StringTools.isNullOrWhitespace(item.file)) {
-      fieldErrors["file"] = "Required";
+    if(StringTools.isNullOrWhitespace(existingId)) {
+      if (item.fileData == null || item.fileData.length == 0) {
+        fieldErrors["file"] = "Required";
+      }
     }
 
     if (item.tags != null) {
@@ -157,20 +157,15 @@ class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
 
   Future<Null> _handleTags(List<Tag> tags) async {
     for (Tag tag in tags) {
-      if (StringTools.isNullOrWhitespace(tag.id)) {
-        tag.id = generateUuid();
-        await tagDataSource.create(tag.id, tag);
+      final bool result = await tagDataSource.existsById(tag.id, tag.category);
+      if(!result) {
+        await tagDataSource.create(tag);
       }
     }
   }
 
   Future<_PrepareFileResult> _prepareFileUpload(
-      String fileId, List<List<int>> files) async {
-    if (StringTools.isNullOrWhitespace(fileId) ||
-        fileId.startsWith(hostedFilesPrefix)) {
-      // This should indicate that the submitted image is one that is already hosted on the server, so nothing to do here
-      return null;
-    }
+      List<int> data) async {
     //      String image_url = getImagesRootUrl().toLowerCase();
 //      if(value.toLowerCase().startsWith(image_url))
 //        continue;
@@ -182,48 +177,24 @@ class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
 //      // Since the file already exists, it would catch that it was the same file and abort,
 //      // but there may be some way to abuse this. Have to think about it.
 
-    List<int> data;
 
-    final Match m = fileUploadRegex.firstMatch(fileId);
-    if (m != null) {
-      // This is a new file upload
-      final int filePosition = int.parse(m.group(1));
-      if (files.length - 1 < filePosition) {
-        throw new InvalidInputException(
-            "Unprovided upload file specified at position $filePosition");
-      }
-      data = files[filePosition];
-    } else {
-      // So we assume it's a URL
-      _log.fine("Processing as URL: $fileId");
-      final Uri fileUri = Uri.parse(fileId);
-      final HttpClientRequest req = await new HttpClient().getUrl(fileUri);
-      final HttpClientResponse response = await req.close();
-      final List<List<int>> output = await response.toList();
-      data = new List<int>();
-      for (List<int> chunk in output) {
-        data.addAll(chunk);
-      }
-    }
 
-    if (data.length == 0)
-      throw new InvalidInputException("Specified file upload $fileId is empty");
+    if (data==null||data.length == 0)
+      throw new InvalidInputException("Specified file data is empty");
 
     final Digest hash = sha256.convert(data);
     final String hashString = hash.toString();
     final _PrepareFileResult result = new _PrepareFileResult();
     result.hash = hashString;
     result.data = data;
-    result.fileSpecifier = "$hostedFilesPrefix$hashString";
     return result;
   }
 
-  Future<Null> _prepareFileUploads(Item item, List<List<int>> files) async {
+  Future<String> _prepareFileUploads(Item item) async {
     final _PrepareFileResult result =
-        await _prepareFileUpload(item.file, files);
+        await _prepareFileUpload(item.fileData);
     if (result == null)
-      return;
-    item.file = result.fileSpecifier;
+      throw new Exception("No file processing result");
 
     final List<String> filesWritten = new List<String>();
     try {
@@ -244,7 +215,8 @@ class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
         if (size != data.length)
           throw new Exception("File already exists with a different size");
         else
-          return;
+          return result.hash;
+          //throw new Exception("File already exists on server");
       }
 
       List<int> lookupBytes;
@@ -299,6 +271,7 @@ class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
           _log.warning(e2, st);
         }
       }
+      return result.hash;
     } catch (e, st) {
       // TODO: Verify that when an item is deleted, that its files ends up going with them IF no other items reference that file
       _log.severe(e.message, e, st);
@@ -318,6 +291,6 @@ class ItemModel extends AIdBasedModel<Item> with AFileUploadModel<Item> {
 
 class _PrepareFileResult {
   String hash;
-  String fileSpecifier;
   List<int> data;
+  //List<int> thumbnailData;
 }

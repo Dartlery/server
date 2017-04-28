@@ -29,13 +29,12 @@ class AuthenticationService {
   AuthenticationService(this._settings, this._api);
 
   Stream<bool> get authStatusChanged => _authStatusController.stream;
-  bool get canCheckout => hasPrivilege(UserPrivilege.checkout);
 
   bool get isAdmin => hasPrivilege(UserPrivilege.admin);
   bool get isAuthenticated => user.isNotEmpty;
-  bool get isCurator => hasPrivilege(UserPrivilege.curator);
+  bool get isModerator => hasPrivilege(UserPrivilege.moderator);
 
-  bool get isPatron => hasPrivilege(UserPrivilege.patron);
+  bool get isNormalUser => hasPrivilege(UserPrivilege.normal);
   Stream<Null> get loginPrompted => _promptController.stream;
 
   Future<Null> authenticate(String user, String password) async {

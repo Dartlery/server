@@ -25,26 +25,26 @@ class MongoDatabase {
   MongoDatabase(this.db);
 
 
-  Future<DbCollection> getHumanReadableCollection(String collectionName) async {
-      final DbCollection output = await getUuidCollection(collectionName);
-      await db.createIndex(collectionName,
-      keys: {readableIdField: 1}, name: "ReadableIdIndex", unique: true);
-      return output;
-  }
-
   Future<DbCollection> getItemsCollection() async {
+    await db.createIndex(_itemsCollection,
+        keys: {"checksum": 1}, name: "ChecksumIndex", unique: true);
     final DbCollection output =
-    await getUuidCollection(_itemsCollection);
+    await getIdCollection(_itemsCollection);
     return output;
   }
   Future<DbCollection> getTagsCollection() async {
-    final DbCollection output =
-    await getHumanReadableCollection(_tagsCollection);
+    await db.createIndex(_tagsCollection,
+        keys: {r"fullName": "text"}, name: "TagTextIndex");
+    final DbCollection output =  db.collection(_tagsCollection);
+
+    await db.createIndex(_tagsCollection,
+        keys: { idField: 1}, name: "ReadableIdIndex", unique: true);
+
     return output;
   }
   Future<DbCollection> getTagCategoriesCollection() async {
     final DbCollection output =
-    await getHumanReadableCollection(_tagCategoriesCollection);
+    await getIdCollection(_tagCategoriesCollection);
     return output;
   }
 
@@ -59,15 +59,15 @@ class MongoDatabase {
   }
 
   Future<DbCollection> getUsersCollection() async {
-    final DbCollection output = await getUuidCollection(_usersCollection);
+    final DbCollection output = await getIdCollection(_usersCollection);
     await db.createIndex(_usersCollection,
         keys: {"id": "text", "name": "text"}, name: "TextIndex");
     return output;
   }
 
-  Future<DbCollection> getUuidCollection(String collectionName) async {
+  Future<DbCollection> getIdCollection(String collectionName) async {
     await db.createIndex(collectionName,
-        keys: {uuidField: 1}, name: "UuidIndex", unique: true);
+        keys: {idField: 1}, name: "IdIndex", unique: true);
     return db.collection(collectionName);
   }
 

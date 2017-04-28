@@ -51,7 +51,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   final PageControlService _pageControl;
   final Router _router;
   final AuthenticationService _auth;
-  final List<ItemSummary> items = <ItemSummary>[];
+  final List<String> items = <String>[];
   String _currentQuery = "";
 
   StreamSubscription<String> _searchSubscription;
@@ -105,9 +105,6 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       case PageActions.Refresh:
         this.refresh();
         break;
-      case PageActions.Add:
-        _router.navigate([itemAddRoute.name]);
-        break;
       default:
         throw new Exception(
             action.toString() + " not implemented for this page");
@@ -140,7 +137,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
       PaginatedResponse response;
       if (StringTools.isNullOrWhitespace(query)) {
-        response = await _api.items.getVisibleSummaries(page: page);
+        response = await _api.items.getVisibleIds(page: page);
       } else {
         response = await _api.items.searchVisible(query, page: page);
         routeName = itemsSearchPageRoute.name;
@@ -168,9 +165,9 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       PageActions.Refresh,
       PageActions.Search
     ];
-    if (_auth.hasPrivilege(UserPrivilege.curator)) {
-      actions.add(PageActions.Add);
-    }
+//    if (_auth.hasPrivilege(UserPrivilege.normal)) {
+//      actions.add(PageActions.Add);
+//    }
     _pageControl.setAvailablePageActions(actions);
   }
 }

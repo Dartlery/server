@@ -11,18 +11,21 @@ import 'package:meta/meta.dart';
 export 'a_mongo_object_data_source.dart';
 import 'constants.dart';
 
-abstract class AMongoIdDataSource<T extends AIdData>
-    extends AMongoObjectDataSource<T> with AIdBasedDataSource<T> {
+abstract class AMongoTwoIdDataSource<T extends AIdData>
+    extends AMongoObjectDataSource<T> with ATwoIdBasedDataSource<T> {
 
-  AMongoIdDataSource(MongoDbConnectionPool pool): super(pool);
+  AMongoTwoIdDataSource(MongoDbConnectionPool pool): super(pool);
+
+  String get secondIdField;
+
 
   @override
-  Future<Null> deleteById(String id) =>
-      deleteFromDb(where.eq(idField, id));
+  Future<Null> deleteById(String id, String id2) =>
+      deleteFromDb(where.eq(idField, id).and(where.eq(secondIdField, id2)));
 
   @override
-  Future<bool> existsById(String id) =>
-      super.exists(where.eq(idField, id));
+  Future<bool> existsById(String id, String id2) =>
+      super.exists(where.eq(idField, id).and(where.eq(secondIdField, id2)));
 
   @override
   Future<IdDataList<T>> getAll({String sortField: null}) =>
@@ -36,19 +39,18 @@ abstract class AMongoIdDataSource<T extends AIdData>
           offset: offset, limit: limit);
 
   @override
-  Future<Option<T>> getById(String id) =>
-      getForOneFromDb(where.eq(idField, id));
+  Future<Option<T>> getById(String id, String id2) =>
+      getForOneFromDb(where.eq(idField, id).and(where.eq(secondIdField, id2)));
 
   @override
-  Future<String> create(String id, T object) async {
-    object.id = id;
+  Future<String> create(T object) async {
     await insertIntoDb(object);
     return object.id;
   }
 
   @override
-  Future<String> update(String id, T object) async {
-    await updateToDb(where.eq(idField, id), object);
+  Future<String> update(String id, String id2, T object) async {
+    await updateToDb(where.eq(idField, id).and(where.eq(secondIdField, id2)), object);
     return object.id;
   }
 

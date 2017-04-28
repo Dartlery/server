@@ -6,6 +6,8 @@ import 'package:rpc/rpc.dart';
 import 'src/resources/item_resource.dart';
 import 'src/resources/setup_resource.dart';
 import 'src/resources/user_resource.dart';
+import 'src/resources/tag_resource.dart';
+import 'src/resources/tag_categories_resource.dart';
 
 export 'src/resources/item_resource.dart';
 export 'src/resources/setup_resource.dart';
@@ -35,11 +37,19 @@ class GalleryApi {
   @ApiResource()
   final SetupResource setup;
 
-  GalleryApi(this.items, this.users, this.setup);
+  @ApiResource()
+  final TagResource tags;
+
+  @ApiResource()
+  final TagCategoriesResource tagCategories;
+
+  GalleryApi(this.items, this.users, this.setup, this.tagCategories, this.tags);
 
   static Module get injectorModules => new Module()
     ..bind(ItemResource)
     ..bind(UserResource)
     ..bind(SetupResource)
+    ..bind(TagResource)
+    ..bind(TagCategoriesResource)
     ..bind(GalleryApi);
 }

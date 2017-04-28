@@ -27,12 +27,14 @@ class ItemResource extends AIdResource<Item> {
 
   @ApiMethod(method: 'POST', path: '$_apiPath/')
   Future<IdResponse> createItem(CreateItemRequest newItem) => catchExceptionsAwait(() async {
-    List<List<int>> files;
-    if (newItem.files != null) {
-      files = convertMediaMessagesToIntLists(newItem.files);
+    if (newItem.file != null) {
+      final List<List<int>> files = convertMediaMessagesToIntLists(<MediaMessage>[newItem.file]);
+      if(files.length>0) {
+        newItem.item.fileData = files[0];
+      }
     }
     final String output = await itemModel
-        .create(newItem.item, files: files);
+        .create(newItem.item);
     return new IdResponse.fromId(output, generateRedirect(output));
 
   });
@@ -47,12 +49,12 @@ class ItemResource extends AIdResource<Item> {
   Future<VoidMessage> delete(String id) => deleteWithCatch(id);
 
   @ApiMethod(path: '$_apiPath/')
-  Future<PaginatedResponse<ItemSummary>> getVisibleSummaries(
+  Future<PaginatedResponse<String>> getVisibleIds(
       {int page: 0, int perPage: defaultPerPage}) =>
       catchExceptionsAwait(() async =>
-          new PaginatedResponse<ItemSummary>.convertPaginatedData(
+          new PaginatedResponse<String>.convertPaginatedData(
               await itemModel.getVisible(page: page, perPage: perPage),
-              (Item item) => new ItemSummary.copyItem(item)));
+              (Item item) => item.id));
 
   @override
   @ApiMethod(path: '$_apiPath/{id}/')
@@ -60,13 +62,13 @@ class ItemResource extends AIdResource<Item> {
       catchExceptionsAwait(() => itemModel.getById(id));
 
   @ApiMethod(path: 'search/{query}/')
-  Future<PaginatedResponse<ItemSummary>> searchVisible(String query,
+  Future<PaginatedResponse<String>> searchVisible(String query,
           {int page: 0, int perPage: defaultPerPage}) =>
       catchExceptionsAwait(() async =>
-          new PaginatedResponse<ItemSummary>.convertPaginatedData(
+          new PaginatedResponse<String>.convertPaginatedData(
               await itemModel
                   .searchVisible(query, page: page, perPage: perPage),
-              (Item item) => new ItemSummary.copyItem(item)));
+              (Item item) => item.id));
 
   @override
   Future<IdResponse> update(String id, Item item) =>

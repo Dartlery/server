@@ -10,6 +10,7 @@ import 'package:dartlery/api/gallery/gallery_api.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/data_sources/mongo/mongo.dart';
+import 'dart:io';
 
 const String testAdminPassword = "TESTPASSWORD";
 const String testItemName = "TESTITEM";
@@ -93,19 +94,56 @@ Future<Map<String, User>> createTestUsers(GalleryApi api,
   return output;
 }
 
+Future<CreateItemRequest> createItemRequest({List<Tag> tags}) async {
+  final Item item = createItem(tags: tags);
+  final CreateItemRequest request = new CreateItemRequest();
+  final MediaMessage msg = new MediaMessage();
+
+  final File f = new File("test\\test.jpg");
+  RandomAccessFile raf;
+  try {
+    raf = await f.open();
+    msg.bytes = <int>[];
+    final int length = await raf.length();
+    msg.bytes = await raf.read(length);
+  } finally {
+    if(raf!=null)
+      await raf.close();
+  }
+
+  request.item = item;
+  request.file = msg;
+
+  return request;
+}
+
 /// Creates a [Item] object that should meet all validation requirements.
 Item createItem({List<Tag> tags}) {
   final Item item = new Item();
   if(tags==null) {
     item.tags = <Tag>[];
-    item.tags.add(new Tag.withValues(generateUuid(), null));
-    item.tags.add(new Tag.withValues(generateUuid(), null));
-    item.tags.add(new Tag.withValues(generateUuid(), null));
+    item.tags.add(new Tag.withValues(generateUuid()));
+    item.tags.add(new Tag.withValues(generateUuid()));
+    item.tags.add(new Tag.withValues(generateUuid()));
   } else {
     item.tags = tags;
   }
 
   return item;
+}
+
+TagCategory createTagCategory() {
+  final TagCategory tagCategory = new TagCategory();
+  tagCategory.id = generateUuid();
+  tagCategory.color = "#000000";
+  return tagCategory;
+}
+
+Tag createTag({String category: null}) {
+  final Tag tag = new Tag();
+  tag.id = generateUuid();
+  tag.category = category;
+  return tag;
 }
 
 /// Creates a [User] object with the specified [type] that should meet all validation requirements.

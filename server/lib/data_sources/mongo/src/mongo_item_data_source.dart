@@ -65,15 +65,14 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String metadataField = "metadata";
   static const String tagsField = "tags";
   static const String fileField = "file";
+  static const String checksumField = "checksum";
   static const String fileThumbnailField = "fileThumbnail";
 
   @override
   Item createObject(Map<String, dynamic> data) {
     final Item output = new Item();
-    AMongoIdDataSource.setUuidForData(output, data);
+    AMongoIdDataSource.setIdForData(output, data);
     output.metadata = data[metadataField];
-    output.file = data[fileField];
-    output.fileThumbnail= data[fileThumbnailField];
 
     if(data[tagsField]!=null) {
       output.tags = <Tag>[];
@@ -94,8 +93,6 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   void updateMap(Item item, Map<String, dynamic> data) {
     super.updateMap(item, data);
     data[metadataField] = item.metadata;
-    data[fileField] = item.file;
-    data[fileThumbnailField] = item.fileThumbnail;
     if(item.tags!=null) {
       final List<dynamic> tagsList = new List<dynamic>();
       for(Tag tag in item.tags) {

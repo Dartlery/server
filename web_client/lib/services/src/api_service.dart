@@ -8,12 +8,12 @@ import 'package:angular2/core.dart';
 import 'settings_service.dart';
 
 export 'package:dartlery/api/api.dart'
-    show PaginatedResponse, ListOfIdNamePair, IdNamePair;
+    show PaginatedResponse;
 
 @Injectable()
-class ApiService extends ItemApi {
+class ApiService extends GalleryApi {
   final SettingsService _settings;
   ApiService(this._settings)
       : super(new ApiHttpClient(_settings),
-            rootUrl: getServerRoot(), servicePath: itemApiPath);
+            rootUrl: getServerRoot(), servicePath: galleryApiPath);
 }

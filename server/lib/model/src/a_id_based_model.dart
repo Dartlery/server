@@ -26,6 +26,15 @@ abstract class AIdBasedModel<T extends AIdData> extends ATypedModel<T> {
     if(StringTools.isNullOrWhitespace(t.id)) {
       output["id"] = "Required";
     }
+
+
+    if(StringTools.isNotNullOrWhitespace(existingId)||existingId!=t.id) {
+      final bool result = await this.dataSource.existsById(existingId);
+      if(result) {
+        output["id"] = "Already in use";
+      }
+    }
+
   }
 
 

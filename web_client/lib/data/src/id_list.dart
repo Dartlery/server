@@ -1,9 +1,9 @@
 import 'dart:collection';
 
-class UuidCollection<T extends dynamic> extends MapBase<String, T> {
+class IdList<T extends dynamic> extends MapBase<String, T> {
   final Map<String, T> _innerMap = <String, T>{};
 
-  UuidCollection();
+  IdList();
 
   @override
   T operator [](String index) => _innerMap[index];

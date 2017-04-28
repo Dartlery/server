@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "d72b4da6d31c21991934f4157e355753bc709010",
+ "etag": "a7794b0a0cb035a3841adbc58e254f1e1cc2bf87",
  "discoveryVersion": "v1",
  "id": "gallery:0.1",
  "name": "gallery",
@@ -21,11 +21,8 @@
     "item": {
      "$ref": "Item"
     },
-    "files": {
-     "type": "array",
-     "items": {
-      "$ref": "MediaMessage"
-     }
+    "file": {
+     "$ref": "MediaMessage"
     }
    }
   },
@@ -33,12 +30,6 @@
    "id": "Item",
    "type": "object",
    "properties": {
-    "file": {
-     "type": "string"
-    },
-    "fileThumbnail": {
-     "type": "string"
-    },
     "tags": {
      "type": "array",
      "items": {
@@ -49,6 +40,13 @@
      "type": "object",
      "additionalProperties": {
       "type": "string"
+     }
+    },
+    "fileData": {
+     "type": "array",
+     "items": {
+      "type": "integer",
+      "format": "int32"
      }
     },
     "id": {
@@ -145,23 +143,8 @@
     "items": {
      "type": "array",
      "items": {
-      "$ref": "ItemSummary"
+      "type": "string"
      }
-    }
-   }
-  },
-  "ItemSummary": {
-   "id": "ItemSummary",
-   "type": "object",
-   "properties": {
-    "uuid": {
-     "type": "string"
-    },
-    "typeUuid": {
-     "type": "string"
-    },
-    "thumbnail": {
-     "type": "string"
     }
    }
   },
@@ -232,6 +215,32 @@
      "type": "boolean"
     }
    }
+  },
+  "ListOfTag": {
+   "id": "ListOfTag",
+   "type": "array",
+   "items": {
+    "$ref": "Tag"
+   }
+  },
+  "TagCategory": {
+   "id": "TagCategory",
+   "type": "object",
+   "properties": {
+    "color": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "ListOfString": {
+   "id": "ListOfString",
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
   }
  },
  "methods": {},
@@ -267,8 +276,8 @@
       "id"
      ]
     },
-    "getVisibleSummaries": {
-     "id": "GalleryApi.items.getVisibleSummaries",
+    "getVisibleIds": {
+     "id": "GalleryApi.items.getVisibleIds",
      "path": "items/",
      "httpMethod": "GET",
      "parameters": {
@@ -492,6 +501,115 @@
      "parameterOrder": [],
      "response": {
       "$ref": "SetupResponse"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "tags": {
+   "methods": {
+    "search": {
+     "id": "GalleryApi.tags.search",
+     "path": "setup/search/{query}",
+     "httpMethod": "GET",
+     "parameters": {
+      "query": {
+       "type": "string",
+       "description": "Path parameter: 'query'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "query"
+     ],
+     "response": {
+      "$ref": "ListOfTag"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "tagCategories": {
+   "methods": {
+    "create": {
+     "id": "GalleryApi.tagCategories.create",
+     "path": "tag_categories/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "TagCategory"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "getAllIds": {
+     "id": "GalleryApi.tagCategories.getAllIds",
+     "path": "tag_categories/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfString"
+     }
+    },
+    "delete": {
+     "id": "GalleryApi.tagCategories.delete",
+     "path": "tag_categories/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "getById": {
+     "id": "GalleryApi.tagCategories.getById",
+     "path": "tag_categories/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "TagCategory"
+     }
+    },
+    "update": {
+     "id": "GalleryApi.tagCategories.update",
+     "path": "tag_categories/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "TagCategory"
+     },
+     "response": {
+      "$ref": "IdResponse"
      }
     }
    },

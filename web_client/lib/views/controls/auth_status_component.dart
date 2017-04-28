@@ -16,7 +16,7 @@ class AuthStatusComponent implements OnInit, OnDestroy {
   bool showMessage = false;
 
   @Input()
-  String required = UserPrivilege.patron;
+  String required = UserPrivilege.normal;
 
   @Output()
   EventEmitter<bool> authorizedChanged = new EventEmitter<bool>();

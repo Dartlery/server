@@ -11,6 +11,8 @@ import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery/views/controls/login_form_component.dart';
 import 'package:dartlery/views/controls/paginator_component.dart';
+import 'package:dartlery/views/controls/item_upload_component.dart';
+
 import 'package:dartlery/views/pages/pages.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
@@ -38,6 +40,7 @@ import 'package:polymer_elements/paper_toolbar.dart';
       materialDirectives,
       pageDirectives,
       LoginFormComponent,
+      ItemUploadComponent,
       AuthStatusComponent,
       PaginatorComponent,
     ],
@@ -49,7 +52,6 @@ import 'package:polymer_elements/paper_toolbar.dart';
       SettingsService,
       ApiService,
       AuthenticationService,
-      CartService,
       const Provider(APP_BASE_HREF, useValue: "/"),
       const Provider(LocationStrategy, useClass: HashLocationStrategy),
     ])
@@ -63,6 +65,7 @@ class MainApp implements OnInit, OnDestroy {
   final Router _router;
   final PageControlService _pageControl;
   bool isLoginOpen = false;
+  bool isUploadOpen = false;
 
   bool showRefreshButton = false;
 
@@ -70,7 +73,7 @@ class MainApp implements OnInit, OnDestroy {
 
   bool showSearch = false;
 
-  bool userIsCurator = false;
+  bool userIsModerator = false;
   bool userIsAdmin = false;
 
   StreamSubscription<String> _pageTitleSubscription;
@@ -153,6 +156,10 @@ class MainApp implements OnInit, OnDestroy {
 
   void promptForAuthentication([Null nullValue = null]) {
     isLoginOpen = true;
+  }
+
+  void openUploadWindow() {
+    isUploadOpen = true;
   }
 
   void refreshClicked() {

@@ -11,19 +11,20 @@ import '../src/a_error_thing.dart';
 import 'package:dartlery_shared/global.dart';
 
 @Component(
-    selector: 'login-form',
-    styleUrls: const ["../shared.css"],
-    directives: const [materialDirectives],
-    providers: const [materialProviders],
+    selector: 'item-upload',
+    styleUrls: const ['../shared.css'],
+    providers: const <dynamic>[materialProviders],
+    directives: const <dynamic>[
+      materialDirectives
+    ],
     template: '''<modal [visible]="visible">
       <material-dialog class="basic-dialog">
-          <h3 header>Login</h3>
+          <h3 header>Upload</h3>
             <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
             <p>
-              <material-input [(ngModel)]="userName" ngControl="userName" floatingLabel required  autoFocus label="User"></material-input><br/>
-              <material-input [(ngModel)]="password" ngControl="password" floatingLabel required  label="Password" type="password"></material-input><br/>
-              <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+              <input type="file" />
               <error-output [error]="errorMessage"></error-output>
+              <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
           </p>
             </form>
           <div footer style="text-align: right">
@@ -36,8 +37,8 @@ import 'package:dartlery_shared/global.dart';
           </div>
       </material-dialog>
     </modal>''')
-class LoginFormComponent extends AErrorThing {
-  static final Logger _log = new Logger("LoginFormComponent");
+class ItemUploadComponent extends AErrorThing {
+  static final Logger _log = new Logger("ItemUploadComponent");
 
   String userName = "";
 
@@ -52,7 +53,8 @@ class LoginFormComponent extends AErrorThing {
 
   bool processing = false;
 
-  LoginFormComponent(this._auth, this._router);
+  ItemUploadComponent(this._auth, this._router);
+
 
   bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
 
@@ -110,4 +112,5 @@ class LoginFormComponent extends AErrorThing {
     password = "";
     errorMessage = "";
   }
+
 }

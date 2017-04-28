@@ -10,11 +10,9 @@ import 'package:meta/meta.dart';
 import 'a_page.dart';
 
 abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
-  List<IdNamePair> items = <IdNamePair>[];
-  List<IdNamePair> templates = <IdNamePair>[];
+  List<String> items = <String>[];
 
-  IdNamePair selectedItem;
-  IdNamePair selectedTemplate;
+  String selectedId;
 
   dynamic model;
 
@@ -28,14 +26,12 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   @ViewChild("editForm")
   NgForm form;
 
-  bool _loadTemplates;
-
   bool showDeleteConfirmation = false;
 
   final String dataType;
 
 
-  AMaintenancePage(this.dataType, this._loadTemplates, this._pageControl, this.api,
+  AMaintenancePage(this.dataType, this._pageControl, this.api,
       AuthenticationService _auth, Router router)
       : super(_pageControl, _auth, router) {
     _pageControl.setAvailablePageActions(
@@ -63,7 +59,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   void cancelEdit() {
     reset();
     for (int i = 0; i < items.length; i++) {
-      if (StringTools.isNullOrWhitespace(items[i].id)) {
+      if (StringTools.isNullOrWhitespace(items[i])) {
         items.removeAt(i);
         i--;
       }
@@ -83,7 +79,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   Future<Null> deleteConfirmClicked() async {
     await performApiCall(() async {
-      await itemApi.delete(selectedItem.id);
+      await itemApi.delete(selectedId);
       await refresh();
     });
   }
@@ -107,9 +103,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
           break;
         case PageActions.Add:
           cancelEdit();
-          final IdNamePair id = new IdNamePair();
-          id.name = "New $dataType";
-          id.id = "";
+          final String id = "";
           items.insert(0, id);
           break;
         default:
@@ -126,7 +120,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
       if (isNewItem) {
         await itemApi.create(model);
       } else {
-        await itemApi.update(model, selectedItem.id);
+        await itemApi.update(model, selectedId);
       }
       await this.refresh();
     }, form: form);
@@ -134,46 +128,36 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   Future<Null> refresh() async {
     await performApiCall(() async {
-      final ListOfIdNamePair data = await itemApi.getAllIdsAndNames();
+
+      final List<String> data = await getItems();
       items.clear();
       items.addAll(data);
-      if (_loadTemplates) {
-        final ListOfIdNamePair data = await itemApi.getAllTemplates();
-        templates.clear();
-        templates.addAll(data);
-      }
       await refreshInternal();
     });
   }
+
+
+  Future<List<String>> getItems();
 
   Future<Null> refreshInternal() async {}
 
   void reset() {
     model = createBlank();
-    selectedItem = null;
+    selectedId = null;
     showDeleteConfirmation = false;
     errorMessage = "";
   }
 
-  Future<Null> selectItem(IdNamePair item) async {
+  Future<Null> selectItem(String id) async {
     await performApiCall(() async {
       reset();
-      if (StringTools.isNotNullOrWhitespace(item.id))
-        model = await itemApi.getById(item.id);
-      selectedItem = item;
-      await selectItemInternal(item);
+      if (StringTools.isNotNullOrWhitespace(id))
+        model = await itemApi.getById(id);
+      selectedId = id;
+      await selectItemInternal(id);
     });
   }
 
-  Future<Null> selectItemInternal(IdNamePair item) async {}
+  Future<Null> selectItemInternal(String id) async {}
 
-  Future<Null> selectTemplate(IdNamePair template) async {
-    await performApiCall(() async {
-      final IdRequest request = new IdRequest();
-      request.id = template.id;
-      await itemApi.applyTemplate(request);
-    }, after: () async {
-      await refresh();
-    });
-  }
 }

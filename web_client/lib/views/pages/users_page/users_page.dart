@@ -30,7 +30,7 @@ class UsersPage extends AMaintenancePage<api.User> {
 
   UsersPage(PageControlService pageControl, ApiService api,
       AuthenticationService auth, Router router)
-      : super("User",false, pageControl, api, auth, router) {
+      : super("User", pageControl, api, auth, router) {
     pageControl.setPageTitle("Users");
   }
 
@@ -40,7 +40,7 @@ class UsersPage extends AMaintenancePage<api.User> {
   }
 
   @override
-  dynamic get itemApi => this.api.users;
+  api.UsersResourceApi get itemApi => this.api.users;
 
   @override
   Logger get loggerImpl => _log;
@@ -49,6 +49,11 @@ class UsersPage extends AMaintenancePage<api.User> {
   api.User createBlank() {
     final api.User model = new api.User();
     return model;
+  }
+
+  @override
+  Future<List<String>> getItems() async {
+    throw new NotImplementedException();
   }
 
   Future<Null> onSubmitPassword(String userUuid) async {

@@ -3,7 +3,7 @@ import 'package:rpc/rpc.dart';
 
 class CreateItemRequest {
   Item item;
-  List<MediaMessage> files = new List<MediaMessage>();
+  MediaMessage file;
 
   CreateItemRequest();
 }

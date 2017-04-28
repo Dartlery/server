@@ -17,7 +17,7 @@ class Tag extends AIdData {
 
   Tag();
 
-  Tag.withValues(String name, this.category):
+  Tag.withValues(String name, {this.category}):
         super.withValues(name);
 
 }
