@@ -12,6 +12,6 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
   Future<PaginatedIdData<Item>> getVisiblePaginated(String userUuid,
       {int page: 0, int perPage: defaultPerPage});
   Future<PaginatedIdData<Item>> searchVisiblePaginated(
-      String userUuid, String query,
+      String userUuid, List<Tag> tags,
       {int page: 0, int perPage: defaultPerPage});
 }

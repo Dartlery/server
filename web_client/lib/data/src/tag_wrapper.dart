@@ -6,6 +6,8 @@ class TagWrapper {
 
   TagWrapper(this.tag);
 
+  String get id => tag.toString();
+
   @override
   String toString() {
     if(StringTools.isNotNullOrWhitespace(tag.category)) {
@@ -13,5 +15,13 @@ class TagWrapper {
     } else {
       return tag.id;
     }
+  }
+
+  bool equals(TagWrapper other) {
+    if(tag.id?.toLowerCase()==other.tag.id?.toLowerCase()
+        &&tag.category?.toLowerCase()==other.tag.category?.toLowerCase()) {
+      return true;
+    }
+    return false;
   }
 }

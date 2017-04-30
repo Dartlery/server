@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "2a91969a766c972bdb598c23d8c974dbc5936313",
+ "etag": "63bba6a238c21a5419e9a7c74e8bbfdd1dc03f7d",
  "discoveryVersion": "v1",
  "id": "gallery:0.1",
  "name": "gallery",
@@ -145,6 +145,26 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "ItemSearchRequest": {
+   "id": "ItemSearchRequest",
+   "type": "object",
+   "properties": {
+    "tags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "perPage": {
+     "type": "integer",
+     "format": "int32"
     }
    }
   },
@@ -320,31 +340,13 @@
     },
     "searchVisible": {
      "id": "GalleryApi.items.searchVisible",
-     "path": "search/{query}/",
-     "httpMethod": "GET",
-     "parameters": {
-      "query": {
-       "type": "string",
-       "description": "Path parameter: 'query'.",
-       "required": true,
-       "location": "path"
-      },
-      "page": {
-       "type": "integer",
-       "description": "Query parameter: 'page'.",
-       "required": false,
-       "location": "query"
-      },
-      "perPage": {
-       "type": "integer",
-       "description": "Query parameter: 'perPage'.",
-       "required": false,
-       "location": "query"
-      }
+     "path": "search/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "ItemSearchRequest"
      },
-     "parameterOrder": [
-      "query"
-     ],
      "response": {
       "$ref": "PaginatedResponse"
      }

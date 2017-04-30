@@ -3,4 +3,4 @@ REM pub run rpc:generate discovery -i lib/server/api/item/item_api.dart > json/i
 REM pub run discoveryapis_generator:generate files -i json -o lib/client/api/src
 
 pub global activate discoveryapis_generator
-pub global run discoveryapis_generator:generate package -i ../json -o ../../api_client --package-name=api_client
+pub global run discoveryapis_generator:generate package -i server/json -o api_client --package-name=api_client

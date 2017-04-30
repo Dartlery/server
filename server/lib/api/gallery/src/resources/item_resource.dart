@@ -8,6 +8,7 @@ import 'package:dartlery/server.dart';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 import '../../gallery_api.dart';
+import '../requests/item_search_request.dart';
 import '../requests/create_item_request.dart';
 import '../requests/update_item_request.dart';
 import 'package:dartlery/tools.dart';
@@ -61,13 +62,12 @@ class ItemResource extends AIdResource<Item> {
   Future<Item> getById(String id)  =>
       catchExceptionsAwait(() => itemModel.getById(id));
 
-  @ApiMethod(path: 'search/{query}/')
-  Future<PaginatedResponse<String>> searchVisible(String query,
-          {int page: 0, int perPage: defaultPerPage}) =>
+  @ApiMethod(method: 'POST', path: 'search/')
+  Future<PaginatedResponse<String>> searchVisible(ItemSearchRequest request) =>
       catchExceptionsAwait(() async =>
           new PaginatedResponse<String>.convertPaginatedData(
               await itemModel
-                  .searchVisible(query, page: page, perPage: perPage),
+                  .searchVisible(request.tags, page: request.page, perPage: request.perPage),
               (Item item) => item.id));
 
   @override

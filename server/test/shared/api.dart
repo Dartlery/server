@@ -94,12 +94,12 @@ Future<Map<String, User>> createTestUsers(GalleryApi api,
   return output;
 }
 
-Future<CreateItemRequest> createItemRequest({List<Tag> tags}) async {
+Future<CreateItemRequest> createItemRequest({List<Tag> tags, String file: "test.jpg"}) async {
   final Item item = createItem(tags: tags);
   final CreateItemRequest request = new CreateItemRequest();
   final MediaMessage msg = new MediaMessage();
 
-  final File f = new File("test\\test.jpg");
+  final File f = new File("test\\$file");
   RandomAccessFile raf;
   try {
     raf = await f.open();

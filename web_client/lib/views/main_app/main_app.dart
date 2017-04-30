@@ -27,6 +27,7 @@ import 'package:polymer_elements/paper_item_body.dart';
 import 'package:polymer_elements/paper_material.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
+import 'package:dartlery/data/data.dart';
 @Component(
     selector: 'main-app',
     //encapsulation: ViewEncapsulation.Native,
@@ -171,4 +172,15 @@ class MainApp implements OnInit, OnDestroy {
       _pageControl.search(query);
     }
   }
+
+  Future<Null> tagSearchChanged(TagList event) async {
+    final String query = event.toQueryString();
+    await _router.navigate([
+      itemsSearchRoute.name,
+      {queryRouteParameter: query}
+
+    ]);
+
+  }
+
 }

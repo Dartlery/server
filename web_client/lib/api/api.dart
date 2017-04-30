@@ -1,8 +1,5 @@
-export 'src/api_http_client.dart';
-
 export 'package:_discoveryapis_commons/_discoveryapis_commons.dart'
     show DetailedApiRequestError, ApiRequestErrorDetail;
-
 export 'package:api_client/gallery/0_1.dart'
     show
         GalleryApi,
@@ -16,5 +13,12 @@ export 'package:api_client/gallery/0_1.dart'
         PasswordChangeRequest,
         SetupRequest,
         SetupResponse,
-UsersResourceApi, ItemsResourceApi,
-Tag, TagCategory, TagsResourceApi, TagCategoriesResourceApi;
+        UsersResourceApi,
+        ItemsResourceApi,
+        Tag,
+        TagCategory,
+        TagsResourceApi,
+        TagCategoriesResourceApi,
+        ItemSearchRequest;
+
+export 'src/api_http_client.dart';

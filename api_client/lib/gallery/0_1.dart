@@ -191,13 +191,9 @@ class ItemsResourceApi {
   }
 
   /**
+   * [request] - The metadata request object.
+   *
    * Request parameters:
-   *
-   * [query] - Path parameter: 'query'.
-   *
-   * [page] - Query parameter: 'page'.
-   *
-   * [perPage] - Query parameter: 'perPage'.
    *
    * Completes with a [PaginatedResponse].
    *
@@ -207,7 +203,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<PaginatedResponse> searchVisible(core.String query, {core.int page, core.int perPage}) {
+  async.Future<PaginatedResponse> searchVisible(ItemSearchRequest request) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -215,20 +211,14 @@ class ItemsResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-    if (query == null) {
-      throw new core.ArgumentError("Parameter query is required.");
-    }
-    if (page != null) {
-      _queryParams["page"] = ["${page}"];
-    }
-    if (perPage != null) {
-      _queryParams["perPage"] = ["${perPage}"];
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
     }
 
-    _url = 'search/' + commons.Escaper.ecapeVariable('$query') + '/';
+    _url = 'search/';
 
     var _response = _requester.request(_url,
-                                       "GET",
+                                       "POST",
                                        body: _body,
                                        queryParams: _queryParams,
                                        uploadOptions: _uploadOptions,
@@ -924,6 +914,40 @@ class Item {
     }
     if (metadata != null) {
       _json["metadata"] = metadata;
+    }
+    if (tags != null) {
+      _json["tags"] = tags.map((value) => (value).toJson()).toList();
+    }
+    return _json;
+  }
+}
+
+class ItemSearchRequest {
+  core.int page;
+  core.int perPage;
+  core.List<Tag> tags;
+
+  ItemSearchRequest();
+
+  ItemSearchRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("page")) {
+      page = _json["page"];
+    }
+    if (_json.containsKey("perPage")) {
+      perPage = _json["perPage"];
+    }
+    if (_json.containsKey("tags")) {
+      tags = _json["tags"].map((value) => new Tag.fromJson(value)).toList();
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (page != null) {
+      _json["page"] = page;
+    }
+    if (perPage != null) {
+      _json["perPage"] = perPage;
     }
     if (tags != null) {
       _json["tags"] = tags.map((value) => (value).toJson()).toList();

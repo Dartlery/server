@@ -9,6 +9,7 @@ import 'package:option/option.dart';
 import 'a_mongo_id_data_source.dart';
 import 'constants.dart';
 import 'mongo_tag_data_source.dart';
+import 'package:dartlery_shared/tools.dart';
 
 
 class MongoItemDataSource extends AMongoIdDataSource<Item>
@@ -43,12 +44,23 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<PaginatedIdData<Item>> searchVisiblePaginated(
-      String userUuid, String query,
+      String userUuid, List<Tag> tags,
       {int page: 0, int perPage: defaultPerPage}) async {
+
+    final SelectorBuilder query = where;
+
+    tags.forEach((Tag t) {
+      String category;
+      if(StringTools.isNotNullOrWhitespace(t.category))
+        category= t.category;
+      query.eq("tags", {"\$elemMatch": { "id": t.id, "category": category }});
+    });
+
+
     return (await generateVisibleCriteria(userUuid)).cata(
         () => new PaginatedIdData<Item>(),
-        (SelectorBuilder selector) async => await searchPaginated(query,
-            selector: selector,
+        (SelectorBuilder selector) async =>
+        await getPaginatedListFromDb(query,
             limit: perPage,
             offset: getOffset(page, perPage)));
   }

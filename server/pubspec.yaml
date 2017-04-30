@@ -10,7 +10,7 @@ environment:
 dependencies:
   dartlery_shared:
     path: ../shared
-#  args: ^0.13.6
+  args: ^0.13.7
   connection_pool: ^0.1.2
   crypt: ^1.0.2
   http_server: ^0.9.6

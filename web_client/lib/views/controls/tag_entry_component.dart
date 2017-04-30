@@ -41,9 +41,9 @@ class TagEntryComponent extends AApiErrorThing {
   @Input()
   DetailedApiRequestError error;
 
-  List<TagWrapper> selectedTags = <TagWrapper>[];
+  TagList selectedTags = new TagList();
 
-  List<TagWrapper> availableTags = <TagWrapper>[];
+  TagList availableTags = new TagList();
 
   String tagQuery = "";
 
@@ -51,8 +51,10 @@ class TagEntryComponent extends AApiErrorThing {
 
   ApiService _api;
 
+  TagList get selected => selectedTags;
+
   @Output()
-  EventEmitter<TagEntryChangedEvent> changed = new EventEmitter<TagEntryChangedEvent>();
+  EventEmitter<TagList> selectedChanged = new EventEmitter<TagList>();
 
   TagEntryComponent(this._api, Router router, AuthenticationService auth)
       : super(router, auth);
@@ -63,7 +65,7 @@ class TagEntryComponent extends AApiErrorThing {
   void deselectTag(TagWrapper t) {
     if (this.selectedTags.contains(t)) {
       this.selectedTags.remove(t);
-      changed.emit(new TagEntryChangedEvent(new List<TagWrapper>.from(selectedTags)));
+      _sendUpdatedTagEvent();
     }
   }
 
@@ -81,20 +83,28 @@ class TagEntryComponent extends AApiErrorThing {
   }
 
   void searchKeyup(KeyboardEvent e) {
-    if (e.keyCode == KeyCode.ENTER) {}
-    fetchAvailableTags();
+    switch(e.keyCode) {
+      case KeyCode.ENTER:
+        final Tag tag = new Tag();
+        tag.id = tagQuery;
+        selectedTags.add(new TagWrapper(tag));
+        tagQuery = "";
+        _sendUpdatedTagEvent();
+        break;
+        // TODO: Add up-down arrow handlers to allow for selecting suggested tags via keyboard.
+      default:
+        fetchAvailableTags();
+        break;
+    }
   }
 
   void selectTag(TagWrapper t) {
     if (!this.selectedTags.contains(t)) {
       this.selectedTags.add(t);
-      changed.emit(new TagEntryChangedEvent(new List<TagWrapper>.from(selectedTags)));
+      _sendUpdatedTagEvent();
     }
     tagQuery = "";
   }
-}
+  void _sendUpdatedTagEvent() => selectedChanged.emit(selectedTags);
 
-class TagEntryChangedEvent {
-  final List<TagWrapper> tags;
-  TagEntryChangedEvent(this.tags);
 }

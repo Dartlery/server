@@ -1,4 +1,4 @@
-<auth-status [(authorized)]="userLoggedIn"></auth-status>
+<auth-status [(authorized)]="userLoggedIn" ></auth-status>
 <paper-drawer-panel responsive-width="1920px">
     <paper-header-panel drawer>
         <paper-toolbar>
@@ -44,7 +44,7 @@
 
             <span class="title" style="margin-left:0pt;">{{pageTitle}}</span>
 
-            <tag-entry style="width: 100%"></tag-entry>
+            <tag-entry style="width: 100%" (selectedChanged)="tagSearchChanged($event)"></tag-entry>
 
             <material-button icon (trigger)="openUploadWindow()"><glyph icon="file_upload"></glyph></material-button>
 

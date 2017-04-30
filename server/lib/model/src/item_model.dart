@@ -100,7 +100,7 @@ class ItemModel extends AIdBasedModel<Item> {
         page: page, perPage: perPage);
   }
 
-  Future<PaginatedIdData<Item>> searchVisible(String query,
+  Future<PaginatedIdData<Item>> searchVisible(List<Tag> tags,
       {int page: 0, int perPage: defaultPerPage}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
@@ -109,7 +109,7 @@ class ItemModel extends AIdBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateSearchPrivileges();
-    return await dataSource.searchVisiblePaginated(this.currentUserUuid, query,
+    return await dataSource.searchVisiblePaginated(this.currentUserUuid, tags,
         page: page, perPage: perPage);
   }
 

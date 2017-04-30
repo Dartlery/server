@@ -74,6 +74,29 @@ void main() {
       expect(item.tags[0].id, newTag.id);
     });
 
+    test("searchVisible()", () async {
+      IdResponse response  = await api.items.createItem(request);
+
+      final Item item = await api.items.getById(response.id);
+      expect(item.tags.length, 3);
+
+      request = await createItemRequest(file: "test2.jpg");
+      response  = await api.items.createItem(request);
+
+      final ItemSearchRequest searchRequest = new  ItemSearchRequest();
+      searchRequest.tags.add(item.tags.first);
+
+      PaginatedResponse<String> results = await api.items.searchVisible(searchRequest);
+      expect(results.items.length, 1);
+      expect(results.items.first,item.id);
+
+      searchRequest.tags.add(item.tags[2]);
+
+      results = await api.items.searchVisible(searchRequest);
+      expect(results.items.length, 1);
+      expect(results.items.first,item.id);
+    });
+
     test("delete()", () async {
       final IdResponse response  = await api.items.createItem(request);
       await api.items.delete(response.id);

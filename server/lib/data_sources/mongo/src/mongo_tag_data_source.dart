@@ -40,7 +40,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag> with ATagDataSource 
     else
       sb = selector;
 
-    sb = sb.eq(fullNameField, new BsonRegexp(".*$query.*")).sortBy(sortBy??fullNameField).limit(limit??25);
+     sb = sb.match(fullNameField, ".*$query.*", multiLine: false, caseInsensitive: true, dotAll: true).sortBy(sortBy??fullNameField).limit(limit??25);
 
     return await super.getListFromDb(sb);
   }

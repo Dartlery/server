@@ -137,7 +137,14 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       if (StringTools.isNullOrWhitespace(query)) {
         response = await _api.items.getVisibleIds(page: page);
       } else {
-        response = await _api.items.searchVisible(query, page: page);
+        final TagList tagList = new TagList.fromQueryString(query);
+
+
+        final ItemSearchRequest request = new ItemSearchRequest();
+        request.page = page;
+        request.tags = tagList.toListOfTags();
+
+        response = await _api.items.searchVisible(request);
         routeName = itemsSearchPageRoute.name;
       }
 
