@@ -7,4 +7,8 @@ abstract class ATagDataSource extends ATwoIdBasedDataSource<Tag> {
   static final Logger _log = new Logger('ATagDataSource');
 
   Future<IdDataList<Tag>> getByIds(List<String> ids);
+
+  @override
+  Future<IdDataList<Tag>> search(String query, {int limit});
+
 }

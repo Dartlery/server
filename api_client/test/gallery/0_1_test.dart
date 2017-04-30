@@ -1266,8 +1266,8 @@ main() {
         pathOffset += 1;
         unittest.expect(path.substring(pathOffset, pathOffset + 16), unittest.equals("api/gallery/0.1/"));
         pathOffset += 16;
-        unittest.expect(path.substring(pathOffset, pathOffset + 13), unittest.equals("setup/search/"));
-        pathOffset += 13;
+        unittest.expect(path.substring(pathOffset, pathOffset + 12), unittest.equals("tags/search/"));
+        pathOffset += 12;
         subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset));
         pathOffset = path.length;
         unittest.expect(subPart, unittest.equals("$arg_query"));

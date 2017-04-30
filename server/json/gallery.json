@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "a7794b0a0cb035a3841adbc58e254f1e1cc2bf87",
+ "etag": "2a91969a766c972bdb598c23d8c974dbc5936313",
  "discoveryVersion": "v1",
  "id": "gallery:0.1",
  "name": "gallery",
@@ -510,7 +510,7 @@
    "methods": {
     "search": {
      "id": "GalleryApi.tags.search",
-     "path": "setup/search/{query}",
+     "path": "tags/search/{query}",
      "httpMethod": "GET",
      "parameters": {
       "query": {

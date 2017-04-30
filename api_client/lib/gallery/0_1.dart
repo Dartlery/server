@@ -585,7 +585,7 @@ class TagsResourceApi {
       throw new core.ArgumentError("Parameter query is required.");
     }
 
-    _url = 'setup/search/' + commons.Escaper.ecapeVariable('$query');
+    _url = 'tags/search/' + commons.Escaper.ecapeVariable('$query');
 
     var _response = _requester.request(_url,
                                        "GET",

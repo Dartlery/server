@@ -26,7 +26,7 @@ import 'package:polymer_elements/paper_item.dart';
 import 'package:polymer_elements/paper_item_body.dart';
 import 'package:polymer_elements/paper_material.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
-
+import 'package:dartlery/views/controls/common_controls.dart';
 @Component(
     selector: 'main-app',
     //encapsulation: ViewEncapsulation.Native,
@@ -41,8 +41,8 @@ import 'package:polymer_elements/paper_toolbar.dart';
       pageDirectives,
       LoginFormComponent,
       ItemUploadComponent,
-      AuthStatusComponent,
       PaginatorComponent,
+      commonControls
     ],
     providers: const [
       FORM_PROVIDERS,

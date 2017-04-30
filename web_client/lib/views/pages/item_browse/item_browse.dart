@@ -161,7 +161,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   void setActions() {
     final List<PageActions> actions = <PageActions>[
       PageActions.Refresh,
-      PageActions.Search
+      //PageActions.Search
     ];
 //    if (_auth.hasPrivilege(UserPrivilege.normal)) {
 //      actions.add(PageActions.Add);

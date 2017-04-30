@@ -4,7 +4,7 @@ import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-
+import 'package:dartlery_shared/global.dart';
 import 'a_mongo_two_id_data_source.dart';
 import 'constants.dart';
 
@@ -31,6 +31,19 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag> with ATagDataSource 
     return output;
   }
 
+  @override
+  Future<IdDataList<Tag>> search(String query,
+      {SelectorBuilder selector, String sortBy, int limit}) async {
+    SelectorBuilder sb;
+    if(selector==null)
+      sb = where;
+    else
+      sb = selector;
+
+    sb = sb.eq(fullNameField, new BsonRegexp(".*$query.*")).sortBy(sortBy??fullNameField).limit(limit??25);
+
+    return await super.getListFromDb(sb);
+  }
 
 
   @override

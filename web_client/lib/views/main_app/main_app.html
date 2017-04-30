@@ -44,6 +44,8 @@
 
             <span class="title" style="margin-left:0pt;">{{pageTitle}}</span>
 
+            <tag-entry style="width: 100%"></tag-entry>
+
             <material-button icon (trigger)="openUploadWindow()"><glyph icon="file_upload"></glyph></material-button>
 
             <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" leadingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>

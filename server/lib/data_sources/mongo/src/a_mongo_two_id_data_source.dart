@@ -84,7 +84,7 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
           int offset: 0,
           int limit: paginatedDataLimit}) async =>
       new PaginatedIdData<T>.copyPaginatedData(
-          await super.searchPaginated(query, offset: offset, limit: limit));
+          await super.searchPaginated(query, selector: selector, offset: offset, limit: limit));
 
   @protected
   Future<IdDataList<T>> getListFromDb(dynamic selector) async =>

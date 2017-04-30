@@ -13,6 +13,8 @@ class Tag extends AIdData {
       return id;
     }
   }
+  set fullName(String value) {} // Only here so that the API will generate it as a field
+
   String category;
 
   Tag();
