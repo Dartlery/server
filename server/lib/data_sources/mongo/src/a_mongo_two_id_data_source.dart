@@ -21,11 +21,11 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
 
   @override
   Future<Null> deleteById(String id, String id2) =>
-      deleteFromDb(where.eq(idField, id).and(where.eq(secondIdField, id2)));
+      deleteFromDb(where.eq(idField, id).eq(secondIdField, id2));
 
   @override
   Future<bool> existsById(String id, String id2) =>
-      super.exists(where.eq(idField, id).and(where.eq(secondIdField, id2)));
+      super.exists(where.eq(idField, id).eq(secondIdField, id2));
 
   @override
   Future<IdDataList<T>> getAll({String sortField: null}) =>
@@ -40,7 +40,7 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
 
   @override
   Future<Option<T>> getById(String id, String id2) =>
-      getForOneFromDb(where.eq(idField, id).and(where.eq(secondIdField, id2)));
+      getForOneFromDb(where.eq(idField, id).eq(secondIdField, id2));
 
   @override
   Future<String> create(T object) async {
@@ -50,7 +50,7 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
 
   @override
   Future<String> update(String id, String id2, T object) async {
-    await updateToDb(where.eq(idField, id).and(where.eq(secondIdField, id2)), object);
+    await updateToDb(where.eq(idField, id).eq(secondIdField, id2), object);
     return object.id;
   }
 

@@ -29,6 +29,10 @@ dependencies:
   shelf_rpc: ^0.0.3
   shelf_static: ^0.2.4
 #  version: any
+  sqljocky:
+    git: https://github.com/mnordine/sqljocky.git
+  mime: any
+  hex: any
 dev_dependencies:
   test: any
 dependency_overrides:

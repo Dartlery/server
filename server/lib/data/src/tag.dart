@@ -22,5 +22,12 @@ class Tag extends AIdData {
   Tag.withValues(String name, {this.category}):
         super.withValues(name);
 
+  bool equals(Tag other) {
+    if(id?.toLowerCase()==other.id?.toLowerCase()
+        &&category?.toLowerCase()==other.category?.toLowerCase()) {
+      return true;
+    }
+    return false;
+  }
 }
 

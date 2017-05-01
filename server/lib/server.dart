@@ -79,6 +79,8 @@ class Server {
           listDirectories: true,
           serveFilesOutsidePath: false,
           useHeaderBytesForContentType: true);
+      // TODO: Submit patch to the static handler project to allow overriding the mime resolver
+
 
       _apiServer.addApi(this.galleryApi);
       _apiServer.enableDiscoveryApi();

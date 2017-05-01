@@ -15,7 +15,8 @@ abstract class AIdBasedModel<T extends AIdData> extends ATypedModel<T> {
   AIdBasedDataSource<T> get dataSource;
 
   Future<String> create(T t, {bool bypassAuthentication: false}) async {
-    if (!bypassAuthentication) await validateCreatePrivileges();
+    if (!bypassAuthentication)
+      await validateCreatePrivileges();
     await validate(t);
     return await dataSource.create(t.id, t);
   }
@@ -55,7 +56,8 @@ abstract class AIdBasedModel<T extends AIdData> extends ATypedModel<T> {
   }
 
   Future<T> getById(String id, {bool bypassAuthentication: false}) async {
-    if (!bypassAuthentication) await validateGetByIdPrivileges();
+    if (!bypassAuthentication)
+      await validateGetByIdPrivileges();
     final Option<T> output = await dataSource.getById(id);
     if (output.isEmpty)
       throw new NotFoundException(

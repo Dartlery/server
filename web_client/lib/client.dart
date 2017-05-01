@@ -3,6 +3,7 @@ import 'package:dartlery_shared/global.dart';
 import 'package:option/option.dart';
 export 'src/http_headers.dart';
 
+
 /// Gets the first child [Element] matching the specified name.
 Option<Element> getChildElement(Element start, String tagName) {
   if (start == null) return new None<Element>();
@@ -25,9 +26,9 @@ Option<Element> getChildElement(Element start, String tagName) {
 String getImageUrl(String image, ImageType type) {
   switch (type) {
     case ImageType.original:
-      return "${getServerRoot()}$hostedFilesOriginalsPath${image}";
+      return "${getServerRoot()}$hostedFilesOriginalsPath${image.substring(0,2)}/${image}";
     case ImageType.thumbnail:
-      return "${getServerRoot()}$hostedFilesThumbnailsPath${image}";
+      return "${getServerRoot()}$hostedFilesThumbnailsPath${image.substring(0,2)}/${image}";
     default:
       throw new Exception("Not supported: $type");
   }

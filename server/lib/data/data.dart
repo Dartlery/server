@@ -14,4 +14,6 @@ export 'src/settings.dart';
 export 'src/user.dart';
 export 'src/tag.dart';
 export 'src/tag_category.dart';
+export 'src/tag_list.dart';
+export 'src/import_result.dart';
 

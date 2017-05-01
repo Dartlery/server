@@ -11,6 +11,7 @@ import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/data_sources/mongo/mongo.dart';
 import 'dart:io';
+import 'package:dartlery/tools.dart';
 
 const String testAdminPassword = "TESTPASSWORD";
 const String testItemName = "TESTITEM";
@@ -99,17 +100,7 @@ Future<CreateItemRequest> createItemRequest({List<Tag> tags, String file: "test.
   final CreateItemRequest request = new CreateItemRequest();
   final MediaMessage msg = new MediaMessage();
 
-  final File f = new File("test\\$file");
-  RandomAccessFile raf;
-  try {
-    raf = await f.open();
-    msg.bytes = <int>[];
-    final int length = await raf.length();
-    msg.bytes = await raf.read(length);
-  } finally {
-    if(raf!=null)
-      await raf.close();
-  }
+  msg.bytes = await getFileData("test\\$file");
 
   request.item = item;
   request.file = msg;

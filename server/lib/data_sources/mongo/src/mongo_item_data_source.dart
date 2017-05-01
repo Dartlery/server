@@ -21,7 +21,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   Future<Option<SelectorBuilder>> generateVisibleCriteria(
       String userUuid) async {
     // TODO: Implement filtering for NSFW levels, etc
-    return new Some<SelectorBuilder>(where);
+    return new Some<SelectorBuilder>(where.sortBy(uploadedField,descending: true));
   }
 
   @override
@@ -77,12 +77,22 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String metadataField = "metadata";
   static const String tagsField = "tags";
   static const String fileField = "file";
+  static const String mimeField = "mime";
+  static const String uploadedField = "uploaded";
+  static const String fileNameField = "fileName";
+  static const String lengthField = "length";
+  static const String extensionField = "extension";
 
   @override
   Item createObject(Map<String, dynamic> data) {
     final Item output = new Item();
     AMongoIdDataSource.setIdForData(output, data);
     output.metadata = data[metadataField];
+    output.uploaded = data[uploadedField];
+    output.mime = data[mimeField];
+    output.fileName = data[fileNameField];
+    output.length = data[lengthField];
+    output.extension = data[extensionField];
 
     if(data[tagsField]!=null) {
       output.tags = <Tag>[];
@@ -103,6 +113,11 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   void updateMap(Item item, Map<String, dynamic> data) {
     super.updateMap(item, data);
     data[metadataField] = item.metadata;
+    data[mimeField] = item.mime;
+    data[uploadedField] = item.uploaded;
+    data[fileNameField] = item.fileName;
+    data[lengthField] = item.length;
+    data[extensionField] = item.extension;
     if(item.tags!=null) {
       final List<dynamic> tagsList = new List<dynamic>();
       for(Tag tag in item.tags) {
