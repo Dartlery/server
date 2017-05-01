@@ -123,7 +123,7 @@ class Server {
         ..add('/discovery/', <String>['GET', 'HEAD', 'OPTIONS'], apiPipeline,
             exactMatch: false);
 
-      pathToBuild = join(rootDirectory, 'build/web/');
+      pathToBuild = join(rootDirectory, 'web/');
       final Directory siteDir = new Directory(pathToBuild);
       if (siteDir.existsSync()) {
         final Handler staticSiteHandler = createStaticHandler(pathToBuild,
