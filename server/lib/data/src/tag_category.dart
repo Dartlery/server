@@ -5,5 +5,8 @@ import 'package:rpc/rpc.dart';
 
 @ApiMessage(includeSuper: true)
 class TagCategory extends AIdData {
-  String color;
+  String color = "#000000";
+
+  TagCategory();
+  TagCategory.withValues(String id, {this.color}): super.withValues(id);
 }

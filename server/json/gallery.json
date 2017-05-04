@@ -1,17 +1,17 @@
 {
  "kind": "discovery#restDescription",
- "etag": "63bba6a238c21a5419e9a7c74e8bbfdd1dc03f7d",
+ "etag": "90e13831f91fb3059e1bdfb3727632dff0dab6ce",
  "discoveryVersion": "v1",
- "id": "gallery:0.1",
+ "id": "gallery:v0.1",
  "name": "gallery",
- "version": "0.1",
+ "version": "v0.1",
  "revision": "0",
  "description": "Item REST API",
  "protocol": "rest",
- "baseUrl": "http://localhost:3278/api/gallery/0.1/",
- "basePath": "/api/gallery/0.1/",
+ "baseUrl": "http://localhost:3278/api/gallery/v0.1/",
+ "basePath": "/api/gallery/v0.1/",
  "rootUrl": "http://localhost:3278/",
- "servicePath": "api/gallery/0.1/",
+ "servicePath": "api/gallery/v0.1/",
  "parameters": {},
  "schemas": {
   "CreateItemRequest": {
@@ -30,17 +30,8 @@
    "id": "Item",
    "type": "object",
    "properties": {
-    "tags": {
-     "type": "array",
-     "items": {
-      "$ref": "Tag"
-     }
-    },
-    "metadata": {
-     "type": "object",
-     "additionalProperties": {
-      "type": "string"
-     }
+    "extension": {
+     "type": "string"
     },
     "fileData": {
      "type": "array",
@@ -48,6 +39,38 @@
       "type": "integer",
       "format": "int32"
      }
+    },
+    "fileName": {
+     "type": "string"
+    },
+    "length": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "metadata": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "mime": {
+     "type": "string"
+    },
+    "source": {
+     "type": "string"
+    },
+    "tags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    },
+    "uploaded": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "uploader": {
+     "type": "string"
     },
     "id": {
      "type": "string"
@@ -148,6 +171,22 @@
     }
    }
   },
+  "ListOfTag": {
+   "id": "ListOfTag",
+   "type": "array",
+   "items": {
+    "$ref": "Tag"
+   }
+  },
+  "IdRequest": {
+   "id": "IdRequest",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    }
+   }
+  },
   "ItemSearchRequest": {
    "id": "ItemSearchRequest",
    "type": "object",
@@ -165,6 +204,10 @@
     "perPage": {
      "type": "integer",
      "format": "int32"
+    },
+    "cutoffDate": {
+     "type": "string",
+     "format": "date-time"
     }
    }
   },
@@ -236,13 +279,6 @@
     }
    }
   },
-  "ListOfTag": {
-   "id": "ListOfTag",
-   "type": "array",
-   "items": {
-    "$ref": "Tag"
-   }
-  },
   "TagCategory": {
    "id": "TagCategory",
    "type": "object",
@@ -312,6 +348,12 @@
        "description": "Query parameter: 'perPage'.",
        "required": false,
        "location": "query"
+      },
+      "cutoffDate": {
+       "type": "string",
+       "description": "Query parameter: 'cutoffDate'.",
+       "required": false,
+       "location": "query"
       }
      },
      "parameterOrder": [],
@@ -338,10 +380,71 @@
       "$ref": "Item"
      }
     },
+    "getTagsByItemId": {
+     "id": "GalleryApi.items.getTagsByItemId",
+     "path": "items/{id}/tags/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "ListOfTag"
+     }
+    },
+    "updateTagsForItemId": {
+     "id": "GalleryApi.items.updateTagsForItemId",
+     "path": "items/{id}/tags/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "ListOfTag"
+     }
+    },
+    "mergeItems": {
+     "id": "GalleryApi.items.mergeItems",
+     "path": "items/{targetItemId}/merge/",
+     "httpMethod": "PUT",
+     "description": "Merges the data from [sourceItemId] into the item specified by [id], and then deletes the item associated with [sourceItemId]",
+     "parameters": {
+      "targetItemId": {
+       "type": "string",
+       "description": "Path parameter: 'targetItemId'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "targetItemId"
+     ],
+     "request": {
+      "$ref": "IdRequest"
+     },
+     "response": {
+      "$ref": "Item"
+     }
+    },
     "searchVisible": {
      "id": "GalleryApi.items.searchVisible",
      "path": "search/",
-     "httpMethod": "POST",
+     "httpMethod": "PUT",
      "parameters": {},
      "parameterOrder": [],
      "request": {

@@ -1,0 +1,9 @@
+<img *ngIf="isImage" src="{{getOriginalFileUrl(model.id)}}" style="width:100%;"/>
+<video  *ngIf="isVideo" controls style="width:100%;">
+    <source src="{{getOriginalFileUrl(model.id)}}" type="{{model.mime}}">
+    Your browser does not support the video tag.
+</video>
+
+<div style="bottom:0;left:0;right:0;position:fixed; height:auto;background-color:rgba(0,0,0,0.7); color:white;padding:8pt;">
+    <tag-entry *ngIf="model!=null" style="width: 100%" [(selected)]="model.tags"></tag-entry>
+</div>

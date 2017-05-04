@@ -39,7 +39,8 @@ class ImportModel {
         try {
           result.fileName = "${row.id} - ${row.filename}";
         final Item newItem = new Item();
-        newItem.fileName = row.filename;
+          newItem.fileName = row.filename;
+          newItem.source = row.source;
 
 
         final String filename = row.hash;

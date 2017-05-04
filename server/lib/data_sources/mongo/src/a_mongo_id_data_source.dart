@@ -40,8 +40,7 @@ abstract class AMongoIdDataSource<T extends AIdData>
       getForOneFromDb(where.eq(idField, id));
 
   @override
-  Future<String> create(String id, T object) async {
-    object.id = id;
+  Future<String> create(T object) async {
     await insertIntoDb(object);
     return object.id;
   }
@@ -69,12 +68,12 @@ abstract class AMongoIdDataSource<T extends AIdData>
   Future<PaginatedIdData<T>> getPaginatedListFromDb(SelectorBuilder selector,
           {int offset: 0,
           int limit: paginatedDataLimit,
-          String sortField: idField}) async =>
+          String sortField: idField, bool sortDescending: false}) async =>
       new PaginatedIdData<T>.copyPaginatedData(await getPaginatedFromDb(
           selector,
           offset: offset,
           limit: limit,
-          sortField: sortField));
+          sortField: sortField, sortDescending: sortDescending));
 
   @override
   Future<PaginatedIdData<T>> searchPaginated(String query,

@@ -882,41 +882,83 @@ class IdResponse {
 }
 
 class Item {
+  core.String extension;
   core.List<core.int> fileData;
+  core.String fileName;
   core.String id;
+  core.int length;
   core.Map<core.String, core.String> metadata;
+  core.String mime;
   core.List<Tag> tags;
+  core.DateTime uploaded;
+  core.String uploader;
 
   Item();
 
   Item.fromJson(core.Map _json) {
+    if (_json.containsKey("extension")) {
+      extension = _json["extension"];
+    }
     if (_json.containsKey("fileData")) {
       fileData = _json["fileData"];
+    }
+    if (_json.containsKey("fileName")) {
+      fileName = _json["fileName"];
     }
     if (_json.containsKey("id")) {
       id = _json["id"];
     }
+    if (_json.containsKey("length")) {
+      length = _json["length"];
+    }
     if (_json.containsKey("metadata")) {
       metadata = _json["metadata"];
     }
+    if (_json.containsKey("mime")) {
+      mime = _json["mime"];
+    }
     if (_json.containsKey("tags")) {
       tags = _json["tags"].map((value) => new Tag.fromJson(value)).toList();
+    }
+    if (_json.containsKey("uploaded")) {
+      uploaded = core.DateTime.parse(_json["uploaded"]);
+    }
+    if (_json.containsKey("uploader")) {
+      uploader = _json["uploader"];
     }
   }
 
   core.Map toJson() {
     var _json = new core.Map();
+    if (extension != null) {
+      _json["extension"] = extension;
+    }
     if (fileData != null) {
       _json["fileData"] = fileData;
+    }
+    if (fileName != null) {
+      _json["fileName"] = fileName;
     }
     if (id != null) {
       _json["id"] = id;
     }
+    if (length != null) {
+      _json["length"] = length;
+    }
     if (metadata != null) {
       _json["metadata"] = metadata;
     }
+    if (mime != null) {
+      _json["mime"] = mime;
+    }
     if (tags != null) {
       _json["tags"] = tags.map((value) => (value).toJson()).toList();
+    }
+    if (uploaded != null) {
+      _json["uploaded"] = (uploaded).toIso8601String();
+    }
+    if (uploader != null) {
+      _json["uploader"] = uploader;
     }
     return _json;
   }

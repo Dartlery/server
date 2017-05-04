@@ -31,12 +31,16 @@ dependencies:
 #  version: any
   sqljocky:
     git: https://github.com/mnordine/sqljocky.git
-  mime: any
-  hex: any
+  mime: ^0.9.3
+  hex: ^0.1.1
+  image_hash:
+    git: https://github.com/dartlery/image_hash.git
 dev_dependencies:
   test: any
 dependency_overrides:
-  uri:
-    git: https://github.com/google/uri.dart.git
+  shelf_static:
+    git: https://github.com/dartalog/shelf_static.git
+  image_hash:
+    path: ../../image_hash/
 executables:
   dartalog-server: server

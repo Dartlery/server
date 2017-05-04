@@ -18,7 +18,7 @@ abstract class AIdBasedModel<T extends AIdData> extends ATypedModel<T> {
     if (!bypassAuthentication)
       await validateCreatePrivileges();
     await validate(t);
-    return await dataSource.create(t.id, t);
+    return await dataSource.create(t);
   }
 
   @override

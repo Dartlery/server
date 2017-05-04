@@ -137,10 +137,16 @@ buildItem() {
   var o = new api.Item();
   buildCounterItem++;
   if (buildCounterItem < 3) {
+    o.extension = "foo";
     o.fileData = buildUnnamed0();
+    o.fileName = "foo";
     o.id = "foo";
+    o.length = 42;
     o.metadata = buildUnnamed1();
+    o.mime = "foo";
     o.tags = buildUnnamed2();
+    o.uploaded = core.DateTime.parse("2002-02-27T14:01:02");
+    o.uploader = "foo";
   }
   buildCounterItem--;
   return o;
@@ -149,10 +155,16 @@ buildItem() {
 checkItem(api.Item o) {
   buildCounterItem++;
   if (buildCounterItem < 3) {
+    unittest.expect(o.extension, unittest.equals('foo'));
     checkUnnamed0(o.fileData);
+    unittest.expect(o.fileName, unittest.equals('foo'));
     unittest.expect(o.id, unittest.equals('foo'));
+    unittest.expect(o.length, unittest.equals(42));
     checkUnnamed1(o.metadata);
+    unittest.expect(o.mime, unittest.equals('foo'));
     checkUnnamed2(o.tags);
+    unittest.expect(o.uploaded, unittest.equals(core.DateTime.parse("2002-02-27T14:01:02")));
+    unittest.expect(o.uploader, unittest.equals('foo'));
   }
   buildCounterItem--;
 }

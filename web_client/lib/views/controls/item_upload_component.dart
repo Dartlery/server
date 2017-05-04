@@ -44,7 +44,7 @@ import 'common_controls.dart';
 class ItemUploadComponent extends AApiErrorThing {
   static final Logger _log = new Logger("ItemUploadComponent");
 
-  TagList tags = new TagList();
+  List<Tag> tags = <Tag>[];
 
   MediaMessage msg;
 
@@ -54,7 +54,7 @@ class ItemUploadComponent extends AApiErrorThing {
 
   String fileUpload;
 
-  void setTags(TagList event) {
+  void setTags(List<Tag> event) {
     this.tags = event;
   }
 
@@ -113,7 +113,7 @@ class ItemUploadComponent extends AApiErrorThing {
     await performApiCall(() async {
       final CreateItemRequest request = new CreateItemRequest();
       request.item = new Item();
-      request.item.tags = tags.toListOfTags();
+      request.item.tags = tags;
       request.file = msg;
 
       await _api.items.createItem(request);

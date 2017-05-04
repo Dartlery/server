@@ -69,14 +69,14 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
 
   @protected
   Future<PaginatedData<T>> getPaginatedFromDb(SelectorBuilder selector,
-      {int offset: 0, int limit: paginatedDataLimit, String sortField}) async {
+      {int offset: 0, int limit: paginatedDataLimit, String sortField, bool sortDescending: false}) async {
     final PaginatedData<T> output = new PaginatedData<T>();
     output.totalCount = await genericCount(selector);
     output.limit = limit;
     output.startIndex = offset;
 
     if (selector == null) selector == where;
-    if (!StringTools.isNullOrWhitespace(sortField)) selector.sortBy(sortField);
+    if (!StringTools.isNullOrWhitespace(sortField)) selector.sortBy(sortField, descending: sortDescending);
 
     selector.limit(limit).skip(offset);
 

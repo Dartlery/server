@@ -9,7 +9,7 @@ abstract class AIdBasedDataSource<T extends AIdData> extends ADataSource {
 
   Future<IdDataList<T>> getAll();
   Future<Option<T>> getById(String id);
-  Future<String> create(String id, T t);
+  Future<String> create(T t);
   Future<String> update(String id, T t);
   Future<Null> deleteById(String id);
   Future<bool> existsById(String id);

@@ -109,7 +109,7 @@ class UserModel extends AIdBasedModel<User> {
       throw new UnauthorizedException();
     }
     // This should allow a user to update their own data
-    if(currentUserUuid!=username) {
+    if(currentUserId!=username) {
       await super.validateUpdatePrivileges(username);
     }
   }
@@ -120,7 +120,7 @@ class UserModel extends AIdBasedModel<User> {
       throw new UnauthorizedException();
     }
 
-    if(currentUserUuid != username && !(await userHasPrivilege(UserPrivilege.admin)))
+    if(currentUserId != username && !(await userHasPrivilege(UserPrivilege.admin)))
       throw new ForbiddenException.withMessage(
           "You do not have permission to change another user's password");
 

@@ -69,10 +69,10 @@ class MainApp implements OnInit, OnDestroy {
   bool isUploadOpen = false;
 
   bool showRefreshButton = false;
-
   bool showAddButton = false;
-
   bool showSearch = false;
+  bool showDeleteButton = false;
+  bool showOpenInNewButton = false;
 
   bool userIsModerator = false;
   bool userIsAdmin = false;
@@ -95,6 +95,8 @@ class MainApp implements OnInit, OnDestroy {
     _pageActionsSubscription =
         _pageControl.availablePageActionsSet.listen(onPageActionsSet);
   }
+
+  bool confirmDeleteVisible = false;
 
   User get currentUser => _auth.user.first;
 
@@ -145,6 +147,8 @@ class MainApp implements OnInit, OnDestroy {
     showRefreshButton = actions.contains(PageActions.Refresh);
     showAddButton = actions.contains(PageActions.Add);
     showSearch = actions.contains(PageActions.Search);
+    showDeleteButton = actions.contains(PageActions.Delete);
+    showOpenInNewButton = actions.contains(PageActions.OpenInNew);
   }
 
   void onPageTitleChanged(String title) {
@@ -166,6 +170,18 @@ class MainApp implements OnInit, OnDestroy {
   void refreshClicked() {
     _pageControl.requestPageAction(PageActions.Refresh);
   }
+  void deleteClicked() {
+    confirmDeleteVisible = true;
+  }
+
+  void confirmDelete() {
+    confirmDeleteVisible = false;
+    _pageControl.requestPageAction(PageActions.Delete);
+  }
+
+  void openInNewClicked() {
+    _pageControl.requestPageAction(PageActions.OpenInNew);
+  }
 
   void searchKeyup(html.KeyboardEvent e) {
     if (e.keyCode == html.KeyCode.ENTER) {
@@ -173,14 +189,12 @@ class MainApp implements OnInit, OnDestroy {
     }
   }
 
-  Future<Null> tagSearchChanged(TagList event) async {
-    final String query = event.toQueryString();
+  Future<Null> tagSearchChanged(List<Tag> event) async {
+    final String query = TagList.convertToQueryString(event);
     await _router.navigate([
       itemsSearchRoute.name,
       {queryRouteParameter: query}
-
     ]);
-
   }
 
 }

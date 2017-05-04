@@ -14,14 +14,20 @@ class TagList extends Iterable<TagWrapper> {
     }
   }
 
+  void addTags(List<Tag> tags) {
+    for(Tag t in tags) {
+      this.add(new TagWrapper(t));
+    }
+  }
+
   TagList.fromQueryString(String query) {
     final Iterable<Tag> tags =  query.split(tagSeparator).map((String tagString) {
       final Tag tag = new Tag();
 
       if(tagString.contains(categorySeparator)) {
         final List<String> split = tagString.split(categorySeparator);
-        tag.id = Uri.decodeFull(split[0]);
-        tag.category = Uri.decodeFull(split[1]);
+        tag.category = Uri.decodeFull(split[0]);
+        tag.id = Uri.decodeFull(split[1]);
       } else {
         tag.id = Uri.decodeFull(tagString);
       }
@@ -62,17 +68,13 @@ class TagList extends Iterable<TagWrapper> {
   static const String categorySeparator = ":";
   static const String tagSeparator = ",";
 
-  String toQueryString() {
-    return _list.map((TagWrapper t) {
-      final StringBuffer tagOutput = new StringBuffer();
-      if(StringTools.isNotNullOrWhitespace(t.tag.category)) {
-        tagOutput.write(Uri.encodeFull(t.tag.category));
-        tagOutput.write(categorySeparator);
-      }
-      tagOutput.write(Uri.encodeFull(t.tag.id));
-      return tagOutput.toString();
+  static String convertToQueryString(List<Tag> tags) {
+    return tags.map((Tag t) {
+      return TagWrapper.createQueryString(t);
     }).join(tagSeparator);
   }
+
+  String toQueryString() => convertToQueryString(this.toListOfTags());
 
   List<Tag> toListOfTags() => new List<Tag>.from(_list.map((TagWrapper t) => t.tag));
 

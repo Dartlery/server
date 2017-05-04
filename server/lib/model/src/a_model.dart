@@ -31,7 +31,7 @@ abstract class AModel {
   AModel(this.userDataSource);
 
   @protected
-  String get currentUserUuid =>
+  String get currentUserId =>
       userPrincipal.map((Principal p) => p.name).getOrDefault("");
 
   @protected

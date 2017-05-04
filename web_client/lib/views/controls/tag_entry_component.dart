@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:html';
-
-import 'package:angular2/angular2.dart';
 import 'package:angular2/router.dart';
+import 'package:angular2/angular2.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
@@ -18,11 +17,11 @@ import '../src/a_api_error_thing.dart';
     styles: const [''],
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[materialDirectives],
+    directives: const <dynamic>[materialDirectives, ROUTER_DIRECTIVES],
     template: '''
     <div style="width: 100%;white-space: nowrap;">
     <material-chips style="float: left;">
-      <material-chip *ngFor="let t of selectedTags" (remove)="deselectTag(t)">{{t}}</material-chip>
+      <material-chip *ngFor="let t of selectedTags" (remove)="deselectTag(t)"><a [routerLink]="['ItemsSearch', {'query':t.toQueryString()}]" >{{t}}</a></material-chip>
     </material-chips>
     <material-input label="Tag(s)" [(ngModel)]="tagQuery" popupSource #tagListSource="popupSource" (keyup)="searchKeyup(\$event)">
     </material-input>
@@ -41,6 +40,8 @@ class TagEntryComponent extends AApiErrorThing {
   @Input()
   DetailedApiRequestError error;
 
+  String generateQueryString(Tag t) => TagWrapper.createQueryString(t);
+
   TagList selectedTags = new TagList();
 
   TagList availableTags = new TagList();
@@ -51,10 +52,16 @@ class TagEntryComponent extends AApiErrorThing {
 
   ApiService _api;
 
-  TagList get selected => selectedTags;
+  @Input()
+  set selected(List<Tag> tags) {
+    this.selectedTags.clear();
+    this.selectedTags.addTags(tags);
+  }
+
+  List<Tag> get selected => selectedTags.toListOfTags();
 
   @Output()
-  EventEmitter<TagList> selectedChanged = new EventEmitter<TagList>();
+  EventEmitter<List<Tag>> selectedChanged = new EventEmitter<List<Tag>>();
 
   TagEntryComponent(this._api, Router router, AuthenticationService auth)
       : super(router, auth);
@@ -105,6 +112,6 @@ class TagEntryComponent extends AApiErrorThing {
     }
     tagQuery = "";
   }
-  void _sendUpdatedTagEvent() => selectedChanged.emit(selectedTags);
+  void _sendUpdatedTagEvent() => selectedChanged.emit(selectedTags.toListOfTags());
 
 }

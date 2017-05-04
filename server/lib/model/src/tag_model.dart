@@ -26,8 +26,8 @@ class TagModel extends ATypedModel<Tag> {
   @override
   Logger get loggerImpl => _log;
 
-  Future<List<Tag>> search(String query) async {
-    final List<Tag> output = await _tagDataSource.search(query);
+  Future<List<Tag>> search(String query, {int limit: 10}) async {
+    final List<Tag> output = await _tagDataSource.search(query, limit: limit);
     return output;
   }
 

@@ -16,6 +16,7 @@ class MongoDatabase {
   static const String _tagsCollection = "tags";
   static const String _tagCategoriesCollection = "tagCategories";
   static const String _usersCollection = "users";
+  static const String _backgroundQueueCollection = "backgroundQueue";
 
   static const String redirectEntryName = "redirect";
   static const int maxConnections = 3;
@@ -30,6 +31,13 @@ class MongoDatabase {
     await getIdCollection(_itemsCollection);
     return output;
   }
+
+  Future<DbCollection> getBackgroundQueueCollection() async {
+    final DbCollection output =
+    await getIdCollection(_backgroundQueueCollection);
+    return output;
+  }
+
   Future<DbCollection> getTagsCollection() async {
     await db.createIndex(_tagsCollection,
         keys: {idField: 1, "category": 1}, name: "IdIndex", unique: true);

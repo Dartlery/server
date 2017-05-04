@@ -14,7 +14,9 @@ import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
 import 'package:option/option.dart';
 import 'package:path/path.dart' as path;
-
+import 'package:image_hash/image_hash.dart';
+import 'package:dartlery/plugins/plugins.dart';
+import 'package:dartlery/services/plugin_service.dart';
 import 'a_file_upload_model.dart';
 
 class ItemModel extends AIdBasedModel<Item> {
@@ -36,7 +38,7 @@ class ItemModel extends AIdBasedModel<Item> {
     "image/gif",
     "image/png",
     'video/webm',
-        'video/mp4',
+    'video/mp4',
     'application/x-shockwave-flash',
     'video/x-flv',
     'video/quicktime',
@@ -49,8 +51,10 @@ class ItemModel extends AIdBasedModel<Item> {
 
   final ATagCategoryDataSource tagCategoryDataSource;
 
+  final PluginService _pluginService;
+
   // TODO: evaluate more (oh)
-  ItemModel(this.itemDataSource, this.tagDataSource, this.tagCategoryDataSource,
+  ItemModel(this.itemDataSource, this.tagDataSource, this.tagCategoryDataSource, this._pluginService,
       AUserDataSource userDataSource)
       : super(userDataSource);
 
@@ -58,7 +62,7 @@ class ItemModel extends AIdBasedModel<Item> {
   AItemDataSource get dataSource => itemDataSource;
 
   @override
-  String get defaultDeletePrivilegeRequirement => UserPrivilege.admin;
+  String get defaultDeletePrivilegeRequirement => UserPrivilege.normal;
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.none;
   @override
@@ -78,7 +82,10 @@ class ItemModel extends AIdBasedModel<Item> {
   @override
   Future<String> create(Item item,
       {bool bypassAuthentication: false, bool keepUuid: false}) async {
-    if (!bypassAuthentication) await validateCreatePrivileges();
+    if (!bypassAuthentication) {
+      await validateCreatePrivileges();
+      item.uploader = currentUserId;
+    }
 
     item.id = "temporary";
     await validate(item);
@@ -86,9 +93,12 @@ class ItemModel extends AIdBasedModel<Item> {
     await _handleTags(item.tags);
 
     item.id = await _prepareFileUploads(item);
-    //TODO: More thorough cleanup of files in case of failure
     item.uploaded = new DateTime.now();
-    final String itemId = await itemDataSource.create(item.id, item);
+
+    await _pluginService.sendCreatingItem(item);
+
+    final String itemId = await itemDataSource.create(item);
+
     return itemId;
   }
 
@@ -176,7 +186,7 @@ class ItemModel extends AIdBasedModel<Item> {
       path.join(thumbnailImagePath, hash.substring(0, 2), hash);
 
   Future<PaginatedIdData<Item>> getVisible(
-      {int page: 0, int perPage: defaultPerPage}) async {
+      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -184,8 +194,8 @@ class ItemModel extends AIdBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetAllPrivileges();
-    return await dataSource.getVisiblePaginated(this.currentUserUuid,
-        page: page, perPage: perPage);
+    return await dataSource.getVisiblePaginated(this.currentUserId,
+        page: page, perPage: perPage, cutoffDate: cutoffDate);
   }
 
   Future<List<int>> resizeImage(List<int> data) async {
@@ -201,7 +211,7 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<PaginatedIdData<Item>> searchVisible(List<Tag> tags,
-      {int page: 0, int perPage: defaultPerPage}) async {
+      {int page: 0, int perPage: defaultPerPage,DateTime cutoffDate}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -209,8 +219,40 @@ class ItemModel extends AIdBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateSearchPrivileges();
-    return await dataSource.searchVisiblePaginated(this.currentUserUuid, tags,
-        page: page, perPage: perPage);
+    return await dataSource.searchVisiblePaginated(this.currentUserId, tags,
+        page: page, perPage: perPage, cutoffDate: cutoffDate);
+  }
+
+  Future<Null> updateTags(String itemId, List<Tag> newTags, {bool bypassAuthentication: false}) async {
+    if (!bypassAuthentication) await validateUpdatePrivileges(itemId);
+
+    if(!await itemDataSource.existsById(itemId))
+      throw new NotFoundException("Item $itemId not found");
+
+    await _handleTags(newTags);
+    await itemDataSource.updateTags(itemId, newTags);
+  }
+
+  Future<Item> merge(String targetItemId, String sourceItemId, {bool bypassAuthentication: false}) async {
+    if (!bypassAuthentication) await validateUpdatePrivileges(targetItemId);
+    if (!bypassAuthentication) await validateUpdatePrivileges(sourceItemId);
+
+    final Option<Item> targetItem = await itemDataSource.getById(targetItemId);
+    if(targetItem.isEmpty)
+      throw new NotFoundException("Item $targetItemId not found");
+
+    final Option<Item> sourceItem = await itemDataSource.getById(sourceItemId);
+    if(sourceItem.isEmpty)
+      throw new NotFoundException("Item $sourceItemId not found");
+
+    final TagList newTagList = new TagList.from(targetItem.first.tags);
+    for(Tag t in sourceItem.first.tags) {
+      newTagList.add(t);
+    }
+
+    await itemDataSource.updateTags(targetItemId, newTagList.toList());
+    await delete(sourceItemId);
+    return (await itemDataSource.getById(targetItemId)).first;
   }
 
   @override
@@ -249,12 +291,6 @@ class ItemModel extends AIdBasedModel<Item> {
         if (StringTools.isNullOrWhitespace(tag.id)) {
           fieldErrors["id"] = "Tag name required";
         }
-
-        if (StringTools.isNotNullOrWhitespace(tag.category)) {
-          final Option<TagCategory> result =
-              await tagCategoryDataSource.getById(tag.category);
-          if (result.isEmpty) fieldErrors["tag"] = "Not found";
-        }
       }
     }
   }
@@ -263,10 +299,18 @@ class ItemModel extends AIdBasedModel<Item> {
     for (Tag tag in tags) {
       final bool result = await tagDataSource.existsById(tag.id, tag.category);
       if (!result) {
+        if(!StringTools.isNotNullOrWhitespace(tag.category)) {
+          if (StringTools.isNotNullOrWhitespace(tag.category)&&
+              !await tagCategoryDataSource.existsById(tag.category)) {
+            final TagCategory cat = new TagCategory.withValues(tag.category);
+            await tagCategoryDataSource.create(cat);
+          }
+        }
         await tagDataSource.create(tag);
       }
     }
   }
+
   Future<_PrepareFileResult> _prepareFileUpload(List<int> data) async {
     //      String image_url = getImagesRootUrl().toLowerCase();
 //      if(value.toLowerCase().startsWith(image_url))
@@ -316,32 +360,38 @@ class ItemModel extends AIdBasedModel<Item> {
       }
 
       final File file = new File(getOriginalFilePathForHash(result.hash));
-      final bool fileExists = await file.exists();
-      if (!fileExists) {
-        await file.create(recursive: true);
-      } else {
-        final int size = await file.length();
-        if (size == 0) await file.delete();
-        if (size != data.length)
-          throw new Exception("File already exists with a different size");
-        else
-          return result.hash;
-        //throw new Exception("File already exists on server");
-      }
-
-      final RandomAccessFile imageRaf =
-          await file.open(mode: FileMode.WRITE_ONLY);
-      try {
-        _log.fine("Writing to ${file.path}");
-        await imageRaf.writeFrom(data);
-        filesWritten.add(file.path);
-      } finally {
-        try {
-          await imageRaf.close();
-        } catch (e2, st) {
-          _log.warning(e2, st);
+      bool fileExists = await file.exists();
+      int size = 0;
+      if(fileExists) {
+        size = file.lengthSync();
+        if(size==0) {
+          file.deleteSync();
+          fileExists = file.existsSync();
         }
       }
+
+      if (!fileExists) {
+        await file.create(recursive: true);
+        final RandomAccessFile imageRaf =
+        await file.open(mode: FileMode.WRITE_ONLY);
+        try {
+          _log.fine("Writing to ${file.path}");
+          await imageRaf.writeFrom(data);
+          filesWritten.add(file.path);
+        } finally {
+          try {
+            // TODO: Create cleanup system so that database changes can be backed out of if there is a filesystem error
+            // like a transaction object that can store the steps needed to reverse or commit everything.
+            await imageRaf.close();
+          } catch (e2, st) {
+            _log.warning("Error while closing original file object", e2, st);
+          }
+        }
+      } else if (size != data.length) {
+          throw new Exception("File already exists with a different size");
+      }
+
+
       try {
         await generateThumbnail(result.hash, mime, data);
       } catch (e, st) {
@@ -364,6 +414,30 @@ class ItemModel extends AIdBasedModel<Item> {
       }
       rethrow;
     }
+  }
+
+  @override
+  Future<String> delete(String id) async {
+    final String output = await super.delete(id);
+
+    try {
+      final File file = new File(getOriginalFilePathForHash(id));
+      if (file.existsSync()) {
+        await file.delete();
+      }
+    } catch (e, st) {
+      _log.warning("Error while deleting original file", e, st);
+    }
+    try {
+      final File file = new File(getOriginalFilePathForHash(id));
+      if (file.existsSync()) {
+        await file.delete();
+      }
+    } catch (e, st) {
+      _log.warning("Error while deleting thumbnail file", e, st);
+    }
+
+    return output;
   }
 }
 

@@ -23,7 +23,7 @@
                 </paper-item>
             </a>
 
-            <a [routerLink]="['TagCategories']" *ngIf="userIsModerator">
+            <a [routerLink]="['TagCategories']" *ngIf="userIsAdmin">
                 <paper-item>
                     <iron-icon icon="label-outline"></iron-icon>
                     <paper-item-body>Tag Categories</paper-item-body>
@@ -49,8 +49,10 @@
             <material-button icon (trigger)="openUploadWindow()"><glyph icon="file_upload"></glyph></material-button>
 
             <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" leadingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>
+            <material-button *ngIf="showDeleteButton" icon (trigger)="deleteClicked()"><glyph icon="delete"></glyph></material-button>
             <!--<material-button *ngIf="showAddButton" icon (trigger)="addClicked()"><glyph icon="add"></glyph></material-button>-->
             <material-button *ngIf="showRefreshButton" icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
+            <material-button *ngIf="showOpenInNewButton" icon (trigger)="openInNewClicked()"><glyph icon="open_in_new"></glyph></material-button>
         </paper-toolbar>
         <div>
             <router-outlet></router-outlet>
@@ -63,3 +65,18 @@
 </paper-drawer-panel>
 <login-form [(visible)]="isLoginOpen" id="userAuthElement"></login-form>
 <item-upload [(visible)]="isUploadOpen" id="uploadElement"></item-upload>
+
+<modal [visible]="confirmDeleteVisible">
+    <material-dialog class="basic-dialog">
+        <h3 header>Delete</h3>
+        <p>
+            Are you sure you wish to delete?
+        </p>
+        <div footer style="text-align: right">
+            <material-yes-no-buttons yesHighlighted
+                                     yesText="Delete" (yes)="confirmDelete()"
+                                     noText="Cancel" (no)="confirmDeleteVisible = false">
+            </material-yes-no-buttons>
+        </div>
+    </material-dialog>
+</modal>

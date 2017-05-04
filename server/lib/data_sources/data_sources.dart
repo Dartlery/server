@@ -14,6 +14,7 @@ ModuleInjector createDataSourceModuleInjector(String connectionString) {
     ..bind(AUserDataSource, toImplementation: MongoUserDataSource)
     ..bind(ATagDataSource, toImplementation: MongoTagDataSource)
     ..bind(ATagCategoryDataSource, toImplementation: MongoTagCategoryDataSource)
+    ..bind(ABackgroundQueueDataSource, toImplementation: MongoBackgroundQueueDataSource)
   ..bind(MongoDbConnectionPool, toFactory: () => new MongoDbConnectionPool(connectionString));
 
   return new ModuleInjector(<Module>[module]);

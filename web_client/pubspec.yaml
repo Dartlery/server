@@ -14,8 +14,8 @@ dependencies:
     path: ../api_client
 
   angular2: ^3.0.0
-  angular_components: ^0.5.0
-  polymer_elements: ^1.0.0-rc.9
+  angular_components: ^0.5.1
+  polymer_elements: ^1.0.0-rc.10
   polymer: ^1.0.0-rc.19
   web_components: ^0.12.3
   logging_handlers: ^0.8.0

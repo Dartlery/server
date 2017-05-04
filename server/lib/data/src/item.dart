@@ -1,21 +1,24 @@
-import 'a_id_data.dart';
 import 'package:option/option.dart';
-import 'tag.dart';
 import 'package:rpc/rpc.dart';
+
+import 'a_id_data.dart';
+import 'tag.dart';
 
 @ApiMessage(includeSuper: true)
 class Item extends AIdData {
-  List<Tag> tags = <Tag>[];
-
-  String mime;
-  DateTime uploaded;
+  String extension;
+  List<int> fileData;
   String fileName;
   int length;
-  String extension;
+  Map<String, String> metadata = <String, String>{};
+  String mime;
+  String source;
+  List<Tag> tags = <Tag>[];
+  DateTime uploaded;
+  String uploader;
 
-  Map<String,String> metadata = <String,String>{};
-
-  List<int> fileData;
+  @ApiProperty(ignore: true)
+  Map<String,dynamic> pluginData = <String, dynamic>{};
 
   Item();
 }

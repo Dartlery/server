@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
@@ -26,7 +26,7 @@ class ItemResource extends AIdResource<Item> {
   @override
   AIdBasedModel<Item> get idModel => itemModel;
 
-  @ApiMethod(method: 'POST', path: '$_apiPath/')
+  @ApiMethod(method: HttpMethod.post, path: '$_apiPath/')
   Future<IdResponse> createItem(CreateItemRequest newItem) => catchExceptionsAwait(() async {
     if (newItem.file != null) {
       final List<List<int>> files = convertMediaMessagesToIntLists(<MediaMessage>[newItem.file]);
@@ -46,35 +46,58 @@ class ItemResource extends AIdResource<Item> {
       throw new NotImplementedException("Use createItem instead"));
 
   @override
-  @ApiMethod(method: 'DELETE', path: '$_apiPath/{id}/')
+  @ApiMethod(method: HttpMethod.delete, path: '$_apiPath/{id}/')
   Future<VoidMessage> delete(String id) => deleteWithCatch(id);
 
   @ApiMethod(path: '$_apiPath/')
   Future<PaginatedResponse<String>> getVisibleIds(
-      {int page: 0, int perPage: defaultPerPage}) =>
-      catchExceptionsAwait(() async =>
-          new PaginatedResponse<String>.convertPaginatedData(
-              await itemModel.getVisible(page: page, perPage: perPage),
-              (Item item) => item.id));
+      {int page: 0, int perPage: defaultPerPage, String cutoffDate}) =>
+      catchExceptionsAwait(() async {
+        DateTime dt;
+        if(StringTools.isNotNullOrWhitespace(cutoffDate))
+          dt = DateTime.parse(cutoffDate);
+
+          return new PaginatedResponse<String>.convertPaginatedData(
+              await itemModel.getVisible(page: page, perPage: perPage, cutoffDate: dt),
+              (Item item) => item.id);
+});
 
   @override
   @ApiMethod(path: '$_apiPath/{id}/')
   Future<Item> getById(String id)  =>
       catchExceptionsAwait(() => itemModel.getById(id));
 
-  @ApiMethod(method: 'POST', path: 'search/')
+  @ApiMethod(path: '$_apiPath/{id}/$tagApiPath/')
+  Future<List<Tag>> getTagsByItemId(String id)  =>
+      catchExceptionsAwait(() async {
+        final Item item = await itemModel.getById(id);
+        return item.tags;
+      });
+
+  @ApiMethod(method: HttpMethod.put, path: '$_apiPath/{id}/$tagApiPath/')
+  Future<Null> updateTagsForItemId(String id, List<Tag> newTags)  =>
+      catchExceptionsAwait(() => itemModel.updateTags(id, newTags));
+
+
+  @ApiMethod(method: HttpMethod.put, path: '$_apiPath/{targetItemId}/merge/',
+      description: "Merges the data from [sourceItemId] into the item specified by [id], and then deletes the item associated with [sourceItemId]")
+  Future<Item> mergeItems(String targetItemId, IdRequest sourceItemId)  =>
+      catchExceptionsAwait(() => itemModel.merge(targetItemId, sourceItemId.id));
+
+
+  @ApiMethod(method: HttpMethod.put, path: 'search/')
   Future<PaginatedResponse<String>> searchVisible(ItemSearchRequest request) =>
       catchExceptionsAwait(() async =>
           new PaginatedResponse<String>.convertPaginatedData(
               await itemModel
-                  .searchVisible(request.tags, page: request.page, perPage: request.perPage),
+                  .searchVisible(request.tags, page: request.page, perPage: request.perPage, cutoffDate: request.cutoffDate),
               (Item item) => item.id));
 
   @override
   Future<IdResponse> update(String id, Item item) =>
       throw new NotImplementedException("User updateItem");
 
-  @ApiMethod(method: 'PUT', path: '$_apiPath/{id}/')
+  @ApiMethod(method: HttpMethod.put, path: '$_apiPath/{id}/')
   Future<IdResponse> updateItem(String id, UpdateItemRequest request) =>
       updateWithCatch(id, request.item, mediaMessages: request.files);
 }

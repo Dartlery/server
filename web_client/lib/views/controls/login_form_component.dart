@@ -32,7 +32,6 @@ import 'package:dartlery_shared/global.dart';
             noText="Cancel" (no)="visible = false"
             [pending]="processing" [yesDisabled]="!loginForm.valid">
             </material-yes-no-buttons>
-
           </div>
       </material-dialog>
     </modal>''')

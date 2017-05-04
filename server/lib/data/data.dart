@@ -16,4 +16,4 @@ export 'src/tag.dart';
 export 'src/tag_category.dart';
 export 'src/tag_list.dart';
 export 'src/import_result.dart';
-
+export 'src/background_queue_item.dart';

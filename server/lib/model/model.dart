@@ -8,7 +8,8 @@ import 'src/tag_category_model.dart';
 import 'src/item_model.dart';
 import 'src/import_model.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
-
+import 'src/background_service_model.dart';
+import 'package:dartlery/plugins/plugins.dart';
 
 export 'src/a_id_based_model.dart';
 export 'src/a_file_upload_model.dart';
@@ -20,16 +21,24 @@ export 'src/item_model.dart';
 export 'src/tag_model.dart';
 export 'src/tag_category_model.dart';
 export 'src/import_model.dart';
+export 'src/background_service_model.dart';
+import 'package:dartlery/services/plugin_service.dart';
 
-ModuleInjector createModelModuleInjector(String connectionString) {
+ModuleInjector createModelModuleInjector(String connectionString, {ModuleInjector parent}) {
   final Module module = new Module()
     ..bind(UserModel)
     ..bind(ItemModel)
     ..bind(TagModel)
     ..bind(TagCategoryModel)
     ..bind(ImportModel)
-    ..bind(SetupModel);
+    ..bind(SetupModel)
+    ..bind(BackgroundServiceModel)
+    ..bind(PluginService);
 
   final ModuleInjector parent = createDataSourceModuleInjector(connectionString);
-  return new ModuleInjector([module], parent);
+  final ModuleInjector injector =new ModuleInjector([module], parent);
+
+  instantiatePlugins(injector);
+
+  return injector;
 }

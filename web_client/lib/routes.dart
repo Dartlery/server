@@ -33,7 +33,7 @@ const Route itemsSearchRoute = const Route(
 const Route itemViewRoute = const Route(
   path: '/item/:$idRouteParameter',
   name: 'Item',
-  component: ItemBrowseComponent,
+  component: ItemViewPage,
 );
 
 const String pageRouteParameter = "page";

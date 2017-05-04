@@ -27,6 +27,7 @@ class PaginatorComponent implements OnDestroy {
   int currentPage;
   final List<dynamic> pages = <dynamic>[];
 
+
   final PageControlService _pageControl;
   StreamSubscription<PaginationInfo> _subscription;
 

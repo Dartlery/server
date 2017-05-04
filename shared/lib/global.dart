@@ -10,7 +10,7 @@ export 'src/item_status.dart';
 export 'src/user_privilege.dart';
 
 const String appName = "Dartlery";
-const String galleryApiVersion = "0.1";
+const String galleryApiVersion = "v0.1";
 const String galleryApiName = "gallery";
 const String galleryApiPath = "api/$galleryApiName/$galleryApiVersion/";
 
@@ -31,6 +31,12 @@ const String imageFieldTypeId = "image";
 const String hiddenFieldTypeId = "hidden";
 const String multiValueStringTypeID = "multiValueString";
 
+const List<String> imageMimeTypes = const <String>[
+"image/jpeg",
+"image/gif",
+"image/png",
+];
+
 final Map<String, String> globalFieldTypes = <String, String>{
   numericFieldTypeId: 'Numeric',
   stringFieldTypeId: 'String',
@@ -39,6 +45,13 @@ final Map<String, String> globalFieldTypes = <String, String>{
   hiddenFieldTypeId: 'Hidden',
   multiValueStringTypeID: "Multi-value String",
 };
+
+abstract class HttpMethod {
+  static const String post = "POST";
+  static const String get = "GET";
+  static const String delete = "DELETE";
+  static const String put = "PUT";
+}
 
 final List<String> _reservedWords = <String>[
   'id',

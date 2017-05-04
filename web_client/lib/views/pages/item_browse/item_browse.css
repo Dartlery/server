@@ -1,11 +1,27 @@
+div.item {
+    position:relative;
+    float:left;
+}
+div.item div.item-menu {
+    position:absolute;
+    left:0;
+    bottom:0;
+    right:0;
+    height:auto;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 100%);
+}
+
+div.item-menu a {
+    text-decoration: none;
+}
+
 a.item_card paper-material {
     cursor: pointer;
-    width: 200pt;
+    width: 100%;
     height: 200pt;
     margin-left: 4pt;
     margin-top: 4pt;
     position: relative;
-    float:left;
 }
 img.item_thumbnail {
     height: 100px;
@@ -31,53 +47,53 @@ img.item_thumbnail {
 
 }
 @media(max-width:400pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% - 4pt)!important;
     }
 }
 
 @media(max-width:600pt) and (min-width:401pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% / 2 - 4pt)!important;
     }
 }
 @media(max-width:800pt) and (min-width:601pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% / 3 - 4pt)!important;
     }
 }
 @media(max-width:1000pt) and (min-width:801pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% / 4 - 4pt)!important;
     }
 }
 @media(max-width:1200pt) and (min-width:1001pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% / 5 - 4pt)!important;
     }
 }
 @media(max-width:1400pt) and (min-width:1201pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% / 6 - 4pt)!important;
     }
 }
 @media(max-width:1600pt) and (min-width:1401pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% / 7 - 4pt)!important;
     }
 }
 @media(max-width:1800pt) and (min-width:1601pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% / 8 - 4pt)!important;
     }
 }
 @media(max-width:2000pt) and (min-width:1801pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% / 9 - 4pt)!important;
     }
 }
 @media(max-width:2200pt) and (min-width:2001pt) {
-    .item_card paper-material {
+    div.item {
         width: calc(100% / 10 - 4pt)!important;
     }
 }
