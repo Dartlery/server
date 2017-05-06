@@ -48,7 +48,8 @@ const List<Route> routes = const <Route>[
   itemViewRoute,
   tagCategoriesRoute,
   setupRoute,
-  usersRoute
+  usersRoute,
+  deduplicateRoute
 ];
 
 const Route setupRoute = const Route(
@@ -61,4 +62,16 @@ const Route usersRoute = const Route(
   path: '/users',
   name: 'Users',
   component: UsersPage,
+);
+
+const Route deduplicateRoute = const Route(
+  path: '/deduplicate/',
+  name: 'Deduplicate',
+  component: DeduplicatePage,
+);
+
+const Route deduplicateItemRoute = const Route(
+  path: '/deduplicate/:$idRouteParameter',
+  name: 'DeduplicateItem',
+  component: DeduplicatePage,
 );

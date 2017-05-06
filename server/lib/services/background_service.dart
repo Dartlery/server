@@ -3,15 +3,16 @@ import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:logging/logging.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:option/option.dart';
-import 'package:dartlery/services/plugin_service.dart';
+import 'package:dartlery/extrensions/extensions.dart';
 import 'package:dartlery_shared/tools.dart';
+import 'extension_service.dart';
 
 class BackgroundService {
   static final Logger _log = new Logger('BackgroundService');
 
   bool _stop = false;
   final ABackgroundQueueDataSource _backgroundQueueDataSource;
-  final PluginService _pluginService;
+  final ExtensionService _pluginService;
 
   BackgroundService(this._backgroundQueueDataSource, this._pluginService);
 

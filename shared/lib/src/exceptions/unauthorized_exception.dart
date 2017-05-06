@@ -1,12 +1,11 @@
 import 'dart:io';
 
 class UnauthorizedException implements Exception {
-  String message = "Not authorized";
+  final String message;
 
-  int code = HttpStatus.UNAUTHORIZED;
+  final int code = HttpStatus.UNAUTHORIZED;
 
-  UnauthorizedException();
-  UnauthorizedException.withMessage(this.message);
+  UnauthorizedException([this.message = "Not authorized"]);
 
   @override
   String toString() {

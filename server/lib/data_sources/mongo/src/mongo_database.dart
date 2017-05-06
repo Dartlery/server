@@ -7,6 +7,8 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 import 'constants.dart';
 import 'mongo_db_connection_pool.dart';
+import 'mongo_extension_data_source.dart';
+import 'mongo_item_data_source.dart';
 
 class MongoDatabase {
   static final Logger _log = new Logger('_MongoDatabase');
@@ -17,6 +19,8 @@ class MongoDatabase {
   static const String _tagCategoriesCollection = "tagCategories";
   static const String _usersCollection = "users";
   static const String _backgroundQueueCollection = "backgroundQueue";
+  static const String _extensionDataCollection = "extensionData";
+  static const String _importResultsCollection = "importResults";
 
   static const String redirectEntryName = "redirect";
   static const int maxConnections = 3;
@@ -27,6 +31,9 @@ class MongoDatabase {
 
 
   Future<DbCollection> getItemsCollection() async {
+    await db.createIndex(_extensionDataCollection,
+        keys: {MongoItemDataSource.uploadedField: -1}, name: "UploadedIndex");
+
     final DbCollection output =
     await getIdCollection(_itemsCollection);
     return output;
@@ -37,6 +44,21 @@ class MongoDatabase {
     await getIdCollection(_backgroundQueueCollection);
     return output;
   }
+
+  Future<DbCollection> getExtensionDataCollection() async {
+    await db.createIndex(_extensionDataCollection,
+        keys: {MongoExtensionDataSource.extensionIdField: 1,
+          MongoExtensionDataSource.keyField: 1,
+        MongoExtensionDataSource.primaryIdField: 1,
+        MongoExtensionDataSource.secondaryIdField: 1}, name: "ExtensionDataIndex", unique: true);
+    return db.collection(_extensionDataCollection);
+  }
+
+  Future<DbCollection> getImportResultsCollection() async {
+    return db.collection(_importResultsCollection);
+  }
+
+
 
   Future<DbCollection> getTagsCollection() async {
     await db.createIndex(_tagsCollection,

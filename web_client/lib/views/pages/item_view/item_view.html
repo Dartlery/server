@@ -1,5 +1,5 @@
 <img *ngIf="isImage" src="{{getOriginalFileUrl(model.id)}}" style="width:100%;"/>
-<video  *ngIf="isVideo" controls style="width:100%;">
+<video  *ngIf="isVideo" controls loop autoplay muted poster="{{getThumbnailFileUrl(model.id)}}" style="width:100%;">
     <source src="{{getOriginalFileUrl(model.id)}}" type="{{model.mime}}">
     Your browser does not support the video tag.
 </video>

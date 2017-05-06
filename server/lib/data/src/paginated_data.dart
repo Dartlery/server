@@ -11,4 +11,10 @@ class PaginatedData<T> {
 
   final List<T> _data = <T>[];
   List<T> get data => _data;
+
+  bool get isEmpty => _data.isEmpty;
+
+  T get first => _data.first;
+
+  void forEach(handler(T t)) => _data.forEach(handler);
 }

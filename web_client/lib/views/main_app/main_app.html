@@ -23,19 +23,27 @@
                 </paper-item>
             </a>
 
-            <a [routerLink]="['TagCategories']" *ngIf="userIsAdmin">
+            <a [routerLink]="['TagCategories']">
                 <paper-item>
                     <iron-icon icon="label-outline"></iron-icon>
                     <paper-item-body>Tag Categories</paper-item-body>
                 </paper-item>
             </a>
 
-            <a [routerLink]="['Users']" *ngIf="userIsAdmin">
+            <a [routerLink]="['Users']">
                 <paper-item>
                     <iron-icon icon="label-outline"></iron-icon>
                     <paper-item-body>Users</paper-item-body>
                 </paper-item>
             </a>
+
+            <a [routerLink]="['Deduplicate']">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Deduplicate</paper-item-body>
+                </paper-item>
+            </a>
+
         </div>
     </paper-header-panel>
     <paper-header-panel main>
@@ -54,7 +62,7 @@
             <material-button *ngIf="showRefreshButton" icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
             <material-button *ngIf="showOpenInNewButton" icon (trigger)="openInNewClicked()"><glyph icon="open_in_new"></glyph></material-button>
         </paper-toolbar>
-        <div>
+        <div style="height: 100%;width:100%;">
             <router-outlet></router-outlet>
             <paginator></paginator>
             <material-fab *ngIf="showAddButton" raised (trigger)="addClicked()" style="position: fixed; right: 8pt; bottom: 8pt;z-index:10;" class="red">

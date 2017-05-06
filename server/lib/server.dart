@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -6,7 +7,7 @@ import 'package:dartlery/api/gallery/gallery_api.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/model/model.dart';
-import 'package:dartlery/plugins/plugins.dart';
+import 'package:dartlery/extrensions/extensions.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:di/di.dart';
@@ -23,6 +24,7 @@ import 'package:shelf_exception_handler/shelf_exception_handler.dart';
 import 'package:shelf_route/shelf_route.dart';
 import 'package:shelf_rpc/shelf_rpc.dart' as shelf_rpc;
 import 'package:shelf_static/shelf_static.dart';
+import 'package:path/path.dart' as path;
 
 import 'src/exceptions/setup_required_exception.dart';
 import 'tools.dart';
@@ -52,6 +54,23 @@ void disableSetup() {
   _setupDisabled = true;
 }
 
+final String originalFilePath =
+path.join(rootDirectory, hostedFilesOriginalsPath);
+
+final String thumbnailImagePath =
+path.join(rootDirectory, hostedFilesThumbnailsPath);
+
+final Directory originalFileDir = new Directory(originalFilePath);
+
+final Directory thumbnailDir = new Directory(thumbnailImagePath);
+
+
+String getOriginalFilePathForHash(String hash) =>
+    path.join(originalFilePath, hash.substring(0, 2), hash);
+
+String getThumbnailFilePathForHash(String hash) =>
+    path.join(thumbnailImagePath, hash.substring(0, 2), hash);
+
 Future<bool> isSetupAvailable() async {
   if (_setupDisabled) return false;
 
@@ -76,7 +95,6 @@ class Server {
   final GalleryApi galleryApi;
   final AUserDataSource userDataSource;
   final UserModel userModel;
-  final BackgroundService _backgroundService;
 
   String instanceUuid;
   String connectionString;
@@ -87,7 +105,7 @@ class Server {
 
   HttpServer _server;
 
-  Server(this.galleryApi, this.userDataSource, this.userModel, this._backgroundService) {
+  Server(this.galleryApi, this.userDataSource, this.userModel) {
     _log.fine("new Server($galleryApi, $userDataSource, $userModel)");
   }
 
@@ -185,10 +203,6 @@ class Server {
       serverApiRoot = "$serverRoot$galleryApiPath";
       _log.info('Serving at $serverRoot');
 
-      // Now we start the cycle for the background service
-
-      _backgroundService.start();
-
     } catch (e, s) {
       _log.severe("Error while starting server", e, s);
     } finally {
@@ -196,8 +210,9 @@ class Server {
     }
   }
 
+
+
   dynamic stop() async {
-    _backgroundService.stop();
 
     if (_server == null) throw new Exception("Server has not been started");
     await _server.close();
@@ -229,7 +244,7 @@ class Server {
       else
         return new None<Principal>();
     } catch (e, st) {
-      _log.severe(e);
+      _log.severe(e,st);
       rethrow;
     } finally {
       _log.fine("End _authenticateUser()");
@@ -252,7 +267,6 @@ class Server {
         <Module>[
         GalleryApi.injectorModules, new Module()
           ..bind(Server)
-          ..bind(BackgroundService)
         ],
         parentInjector);
 

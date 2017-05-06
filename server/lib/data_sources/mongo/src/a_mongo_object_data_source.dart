@@ -39,7 +39,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   }
 
   @protected
-  T createObject(Map<String, dynamic> data);
+  T createObject(Map<String, Map> data);
 
   @protected
   @override
@@ -63,8 +63,10 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   }
 
   Future<Stream<T>> streamFromDb(dynamic selector) async {
-    final Stream<dynamic> outputStream = await genericFindStream(selector);
-    return outputStream.map((dynamic data) => createObject(data));
+    final Stream<Map> outputStream = await genericFindStream(selector);
+    return outputStream.map((Map data) {
+      return createObject(data);
+    });
   }
 
   @protected

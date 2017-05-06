@@ -63,10 +63,7 @@ void main() {
       final Tag newTag  = new Tag.withValues("TestTagName");
       item.tags = <Tag>[newTag];
 
-      final UpdateItemRequest updateItemRequest = new UpdateItemRequest();
-      updateItemRequest.item = item;
-
-      await api.items.updateItem(response.id, updateItemRequest);
+      await api.items.update(response.id, item);
 
       item = await api.items.getById(response.id);
 

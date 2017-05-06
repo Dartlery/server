@@ -16,9 +16,7 @@ class Item extends AIdData {
   List<Tag> tags = <Tag>[];
   DateTime uploaded;
   String uploader;
-
-  @ApiProperty(ignore: true)
-  Map<String,dynamic> pluginData = <String, dynamic>{};
+  String thumbnailError;
 
   Item();
 }

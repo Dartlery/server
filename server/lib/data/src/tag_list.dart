@@ -16,6 +16,12 @@ class TagList extends Iterable<Tag> {
 
   void clear() => _list.clear();
 
+  void addAll(Iterable<Tag> tags) {
+    for(Tag t in tags) {
+      add(t);
+    }
+  }
+
   void add(Tag tag) {
     if(indexOf(tag)!=-1)
       return;

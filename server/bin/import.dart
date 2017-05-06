@@ -17,7 +17,7 @@ Future<Null> main(List<String> args) async {
   final ArgParser parser = new ArgParser();
   parser.addOption("sourceType", abbr: 't', allowed: ["shimmie","path"]);
   parser.addOption("path", abbr: 'p');
-  final ArgResults argResults = parser.parse(args);
+  //final ArgResults argResults = parser.parse(args);
 
   // Currently only supports importing from shimmie. Yay!
 
@@ -37,16 +37,17 @@ Future<Null> main(List<String> args) async {
 
   final ImportModel importModel = parentInjector.get(ImportModel);
 
-  switch(argResults["sourceType"]) {
-    case "shimmie":
-      await importModel.importFromShimmie(stopOnError: true);
-      break;
-    case "path":
-      if(StringTools.isNullOrWhitespace(argResults["path"]))
-        throw new Exception("Path is required");
-      await importModel.importFromPath(argResults["path"], interpretShimmieNames: true, stopOnError: true);
-  }
+  //switch(argResults["sourceType"]) {
+//    case "shimmie":
+//      await importModel.importFromShimmie(stopOnError: true);
+//      break;
+//    case "path":
+//      if(StringTools.isNullOrWhitespace(argResults["path"]))
+//        throw new Exception("Path is required");
+//      await importModel.importFromPath(argResults["path"], interpretShimmieNames: true, stopOnError: true);
+  //}
 
+  await importModel.importFromPath(r"\\darkholme\rand\import", interpretShimmieNames: true, stopOnError: true);
 
   _log.info("Process is over!");
 }

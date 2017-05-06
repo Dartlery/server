@@ -1,5 +1,5 @@
 class InvalidInputException implements Exception {
-  String message;
+  final String message;
   InvalidInputException(this.message);
 
   @override

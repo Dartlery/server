@@ -8,8 +8,8 @@ import 'src/tag_category_model.dart';
 import 'src/item_model.dart';
 import 'src/import_model.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
-import 'src/background_service_model.dart';
-import 'package:dartlery/plugins/plugins.dart';
+import 'package:dartlery/extrensions/extensions.dart';
+import 'src/extension_data_model.dart';
 
 export 'src/a_id_based_model.dart';
 export 'src/a_file_upload_model.dart';
@@ -21,8 +21,9 @@ export 'src/item_model.dart';
 export 'src/tag_model.dart';
 export 'src/tag_category_model.dart';
 export 'src/import_model.dart';
-export 'src/background_service_model.dart';
-import 'package:dartlery/services/plugin_service.dart';
+import 'package:dartlery/services/extension_service.dart';
+import 'package:dartlery/services/background_service.dart';
+export 'src/extension_data_model.dart';
 
 ModuleInjector createModelModuleInjector(String connectionString, {ModuleInjector parent}) {
   final Module module = new Module()
@@ -32,13 +33,14 @@ ModuleInjector createModelModuleInjector(String connectionString, {ModuleInjecto
     ..bind(TagCategoryModel)
     ..bind(ImportModel)
     ..bind(SetupModel)
-    ..bind(BackgroundServiceModel)
-    ..bind(PluginService);
+    ..bind(BackgroundService)
+    ..bind(ExtensionDataModel)
+    ..bind(ExtensionService);
 
   final ModuleInjector parent = createDataSourceModuleInjector(connectionString);
   final ModuleInjector injector =new ModuleInjector([module], parent);
 
-  instantiatePlugins(injector);
+  instantiateExtensions(injector);
 
   return injector;
 }

@@ -1,4 +1,4 @@
 class ValidationException implements Exception {
-  String message;
+  final String message;
   ValidationException(this.message);
 }

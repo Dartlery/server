@@ -14,4 +14,5 @@ export 'gallery/src/requests/update_item_request.dart';
 const String setupApiPath = "setup";
 const String tagApiPath = "tags";
 const String tagCategoriesApiPath = "tag_categories";
+const String extensionDataApiPath = "extension_data";
 

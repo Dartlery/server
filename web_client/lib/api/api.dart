@@ -1,6 +1,6 @@
 export 'package:_discoveryapis_commons/_discoveryapis_commons.dart'
     show DetailedApiRequestError, ApiRequestErrorDetail;
-export 'package:api_client/gallery/0_1.dart'
+export 'package:api_client/gallery/v0_1.dart'
     show
         GalleryApi,
         CreateItemRequest,
@@ -19,6 +19,8 @@ export 'package:api_client/gallery/0_1.dart'
         TagCategory,
         TagsResourceApi,
         TagCategoriesResourceApi,
+        ExtensionDataPaginatedResponse,
+        ExtensionData,
         ItemSearchRequest;
 
 export 'src/api_http_client.dart';

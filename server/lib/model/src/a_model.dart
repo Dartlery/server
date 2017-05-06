@@ -71,9 +71,9 @@ abstract class AModel {
   @protected
   Future<User> getCurrentUser() async {
     final Principal p = userPrincipal.getOrElse(
-        () => throw new UnauthorizedException.withMessage("Please log in"));
+        () => throw new UnauthorizedException("Please log in"));
     return (await userDataSource.getById(p.name)).getOrElse(
-        () => throw new UnauthorizedException.withMessage("User not found"));
+        () => throw new UnauthorizedException("User not found"));
   }
 
   @protected
@@ -136,6 +136,6 @@ abstract class AModel {
   @protected
   Future<bool> validateUserPrivilege(String privilege) async {
     if (await userHasPrivilege(privilege)) return true;
-    throw new ForbiddenException.withMessage("$privilege required");
+    throw new ForbiddenException("$privilege required");
   }
 }

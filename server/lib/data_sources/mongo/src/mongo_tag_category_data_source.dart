@@ -10,6 +10,8 @@ import 'constants.dart';
 
 class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory> with ATagCategoryDataSource {
   static final Logger _log = new Logger('MongoTagCategoryDataSource');
+  @override
+  Logger get childLogger => _log;
 
 
   MongoTagCategoryDataSource(MongoDbConnectionPool pool): super(pool);

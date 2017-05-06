@@ -29,8 +29,8 @@ class MongoDbConnectionPool extends ConnectionPool<Db> {
   }
 
 
-  Future<dynamic> databaseWrapper(
-      Future<dynamic> statement(MongoDatabase db),
+  Future<T> databaseWrapper<T>(
+      Future<T> statement(MongoDatabase db),
       {int retries: 5}) async {
     // The number of retries should be at least as much as the number of connections in the connection pool.
     // Otherwise it might run out of retries before invalidating every potentially disconnected connection in the pool.
@@ -56,6 +56,7 @@ class MongoDbConnectionPool extends ConnectionPool<Db> {
         this.releaseConnection(conn, markAsInvalid: closeConnection);
       }
     }
+    throw new Exception("Reached unreachable code");
   }
 
 

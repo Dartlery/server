@@ -1,6 +1,7 @@
 import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery/tools.dart';
 import 'package:dartlery/data/data.dart';
+import 'package:dartlery/server.dart';
 import 'dart:io';
 import 'package:sqljocky/sqljocky.dart';
 import 'item_model.dart';
@@ -9,16 +10,29 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartlery_shared/global.dart';
+import 'package:dartlery/data_sources/data_sources.dart';
 
 class ImportModel {
   static final Logger _log = new Logger('ImportModel');
 
   final ItemModel itemModel;
   final TagCategoryModel tagCategoryModel;
+  final AImportResultsDataSource _importResultsDataSource;
 
-  ImportModel(this.itemModel, this.tagCategoryModel);
 
-  Future<List<ImportResult>> importFromShimmie({bool stopOnError: false}) async {
+  ImportModel(this.itemModel, this.tagCategoryModel, this._importResultsDataSource);
+
+
+  Future<Null> recordResult(ImportResult result) async {
+    result.timestamp = new DateTime.now();
+    if(StringTools.isNotNullOrWhitespace(result.id)) {
+      final File f = new File(getThumbnailFilePathForHash(result.id));
+      result.thumbnailCreated = f.existsSync();
+    }
+    await _importResultsDataSource.record(result);
+  }
+
+  Future<Null> importFromShimmie({bool stopOnError: false}) async {
     final ConnectionPool pool = new ConnectionPool(
         host: "192.168.1.10",
         user: "dartlery",
@@ -26,16 +40,18 @@ class ImportModel {
         db: "shimmie_rand");
 
     final int batchSize = 100;
-    int offset = 0;//3000;
+    int lastId = -1;
 
     final Results results = await pool.query(
-        "SELECT * FROM images ORDER BY ID ASC LIMIT $batchSize OFFSET $offset");
+        "SELECT * FROM images ORDER BY ID ASC LIMIT $batchSize WHERE ID > $lastId");
     List<Row> rows = await results.toList();
 
-    final List<ImportResult> output = <ImportResult>[];
+
     while (rows.length > 0) {
       for (Row row in rows) {
+        lastId = row.id;
         final ImportResult result = new ImportResult();
+        result.source = "shimmie";
         try {
           result.fileName = "${row.id} - ${row.filename}";
         final Item newItem = new Item();
@@ -105,16 +121,15 @@ class ImportModel {
           if(stopOnError) {
             rethrow;
           }
+        } finally {
+          await recordResult(result);
         }
-        output.add(result);
-
       }
-      offset += batchSize;
       final Results results = await pool.query(
-          "SELECT * FROM images  ORDER BY ID ASC LIMIT $batchSize OFFSET $offset");
+          "SELECT * FROM images  ORDER BY ID ASC LIMIT $batchSize WHERE ID > $lastId");
       rows = await results.toList();
     }
-    return output;
+
   }
 
   Future<Null> _createItem(Item newItem, ImportResult result) async {
@@ -122,14 +137,14 @@ class ImportModel {
       result.id = await itemModel.create(newItem, bypassAuthentication: true);
       _log.info("Imported new file ${result.id}");
       result.result = "added";
-    } catch (e, st) {
-      if (e.toString().contains("duplicate key")) {
-        // TODO: Merge logic
-        result.result = "merged";
-        _log.info("Already imported, skipping");
-      } else {
-        rethrow;
-      }
+    } on DuplicateItemException {
+      _log.info("Item already exists, merging");
+      final TagList newTags = new TagList.from(newItem.tags);
+      final Item existingItem = await itemModel.getById(newItem.id);
+      final TagList existingTags = new TagList.from(existingItem.tags);
+      existingTags.addAll(newTags);
+      await itemModel.updateTags(existingItem.id, existingTags.toList(), bypassAuthentication: true);
+      result.result = "merged";
     }
   }
 
@@ -142,6 +157,10 @@ class ImportModel {
     await _importFromFolderRecursive(new Directory(path), tagList, interpretShimmieNames, stopOnError);
   }
 
+  Future<PaginatedData<ImportResult>> getResults({ int page: 0, int perPage: defaultPerPage}) async {
+    return await _importResultsDataSource.get(page: page, perPage: perPage);
+  }
+
   List<String> breakDownTagString(String input) {
     final List<String> output = <String>[];
     for(Match m in tagSplitterRegExp.allMatches(input)) {
@@ -152,13 +171,12 @@ class ImportModel {
     return output;
   }
 
-  Future<List<ImportResult>> _importFromFolderRecursive(Directory currentDirectory, TagList parentTags, bool interpretShimmieNames, bool stopOnError) async {
-    final List<ImportResult> output = <ImportResult>[];
+  Future<Null> _importFromFolderRecursive(Directory currentDirectory, TagList parentTags, bool interpretShimmieNames, bool stopOnError) async {
     for(FileSystemEntity entity in currentDirectory.listSync()) {
       if(entity is Directory) {
         final TagList newTagList = new TagList.from(parentTags);
-        final String dirNAme = path.basename(entity.path);
-        for(String tagString in breakDownTagString(dirNAme)) {
+        final String dirName = path.basename(entity.path);
+        for(String tagString in breakDownTagString(dirName)) {
           newTagList.add(new Tag.withValues(tagString));
         }
         await _importFromFolderRecursive(entity, newTagList, interpretShimmieNames, stopOnError);
@@ -185,14 +203,13 @@ class ImportModel {
           _log.severe(e,st);
           result.result = "error";
           result.error = e.toString();
-
           if(stopOnError) {
             rethrow;
           }
+        } finally{
+          await recordResult(result);
         }
-        output.add(result);
       }
     }
-    return output;
   }
 }

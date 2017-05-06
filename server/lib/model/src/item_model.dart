@@ -15,23 +15,14 @@ import 'package:mime/mime.dart';
 import 'package:option/option.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_hash/image_hash.dart';
-import 'package:dartlery/plugins/plugins.dart';
-import 'package:dartlery/services/plugin_service.dart';
+import 'package:dartlery/extrensions/extensions.dart';
+import 'package:dartlery/services/extension_service.dart';
 import 'a_file_upload_model.dart';
 
 class ItemModel extends AIdBasedModel<Item> {
   static final Logger _log = new Logger('ItemModel');
   static final RegExp legalIdCharacters = new RegExp("[a-zA-Z0-9_\-]");
 
-  static final String originalFilePath =
-      path.join(rootDirectory, hostedFilesOriginalsPath);
-
-  static final String thumbnailImagePath =
-      path.join(rootDirectory, hostedFilesThumbnailsPath);
-
-  static final Directory originalFileDir = new Directory(originalFilePath);
-
-  static final Directory thumbnailDir = new Directory(thumbnailImagePath);
 
   static const List<String> supportedMimeTypes = const <String>[
     "image/jpeg",
@@ -51,10 +42,10 @@ class ItemModel extends AIdBasedModel<Item> {
 
   final ATagCategoryDataSource tagCategoryDataSource;
 
-  final PluginService _pluginService;
+  final ExtensionService _extensionServices;
 
   // TODO: evaluate more (oh)
-  ItemModel(this.itemDataSource, this.tagDataSource, this.tagCategoryDataSource, this._pluginService,
+  ItemModel(this.itemDataSource, this.tagDataSource, this.tagCategoryDataSource, this._extensionServices,
       AUserDataSource userDataSource)
       : super(userDataSource);
 
@@ -95,7 +86,7 @@ class ItemModel extends AIdBasedModel<Item> {
     item.id = await _prepareFileUploads(item);
     item.uploaded = new DateTime.now();
 
-    await _pluginService.sendCreatingItem(item);
+    await _extensionServices.sendCreatingItem(item);
 
     final String itemId = await itemDataSource.create(item);
 
@@ -123,8 +114,7 @@ class ItemModel extends AIdBasedModel<Item> {
     }
   }
 
-  Future<Null> generateThumbnail(
-      String hash, String mime, List<int> data) async {
+  Future<Null> generateThumbnail(String hash, String mime, List<int> data) async {
     if (!thumbnailDir.existsSync()) thumbnailDir.createSync(recursive: true);
     List<int> thumbnailData;
     switch (mime) {
@@ -146,7 +136,7 @@ class ItemModel extends AIdBasedModel<Item> {
         thumbnailData = await resizeImage(thumbnailData);
         break;
       default:
-        throw new Exception("MIME type not supported: $mime");
+        throw new Exception("MIME type not supported for thumbnailing: $mime");
     }
 
     final File thumbnailFile = new File(getThumbnailFilePathForHash(hash));
@@ -178,12 +168,6 @@ class ItemModel extends AIdBasedModel<Item> {
 
     return output;
   }
-
-  String getOriginalFilePathForHash(String hash) =>
-      path.join(originalFilePath, hash.substring(0, 2), hash);
-
-  String getThumbnailFilePathForHash(String hash) =>
-      path.join(thumbnailImagePath, hash.substring(0, 2), hash);
 
   Future<PaginatedIdData<Item>> getVisible(
       {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate}) async {
@@ -261,9 +245,6 @@ class ItemModel extends AIdBasedModel<Item> {
     if (!bypassAuthentication) await validateUpdatePrivileges(id);
 
     await _handleTags(item.tags);
-    if (item.fileData != null) {
-      item.id = await _prepareFileUploads(item);
-    }
 
     return await super
         .update(id, item, bypassAuthentication: bypassAuthentication);
@@ -337,6 +318,7 @@ class ItemModel extends AIdBasedModel<Item> {
   Future<String> _prepareFileUploads(Item item) async {
     item.length = item.fileData.length;
     final _PrepareFileResult result = await _prepareFileUpload(item.fileData);
+
     if (result == null) throw new Exception("No file processing result");
 
     final List<String> filesWritten = new List<String>();
@@ -395,6 +377,7 @@ class ItemModel extends AIdBasedModel<Item> {
       try {
         await generateThumbnail(result.hash, mime, data);
       } catch (e, st) {
+        item.thumbnailError = e.toString();
         _log.warning(
             "Error while generating thumbnail for ${result.hash}", e, st);
       }
@@ -418,6 +401,7 @@ class ItemModel extends AIdBasedModel<Item> {
 
   @override
   Future<String> delete(String id) async {
+    await _extensionServices.sendDeletingItem(id);
     final String output = await super.delete(id);
 
     try {

@@ -5,6 +5,7 @@ export 'src/exceptions/not_found_exception.dart';
 export 'src/exceptions/validation_exception.dart';
 export 'src/exceptions/not_implemented_exception.dart';
 export 'src/exceptions/unauthorized_exception.dart';
+export 'src/exceptions/duplicate_item_exception.dart';
 export 'src/item_action.dart';
 export 'src/item_status.dart';
 export 'src/user_privilege.dart';
@@ -36,6 +37,17 @@ const List<String> imageMimeTypes = const <String>[
 "image/gif",
 "image/png",
 ];
+
+const List<String> videoMimeTypes = const <String>[
+  'video/webm',
+  'video/mp4',
+  'video/x-flv',
+  'video/quicktime',
+  'video/avi',
+  'video/x-ms-asf',
+  'video/mpeg'
+];
+const String flashMimeType = "application/x-shockwave-flash";
 
 final Map<String, String> globalFieldTypes = <String, String>{
   numericFieldTypeId: 'Numeric',

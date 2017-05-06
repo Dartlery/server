@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "90e13831f91fb3059e1bdfb3727632dff0dab6ce",
+ "etag": "1c5894f3a24f960f0cdf819a9cc6c41408690180",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -139,6 +139,13 @@
     }
    }
   },
+  "ListOfTag": {
+   "id": "ListOfTag",
+   "type": "array",
+   "items": {
+    "$ref": "Tag"
+   }
+  },
   "PaginatedResponse": {
    "id": "PaginatedResponse",
    "type": "object",
@@ -169,13 +176,6 @@
       "type": "string"
      }
     }
-   }
-  },
-  "ListOfTag": {
-   "id": "ListOfTag",
-   "type": "array",
-   "items": {
-    "$ref": "Tag"
    }
   },
   "IdRequest": {
@@ -297,6 +297,53 @@
    "items": {
     "type": "string"
    }
+  },
+  "ExtensionDataPaginatedResponse": {
+   "id": "ExtensionDataPaginatedResponse",
+   "type": "object",
+   "properties": {
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "ExtensionData"
+     }
+    }
+   }
+  },
+  "ExtensionData": {
+   "id": "ExtensionData",
+   "type": "object",
+   "properties": {
+    "primaryId": {
+     "type": "string"
+    },
+    "secondaryId": {
+     "type": "string"
+    },
+    "value": {
+     "type": "string"
+    }
+   }
   }
  },
  "methods": {},
@@ -331,35 +378,6 @@
      "parameterOrder": [
       "id"
      ]
-    },
-    "getVisibleIds": {
-     "id": "GalleryApi.items.getVisibleIds",
-     "path": "items/",
-     "httpMethod": "GET",
-     "parameters": {
-      "page": {
-       "type": "integer",
-       "description": "Query parameter: 'page'.",
-       "required": false,
-       "location": "query"
-      },
-      "perPage": {
-       "type": "integer",
-       "description": "Query parameter: 'perPage'.",
-       "required": false,
-       "location": "query"
-      },
-      "cutoffDate": {
-       "type": "string",
-       "description": "Query parameter: 'cutoffDate'.",
-       "required": false,
-       "location": "query"
-      }
-     },
-     "parameterOrder": [],
-     "response": {
-      "$ref": "PaginatedResponse"
-     }
     },
     "getById": {
      "id": "GalleryApi.items.getById",
@@ -399,23 +417,33 @@
       "$ref": "ListOfTag"
      }
     },
-    "updateTagsForItemId": {
-     "id": "GalleryApi.items.updateTagsForItemId",
-     "path": "items/{id}/tags/",
-     "httpMethod": "PUT",
+    "getVisibleIds": {
+     "id": "GalleryApi.items.getVisibleIds",
+     "path": "items/",
+     "httpMethod": "GET",
      "parameters": {
-      "id": {
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      },
+      "cutoffDate": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
-       "required": true,
-       "location": "path"
+       "description": "Query parameter: 'cutoffDate'.",
+       "required": false,
+       "location": "query"
       }
      },
-     "parameterOrder": [
-      "id"
-     ],
-     "request": {
-      "$ref": "ListOfTag"
+     "parameterOrder": [],
+     "response": {
+      "$ref": "PaginatedResponse"
      }
     },
     "mergeItems": {
@@ -474,6 +502,25 @@
      },
      "response": {
       "$ref": "IdResponse"
+     }
+    },
+    "updateTagsForItemId": {
+     "id": "GalleryApi.items.updateTagsForItemId",
+     "path": "items/{id}/tags/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "ListOfTag"
      }
     }
    },
@@ -715,6 +762,164 @@
      },
      "response": {
       "$ref": "IdResponse"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "extensionData": {
+   "methods": {
+    "get": {
+     "id": "GalleryApi.extensionData.get",
+     "path": "extension_data/{extensionId}/{key}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "extensionId": {
+       "type": "string",
+       "description": "Path parameter: 'extensionId'.",
+       "required": true,
+       "location": "path"
+      },
+      "key": {
+       "type": "string",
+       "description": "Path parameter: 'key'.",
+       "required": true,
+       "location": "path"
+      },
+      "orderByValues": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderByValues'.",
+       "required": false,
+       "location": "query"
+      },
+      "orderDescending": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderDescending'.",
+       "required": false,
+       "location": "query"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "extensionId",
+      "key"
+     ],
+     "response": {
+      "$ref": "ExtensionDataPaginatedResponse"
+     }
+    },
+    "getByPrimaryAndSecondaryId": {
+     "id": "GalleryApi.extensionData.getByPrimaryAndSecondaryId",
+     "path": "extension_data/{extensionId}/{key}/{primaryId}/{secondaryId}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "extensionId": {
+       "type": "string",
+       "description": "Path parameter: 'extensionId'.",
+       "required": true,
+       "location": "path"
+      },
+      "key": {
+       "type": "string",
+       "description": "Path parameter: 'key'.",
+       "required": true,
+       "location": "path"
+      },
+      "primaryId": {
+       "type": "string",
+       "description": "Path parameter: 'primaryId'.",
+       "required": true,
+       "location": "path"
+      },
+      "secondaryId": {
+       "type": "string",
+       "description": "Path parameter: 'secondaryId'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "extensionId",
+      "key",
+      "primaryId",
+      "secondaryId"
+     ],
+     "response": {
+      "$ref": "ExtensionDataPaginatedResponse"
+     }
+    },
+    "getByPrimaryId": {
+     "id": "GalleryApi.extensionData.getByPrimaryId",
+     "path": "extension_data/{extensionId}/{key}/{primaryId}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "extensionId": {
+       "type": "string",
+       "description": "Path parameter: 'extensionId'.",
+       "required": true,
+       "location": "path"
+      },
+      "key": {
+       "type": "string",
+       "description": "Path parameter: 'key'.",
+       "required": true,
+       "location": "path"
+      },
+      "primaryId": {
+       "type": "string",
+       "description": "Path parameter: 'primaryId'.",
+       "required": true,
+       "location": "path"
+      },
+      "bidirectional": {
+       "type": "boolean",
+       "description": "Query parameter: 'bidirectional'.",
+       "required": false,
+       "location": "query"
+      },
+      "orderByValues": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderByValues'.",
+       "required": false,
+       "location": "query"
+      },
+      "orderDescending": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderDescending'.",
+       "required": false,
+       "location": "query"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "extensionId",
+      "key",
+      "primaryId"
+     ],
+     "response": {
+      "$ref": "ExtensionDataPaginatedResponse"
      }
     }
    },

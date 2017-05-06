@@ -12,10 +12,12 @@ import 'a_mongo_data_source.dart';
 
 class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQueueItem> with ABackgroundQueueDataSource {
   static final Logger _log = new Logger('MongoBackgroundQueueDataSource');
+  @override
+  Logger get childLogger => _log;
 
   static const String dataField = 'data';
   static const String addedField = "added";
-  static const String pluginIdField = "pluginId";
+  static const String extensionIdField = "extensionId";
 
   MongoBackgroundQueueDataSource(MongoDbConnectionPool pool): super(pool);
 
@@ -25,11 +27,11 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
       con.getBackgroundQueueCollection();
 
   @override
-  Future<Null> addToQueue(String pluginId, dynamic data) async {
+  Future<Null> addToQueue(String extensionId, dynamic data) async {
     final BackgroundQueueItem item = new BackgroundQueueItem();
     item.id = generateUuid();
     item.data = data;
-    item.pluginId = pluginId;
+    item.extensionId = extensionId;
     item.added = new DateTime.now();
     await super.insertIntoDb(item);
   }
@@ -39,7 +41,7 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
     data[idField] = item.id;
     data[dataField] = item.data;
     data[addedField] = item.added;
-    data[pluginIdField] = item.pluginId;
+    data[extensionIdField] = item.extensionId;
   }
 
   @override
@@ -48,7 +50,7 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
     output.id = data[idField];
     output.data = data[dataField];
     output.added = data[addedField];
-    output.pluginId = data[pluginIdField];
+    output.extensionId = data[extensionIdField];
     return output;
   }
 

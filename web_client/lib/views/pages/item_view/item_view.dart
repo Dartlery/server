@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:dartlery/client.dart';
 import 'package:angular2/angular2.dart';
 import 'package:angular2/platform/common.dart';
+import 'dart:convert';
 
 import 'package:angular2/router.dart';
 import 'package:angular_components/angular_components.dart';
@@ -28,29 +29,12 @@ import 'package:dartlery/views/controls/common_controls.dart';
     ],
     styleUrls: const <String>["../../shared.css"],
     templateUrl: "item_view.html")
-class ItemViewPage extends APage implements OnInit {
+class ItemViewPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemViewPage");
 
   NgForm form;
 
   Item model = new Item();
-
-  static const List<String> imageMimeTypes = const <String>[
-    "image/jpeg",
-    "image/gif",
-    "image/png",
-  ];
-
-  static const List<String> videoMimeTypes = const <String>[
-    'video/webm',
-    'video/mp4',
-    //'application/x-shockwave-flash',
-    'video/x-flv',
-    'video/quicktime',
-    'video/avi',
-    'video/x-ms-asf',
-    'video/mpeg'
-  ];
 
   bool get isImage {
     return imageMimeTypes.contains(model?.mime);
@@ -75,17 +59,11 @@ class ItemViewPage extends APage implements OnInit {
 
   ItemViewPage(this._pageControl, this._api, this._auth, this._router, this._params, this._location)
       : super(_auth, _router) {
-    _pageControl.setPageTitle("Setup");
+    _pageControl.setPageTitle("Item View");
     _pageControl.setAvailablePageActions([PageActions.Refresh, PageActions.Delete]);
 
   }
 
-  String getOriginalFileUrl(String value) {
-    if(StringTools.isNullOrWhitespace(value))
-      return "";
-    final String output = getImageUrl(value, ImageType.original);
-    return output;
-  }
 
   @override
   Logger get loggerImpl => _log;
@@ -132,6 +110,7 @@ class ItemViewPage extends APage implements OnInit {
   Future<Null> refresh() async {
     await performApiCall(() async {
         model = await _api.items.getById(itemId);
+
     });
   }
 

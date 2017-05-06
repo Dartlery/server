@@ -19,7 +19,7 @@ abstract class AResource {
   String get resourcePath => "";
 
   @protected
-  Future<dynamic> catchExceptionsAwait(Future<dynamic> toAwait()) async {
+  Future<T> catchExceptionsAwait<T>(Future<T> toAwait()) async {
     return _catchExceptions(toAwait());
   }
 

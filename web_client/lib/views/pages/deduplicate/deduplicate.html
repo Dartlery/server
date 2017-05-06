@@ -1,0 +1,7 @@
+<div *ngIf="model!=null" style="height: 100%;border:solid 1px black;">
+    <img src="{{getThumbnailFileUrl(model.primaryId)}}" style="height: 150px;" />
+    {{model.value}}
+    <img src="{{getThumbnailFileUrl(model.secondaryId)}}" style="height: 150px;" />
+    <iron-image sizing="contain" style="width: 100%;" [style.height]='comparisonHeight'
+                src="{{currentImageUrl}}"></iron-image>
+</div>

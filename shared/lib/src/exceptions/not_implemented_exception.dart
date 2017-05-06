@@ -1,5 +1,5 @@
 class NotImplementedException implements Exception {
-  String message;
+  final String message;
   NotImplementedException([this.message = ""]);
   @override
   String toString() => message;

@@ -6,3 +6,5 @@ export 'src/a_tag_data_source.dart';
 export 'src/a_tag_category_data_source.dart';
 export 'src/a_two_id_based_data_source.dart';
 export 'src/a_background_queue_data_source.dart';
+export 'src/a_extension_data_source.dart';
+export 'src/a_import_result_data_source.dart';

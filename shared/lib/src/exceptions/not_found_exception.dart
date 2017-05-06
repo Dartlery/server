@@ -1,5 +1,5 @@
 class NotFoundException implements Exception {
-  String message;
+  final String message;
   NotFoundException(this.message);
   @override
   String toString() {

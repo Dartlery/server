@@ -8,6 +8,7 @@ import 'src/resources/setup_resource.dart';
 import 'src/resources/user_resource.dart';
 import 'src/resources/tag_resource.dart';
 import 'src/resources/tag_categories_resource.dart';
+import 'src/resources/extension_data_resource.dart';
 
 export 'src/resources/item_resource.dart';
 export 'src/resources/setup_resource.dart';
@@ -43,13 +44,17 @@ class GalleryApi {
   @ApiResource()
   final TagCategoriesResource tagCategories;
 
-  GalleryApi(this.items, this.users, this.setup, this.tagCategories, this.tags);
+  @ApiResource()
+  final ExtensionDataResource extensionData;
 
-  static Module get injectorModules => new Module()
+  GalleryApi(this.items, this.users, this.setup, this.tagCategories, this.tags, this.extensionData);
+
+  static final Module injectorModules = new Module()
     ..bind(ItemResource)
     ..bind(UserResource)
     ..bind(SetupResource)
     ..bind(TagResource)
     ..bind(TagCategoriesResource)
+    ..bind(ExtensionDataResource)
     ..bind(GalleryApi);
 }

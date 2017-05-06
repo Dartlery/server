@@ -10,6 +10,8 @@ import 'constants.dart';
 
 class MongoTagDataSource extends AMongoTwoIdDataSource<Tag> with ATagDataSource {
   static final Logger _log = new Logger('MongoTagDataSource');
+  @override
+  Logger get childLogger => _log;
 
   static const String categoryField = 'category';
   static const String fullNameField = "fullName";

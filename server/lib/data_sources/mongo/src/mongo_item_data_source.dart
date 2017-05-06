@@ -16,6 +16,8 @@ import 'mongo_tag_data_source.dart';
 class MongoItemDataSource extends AMongoIdDataSource<Item>
     with AItemDataSource {
   static final Logger _log = new Logger('MongoItemDataSource');
+  @override
+  Logger get childLogger => _log;
 
   static const String metadataField = "metadata";
 
@@ -30,7 +32,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String fileNameField = "fileName";
 
   static const String lengthField = "length";
-  static const String pluginDataField = "pluginData";
+  static const String thumbnailErrorField = "thumbnailError";
   static const String extensionField = "extension";
   static const String sourceField = "source";
   MongoItemDataSource(MongoDbConnectionPool pool) : super(pool);
@@ -45,7 +47,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     output.length = data[lengthField];
     output.extension = data[extensionField];
     output.source = data[sourceField];
-    output.pluginData = data[pluginDataField];
+    output.thumbnailError = data[thumbnailErrorField];
 
     if (data[tagsField] != null) {
       output.tags = <Tag>[];
@@ -54,6 +56,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
         output.tags.add(newTag);
       }
     }
+
 
     return output;
   }
@@ -68,14 +71,20 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<PaginatedIdData<Item>> getAllPaginated(
-      {int page: 0, int perPage: defaultPerPage}) async {
+      {int page: 0, int perPage: defaultPerPage, bool sortDescending: true}) async {
     final SelectorBuilder selector = where;
     return await getPaginatedListFromDb(selector,
         limit: perPage,
         offset: getOffset(page, perPage),
         sortField: uploadedField,
-        sortDescending: false);
+        sortDescending: sortDescending);
   }
+
+  @override
+  Future<Stream<Item>> streamAll() async {
+    return await streamFromDb(where.sortBy(uploadedField, descending: false));
+  }
+  
   @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getItemsCollection();
@@ -139,8 +148,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     data[fileNameField] = item.fileName;
     data[lengthField] = item.length;
     data[extensionField] = item.extension;
-    data[pluginDataField] = item.pluginData;
     data[sourceField] = item.source;
+    data[thumbnailErrorField] = item.thumbnailError;
     if (item.tags != null) {
       final List<dynamic> tagsList = new List<dynamic>();
       for (Tag tag in item.tags) {
@@ -150,15 +159,6 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       }
       data[tagsField] = tagsList;
     }
-  }
-
-  @override
-  Future<Null> updatePluginData(String id, Map<String, dynamic> data) async {
-    final ModifierBuilder modifier = modify;
-    for (String key in data.keys) {
-      modifier.set("$pluginDataField.$key", data[key]);
-    }
-    await genericUpdate(where.eq(idField, id), modifier);
   }
 
   @override

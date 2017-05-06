@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'package:dartlery/services/background_service.dart';
+import 'dart:isolate';
+import 'package:di/di.dart';
 import 'dart:io';
 import 'package:dartlery/server.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart'
     as server_logging;
 import 'package:options_file/options_file.dart';
+import 'package:dartlery/model/model.dart';
 
-void main(List<String> args) {
+Future<Null> main(List<String> args) async {
 //  var parser = new argsLib.ArgParser()
 //    ..addOption('port', abbr: 'p', defaultsTo: '8080');
 //
@@ -18,7 +22,7 @@ void main(List<String> args) {
 //  });
 //
   // Add a simple log handler to log information to a server side file.
-  Logger.root.level = Level.FINEST;
+  Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
   final Logger _log = new Logger("server.main()");
 
@@ -39,7 +43,19 @@ void main(List<String> args) {
   final Server server = Server.createInstance(connectionString);
   server.start(ip, port);
 
+  // Now we start the thread for the background service
+  await Isolate.spawn(startBackgroundIsolate, connectionString);
+
+
 
 }
 
 
+void startBackgroundIsolate(String connectionString) {
+  Logger.root.level = Level.INFO;
+  Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
+
+  final ModuleInjector injector = createModelModuleInjector(connectionString);
+  final BackgroundService service = injector.get(BackgroundService);
+  service.start();
+}

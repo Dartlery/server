@@ -1,3 +1,4 @@
+import 'package:rpc/rpc.dart';
 import 'package:dartlery/data/data.dart';
 
 class PaginatedResponse<T> {
@@ -8,6 +9,7 @@ class PaginatedResponse<T> {
   int page;
   int totalPages;
 
+  @ApiProperty()
   List<T> items = new List<T>();
 
   PaginatedResponse();

@@ -1,3 +1,4 @@
+import 'package:dartlery_shared/global.dart';
 import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -9,7 +10,8 @@ export 'mongo_db_connection_pool.dart';
 export 'mongo_database.dart';
 
 abstract class AMongoDataSource {
-  static final Logger _log = new Logger('AMongoDataSource');
+  @protected
+  Logger get childLogger;
 
 
   final MongoDbConnectionPool dbConnectionPool;
@@ -17,14 +19,23 @@ abstract class AMongoDataSource {
 
   int getOffset(int page, int perPage) => page * perPage;
 
-  Future<dynamic> _databaseWrapper(
-          Future<dynamic> statement(MongoDatabase db),
-          {int retries: 5}) =>
-      dbConnectionPool.databaseWrapper(statement, retries: retries);
+  Future<T> _databaseWrapper<T>(
+          Future<T> statement(MongoDatabase db),
+          {int retries: 5})  async {
+    try {
+      return await dbConnectionPool.databaseWrapper<T>(statement, retries: retries);
+    } catch (e, st) {
+      if (e.toString().contains("duplicate key")) {
+        throw new DuplicateItemException("Item already exists in database",e,st);
+      }
+      rethrow;
+    }
+  }
+
 
   @protected
-  Future<dynamic> collectionWrapper(
-          Future<dynamic> statement(DbCollection c)) =>
+  Future<T> collectionWrapper<T>(
+          Future<T> statement(DbCollection c)) =>
       _databaseWrapper((MongoDatabase con) async =>
           await statement(await getCollection(con)));
 
@@ -70,7 +81,7 @@ abstract class AMongoDataSource {
   }
 
   @protected
-  Future<List<dynamic>> genericFind(SelectorBuilder selector) async {
+  Future<List<Map>> genericFind(SelectorBuilder selector) async {
     return await collectionWrapper((DbCollection collection) async {
       final Stream<dynamic> str = collection.find(selector);
       final List<dynamic> output = await str.toList();
@@ -78,7 +89,7 @@ abstract class AMongoDataSource {
     });
   }
 
-  Future<Stream<dynamic>> genericFindStream(SelectorBuilder selector) async {
+  Future<Stream<Map>> genericFindStream(SelectorBuilder selector) async {
     return await collectionWrapper((DbCollection collection) async {
       return collection.find(selector);
     });

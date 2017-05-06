@@ -121,7 +121,7 @@ class UserModel extends AIdBasedModel<User> {
     }
 
     if(currentUserId != username && !(await userHasPrivilege(UserPrivilege.admin)))
-      throw new ForbiddenException.withMessage(
+      throw new ForbiddenException(
           "You do not have permission to change another user's password");
 
     final String userPassword =

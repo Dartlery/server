@@ -13,6 +13,8 @@ import 'constants.dart';
 class MongoUserDataSource extends AMongoIdDataSource<User>
     with AUserDataSource {
   static final Logger _log = new Logger('MongoUserDataSource');
+  @override
+  Logger get childLogger => _log;
 
   static const String typeField = "type";
   static const String emailField = "email";
