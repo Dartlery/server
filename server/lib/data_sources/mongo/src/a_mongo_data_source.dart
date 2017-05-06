@@ -22,14 +22,7 @@ abstract class AMongoDataSource {
   Future<T> _databaseWrapper<T>(
           Future<T> statement(MongoDatabase db),
           {int retries: 5})  async {
-    try {
       return await dbConnectionPool.databaseWrapper<T>(statement, retries: retries);
-    } catch (e, st) {
-      if (e.toString().contains("duplicate key")) {
-        throw new DuplicateItemException("Item already exists in database",e,st);
-      }
-      rethrow;
-    }
   }
 
 

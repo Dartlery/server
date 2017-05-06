@@ -3,6 +3,7 @@ import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:connection_pool/connection_pool.dart';
 import 'mongo_database.dart';
+import 'package:dartlery_shared/global.dart';
 
 class MongoDbConnectionPool extends ConnectionPool<Db> {
   static final Logger _log = new Logger('_MongoDbConnectionPool');
@@ -52,6 +53,12 @@ class MongoDbConnectionPool extends ConnectionPool<Db> {
               st);
         }
         closeConnection = true;
+      } catch (e, st) {
+        _log.fine("Error while operating on mongo dataabase", e,st);
+        if (e.toString().contains("duplicate key")) {
+          throw new DuplicateItemException("Item already exists in database",e,st);
+        }
+        rethrow;
       } finally {
         this.releaseConnection(conn, markAsInvalid: closeConnection);
       }

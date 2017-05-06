@@ -114,14 +114,18 @@ class ItemModel extends AIdBasedModel<Item> {
     }
   }
 
-  Future<Null> generateThumbnail(String hash, String mime, List<int> data) async {
-    if (!thumbnailDir.existsSync()) thumbnailDir.createSync(recursive: true);
-    List<int> thumbnailData;
+  Future<Image> _getRepresentativeImage(String hash, String mime, List<int> data) async {
     switch (mime) {
       case "image/jpeg":
+        return decodeImage(data);
+        break;
       case "image/gif":
       case "image/png":
-        thumbnailData = await resizeImage(data);
+      case "image/tiff":
+      case "image/webp":
+        try {
+          Animation anim = decodeAnimation(data);
+        return decodeImage(data);
         break;
       case 'video/webm':
       case 'video/mp4':
@@ -131,13 +135,16 @@ class ItemModel extends AIdBasedModel<Item> {
       case 'video/avi':
       case 'video/x-ms-asf':
       case 'video/mpeg':
-        thumbnailData =
-            await generateFfmpegThumbnail(getOriginalFilePathForHash(hash));
-        thumbnailData = await resizeImage(thumbnailData);
+        return decodePng(await generateFfmpegThumbnail(getOriginalFilePathForHash(hash)));
         break;
       default:
         throw new Exception("MIME type not supported for thumbnailing: $mime");
     }
+  }
+
+  Future<Null> _createAndSaveThumbnail(Image image, String hash) async {
+    if (!thumbnailDir.existsSync()) thumbnailDir.createSync(recursive: true);
+    final List<int> thumbnailData = await _resizeImage(image);
 
     final File thumbnailFile = new File(getThumbnailFilePathForHash(hash));
 
@@ -151,11 +158,11 @@ class ItemModel extends AIdBasedModel<Item> {
       _log.fine("Writing to ${thumbnailFile.path}");
       await thumbnailRaf.writeFrom(thumbnailData);
     } finally {
-      try {
-        await thumbnailRaf.close();
-      } catch (e2, st) {
-        _log.warning(e2, st);
-      }
+    try {
+    await thumbnailRaf.close();
+    } catch (e2, st) {
+    _log.warning(e2, st);
+    }
     }
   }
 
@@ -182,16 +189,14 @@ class ItemModel extends AIdBasedModel<Item> {
         page: page, perPage: perPage, cutoffDate: cutoffDate);
   }
 
-  Future<List<int>> resizeImage(List<int> data) async {
-    final Image image = decodeImage(data);
-    List<int> thumbnailData;
-    if (image.width > 300) {
-      final Image thumbnail = copyResize(image, 300, -1, AVERAGE);
-      thumbnailData = encodeJpg(thumbnail, quality: 90);
+  Future<List<int>> _resizeImage(Image image, {int maxDimension: 300}) async {
+    Image thumbnail;
+    if (image.width > image.height) {
+      thumbnail = copyResize(image, maxDimension, -1, AVERAGE);
     } else {
-      thumbnailData = data;
+      thumbnail = copyResize(image, -1, maxDimension, AVERAGE);
     }
-    return thumbnailData;
+    return encodeJpg(thumbnail, quality: 90);
   }
 
   Future<PaginatedIdData<Item>> searchVisible(List<Tag> tags,
@@ -375,7 +380,11 @@ class ItemModel extends AIdBasedModel<Item> {
 
 
       try {
-        await generateThumbnail(result.hash, mime, data);
+        Image representativeImage = await _getRepresentativeImage(result.hash, mime, data);
+        item.height = representativeImage.height;
+        item.width = representativeImage.width;
+        representativeImage.duration = 'test';
+        await _createAndSaveThumbnail(representativeImage, result.hash);
       } catch (e, st) {
         item.thumbnailError = e.toString();
         _log.warning(

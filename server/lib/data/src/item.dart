@@ -10,6 +10,9 @@ class Item extends AIdData {
   List<int> fileData;
   String fileName;
   int length;
+  int height;
+  int width;
+  bool video;
   Map<String, String> metadata = <String, String>{};
   String mime;
   String source;

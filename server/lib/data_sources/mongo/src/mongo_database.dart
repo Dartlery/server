@@ -31,7 +31,7 @@ class MongoDatabase {
 
 
   Future<DbCollection> getItemsCollection() async {
-    await db.createIndex(_extensionDataCollection,
+    await db.createIndex(_itemsCollection,
         keys: {MongoItemDataSource.uploadedField: -1}, name: "UploadedIndex");
 
     final DbCollection output =
@@ -49,8 +49,15 @@ class MongoDatabase {
     await db.createIndex(_extensionDataCollection,
         keys: {MongoExtensionDataSource.extensionIdField: 1,
           MongoExtensionDataSource.keyField: 1,
-        MongoExtensionDataSource.primaryIdField: 1,
-        MongoExtensionDataSource.secondaryIdField: 1}, name: "ExtensionDataIndex", unique: true);
+          MongoExtensionDataSource.primaryIdField: 1,
+          MongoExtensionDataSource.secondaryIdField: 1}, name: "ExtensionDataIndex", unique: true);
+    await db.createIndex(_extensionDataCollection,
+        keys: {MongoExtensionDataSource.extensionIdField: 1,
+          MongoExtensionDataSource.keyField: 1}, name: "ExtensionDataKeyIndex", unique: false);
+    await db.createIndex(_extensionDataCollection,
+        keys: {MongoExtensionDataSource.extensionIdField: 1,
+          MongoExtensionDataSource.keyField: 1,
+        MongoExtensionDataSource.valueField: -1}, name: "ExtensionDataKeyValueDescendingIndex", unique: false);
     return db.collection(_extensionDataCollection);
   }
 

@@ -1,6 +1,6 @@
 import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery_shared/global.dart';
-import 'dart:html';
+import 'dart:html' as html;
 import 'dart:async';
 import 'package:dartlery/client.dart';
 import 'package:angular2/angular2.dart';
@@ -38,7 +38,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   ExtensionData model;
 
   String get comparisonHeight {
-    return "${window.innerHeight-225}px";
+    return "${html.window.innerHeight-225}px";
   }
 
   int currentImage = 0;

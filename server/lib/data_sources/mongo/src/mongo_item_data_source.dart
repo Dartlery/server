@@ -35,6 +35,9 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String thumbnailErrorField = "thumbnailError";
   static const String extensionField = "extension";
   static const String sourceField = "source";
+  static const String heightField = "height";
+  static const String widthField = "width";
+  static const String videoField = "video";
   MongoItemDataSource(MongoDbConnectionPool pool) : super(pool);
   @override
   Item createObject(Map<String, dynamic> data) {
@@ -48,6 +51,9 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     output.extension = data[extensionField];
     output.source = data[sourceField];
     output.thumbnailError = data[thumbnailErrorField];
+    output.height = data[heightField];
+    output.width = data[widthField];
+    output.video = data[videoField];
 
     if (data[tagsField] != null) {
       output.tags = <Tag>[];
