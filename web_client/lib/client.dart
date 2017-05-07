@@ -23,11 +23,11 @@ Option<Element> getChildElement(Element start, String tagName) {
 }
 
 /// Determines the appropriate URL to get an image from the server's image store.
-String getImageUrl(String image, ImageType type) {
+String getImageUrl(String image, ItemFileType type) {
   switch (type) {
-    case ImageType.original:
-      return "${getServerRoot()}$hostedFilesOriginalsPath${image.substring(0,2)}/${image}";
-    case ImageType.thumbnail:
+    case ItemFileType.full:
+      return "${getServerRoot()}$hostedFilesFullPath${image.substring(0,2)}/${image}";
+    case ItemFileType.thumbnail:
       return "${getServerRoot()}$hostedFilesThumbnailsPath${image.substring(0,2)}/${image}";
     default:
       throw new Exception("Not supported: $type");
@@ -74,10 +74,10 @@ String getServerRoot() {
 }
 
 /// Defines the different image types that can be requested from the server.
-enum ImageType {
-  /// The original, unaltered image file.
+enum ItemFileType {
   original,
-
+  /// The original full size file, or the web-friendly version thereof.
+  full,
   /// A scaled-down, slightly more compressed, version of an original image file.
   thumbnail
 }

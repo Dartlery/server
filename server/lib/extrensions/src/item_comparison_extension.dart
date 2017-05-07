@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/model/model.dart';
@@ -39,7 +39,7 @@ class ItemComparisonExtension extends AExtension {
       final Option<Item> sourceItem = await _itemDataSource.getById(item.data);
 
       if (sourceItem.isEmpty) return;
-      if (!imageMimeTypes.contains(sourceItem.first.mime)) return;
+      if (!MimeTypes.imageTypes.contains(sourceItem.first.mime)) return;
 
       final ImageHash sourceHash = await _getPerceptualHash(item.data);
 
@@ -49,7 +49,7 @@ class ItemComparisonExtension extends AExtension {
       await for (Item targetItem in itemStream) {
 
         if (sourceItem.first.id == targetItem.id) continue;
-          if (!imageMimeTypes.contains(targetItem.mime)) continue;
+          if (!MimeTypes.imageTypes.contains(targetItem.mime)) continue;
 
           try {
             if (await _checkForComparisonResult(
@@ -89,7 +89,7 @@ class ItemComparisonExtension extends AExtension {
     if(item.id=="94795b7b0c8c4b09cd455a09c14961ac44bc807eb0617a4b3b791db34a3b52e7")
       _log.info(item);
     try {
-      if (imageMimeTypes.contains(item.mime)) {
+      if (MimeTypes.imageTypes.contains(item.mime)) {
         await _backgroundQueueDataSource.addToQueue(this.extensionId, item.id);
       }
     } catch (e, st) {
@@ -123,7 +123,7 @@ class ItemComparisonExtension extends AExtension {
     } on NotFoundException {
       // Hash hasn't been generated, have to make it
     }
-    final String fileName = getOriginalFilePathForHash(imageID);
+    final String fileName = getFullFilePathForHash(imageID);
 
     final File f = new File(fileName);
     if (!f.existsSync()) return null;

@@ -40,7 +40,7 @@ dev_dependencies:
 dependency_overrides:
   shelf_static:
     git: https://github.com/dartalog/shelf_static.git
-  image_hash:
-    path: ../../image_hash/
+#  image_hash:
+#    path: ../../image_hash/
 executables:
   dartalog-server: server

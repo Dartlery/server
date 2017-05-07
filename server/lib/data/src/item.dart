@@ -12,7 +12,9 @@ class Item extends AIdData {
   int length;
   int height;
   int width;
-  bool video;
+  int duration;
+  bool video = false;
+  bool audio = false;
   Map<String, String> metadata = <String, String>{};
   String mime;
   String source;

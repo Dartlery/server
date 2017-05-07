@@ -38,6 +38,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String heightField = "height";
   static const String widthField = "width";
   static const String videoField = "video";
+  static const String audioField = "audio";
   MongoItemDataSource(MongoDbConnectionPool pool) : super(pool);
   @override
   Item createObject(Map<String, dynamic> data) {
@@ -54,6 +55,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     output.height = data[heightField];
     output.width = data[widthField];
     output.video = data[videoField];
+    output.audio = data[audioField];
 
     if (data[tagsField] != null) {
       output.tags = <Tag>[];
@@ -156,6 +158,12 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     data[extensionField] = item.extension;
     data[sourceField] = item.source;
     data[thumbnailErrorField] = item.thumbnailError;
+
+    data[heightField] = item.height;
+    data[widthField] = item.width;
+    data[videoField] = item.video;
+    data[audioField] = item.audio;
+
     if (item.tags != null) {
       final List<dynamic> tagsList = new List<dynamic>();
       for (Tag tag in item.tags) {

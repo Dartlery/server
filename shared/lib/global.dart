@@ -9,6 +9,7 @@ export 'src/exceptions/duplicate_item_exception.dart';
 export 'src/item_action.dart';
 export 'src/item_status.dart';
 export 'src/user_privilege.dart';
+export 'src/mime_types.dart';
 
 const String appName = "Dartlery";
 const String galleryApiVersion = "v0.1";
@@ -17,10 +18,11 @@ const String galleryApiPath = "api/$galleryApiName/$galleryApiVersion/";
 
 const int defaultPerPage = 60;
 
-const String hostedFilesOriginalsPath = "${hostedFilesPath}originals/";
+const String hostedFilesFullPath = "${hostedFilesPath}full/";
 const String hostedFilesPath = "files/";
 
 const String hostedFilesThumbnailsPath = "${hostedFilesPath}thumbnails/";
+const String hostedFilesOriginalPath = "${hostedFilesPath}original/";
 const int httpStatusServerNeedsSetup = 555;
 
 const int paginatedDataLimit = 60;
@@ -32,22 +34,6 @@ const String imageFieldTypeId = "image";
 const String hiddenFieldTypeId = "hidden";
 const String multiValueStringTypeID = "multiValueString";
 
-const List<String> imageMimeTypes = const <String>[
-"image/jpeg",
-"image/gif",
-"image/png",
-];
-
-const List<String> videoMimeTypes = const <String>[
-  'video/webm',
-  'video/mp4',
-  'video/x-flv',
-  'video/quicktime',
-  'video/avi',
-  'video/x-ms-asf',
-  'video/mpeg'
-];
-const String flashMimeType = "application/x-shockwave-flash";
 
 final Map<String, String> globalFieldTypes = <String, String>{
   numericFieldTypeId: 'Numeric',

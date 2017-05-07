@@ -13,12 +13,12 @@ abstract class APage extends AApiErrorThing {
   String getOriginalFileUrl(String value) {
     if(StringTools.isNullOrWhitespace(value))
       return "";
-    final String output = getImageUrl(value, ImageType.original);
+    final String output = getImageUrl(value, ItemFileType.full);
     return output;
   }
 
   String getThumbnailFileUrl(String value) {
-    final String output = getImageUrl(value, ImageType.thumbnail);
+    final String output = getImageUrl(value, ItemFileType.thumbnail);
     return output;
   }
 

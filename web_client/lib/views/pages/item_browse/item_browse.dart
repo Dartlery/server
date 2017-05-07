@@ -80,10 +80,10 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     await refresh();
   }
 
-  String getOriginalFileUrl(String id) => getImageUrl(id, ImageType.original);
+  String getOriginalFileUrl(String id) => getImageUrl(id, ItemFileType.full);
 
   String getThumbnailForImage(String value) {
-    final String output = getImageUrl(value, ImageType.thumbnail);
+    final String output = getImageUrl(value, ItemFileType.thumbnail);
     return output;
   }
 
@@ -168,7 +168,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
           final IdWrapper item = toOpen.removeFirst();
           //final AnchorElement a =document.getElementById("original_link_${item.id}");
           //if (a != null) {
-            final String link = getImageUrl(item.id, ImageType.original);
+            final String link = getImageUrl(item.id, ItemFileType.full);
             final WindowBase wb = window.open(link, item.id);
             wb.addEventListener('load', openNextLink, true);
             //a.click();

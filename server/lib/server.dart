@@ -54,22 +54,23 @@ void disableSetup() {
   _setupDisabled = true;
 }
 
-final String originalFilePath =
-path.join(rootDirectory, hostedFilesOriginalsPath);
-
-final String thumbnailImagePath =
+final String fullFilePath =
+path.join(rootDirectory, hostedFilesFullPath);
+final String thumbnailFilePath =
 path.join(rootDirectory, hostedFilesThumbnailsPath);
+final String originalFilePath =
+path.join(rootDirectory, hostedFilesOriginalPath);
 
-final Directory originalFileDir = new Directory(originalFilePath);
+final Directory originalDir = new Directory(originalFilePath);
+final Directory fullFileDir = new Directory(fullFilePath);
+final Directory thumbnailDir = new Directory(thumbnailFilePath);
 
-final Directory thumbnailDir = new Directory(thumbnailImagePath);
-
-
+String getFullFilePathForHash(String hash) =>
+    path.join(fullFilePath, hash.substring(0, 2), hash);
 String getOriginalFilePathForHash(String hash) =>
-    path.join(originalFilePath, hash.substring(0, 2), hash);
-
+    path.join(fullFilePath, hash.substring(0, 2), hash);
 String getThumbnailFilePathForHash(String hash) =>
-    path.join(thumbnailImagePath, hash.substring(0, 2), hash);
+    path.join(thumbnailFilePath, hash.substring(0, 2), hash);
 
 Future<bool> isSetupAvailable() async {
   if (_setupDisabled) return false;
