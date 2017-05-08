@@ -1,3 +1,4 @@
+import 'dart:html' as html;
 import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery_shared/global.dart';
 import 'dart:async';
@@ -33,6 +34,21 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemViewPage");
 
   NgForm form;
+  final ItemSearchService _searchService;
+
+  String get widthString {
+    if(model.width>html.window.innerWidth)
+      return "100%";
+    else
+      return "${model.width}px";
+  }
+
+  String get heightString {
+    if(model.height>html.window.innerHeight)
+      return "${html.window.innerHeight}px";
+    else
+      return "${model.height}px";
+  }
 
   Item model = new Item();
 
@@ -57,7 +73,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   StreamSubscription<PageActions> _pageActionSubscription;
 
 
-  ItemViewPage(this._pageControl, this._api, this._auth, this._router, this._params, this._location)
+  ItemViewPage(this._pageControl, this._api, this._auth, this._router, this._params, this._location, this._searchService)
       : super(_auth, _router) {
     _pageControl.setPageTitle("Item View");
     _pageControl.setAvailablePageActions([PageActions.Refresh, PageActions.Delete]);
@@ -121,5 +137,18 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   }
 
   void clear() {
+  }
+
+  Future<Null> nextItemClicked() async {
+    final String next  = await _searchService.getNextItem(model.id);
+    if(StringTools.isNotNullOrWhitespace(next)) {
+      await _router.navigate([itemViewRoute.name, {idRouteParameter: next}]);
+    }
+  }
+  Future<Null> previousItemClicked() async {
+    final String next  = await _searchService.getPreviousItem(model.id);
+    if(StringTools.isNotNullOrWhitespace(next)) {
+      await _router.navigate([itemViewRoute.name, {idRouteParameter: next}]);
+    }
   }
 }

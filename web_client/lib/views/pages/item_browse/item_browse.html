@@ -4,7 +4,7 @@
     <a [routerLink]="['Item', {id: i.id}]" class="item_card" id="link_{{i.id}}">
         <paper-material class="item_card" data-id="{{i.id}}" title="{{i.id}}" class="container">
             <iron-image class="fit" sizing="cover"
-                src="{{getThumbnailForImage(i.id)}}"></iron-image>
+                src="{{getThumbnailFileUrl(i.id)}}"></iron-image>
         </paper-material>
     </a>
     <div class="item-menu">

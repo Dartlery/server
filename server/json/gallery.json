@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "1c5894f3a24f960f0cdf819a9cc6c41408690180",
+ "etag": "0a42838eb8e447da3061ed3b5642c3832f03495b",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -47,6 +47,24 @@
      "type": "integer",
      "format": "int32"
     },
+    "height": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "width": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "duration": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "video": {
+     "type": "boolean"
+    },
+    "audio": {
+     "type": "boolean"
+    },
     "metadata": {
      "type": "object",
      "additionalProperties": {
@@ -71,6 +89,15 @@
     },
     "uploader": {
      "type": "string"
+    },
+    "errors": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "fullFileAvailable": {
+     "type": "boolean"
     },
     "id": {
      "type": "string"
@@ -211,21 +238,6 @@
     }
    }
   },
-  "UpdateItemRequest": {
-   "id": "UpdateItemRequest",
-   "type": "object",
-   "properties": {
-    "item": {
-     "$ref": "Item"
-    },
-    "files": {
-     "type": "array",
-     "items": {
-      "$ref": "MediaMessage"
-     }
-    }
-   }
-  },
   "PasswordChangeRequest": {
    "id": "PasswordChangeRequest",
    "type": "object",
@@ -298,8 +310,8 @@
     "type": "string"
    }
   },
-  "ExtensionDataPaginatedResponse": {
-   "id": "ExtensionDataPaginatedResponse",
+  "PaginatedExtensionDataResponse": {
+   "id": "PaginatedExtensionDataResponse",
    "type": "object",
    "properties": {
     "startIndex": {
@@ -482,8 +494,8 @@
       "$ref": "PaginatedResponse"
      }
     },
-    "updateItem": {
-     "id": "GalleryApi.items.updateItem",
+    "update": {
+     "id": "GalleryApi.items.update",
      "path": "items/{id}/",
      "httpMethod": "PUT",
      "parameters": {
@@ -498,7 +510,7 @@
       "id"
      ],
      "request": {
-      "$ref": "UpdateItemRequest"
+      "$ref": "Item"
      },
      "response": {
       "$ref": "IdResponse"
@@ -816,7 +828,7 @@
       "key"
      ],
      "response": {
-      "$ref": "ExtensionDataPaginatedResponse"
+      "$ref": "PaginatedExtensionDataResponse"
      }
     },
     "getByPrimaryAndSecondaryId": {
@@ -856,8 +868,45 @@
       "secondaryId"
      ],
      "response": {
-      "$ref": "ExtensionDataPaginatedResponse"
+      "$ref": "PaginatedExtensionDataResponse"
      }
+    },
+    "delete": {
+     "id": "GalleryApi.extensionData.delete",
+     "path": "extension_data/{extensionId}/{key}/{primaryId}/{secondaryId}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "extensionId": {
+       "type": "string",
+       "description": "Path parameter: 'extensionId'.",
+       "required": true,
+       "location": "path"
+      },
+      "key": {
+       "type": "string",
+       "description": "Path parameter: 'key'.",
+       "required": true,
+       "location": "path"
+      },
+      "primaryId": {
+       "type": "string",
+       "description": "Path parameter: 'primaryId'.",
+       "required": true,
+       "location": "path"
+      },
+      "secondaryId": {
+       "type": "string",
+       "description": "Path parameter: 'secondaryId'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "extensionId",
+      "key",
+      "primaryId",
+      "secondaryId"
+     ]
     },
     "getByPrimaryId": {
      "id": "GalleryApi.extensionData.getByPrimaryId",
@@ -919,7 +968,7 @@
       "primaryId"
      ],
      "response": {
-      "$ref": "ExtensionDataPaginatedResponse"
+      "$ref": "PaginatedExtensionDataResponse"
      }
     }
    },

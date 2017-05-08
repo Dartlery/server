@@ -21,7 +21,8 @@ class Item extends AIdData {
   List<Tag> tags = <Tag>[];
   DateTime uploaded;
   String uploader;
-  String thumbnailError;
+  List<String> errors = <String>[];
+  bool fullFileAvailable = false;
 
   Item();
 }

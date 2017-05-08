@@ -47,7 +47,7 @@ Future<Null> main(List<String> args) async {
 //      await importModel.importFromPath(argResults["path"], interpretShimmieNames: true, stopOnError: true);
   //}
 
-  await importModel.importFromPath(r"\\darkholme\rand\import", interpretShimmieNames: true, stopOnError: true);
+  await importModel.importFromPath(r"\\darkholme\rand\importTest", interpretShimmieNames: true, stopOnError: true);
 
   _log.info("Process is over!");
 }

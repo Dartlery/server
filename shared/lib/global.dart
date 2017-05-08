@@ -10,6 +10,7 @@ export 'src/item_action.dart';
 export 'src/item_status.dart';
 export 'src/user_privilege.dart';
 export 'src/mime_types.dart';
+import 'package:path/path.dart' as path;
 
 const String appName = "Dartlery";
 const String galleryApiVersion = "v0.1";
@@ -18,11 +19,11 @@ const String galleryApiPath = "api/$galleryApiName/$galleryApiVersion/";
 
 const int defaultPerPage = 60;
 
-const String hostedFilesFullPath = "${hostedFilesPath}full/";
-const String hostedFilesPath = "files/";
+const String hostedFilesPath = "files";
 
-const String hostedFilesThumbnailsPath = "${hostedFilesPath}thumbnails/";
-const String hostedFilesOriginalPath = "${hostedFilesPath}original/";
+final String hostedFilesFullPath = path.join(hostedFilesPath,"full");
+final String hostedFilesThumbnailsPath = path.join(hostedFilesPath,"thumbnails");
+final String hostedFilesOriginalPath = path.join(hostedFilesPath,"original");
 const int httpStatusServerNeedsSetup = 555;
 
 const int paginatedDataLimit = 60;

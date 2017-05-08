@@ -21,8 +21,8 @@ class TagCategoriesPage extends AMaintenancePage<api.TagCategory> {
 
   TagCategoriesPage(PageControlService pageControl, ApiService api,
       AuthenticationService auth, Router router)
-      : super("Collection", pageControl, api, auth, router) {
-    pageControl.setPageTitle("Collections");
+      : super("Tag Categories", pageControl, api, auth, router) {
+    pageControl.setPageTitle("Tag Categories");
   }
 
   @override

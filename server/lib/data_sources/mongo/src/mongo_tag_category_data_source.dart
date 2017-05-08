@@ -13,6 +13,7 @@ class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory> with AT
   @override
   Logger get childLogger => _log;
 
+static const String colorField = "color";
 
   MongoTagCategoryDataSource(MongoDbConnectionPool pool): super(pool);
 
@@ -24,6 +25,7 @@ class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory> with AT
   static TagCategory staticCreateObject(Map data) {
     final TagCategory output = new TagCategory();
     AMongoIdDataSource.setIdForData(output, data);
+    output.color = data[colorField];
     return output;
   }
 
@@ -35,5 +37,6 @@ class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory> with AT
   @override
   void updateMap(TagCategory tag, Map data) {
     super.updateMap(tag, data);
+    data[colorField] = tag.color;
   }
 }

@@ -28,17 +28,20 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String mimeField = "mime";
 
   static const String uploadedField = "uploaded";
+  static const String uploaderField = "uploader";
 
   static const String fileNameField = "fileName";
 
   static const String lengthField = "length";
-  static const String thumbnailErrorField = "thumbnailError";
+  static const String errorsField = "errors";
   static const String extensionField = "extension";
   static const String sourceField = "source";
   static const String heightField = "height";
   static const String widthField = "width";
   static const String videoField = "video";
   static const String audioField = "audio";
+  static const String durationField = "duration";
+  static const String fullFileAvailableField = "fullFileAvailable";
   MongoItemDataSource(MongoDbConnectionPool pool) : super(pool);
   @override
   Item createObject(Map<String, dynamic> data) {
@@ -46,16 +49,19 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     AMongoIdDataSource.setIdForData(output, data);
     output.metadata = data[metadataField];
     output.uploaded = data[uploadedField];
+    output.uploader = data[uploaderField];
     output.mime = data[mimeField];
     output.fileName = data[fileNameField];
     output.length = data[lengthField];
     output.extension = data[extensionField];
     output.source = data[sourceField];
-    output.thumbnailError = data[thumbnailErrorField];
+    output.errors = data[errorsField];
     output.height = data[heightField];
     output.width = data[widthField];
     output.video = data[videoField];
     output.audio = data[audioField];
+    output.duration= data[durationField];
+    output.fullFileAvailable= data[fullFileAvailableField];
 
     if (data[tagsField] != null) {
       output.tags = <Tag>[];
@@ -153,16 +159,19 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     data[metadataField] = item.metadata;
     data[mimeField] = item.mime;
     data[uploadedField] = item.uploaded;
+    data[uploaderField] = item.uploader;
     data[fileNameField] = item.fileName;
     data[lengthField] = item.length;
     data[extensionField] = item.extension;
     data[sourceField] = item.source;
-    data[thumbnailErrorField] = item.thumbnailError;
+    data[errorsField] = item.errors;
+    data[fullFileAvailableField] = item.fullFileAvailable;
 
     data[heightField] = item.height;
     data[widthField] = item.width;
     data[videoField] = item.video;
     data[audioField] = item.audio;
+    data[durationField] = item.duration;
 
     if (item.tags != null) {
       final List<dynamic> tagsList = new List<dynamic>();

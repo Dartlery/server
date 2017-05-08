@@ -50,6 +50,7 @@ import 'package:dartlery/data/data.dart';
       ROUTER_PROVIDERS,
       materialProviders,
       PageControlService,
+      ItemSearchService,
       SettingsService,
       ApiService,
       AuthenticationService,
@@ -72,6 +73,7 @@ class MainApp implements OnInit, OnDestroy {
   bool showAddButton = false;
   bool showSearch = false;
   bool showDeleteButton = false;
+  bool showTagButton = false;
   bool showOpenInNewButton = false;
 
   bool userIsModerator = false;
@@ -169,6 +171,9 @@ class MainApp implements OnInit, OnDestroy {
 
   void refreshClicked() {
     _pageControl.requestPageAction(PageActions.Refresh);
+  }
+  void tagClicked() {
+    _pageControl.requestPageAction(PageActions.Tag);
   }
   void deleteClicked() {
     confirmDeleteVisible = true;

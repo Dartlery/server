@@ -3,58 +3,19 @@
 <div *ngIf="userAuthorized">
     <div *ngIf="noItemsFound&&!processing" class="no-items">No Tag Categories Found</div>
     <material-expansionpanel-set *ngIf="!noItemsFound">
-        <material-expansionpanel name="{{i.name}}" *ngFor="let i of items" (save)="onSubmit()"
-                                 [expanded]="i.uuid==''"
+        <material-expansionpanel name="{{i}}" *ngFor="let i of items" (save)="onSubmit()"
+                                 [expanded]="i==''"
                                  [saveDisabled]="!editForm.valid" (open)="selectItem(i)" (close)="cancelEdit()" (cancel)="cancelEdit()">
             <div style="column-width: 200pt;">
                 <form (ngSubmit)="onSubmit()" #editForm="ngForm">
-                    <table>
-                        <tr>
-                            <td>
-                                <material-input [(ngModel)]="model.readableId" ngControl="readableId" floatingLabel required autoFocus
-                                                label="ID"></material-input>
-                                <br/>
-                                <material-input [(ngModel)]="model.name" ngControl="name" floatingLabel required
-                                                label="Name"></material-input>
-                                <br/>
-                            </td>
-                            <td>
-                                <material-checkbox [(ngModel)]="model.publiclyBrowsable" ngControl="publiclyBrowsable"
-                                                   label="Publicly Browsable"></material-checkbox>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                Users
-                                <select [(ngModel)]="selectedUser">
-                                    <option></option>
-                                    <option *ngFor="let u of users.values" [ngValue]="u">
-                                        {{u.name}}
-                                    </option>
-                                </select>
-                                <material-button (trigger)="addCurator()" raised>Add Curator</material-button>
-                                <material-button (trigger)="addBrowser()" raised>Add Browser</material-button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Curators
-                                <material-list>
-                                    <material-list-item *ngFor="let i of model.curatorUuids" (trigger)="removeCurator(i)">
-                                        {{users[i]?.name??i}}
-                                    </material-list-item>
-                                </material-list>
-                            </td>
-                            <td>
-                                Browsers
-                                <material-list>
-                                    <material-list-item *ngFor="let i of model.browserUuids" (trigger)="removeBrowser(i)">
-                                        {{users[i]?.name??i}}
-                                    </material-list-item>
-                                </material-list>
-                            </td>
-                        </tr>
-                    </table>
+                    <material-input [(ngModel)]="model.id" ngControl="id" floatingLabel required
+                                    autoFocus
+                                    label="ID"></material-input>
+                    <br/>
+                    <label>Color:<input type="color" [(ngModel)]="model.color" ngControl="color" /></label>
+                    <br/>
+
+
                     <span *ngIf="hasErrorMessage" class="error_output">
                     <glyph icon="error_outline"></glyph>
                     {{errorMessage}}

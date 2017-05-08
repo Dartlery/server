@@ -95,48 +95,6 @@ checkExtensionData(api.ExtensionData o) {
   buildCounterExtensionData--;
 }
 
-buildUnnamed0() {
-  var o = new core.List<api.ExtensionData>();
-  o.add(buildExtensionData());
-  o.add(buildExtensionData());
-  return o;
-}
-
-checkUnnamed0(core.List<api.ExtensionData> o) {
-  unittest.expect(o, unittest.hasLength(2));
-  checkExtensionData(o[0]);
-  checkExtensionData(o[1]);
-}
-
-core.int buildCounterExtensionDataPaginatedResponse = 0;
-buildExtensionDataPaginatedResponse() {
-  var o = new api.ExtensionDataPaginatedResponse();
-  buildCounterExtensionDataPaginatedResponse++;
-  if (buildCounterExtensionDataPaginatedResponse < 3) {
-    o.items = buildUnnamed0();
-    o.page = 42;
-    o.pageCount = 42;
-    o.startIndex = 42;
-    o.totalCount = 42;
-    o.totalPages = 42;
-  }
-  buildCounterExtensionDataPaginatedResponse--;
-  return o;
-}
-
-checkExtensionDataPaginatedResponse(api.ExtensionDataPaginatedResponse o) {
-  buildCounterExtensionDataPaginatedResponse++;
-  if (buildCounterExtensionDataPaginatedResponse < 3) {
-    checkUnnamed0(o.items);
-    unittest.expect(o.page, unittest.equals(42));
-    unittest.expect(o.pageCount, unittest.equals(42));
-    unittest.expect(o.startIndex, unittest.equals(42));
-    unittest.expect(o.totalCount, unittest.equals(42));
-    unittest.expect(o.totalPages, unittest.equals(42));
-  }
-  buildCounterExtensionDataPaginatedResponse--;
-}
-
 core.int buildCounterIdRequest = 0;
 buildIdRequest() {
   var o = new api.IdRequest();
@@ -175,6 +133,19 @@ checkIdResponse(api.IdResponse o) {
     unittest.expect(o.location, unittest.equals('foo'));
   }
   buildCounterIdResponse--;
+}
+
+buildUnnamed0() {
+  var o = new core.List<core.String>();
+  o.add("foo");
+  o.add("foo");
+  return o;
+}
+
+checkUnnamed0(core.List<core.String> o) {
+  unittest.expect(o, unittest.hasLength(2));
+  unittest.expect(o[0], unittest.equals('foo'));
+  unittest.expect(o[1], unittest.equals('foo'));
 }
 
 buildUnnamed1() {
@@ -221,9 +192,14 @@ buildItem() {
   var o = new api.Item();
   buildCounterItem++;
   if (buildCounterItem < 3) {
+    o.audio = true;
+    o.duration = 42;
+    o.errors = buildUnnamed0();
     o.extension = "foo";
     o.fileData = buildUnnamed1();
     o.fileName = "foo";
+    o.fullFileAvailable = true;
+    o.height = 42;
     o.id = "foo";
     o.length = 42;
     o.metadata = buildUnnamed2();
@@ -232,6 +208,8 @@ buildItem() {
     o.tags = buildUnnamed3();
     o.uploaded = core.DateTime.parse("2002-02-27T14:01:02");
     o.uploader = "foo";
+    o.video = true;
+    o.width = 42;
   }
   buildCounterItem--;
   return o;
@@ -240,9 +218,14 @@ buildItem() {
 checkItem(api.Item o) {
   buildCounterItem++;
   if (buildCounterItem < 3) {
+    unittest.expect(o.audio, unittest.isTrue);
+    unittest.expect(o.duration, unittest.equals(42));
+    checkUnnamed0(o.errors);
     unittest.expect(o.extension, unittest.equals('foo'));
     checkUnnamed1(o.fileData);
     unittest.expect(o.fileName, unittest.equals('foo'));
+    unittest.expect(o.fullFileAvailable, unittest.isTrue);
+    unittest.expect(o.height, unittest.equals(42));
     unittest.expect(o.id, unittest.equals('foo'));
     unittest.expect(o.length, unittest.equals(42));
     checkUnnamed2(o.metadata);
@@ -251,6 +234,8 @@ checkItem(api.Item o) {
     checkUnnamed3(o.tags);
     unittest.expect(o.uploaded, unittest.equals(core.DateTime.parse("2002-02-27T14:01:02")));
     unittest.expect(o.uploader, unittest.equals('foo'));
+    unittest.expect(o.video, unittest.isTrue);
+    unittest.expect(o.width, unittest.equals(42));
   }
   buildCounterItem--;
 }
@@ -379,13 +364,55 @@ checkMediaMessage(api.MediaMessage o) {
 }
 
 buildUnnamed7() {
+  var o = new core.List<api.ExtensionData>();
+  o.add(buildExtensionData());
+  o.add(buildExtensionData());
+  return o;
+}
+
+checkUnnamed7(core.List<api.ExtensionData> o) {
+  unittest.expect(o, unittest.hasLength(2));
+  checkExtensionData(o[0]);
+  checkExtensionData(o[1]);
+}
+
+core.int buildCounterPaginatedExtensionDataResponse = 0;
+buildPaginatedExtensionDataResponse() {
+  var o = new api.PaginatedExtensionDataResponse();
+  buildCounterPaginatedExtensionDataResponse++;
+  if (buildCounterPaginatedExtensionDataResponse < 3) {
+    o.items = buildUnnamed7();
+    o.page = 42;
+    o.pageCount = 42;
+    o.startIndex = 42;
+    o.totalCount = 42;
+    o.totalPages = 42;
+  }
+  buildCounterPaginatedExtensionDataResponse--;
+  return o;
+}
+
+checkPaginatedExtensionDataResponse(api.PaginatedExtensionDataResponse o) {
+  buildCounterPaginatedExtensionDataResponse++;
+  if (buildCounterPaginatedExtensionDataResponse < 3) {
+    checkUnnamed7(o.items);
+    unittest.expect(o.page, unittest.equals(42));
+    unittest.expect(o.pageCount, unittest.equals(42));
+    unittest.expect(o.startIndex, unittest.equals(42));
+    unittest.expect(o.totalCount, unittest.equals(42));
+    unittest.expect(o.totalPages, unittest.equals(42));
+  }
+  buildCounterPaginatedExtensionDataResponse--;
+}
+
+buildUnnamed8() {
   var o = new core.List<core.String>();
   o.add("foo");
   o.add("foo");
   return o;
 }
 
-checkUnnamed7(core.List<core.String> o) {
+checkUnnamed8(core.List<core.String> o) {
   unittest.expect(o, unittest.hasLength(2));
   unittest.expect(o[0], unittest.equals('foo'));
   unittest.expect(o[1], unittest.equals('foo'));
@@ -396,7 +423,7 @@ buildPaginatedResponse() {
   var o = new api.PaginatedResponse();
   buildCounterPaginatedResponse++;
   if (buildCounterPaginatedResponse < 3) {
-    o.items = buildUnnamed7();
+    o.items = buildUnnamed8();
     o.page = 42;
     o.pageCount = 42;
     o.startIndex = 42;
@@ -410,7 +437,7 @@ buildPaginatedResponse() {
 checkPaginatedResponse(api.PaginatedResponse o) {
   buildCounterPaginatedResponse++;
   if (buildCounterPaginatedResponse < 3) {
-    checkUnnamed7(o.items);
+    checkUnnamed8(o.items);
     unittest.expect(o.page, unittest.equals(42));
     unittest.expect(o.pageCount, unittest.equals(42));
     unittest.expect(o.startIndex, unittest.equals(42));
@@ -523,40 +550,6 @@ checkTagCategory(api.TagCategory o) {
   buildCounterTagCategory--;
 }
 
-buildUnnamed8() {
-  var o = new core.List<api.MediaMessage>();
-  o.add(buildMediaMessage());
-  o.add(buildMediaMessage());
-  return o;
-}
-
-checkUnnamed8(core.List<api.MediaMessage> o) {
-  unittest.expect(o, unittest.hasLength(2));
-  checkMediaMessage(o[0]);
-  checkMediaMessage(o[1]);
-}
-
-core.int buildCounterUpdateItemRequest = 0;
-buildUpdateItemRequest() {
-  var o = new api.UpdateItemRequest();
-  buildCounterUpdateItemRequest++;
-  if (buildCounterUpdateItemRequest < 3) {
-    o.files = buildUnnamed8();
-    o.item = buildItem();
-  }
-  buildCounterUpdateItemRequest--;
-  return o;
-}
-
-checkUpdateItemRequest(api.UpdateItemRequest o) {
-  buildCounterUpdateItemRequest++;
-  if (buildCounterUpdateItemRequest < 3) {
-    checkUnnamed8(o.files);
-    checkItem(o.item);
-  }
-  buildCounterUpdateItemRequest--;
-}
-
 core.int buildCounterUser = 0;
 buildUser() {
   var o = new api.User();
@@ -598,15 +591,6 @@ main() {
       var o = buildExtensionData();
       var od = new api.ExtensionData.fromJson(o.toJson());
       checkExtensionData(od);
-    });
-  });
-
-
-  unittest.group("obj-schema-ExtensionDataPaginatedResponse", () {
-    unittest.test("to-json--from-json", () {
-      var o = buildExtensionDataPaginatedResponse();
-      var od = new api.ExtensionDataPaginatedResponse.fromJson(o.toJson());
-      checkExtensionDataPaginatedResponse(od);
     });
   });
 
@@ -674,6 +658,15 @@ main() {
   });
 
 
+  unittest.group("obj-schema-PaginatedExtensionDataResponse", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildPaginatedExtensionDataResponse();
+      var od = new api.PaginatedExtensionDataResponse.fromJson(o.toJson());
+      checkPaginatedExtensionDataResponse(od);
+    });
+  });
+
+
   unittest.group("obj-schema-PaginatedResponse", () {
     unittest.test("to-json--from-json", () {
       var o = buildPaginatedResponse();
@@ -728,15 +721,6 @@ main() {
   });
 
 
-  unittest.group("obj-schema-UpdateItemRequest", () {
-    unittest.test("to-json--from-json", () {
-      var o = buildUpdateItemRequest();
-      var od = new api.UpdateItemRequest.fromJson(o.toJson());
-      checkUpdateItemRequest(od);
-    });
-  });
-
-
   unittest.group("obj-schema-User", () {
     unittest.test("to-json--from-json", () {
       var o = buildUser();
@@ -747,6 +731,81 @@ main() {
 
 
   unittest.group("resource-ExtensionDataResourceApi", () {
+    unittest.test("method--delete", () {
+
+      var mock = new HttpServerMock();
+      api.ExtensionDataResourceApi res = new api.GalleryApi(mock).extensionData;
+      var arg_extensionId = "foo";
+      var arg_key = "foo";
+      var arg_primaryId = "foo";
+      var arg_secondaryId = "foo";
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 15), unittest.equals("extension_data/"));
+        pathOffset += 15;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_extensionId"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_key"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_primaryId"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_secondaryId"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = "";
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.delete(arg_extensionId, arg_key, arg_primaryId, arg_secondaryId).then(unittest.expectAsync((_) {}));
+    });
+
     unittest.test("method--get", () {
 
       var mock = new HttpServerMock();
@@ -808,11 +867,11 @@ main() {
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = convert.JSON.encode(buildExtensionDataPaginatedResponse());
+        var resp = convert.JSON.encode(buildPaginatedExtensionDataResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.get(arg_extensionId, arg_key, orderByValues: arg_orderByValues, orderDescending: arg_orderDescending, page: arg_page, perPage: arg_perPage).then(unittest.expectAsync(((api.ExtensionDataPaginatedResponse response) {
-        checkExtensionDataPaginatedResponse(response);
+      res.get(arg_extensionId, arg_key, orderByValues: arg_orderByValues, orderDescending: arg_orderDescending, page: arg_page, perPage: arg_perPage).then(unittest.expectAsync(((api.PaginatedExtensionDataResponse response) {
+        checkPaginatedExtensionDataResponse(response);
       })));
     });
 
@@ -885,11 +944,11 @@ main() {
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = convert.JSON.encode(buildExtensionDataPaginatedResponse());
+        var resp = convert.JSON.encode(buildPaginatedExtensionDataResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getByPrimaryAndSecondaryId(arg_extensionId, arg_key, arg_primaryId, arg_secondaryId).then(unittest.expectAsync(((api.ExtensionDataPaginatedResponse response) {
-        checkExtensionDataPaginatedResponse(response);
+      res.getByPrimaryAndSecondaryId(arg_extensionId, arg_key, arg_primaryId, arg_secondaryId).then(unittest.expectAsync(((api.PaginatedExtensionDataResponse response) {
+        checkPaginatedExtensionDataResponse(response);
       })));
     });
 
@@ -964,11 +1023,11 @@ main() {
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = convert.JSON.encode(buildExtensionDataPaginatedResponse());
+        var resp = convert.JSON.encode(buildPaginatedExtensionDataResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getByPrimaryId(arg_extensionId, arg_key, arg_primaryId, bidirectional: arg_bidirectional, orderByValues: arg_orderByValues, orderDescending: arg_orderDescending, page: arg_page, perPage: arg_perPage).then(unittest.expectAsync(((api.ExtensionDataPaginatedResponse response) {
-        checkExtensionDataPaginatedResponse(response);
+      res.getByPrimaryId(arg_extensionId, arg_key, arg_primaryId, bidirectional: arg_bidirectional, orderByValues: arg_orderByValues, orderDescending: arg_orderDescending, page: arg_page, perPage: arg_perPage).then(unittest.expectAsync(((api.PaginatedExtensionDataResponse response) {
+        checkPaginatedExtensionDataResponse(response);
       })));
     });
 
@@ -1339,15 +1398,15 @@ main() {
       })));
     });
 
-    unittest.test("method--updateItem", () {
+    unittest.test("method--update", () {
 
       var mock = new HttpServerMock();
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
-      var arg_request = buildUpdateItemRequest();
+      var arg_request = buildItem();
       var arg_id = "foo";
       mock.register(unittest.expectAsync((http.BaseRequest req, json) {
-        var obj = new api.UpdateItemRequest.fromJson(json);
-        checkUpdateItemRequest(obj);
+        var obj = new api.Item.fromJson(json);
+        checkItem(obj);
 
         var path = (req.url).path;
         var pathOffset = 0;
@@ -1391,7 +1450,7 @@ main() {
         var resp = convert.JSON.encode(buildIdResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.updateItem(arg_request, arg_id).then(unittest.expectAsync(((api.IdResponse response) {
+      res.update(arg_request, arg_id).then(unittest.expectAsync(((api.IdResponse response) {
         checkIdResponse(response);
       })));
     });

@@ -24,7 +24,15 @@ class ImportModel {
 
 
   Future<Null> recordResult(ImportResult result) async {
+
     result.timestamp = new DateTime.now();
+    if(StringTools.isNullOrWhitespace(result.id))
+      throw new FormatException("ID is missing");
+    if(StringTools.isNullOrWhitespace(result.source))
+      throw new FormatException("Source is missing");
+    if(StringTools.isNullOrWhitespace(result.result))
+      throw new FormatException("Result is missing");
+
     if(StringTools.isNotNullOrWhitespace(result.id)) {
       final File f = new File(getThumbnailFilePathForHash(result.id));
       result.thumbnailCreated = f.existsSync();
@@ -141,6 +149,7 @@ class ImportModel {
       _log.info("Item already exists, merging");
       final TagList newTags = new TagList.from(newItem.tags);
       final Item existingItem = await itemModel.getById(newItem.id);
+      result.id = existingItem.id;
       final TagList existingTags = new TagList.from(existingItem.tags);
       existingTags.addAll(newTags);
       await itemModel.updateTags(existingItem.id, existingTags.toList(), bypassAuthentication: true);
@@ -182,6 +191,7 @@ class ImportModel {
         await _importFromFolderRecursive(entity, newTagList, interpretShimmieNames, stopOnError);
       } else if(entity is File) {
         final ImportResult result = new ImportResult();
+        result.source = "folder";
         try {
           result.fileName = path.basename(entity.path);
           _log.info("Attempting to import ${entity.path}");
@@ -197,6 +207,7 @@ class ImportModel {
           }
           newItem.fileData = await getFileData(entity.path);
           newItem.fileName = result.fileName;
+          newItem.extension = path.extension(entity.path).substring(1);
           await _createItem(newItem, result);
           _log.info("Imported file ${entity.path}");
         } catch(e,st) {

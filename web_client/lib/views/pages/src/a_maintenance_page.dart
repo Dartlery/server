@@ -41,7 +41,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
     this.model = createBlank();
   }
 
-  bool get isNewItem => StringTools.isNullOrWhitespace(model.id);
+  bool get isNewItem => StringTools.isNullOrWhitespace(selectedId);
 
   dynamic get itemApi;
 

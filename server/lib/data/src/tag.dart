@@ -29,5 +29,8 @@ class Tag extends AIdData {
     }
     return false;
   }
+
+  @override
+  String toString() => fullName;
 }
 

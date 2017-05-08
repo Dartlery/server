@@ -19,6 +19,11 @@ class TagList extends Iterable<TagWrapper> {
       this.add(new TagWrapper(t));
     }
   }
+  void addTagList(TagList tags) {
+    for(TagWrapper t in tags) {
+      this.add(t);
+    }
+  }
 
   TagList.fromQueryString(String query) {
     final Iterable<Tag> tags =  query.split(tagSeparator).map((String tagString) {
@@ -77,5 +82,16 @@ class TagList extends Iterable<TagWrapper> {
   String toQueryString() => convertToQueryString(this.toListOfTags());
 
   List<Tag> toListOfTags() => new List<Tag>.from(_list.map((TagWrapper t) => t.tag));
+
+  bool compare(TagList otherList) {
+    for(TagWrapper tag in otherList) {
+      if(indexOf(tag)==-1)
+        return false;
+    }
+    if(length!=otherList.length)
+      return false;
+
+    return true;
+  }
 
 }

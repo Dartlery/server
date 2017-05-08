@@ -56,7 +56,7 @@ class MongoDbConnectionPool extends ConnectionPool<Db> {
       } catch (e, st) {
         _log.fine("Error while operating on mongo dataabase", e,st);
         if (e.toString().contains("duplicate key")) {
-          throw new DuplicateItemException("Item already exists in database",e,st);
+          throw new DuplicateItemException("Item already exists in database");
         }
         rethrow;
       } finally {

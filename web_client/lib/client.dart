@@ -1,7 +1,9 @@
 import 'dart:html';
 import 'package:dartlery_shared/global.dart';
 import 'package:option/option.dart';
+import 'package:path/path.dart' as path;
 export 'src/http_headers.dart';
+
 
 
 /// Gets the first child [Element] matching the specified name.
@@ -26,9 +28,11 @@ Option<Element> getChildElement(Element start, String tagName) {
 String getImageUrl(String image, ItemFileType type) {
   switch (type) {
     case ItemFileType.full:
-      return "${getServerRoot()}$hostedFilesFullPath${image.substring(0,2)}/${image}";
+      return path.join(getServerRoot(),hostedFilesFullPath,image.substring(0,2),image);
     case ItemFileType.thumbnail:
-      return "${getServerRoot()}$hostedFilesThumbnailsPath${image.substring(0,2)}/${image}";
+      return path.join(getServerRoot(),hostedFilesThumbnailsPath,image.substring(0,2),image);
+    case ItemFileType.original:
+      return path.join(getServerRoot(),hostedFilesOriginalPath,image.substring(0,2),image);
     default:
       throw new Exception("Not supported: $type");
   }

@@ -18,9 +18,7 @@ class BackgroundService {
 
   void start() {
     _log.info("Starting background service");
-    Timer.run(() {
-      _backgroundThread();
-    });
+    _backgroundThread();
   }
 
   void stop() {

@@ -62,7 +62,7 @@ class MediaMimeResolver extends MimeTypeResolver{
       lookupBytes = data;
     }
 
-    _log.info(HEX.encode(lookupBytes));
+    _log.fine("Header bytes: ${HEX.encode(lookupBytes)}");
 
     return  lookup("", headerBytes: lookupBytes);
   }

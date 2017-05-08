@@ -8,8 +8,8 @@ export 'package:api_client/gallery/v0_1.dart'
         PaginatedResponse,
         User,
         MediaMessage,
-        UpdateItemRequest,
         IdResponse,
+        IdRequest,
         PasswordChangeRequest,
         SetupRequest,
         SetupResponse,
@@ -19,7 +19,7 @@ export 'package:api_client/gallery/v0_1.dart'
         TagCategory,
         TagsResourceApi,
         TagCategoriesResourceApi,
-        ExtensionDataPaginatedResponse,
+        PaginatedExtensionDataResponse,
         ExtensionData,
         ItemSearchRequest;
 

@@ -45,6 +45,58 @@ class ExtensionDataResourceApi {
    *
    * [key] - Path parameter: 'key'.
    *
+   * [primaryId] - Path parameter: 'primaryId'.
+   *
+   * [secondaryId] - Path parameter: 'secondaryId'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future delete(core.String extensionId, core.String key, core.String primaryId, core.String secondaryId) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (extensionId == null) {
+      throw new core.ArgumentError("Parameter extensionId is required.");
+    }
+    if (key == null) {
+      throw new core.ArgumentError("Parameter key is required.");
+    }
+    if (primaryId == null) {
+      throw new core.ArgumentError("Parameter primaryId is required.");
+    }
+    if (secondaryId == null) {
+      throw new core.ArgumentError("Parameter secondaryId is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'extension_data/' + commons.Escaper.ecapeVariable('$extensionId') + '/' + commons.Escaper.ecapeVariable('$key') + '/' + commons.Escaper.ecapeVariable('$primaryId') + '/' + commons.Escaper.ecapeVariable('$secondaryId') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [extensionId] - Path parameter: 'extensionId'.
+   *
+   * [key] - Path parameter: 'key'.
+   *
    * [orderByValues] - Query parameter: 'orderByValues'.
    *
    * [orderDescending] - Query parameter: 'orderDescending'.
@@ -53,7 +105,7 @@ class ExtensionDataResourceApi {
    *
    * [perPage] - Query parameter: 'perPage'.
    *
-   * Completes with a [ExtensionDataPaginatedResponse].
+   * Completes with a [PaginatedExtensionDataResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -61,7 +113,7 @@ class ExtensionDataResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ExtensionDataPaginatedResponse> get(core.String extensionId, core.String key, {core.bool orderByValues, core.bool orderDescending, core.int page, core.int perPage}) {
+  async.Future<PaginatedExtensionDataResponse> get(core.String extensionId, core.String key, {core.bool orderByValues, core.bool orderDescending, core.int page, core.int perPage}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -97,7 +149,7 @@ class ExtensionDataResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ExtensionDataPaginatedResponse.fromJson(data));
+    return _response.then((data) => new PaginatedExtensionDataResponse.fromJson(data));
   }
 
   /**
@@ -111,7 +163,7 @@ class ExtensionDataResourceApi {
    *
    * [secondaryId] - Path parameter: 'secondaryId'.
    *
-   * Completes with a [ExtensionDataPaginatedResponse].
+   * Completes with a [PaginatedExtensionDataResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -119,7 +171,7 @@ class ExtensionDataResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ExtensionDataPaginatedResponse> getByPrimaryAndSecondaryId(core.String extensionId, core.String key, core.String primaryId, core.String secondaryId) {
+  async.Future<PaginatedExtensionDataResponse> getByPrimaryAndSecondaryId(core.String extensionId, core.String key, core.String primaryId, core.String secondaryId) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -149,7 +201,7 @@ class ExtensionDataResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ExtensionDataPaginatedResponse.fromJson(data));
+    return _response.then((data) => new PaginatedExtensionDataResponse.fromJson(data));
   }
 
   /**
@@ -171,7 +223,7 @@ class ExtensionDataResourceApi {
    *
    * [perPage] - Query parameter: 'perPage'.
    *
-   * Completes with a [ExtensionDataPaginatedResponse].
+   * Completes with a [PaginatedExtensionDataResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -179,7 +231,7 @@ class ExtensionDataResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ExtensionDataPaginatedResponse> getByPrimaryId(core.String extensionId, core.String key, core.String primaryId, {core.bool bidirectional, core.bool orderByValues, core.bool orderDescending, core.int page, core.int perPage}) {
+  async.Future<PaginatedExtensionDataResponse> getByPrimaryId(core.String extensionId, core.String key, core.String primaryId, {core.bool bidirectional, core.bool orderByValues, core.bool orderDescending, core.int page, core.int perPage}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -221,7 +273,7 @@ class ExtensionDataResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ExtensionDataPaginatedResponse.fromJson(data));
+    return _response.then((data) => new PaginatedExtensionDataResponse.fromJson(data));
   }
 
 }
@@ -525,7 +577,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<IdResponse> updateItem(UpdateItemRequest request, core.String id) {
+  async.Future<IdResponse> update(Item request, core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1213,61 +1265,6 @@ class ExtensionData {
   }
 }
 
-class ExtensionDataPaginatedResponse {
-  core.List<ExtensionData> items;
-  core.int page;
-  core.int pageCount;
-  core.int startIndex;
-  core.int totalCount;
-  core.int totalPages;
-
-  ExtensionDataPaginatedResponse();
-
-  ExtensionDataPaginatedResponse.fromJson(core.Map _json) {
-    if (_json.containsKey("items")) {
-      items = _json["items"].map((value) => new ExtensionData.fromJson(value)).toList();
-    }
-    if (_json.containsKey("page")) {
-      page = _json["page"];
-    }
-    if (_json.containsKey("pageCount")) {
-      pageCount = _json["pageCount"];
-    }
-    if (_json.containsKey("startIndex")) {
-      startIndex = _json["startIndex"];
-    }
-    if (_json.containsKey("totalCount")) {
-      totalCount = _json["totalCount"];
-    }
-    if (_json.containsKey("totalPages")) {
-      totalPages = _json["totalPages"];
-    }
-  }
-
-  core.Map toJson() {
-    var _json = new core.Map();
-    if (items != null) {
-      _json["items"] = items.map((value) => (value).toJson()).toList();
-    }
-    if (page != null) {
-      _json["page"] = page;
-    }
-    if (pageCount != null) {
-      _json["pageCount"] = pageCount;
-    }
-    if (startIndex != null) {
-      _json["startIndex"] = startIndex;
-    }
-    if (totalCount != null) {
-      _json["totalCount"] = totalCount;
-    }
-    if (totalPages != null) {
-      _json["totalPages"] = totalPages;
-    }
-    return _json;
-  }
-}
-
 class IdRequest {
   core.String id;
 
@@ -1316,9 +1313,14 @@ class IdResponse {
 }
 
 class Item {
+  core.bool audio;
+  core.int duration;
+  core.List<core.String> errors;
   core.String extension;
   core.List<core.int> fileData;
   core.String fileName;
+  core.bool fullFileAvailable;
+  core.int height;
   core.String id;
   core.int length;
   core.Map<core.String, core.String> metadata;
@@ -1327,10 +1329,21 @@ class Item {
   core.List<Tag> tags;
   core.DateTime uploaded;
   core.String uploader;
+  core.bool video;
+  core.int width;
 
   Item();
 
   Item.fromJson(core.Map _json) {
+    if (_json.containsKey("audio")) {
+      audio = _json["audio"];
+    }
+    if (_json.containsKey("duration")) {
+      duration = _json["duration"];
+    }
+    if (_json.containsKey("errors")) {
+      errors = _json["errors"];
+    }
     if (_json.containsKey("extension")) {
       extension = _json["extension"];
     }
@@ -1339,6 +1352,12 @@ class Item {
     }
     if (_json.containsKey("fileName")) {
       fileName = _json["fileName"];
+    }
+    if (_json.containsKey("fullFileAvailable")) {
+      fullFileAvailable = _json["fullFileAvailable"];
+    }
+    if (_json.containsKey("height")) {
+      height = _json["height"];
     }
     if (_json.containsKey("id")) {
       id = _json["id"];
@@ -1364,10 +1383,25 @@ class Item {
     if (_json.containsKey("uploader")) {
       uploader = _json["uploader"];
     }
+    if (_json.containsKey("video")) {
+      video = _json["video"];
+    }
+    if (_json.containsKey("width")) {
+      width = _json["width"];
+    }
   }
 
   core.Map toJson() {
     var _json = new core.Map();
+    if (audio != null) {
+      _json["audio"] = audio;
+    }
+    if (duration != null) {
+      _json["duration"] = duration;
+    }
+    if (errors != null) {
+      _json["errors"] = errors;
+    }
     if (extension != null) {
       _json["extension"] = extension;
     }
@@ -1376,6 +1410,12 @@ class Item {
     }
     if (fileName != null) {
       _json["fileName"] = fileName;
+    }
+    if (fullFileAvailable != null) {
+      _json["fullFileAvailable"] = fullFileAvailable;
+    }
+    if (height != null) {
+      _json["height"] = height;
     }
     if (id != null) {
       _json["id"] = id;
@@ -1400,6 +1440,12 @@ class Item {
     }
     if (uploader != null) {
       _json["uploader"] = uploader;
+    }
+    if (video != null) {
+      _json["video"] = video;
+    }
+    if (width != null) {
+      _json["width"] = width;
     }
     return _json;
   }
@@ -1562,6 +1608,61 @@ class MediaMessage {
     }
     if (updated != null) {
       _json["updated"] = (updated).toIso8601String();
+    }
+    return _json;
+  }
+}
+
+class PaginatedExtensionDataResponse {
+  core.List<ExtensionData> items;
+  core.int page;
+  core.int pageCount;
+  core.int startIndex;
+  core.int totalCount;
+  core.int totalPages;
+
+  PaginatedExtensionDataResponse();
+
+  PaginatedExtensionDataResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("items")) {
+      items = _json["items"].map((value) => new ExtensionData.fromJson(value)).toList();
+    }
+    if (_json.containsKey("page")) {
+      page = _json["page"];
+    }
+    if (_json.containsKey("pageCount")) {
+      pageCount = _json["pageCount"];
+    }
+    if (_json.containsKey("startIndex")) {
+      startIndex = _json["startIndex"];
+    }
+    if (_json.containsKey("totalCount")) {
+      totalCount = _json["totalCount"];
+    }
+    if (_json.containsKey("totalPages")) {
+      totalPages = _json["totalPages"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (items != null) {
+      _json["items"] = items.map((value) => (value).toJson()).toList();
+    }
+    if (page != null) {
+      _json["page"] = page;
+    }
+    if (pageCount != null) {
+      _json["pageCount"] = pageCount;
+    }
+    if (startIndex != null) {
+      _json["startIndex"] = startIndex;
+    }
+    if (totalCount != null) {
+      _json["totalCount"] = totalCount;
+    }
+    if (totalPages != null) {
+      _json["totalPages"] = totalPages;
     }
     return _json;
   }
@@ -1745,33 +1846,6 @@ class TagCategory {
     }
     if (id != null) {
       _json["id"] = id;
-    }
-    return _json;
-  }
-}
-
-class UpdateItemRequest {
-  core.List<MediaMessage> files;
-  Item item;
-
-  UpdateItemRequest();
-
-  UpdateItemRequest.fromJson(core.Map _json) {
-    if (_json.containsKey("files")) {
-      files = _json["files"].map((value) => new MediaMessage.fromJson(value)).toList();
-    }
-    if (_json.containsKey("item")) {
-      item = new Item.fromJson(_json["item"]);
-    }
-  }
-
-  core.Map toJson() {
-    var _json = new core.Map();
-    if (files != null) {
-      _json["files"] = files.map((value) => (value).toJson()).toList();
-    }
-    if (item != null) {
-      _json["item"] = (item).toJson();
     }
     return _json;
   }

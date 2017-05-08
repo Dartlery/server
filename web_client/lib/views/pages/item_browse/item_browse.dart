@@ -56,8 +56,11 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   StreamSubscription<bool> _authChangedSubscription;
   StreamSubscription<KeyboardEvent> _keyboardSubscription;
 
+  final ItemSearchService _search;
+
+
   ItemBrowseComponent(
-      this._api, this._routeParams, this._pageControl, this._router, this._auth)
+      this._api, this._routeParams, this._pageControl, this._router, this._auth, this._search)
       : super(_auth, _router) {
     setActions();
   }
@@ -80,16 +83,11 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     await refresh();
   }
 
-  String getOriginalFileUrl(String id) => getImageUrl(id, ItemFileType.full);
-
-  String getThumbnailForImage(String value) {
-    final String output = getImageUrl(value, ItemFileType.thumbnail);
-    return output;
-  }
-
   void itemSelectChanged(bool checked, String id) {
     setActions();
   }
+
+
 
   @override
   void ngOnDestroy() {
@@ -107,7 +105,6 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
         _auth.authStatusChanged.listen(onAuthStatusChange);
     _pageActionSubscription =
         _pageControl.pageActionRequested.listen(onPageActionRequested);
-
     _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
     refresh();
   }
@@ -140,6 +137,10 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       case PageActions.OpenInNew:
         this.openSelectedItemsInNewWindow();
         break;
+      case PageActions.Tag:
+        this.openSelectedItemsInNewWindow();
+        break;
+
       default:
         throw new Exception(
             action.toString() + " not implemented for this page");
@@ -198,19 +199,13 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
         query = _routeParams.get(queryRouteParameter);
       }
 
-      PaginatedResponse response;
-      if (StringTools.isNullOrWhitespace(query)) {
-        response = await _api.items.getVisibleIds(page: page);
-      } else {
+      if (StringTools.isNotNullOrWhitespace(query)) {
         final TagList tagList = new TagList.fromQueryString(query);
-
-        final ItemSearchRequest request = new ItemSearchRequest();
-        request.page = page;
-        request.tags = tagList.toListOfTags();
-
-        response = await _api.items.searchVisible(request);
+        _search.setTags(tagList);
         routeName = itemsSearchPageRoute.name;
       }
+
+      final PaginatedResponse response = await _search.performSearch(page:page);
 
       selectedItems.clear();
       items.clear();

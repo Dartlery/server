@@ -68,7 +68,7 @@ final Directory thumbnailDir = new Directory(thumbnailFilePath);
 String getFullFilePathForHash(String hash) =>
     path.join(fullFilePath, hash.substring(0, 2), hash);
 String getOriginalFilePathForHash(String hash) =>
-    path.join(fullFilePath, hash.substring(0, 2), hash);
+    path.join(originalFilePath, hash.substring(0, 2), hash);
 String getThumbnailFilePathForHash(String hash) =>
     path.join(thumbnailFilePath, hash.substring(0, 2), hash);
 

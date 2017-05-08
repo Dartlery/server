@@ -19,7 +19,7 @@ class ItemComparisonExtension extends AExtension {
 
   static const String pluginIdStatic = "itemComparison";
 
-  static const int similarityCutoff = 50;
+  static const int similarityCutoff = 85;
 
   static const String perceptualHashKeyName = "perceptualHash";
   static const String similarItemsKeyName = "similarItems";
@@ -50,6 +50,10 @@ class ItemComparisonExtension extends AExtension {
 
         if (sourceItem.first.id == targetItem.id) continue;
           if (!MimeTypes.imageTypes.contains(targetItem.mime)) continue;
+
+          // We'll support comparing animated GIFs, but only to other animated GIFs
+          if(sourceItem.first.video!=targetItem.video)
+            continue;
 
           try {
             if (await _checkForComparisonResult(
@@ -123,7 +127,7 @@ class ItemComparisonExtension extends AExtension {
     } on NotFoundException {
       // Hash hasn't been generated, have to make it
     }
-    final String fileName = getFullFilePathForHash(imageID);
+    final String fileName = getOriginalFilePathForHash(imageID);
 
     final File f = new File(fileName);
     if (!f.existsSync()) return null;

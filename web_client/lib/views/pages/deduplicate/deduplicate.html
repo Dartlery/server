@@ -1,7 +1,87 @@
-<div *ngIf="model!=null" style="height: 100%;border:solid 1px black;">
-    <img src="{{getThumbnailFileUrl(model.primaryId)}}" style="height: 150px;" />
-    {{model.value}}
-    <img src="{{getThumbnailFileUrl(model.secondaryId)}}" style="height: 150px;" />
-    <iron-image sizing="contain" style="width: 100%;" [style.height]='comparisonHeight'
-                src="{{currentImageUrl}}"></iron-image>
+<div *ngIf="model!=null">
+    <div [style.width]="comparisonWidth" [style.height]='comparisonHeight' style="text-align: center;position:absolute;top:0left:0;">
+        <img src="{{getFullFileUrl(firstComparisonItem)}}" style="max-height: 100%;max-width: 100%" id="leftImage" />
+    </div>
+    <div [style.left]="comparisonSplitPosition" [style.height]='comparisonHeight' style="position:absolute;right:0;overflow: hidden;">
+        <div [style.width]="comparisonWidth" [style.height]='comparisonHeight' style="text-align: center;position: absolute;top:0;right:0;">
+            <img src="{{getFullFileUrl(secondComparisonItem)}}" style="max-height: 100%;max-width: 100%" id="rightImage" />
+        </div>
+    </div>
+    <div style="position: absolute; top:0;width:1px;background-color: black;" [style.left]="comparisonSplitPosition" [style.height]="comparisonHeight"></div>
+    <div style="position:absolute;top:50%;height:24px;width: 24px;background-color: black;border-radius: 50%;color:white;margin-left:-12px;margin-top:-12px;cursor:ew-resize;"
+         [style.left]="comparisonSplitPosition" draggable="true" (drag)="comparisonDrag($event)" (dragend)="cancelEvent($event)">
+        <glyph icon="compare_arrows"></glyph>
+    </div>
+
+
+    <material-spinner *ngIf="processing"></material-spinner>
+
+
+
+    <table style="width: 100%;position:absolute;left:0;" [style.top]="comparisonHeight">
+        <tr>
+
+            <td>
+                <confirm-button icon="delete_forever" (trigger)="deleteClicked(true)"></confirm-button>
+            </td>
+            <td>
+                {{firstComparisonItem.height}}x{{firstComparisonItem.width}}<br/>
+                <span *ngIf="sizeWinner==0" class="win">
+                {{f.format(firstComparisonPixelCount)}} pixels
+            </span>
+                <span *ngIf="sizeWinner==-1" class="tie">
+                {{f.format(firstComparisonPixelCount)}} pixels
+            </span>
+                <span *ngIf="sizeWinner==1" class="lose">
+                {{f.format(firstComparisonPixelCount)}} pixels
+            </span>
+                <br/>
+                <span *ngIf="lengthWinner==0" class="win">
+                {{f.format(firstComparisonItem?.length??0)}} bytes
+            </span>
+                <span *ngIf="lengthWinner==-1" class="tie">
+                {{f.format(firstComparisonItem?.length??0)}} bytes
+            </span>
+                <span *ngIf="lengthWinner==1" class="lose">
+                {{f.format(firstComparisonItem?.length??0)}} bytes
+            </span>
+                <br/>
+            </td>
+            <td style="width: 40px;">
+                <confirm-button icon="chevron_left" (trigger)="mergeClicked(true)"></confirm-button>
+            </td><td  style="width: 100px;text-align: center;">
+                {{model.value}}%
+            <confirm-button icon="remove_circle" orientation="horizontal" (trigger)="clearSimilarity()"></confirm-button>
+        </td>
+            <td style="width: 40px;">
+                <confirm-button icon="chevron_right" (trigger)="mergeClicked(false)"></confirm-button>
+            </td>
+            <td>
+                {{secondComparisonItem.height}}x{{secondComparisonItem.width}}<br/>
+                <span *ngIf="sizeWinner==1" class="win">
+                {{f.format(secondComparisonPixelCount)}} pixels
+            </span>
+                <span *ngIf="sizeWinner==-1" class="tie">
+                {{f.format(secondComparisonPixelCount)}} pixels
+            </span>
+                <span *ngIf="sizeWinner==0" class="lose">
+                {{f.format(secondComparisonPixelCount)}} pixels
+            </span>
+                <br/>
+                <span *ngIf="lengthWinner==1" class="win">
+                {{f.format(secondComparisonItem?.length??0)}} bytes
+            </span>
+                <span *ngIf="lengthWinner==-1" class="tie">
+                {{f.format(secondComparisonItem?.length??0)}} bytes
+            </span>
+                <span *ngIf="lengthWinner==0" class="lose">
+                {{f.format(secondComparisonItem?.length??0)}} bytes
+            </span>
+            </td>
+            <td>
+                <confirm-button icon="delete_forever" (trigger)="deleteClicked(false)"></confirm-button>
+            </td>
+        </tr>
+    </table>
+
 </div>

@@ -13,7 +13,7 @@ const String uuidRegexStringSnippet =
 /// A pre-prepared [RegExp] that matches against [Uuid] [String]s.
 final RegExp uuidRegex = new RegExp(uuidRegexString);
 
-const String hexColorRegexString = r"^#\d{6}$";
+const String hexColorRegexString = r"^#[\da-fA-F]{6}$";
 final RegExp hexColorRegex = new RegExp(hexColorRegexString);
 
 
