@@ -40,7 +40,7 @@ class ImportModel {
     await _importResultsDataSource.record(result);
   }
 
-  Future<Null> importFromShimmie({bool stopOnError: false}) async {
+  Future<Null> importFromShimmie(String imagePath, {bool stopOnError: false}) async {
     final ConnectionPool pool = new ConnectionPool(
         host: "192.168.1.10",
         user: "dartlery",
@@ -70,7 +70,7 @@ class ImportModel {
         final String filename = row.hash;
         _log.info("Importing file #${row.id} (${row.hash}) (${row.ext}) (${row.filename})");
 
-        final File f = new File(path.join(r"\\darkholme\shimmie_data\images",
+        final File f = new File(path.join(imagePath,
             filename.substring(0, 2), filename));
         RandomAccessFile raf;
         try {
