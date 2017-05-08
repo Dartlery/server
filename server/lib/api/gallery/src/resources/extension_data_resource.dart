@@ -21,13 +21,24 @@ class ExtensionDataResource extends AResource {
   @override
   String get resourcePath => extensionDataApiPath;
 
-  @ApiMethod(method: HttpMethod.get, path: '$extensionDataApiPath/{extensionId}/{key}/')
-  Future<PaginatedExtensionDataResponse> get(String extensionId, String key, {bool orderByValues: false, bool orderDescending: false, int page: 0, int perPage: defaultPerPage}) async {
+  @ApiMethod(
+      method: HttpMethod.get,
+      path: '$extensionDataApiPath/{extensionId}/{key}/')
+  Future<PaginatedExtensionDataResponse> get(String extensionId, String key,
+      {bool orderByValues: false,
+      bool orderDescending: false,
+      int page: 0,
+      int perPage: defaultPerPage}) async {
     return await catchExceptionsAwait(() async {
-      return new PaginatedExtensionDataResponse.fromPaginatedData(await _extensionDataModel.get(extensionId, key, orderByValues: orderByValues, orderDescending: orderDescending, page: page, perPage: perPage)
-        ..forEach((ExtensionData data) {
-          data.externalValue = JSON.encode(data.value);
-        }));
+      return new PaginatedExtensionDataResponse.fromPaginatedData(
+          await _extensionDataModel.get(extensionId, key,
+              orderByValues: orderByValues,
+              orderDescending: orderDescending,
+              page: page,
+              perPage: perPage)
+            ..forEach((ExtensionData data) {
+              data.externalValue = JSON.encode(data.value);
+            }));
     });
   }
 
@@ -35,25 +46,30 @@ class ExtensionDataResource extends AResource {
       method: HttpMethod.get,
       path:
           '$extensionDataApiPath/{extensionId}/{key}/{primaryId}/{secondaryId}/')
-  Future<PaginatedExtensionDataResponse> getByPrimaryAndSecondaryId(String extensionId,
-      String key, String primaryId, String secondaryId) async {
+  Future<PaginatedExtensionDataResponse> getByPrimaryAndSecondaryId(
+      String extensionId,
+      String key,
+      String primaryId,
+      String secondaryId) async {
     return await catchExceptionsAwait(() async {
-      return new PaginatedExtensionDataResponse.fromPaginatedData(await _extensionDataModel.get(extensionId, key,
-          primaryId: primaryId, secondaryId: secondaryId)
-        ..forEach((ExtensionData data) {
-          data.externalValue = JSON.encode(data.value);
-        }));
+      return new PaginatedExtensionDataResponse.fromPaginatedData(
+          await _extensionDataModel.get(extensionId, key,
+              primaryId: primaryId, secondaryId: secondaryId)
+            ..forEach((ExtensionData data) {
+              data.externalValue = JSON.encode(data.value);
+            }));
     });
   }
 
   @ApiMethod(
       method: HttpMethod.delete,
       path:
-      '$extensionDataApiPath/{extensionId}/{key}/{primaryId}/{secondaryId}/')
-  Future<Null> delete(String extensionId,
-      String key, String primaryId, String secondaryId) async {
+          '$extensionDataApiPath/{extensionId}/{key}/{primaryId}/{secondaryId}/')
+  Future<Null> delete(String extensionId, String key, String primaryId,
+      String secondaryId) async {
     return await catchExceptionsAwait(() async {
-      await _extensionDataModel.delete(extensionId, key, primaryId: primaryId, secondaryId: secondaryId);
+      await _extensionDataModel.delete(extensionId, key,
+          primaryId: primaryId, secondaryId: secondaryId);
     });
   }
 
@@ -62,15 +78,27 @@ class ExtensionDataResource extends AResource {
       path: '$extensionDataApiPath/{extensionId}/{key}/{primaryId}/')
   Future<PaginatedExtensionDataResponse> getByPrimaryId(
       String extensionId, String key, String primaryId,
-      {bool bidirectional, bool orderByValues: false, bool orderDescending: false, int page: 0, int perPage: defaultPerPage}) async {
+      {bool bidirectional,
+      bool orderByValues: false,
+      bool orderDescending: false,
+      int page: 0,
+      int perPage: defaultPerPage}) async {
     return await catchExceptionsAwait<PaginatedExtensionDataResponse>(() async {
       PaginatedData<ExtensionData> output;
       if (bidirectional) {
         output = await _extensionDataModel.getBidrectional(
-            extensionId, key, primaryId, orderByValues: orderByValues, orderDescending: orderDescending, perPage: perPage, page: page);
+            extensionId, key, primaryId,
+            orderByValues: orderByValues,
+            orderDescending: orderDescending,
+            perPage: perPage,
+            page: page);
       } else {
         output = await _extensionDataModel.get(extensionId, key,
-            primaryId: primaryId, orderDescending: orderDescending, orderByValues: orderByValues, perPage: perPage, page: page);
+            primaryId: primaryId,
+            orderDescending: orderDescending,
+            orderByValues: orderByValues,
+            perPage: perPage,
+            page: page);
       }
       output.forEach((ExtensionData data) {
         data.externalValue = JSON.encode(data.value);

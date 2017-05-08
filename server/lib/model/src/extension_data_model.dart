@@ -26,27 +26,47 @@ class ExtensionDataModel extends ATypedModel<ExtensionData> {
   Logger get loggerImpl => _log;
 
   Future<Null> delete(String extensionId, String key,
-      {String primaryId, String secondaryId}) =>
+          {String primaryId, String secondaryId}) =>
       _extensionDataSource.delete(extensionId, key,
           primaryId: primaryId, secondaryId: secondaryId);
 
-  Future<Null> deleteBidirectional(String extensionId, String key,
-      String bidirectionalId) =>
-      _extensionDataSource.deleteBidirectional(extensionId, key,bidirectionalId);
+  Future<Null> deleteBidirectional(
+          String extensionId, String key, String bidirectionalId) =>
+      _extensionDataSource.deleteBidirectional(
+          extensionId, key, bidirectionalId);
 
   Future<PaginatedData<ExtensionData>> get(String extensionId, String key,
-      {String primaryId, String secondaryId, bool orderByValues: false, bool orderDescending: false, int page: 0, int perPage: defaultPerPage}) async {
-    final PaginatedData<ExtensionData> output = await _extensionDataSource
-        .get(extensionId, key, primaryId: primaryId, secondaryId: secondaryId, orderByValues: orderByValues, orderDescending: orderDescending, page: page, perPage: perPage);
+      {String primaryId,
+      String secondaryId,
+      bool orderByValues: false,
+      bool orderDescending: false,
+      int page: 0,
+      int perPage: defaultPerPage}) async {
+    final PaginatedData<ExtensionData> output = await _extensionDataSource.get(
+        extensionId, key,
+        primaryId: primaryId,
+        secondaryId: secondaryId,
+        orderByValues: orderByValues,
+        orderDescending: orderDescending,
+        page: page,
+        perPage: perPage);
     if (output.isEmpty)
       throw new NotFoundException("Specified extension data was not found");
     return output;
   }
 
-  Future<PaginatedData<ExtensionData>> getBidrectional(String extensionId, String key,
-      String bidirectionalId, {bool orderByValues: false, bool orderDescending: false, int page: 0, int perPage: defaultPerPage}) async {
+  Future<PaginatedData<ExtensionData>> getBidrectional(
+      String extensionId, String key, String bidirectionalId,
+      {bool orderByValues: false,
+      bool orderDescending: false,
+      int page: 0,
+      int perPage: defaultPerPage}) async {
     final PaginatedData<ExtensionData> output = await _extensionDataSource
-        .getBidrectional(extensionId, key, bidirectionalId, orderDescending: orderDescending, orderByValues: orderByValues, perPage: perPage, page: page);
+        .getBidrectional(extensionId, key, bidirectionalId,
+            orderDescending: orderDescending,
+            orderByValues: orderByValues,
+            perPage: perPage,
+            page: page);
     if (output.isEmpty)
       throw new NotFoundException("Specified extension data was not found");
     return output;
