@@ -40,7 +40,7 @@ class ImportModel {
     await _importResultsDataSource.record(result);
   }
 
-  Future<Null> importFromShimmie(String imagePath, {bool stopOnError: false}) async {
+  Future<Null> importFromShimmie(String imagePath, {int startAt: -1, bool stopOnError: false}) async {
     final ConnectionPool pool = new ConnectionPool(
         host: "192.168.1.10",
         user: "dartlery",
@@ -48,10 +48,10 @@ class ImportModel {
         db: "shimmie_rand");
 
     final int batchSize = 100;
-    int lastId = -1;
+    int lastId = startAt;
 
     final Results results = await pool.query(
-        "SELECT * FROM images WHERE ID > $lastId ORDER BY ID ASC LIMIT $batchSize");
+        "SELECT * FROM images WHERE ID >= $lastId ORDER BY ID ASC LIMIT $batchSize");
     List<Row> rows = await results.toList();
 
 
