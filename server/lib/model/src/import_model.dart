@@ -51,7 +51,7 @@ class ImportModel {
     int lastId = -1;
 
     final Results results = await pool.query(
-        "SELECT * FROM images ORDER BY ID ASC LIMIT $batchSize WHERE ID > $lastId");
+        "SELECT * FROM images WHERE ID > $lastId ORDER BY ID ASC LIMIT $batchSize");
     List<Row> rows = await results.toList();
 
 
@@ -134,7 +134,7 @@ class ImportModel {
         }
       }
       final Results results = await pool.query(
-          "SELECT * FROM images  ORDER BY ID ASC LIMIT $batchSize WHERE ID > $lastId");
+          "SELECT * FROM images WHERE ID > $lastId ORDER BY ID ASC LIMIT $batchSize");
       rows = await results.toList();
     }
 
