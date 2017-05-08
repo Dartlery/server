@@ -36,7 +36,6 @@ transformers:
 - polymer:
     entry_points:
       - web/index.html
-      - web/setup/index.html
 - angular2:
     platform_directives:
     - 'package:angular2/common.dart#COMMON_DIRECTIVES'
@@ -45,6 +44,7 @@ transformers:
     entry_points: web/main.dart
 - dart_to_js_script_rewriter
 - $dart2js:
+    $include: '**/*.bootstrap.initialize.dart'
     minify: true
     commandLineOptions:
     - --trust-type-annotations
