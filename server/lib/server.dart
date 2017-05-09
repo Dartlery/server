@@ -7,7 +7,7 @@ import 'package:dartlery/api/gallery/gallery_api.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/model/model.dart';
-import 'package:dartlery/extrensions/extensions.dart';
+import 'package:dartlery/extensions/extensions.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:di/di.dart';

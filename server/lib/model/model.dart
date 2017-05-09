@@ -8,7 +8,7 @@ import 'src/tag_category_model.dart';
 import 'src/item_model.dart';
 import 'src/import_model.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
-import 'package:dartlery/extrensions/extensions.dart';
+import 'package:dartlery/extensions/extensions.dart';
 import 'src/extension_data_model.dart';
 
 export 'src/a_id_based_model.dart';

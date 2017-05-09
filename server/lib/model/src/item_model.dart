@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:crypto/crypto.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
-import 'package:dartlery/extrensions/extensions.dart';
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/services/extension_service.dart';
@@ -13,13 +11,9 @@ import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:exif/exif.dart';
 import 'package:image/image.dart';
-import 'package:image_hash/image_hash.dart';
 import 'package:logging/logging.dart';
-import 'package:mime/mime.dart';
 import 'package:option/option.dart';
 import 'package:path/path.dart' as path;
-
-import 'a_file_upload_model.dart';
 
 class ItemModel extends AIdBasedModel<Item> {
   static final Logger _log = new Logger('ItemModel');
@@ -121,13 +115,13 @@ class ItemModel extends AIdBasedModel<Item> {
     return output;
   }
   Future<List<int>> generateFfmpegThumbnail(String originalFile) async {
-    _log.info("generateFfmpegThumbnail start");
+    _log.fine("generateFfmpegThumbnail start");
     final Directory tempFolder =
         await Directory.systemTemp.createTemp("dartlery_ffempeg_output");
     final String tempfile = path.join(tempFolder.path, "thumbnail.png");
     try {
       final ProcessResult result = await Process.run("ffmpeg",
-          ['-i', originalFile, '-vf', "thumbnail", '-frames:v', '1', tempfile]);
+          <String>['-i', originalFile, '-vf', "thumbnail", '-frames:v', '1', tempfile]);
       if (result.exitCode != 0) {
         throw new Exception(
             "Error while generating video thumbnail: ${result.stderr
@@ -140,7 +134,7 @@ class ItemModel extends AIdBasedModel<Item> {
       } catch (e, st) {
         _log.warning("Error while deleting thumbnail temp file", e, st);
       }
-      _log.info("generateFfmpegThumbnail end");
+      _log.fine("generateFfmpegThumbnail end");
     }
   }
 
@@ -155,10 +149,10 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<Null> getFfprobeData(Item item, String originalFile) async {
-    _log.info("getFfprobeData start");
+    _log.fine("getFfprobeData start");
     ProcessResult result = await Process.run(
         "ffprobe",
-        [
+        <String>[
           '-i',
           originalFile,
           '-show_entries',
@@ -171,8 +165,8 @@ class ItemModel extends AIdBasedModel<Item> {
         runInShell: true);
     if (result.exitCode != 0) {
       final String error = result.stderr.toString();
-      _log.warning("Error while getting video duration: ${error}");
-      item.errors.add("Error while getting video duration: ${error}");
+      _log.warning("Error while getting video duration: $error");
+      item.errors.add("Error while getting video duration: $error");
     } else {
       final String durationString = result.stdout.toString().trim();
       try {
@@ -184,11 +178,11 @@ class ItemModel extends AIdBasedModel<Item> {
       }
     }
     result = await Process.run("ffprobe",
-        ['-i', originalFile, '-show_streams', '-select_streams', 'v']);
+        <String>['-i', originalFile, '-show_streams', '-select_streams', 'v']);
     if (result.exitCode != 0) {
       final String error = result.stderr.toString();
-      _log.warning("Error while getting video sream data: ${error}");
-      item.errors.add("Error while getting video sream data: ${error}");
+      _log.warning("Error while getting video sream data: $error");
+      item.errors.add("Error while getting video sream data: $error");
     } else {
       final String videoStreams = result.stdout.toString();
       if (videoStreams.contains("[STREAM]")) {
@@ -226,11 +220,11 @@ class ItemModel extends AIdBasedModel<Item> {
     }
 
     result = await Process.run("ffprobe",
-        ['-i', originalFile, '-show_streams', '-select_streams', 'a']);
+        <String>['-i', originalFile, '-show_streams', '-select_streams', 'a']);
     if (result.exitCode != 0) {
       final String error = result.stderr.toString();
-      _log.warning("Error while getting audio stream data: ${error}");
-      item.errors.add("Error while getting audio stream data: ${error}");
+      _log.warning("Error while getting audio stream data: $error");
+      item.errors.add("Error while getting audio stream data: $error");
     } else {
       final String audioStreams = result.stdout.toString();
       if (audioStreams.contains("[STREAM]")) {
@@ -255,7 +249,7 @@ class ItemModel extends AIdBasedModel<Item> {
         item.audio = false;
       }
     }
-    _log.info("getFfprobeData end");
+    _log.fine("getFfprobeData end");
   }
 
   Future<PaginatedIdData<Item>> getVisible(
@@ -356,7 +350,7 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<File> _createAndSaveThumbnail(Image image, String hash) async {
-    _log.info("_createAndSaveThumbnail start");
+    _log.fine("_createAndSaveThumbnail start");
     final List<int> thumbnailData = await _resizeImage(image);
 
     final File thumbnailFile = new File(getThumbnailFilePathForHash(hash));
@@ -376,7 +370,7 @@ class ItemModel extends AIdBasedModel<Item> {
       } catch (e2, st) {
         _log.warning(e2, st);
       }
-      _log.info("_createAndSaveThumbnail end");
+      _log.fine("_createAndSaveThumbnail end");
     }
 
 
@@ -384,29 +378,33 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<Null> _handleFileUpload(Item item) async {
-    _log.info("_handleFileUpload start");
+    _log.fine("_handleFileUpload start");
     item.length = item.fileData.length;
 
     final List<int> data = item.fileData;
-    _log.info("Generating file hash...");
+    _log.fine("Generating file hash...");
     item.id = generateHash(data);
 
     if (StringTools.isNullOrWhitespace(item.id))
       throw new Exception("No hash generated for file data");
 
-    _log.info("File hash: ${item.id}");
+    _log.fine("File hash: ${item.id}");
+
+    _log.fine("Checking if item already exists");
+    if(await itemDataSource.existsById(item.id))
+      throw new DuplicateItemException("Item ${item.id} already imported");
 
     final List<FileSystemEntity> filesWritten = <FileSystemEntity>[];
 
     try {
-      _log.info("Getting MIME type");
+      _log.fine("Getting MIME type");
       final String mime = mediaMimeResolver.getMimeType(data);
 
       if (StringTools.isNullOrWhitespace(mime)) {
         throw new InvalidInputException("Mime type of file is unknown");
       }
 
-      _log.info("MIME type: ${mime}");
+      _log.fine("MIME type: $mime");
 
       item.mime = mime;
 
@@ -416,42 +414,42 @@ class ItemModel extends AIdBasedModel<Item> {
 
       Image originalImage;
       if (MimeTypes.imageTypes.contains(mime)) {
-        _log.info("Is image MIME type");
+        _log.fine("Is image MIME type");
         if (MimeTypes.animatableImageTypes.contains(mime)) {
-          _log.info("Is animatable image MIME type");
+          _log.fine("Is animatable image MIME type");
           try {
-            _log.info("Decoding animation");
+            _log.fine("Decoding animation");
             final Animation anim = decodeAnimation(data);
-            _log.info("Animation decoded");
+            _log.fine("Animation decoded");
             if (anim.length > 1) {
-              _log.info("Has more than one frame, marking as video");
+              _log.fine("Has more than one frame, marking as video");
               item.video = true;
               item.duration = 0;
               for (Image i in anim) {
                 item.duration += i.duration;
               }
-              _log.info("Duration: ${item.duration}");
+              _log.fine("Duration: ${item.duration}");
             }
             originalImage = anim[0];
           } catch (e, st) {
             // Not an animation
-            _log.finest("Not an animation!", e, st);
+            _log.fine("Not an animation!", e, st);
             originalImage = decodeImage(item.fileData);
           }
         } else {
-          _log.info("Decoding image");
+          _log.fine("Decoding image");
           originalImage = decodeImage(item.fileData);
-          _log.info("image decoded");
+          _log.fine("image decoded");
         }
         if(mime==MimeTypes.jpeg||mime==MimeTypes.tiff) {
           try {
-            _log.info("Reading exif data");
+            _log.fine("Reading exif data");
             final Map<String, IfdTag> data = await readExifFromFile(
                 new File(originalFile));
             for (String key in data.keys) {
               item.metadata[key] = data[key].toString();
             }
-            _log.info("Done reading exif data", item.metadata);
+            _log.fine("Done reading exif data", item.metadata);
           } catch (e,st) {
             _log.warning("Error while fetching exif data", e,st);
             item.errors.add("Error while fetching exif data: ${e.toString()}");
@@ -459,7 +457,7 @@ class ItemModel extends AIdBasedModel<Item> {
         }
 
       } else if (MimeTypes.videoTypes.contains(mime)||mime==MimeTypes.swf) {
-        _log.info("Is video mime type");
+        _log.fine("Is video mime type");
         item.video = true;
         originalImage = decodePng(
             await generateFfmpegThumbnail(originalFile));
@@ -471,15 +469,15 @@ class ItemModel extends AIdBasedModel<Item> {
       item.width = originalImage.width;
 
       if (MimeTypes.webFriendlyTypes.contains(mime)) {
-        _log.info("Web-friendly MIME type, using original file for display");
+        _log.fine("Web-friendly MIME type, using original file for display");
         //filesWritten.add(await new Link(getFullFilePathForHash(item.id))
         //.create(getOriginalFilePathForHash(item.id), recursive: true));
       } else {
-        _log.info("Non-web-friendly MIME type, generating full-size image for display");
+        _log.fine("Non-web-friendly MIME type, generating full-size image for display");
         filesWritten.add(await _writeBytes(getFullFilePathForHash(item.id),
             encodeJpg(originalImage, quality: 90),
             deleteExisting: true));
-        _log.info("Full-size image generated");
+        _log.fine("Full-size image generated");
         item.fullFileAvailable = true;
       }
 
@@ -502,7 +500,7 @@ class ItemModel extends AIdBasedModel<Item> {
       }
       rethrow;
     } finally {
-      _log.info("_handleFileUpload end");
+      _log.fine("_handleFileUpload end");
     }
   }
 

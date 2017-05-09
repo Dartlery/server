@@ -3,7 +3,7 @@ import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:logging/logging.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:option/option.dart';
-import 'package:dartlery/extrensions/extensions.dart';
+import 'package:dartlery/extensions/extensions.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'extension_service.dart';
 

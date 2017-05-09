@@ -52,6 +52,7 @@ class ItemSearchService {
   void setTags(TagList tags) {
     if(!this._tags.compare(tags)) {
       clear();
+      this._tags.clear();
       this._tags.addTagList(tags);
     }
   }

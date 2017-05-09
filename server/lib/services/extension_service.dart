@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:dartlery/data/data.dart';
-import 'package:dartlery/extrensions/extensions.dart';
+import 'package:dartlery/extensions/extensions.dart';
 
 class ExtensionService {
   final Map<String,AExtension> _extensions = <String,AExtension>{};
