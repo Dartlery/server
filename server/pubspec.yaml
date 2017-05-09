@@ -41,6 +41,8 @@ dev_dependencies:
 dependency_overrides:
   shelf_static:
     git: https://github.com/dartalog/shelf_static.git
+  image:
+    git: https://github.com/brendan-duncan/image.git
 #  image_hash:
 #    path: ../../image_hash/
 executables:

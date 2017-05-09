@@ -203,6 +203,8 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
         final TagList tagList = new TagList.fromQueryString(query);
         _search.setTags(tagList);
         routeName = itemsSearchPageRoute.name;
+      } else {
+        _search.clearTags();
       }
 
       final PaginatedResponse response = await _search.performSearch(page:page);

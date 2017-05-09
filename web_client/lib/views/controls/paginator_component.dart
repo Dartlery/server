@@ -16,17 +16,18 @@ import 'package:logging/logging.dart';
     providers: const [materialProviders],
     template: '''
     <div class="paginator" *ngIf="pages.isNotEmpty" >
-    <material-button *ngIf="isNotFirstPage">Back</material-button>
-    <material-button *ngFor="let p of pages; let i = index" [routerLink]="p" style="width:24pt;">{{i+1}}</material-button>
-    <material-button *ngIf="isNotLastPage" >Next</material-button>
+    <material-button *ngIf="isNotFirstPage" icon [routerLink]="previousPageRoute"><glyph icon="chevron_left" ></glyph></material-button>
+    <material-button *ngFor="let p of pages" [routerLink]="p.route" style=""><span style="font-size:14pt;">{{p.page}}</span></material-button>
+    <material-button *ngIf="isNotLastPage" icon [routerLink]="nextPageRoute"><glyph icon="chevron_right" ></glyph></material-button>
     </div>
     ''')
 class PaginatorComponent implements OnDestroy {
   static final Logger _log = new Logger("PaginatorComponent");
 
   int currentPage;
-  final List<dynamic> pages = <dynamic>[];
 
+  final List<_PaginatorEntry> pages = <_PaginatorEntry>[];
+  final List<dynamic> pageRoutes = <dynamic>[];
 
   final PageControlService _pageControl;
   StreamSubscription<PaginationInfo> _subscription;
@@ -35,18 +36,53 @@ class PaginatorComponent implements OnDestroy {
     _subscription = _pageControl.paginationChanged.listen(onSubscriptionUpdate);
   }
 
+
+
   bool get isNotFirstPage => currentPage > 0;
 
-  bool get isNotLastPage => currentPage < pages.length - 1;
+  bool get isNotLastPage => currentPage < pageRoutes.length - 1;
+
+  dynamic get nextPageRoute {
+    if(isNotLastPage) {
+      return pageRoutes[currentPage+1];
+    }
+    return null;
+  }
+  dynamic get previousPageRoute {
+    if(isNotFirstPage) {
+      return pageRoutes[currentPage-1];
+    }
+    return null;
+  }
 
   @override
   void ngOnDestroy() {
     _subscription.cancel();
   }
 
+  static const int pageRange = 3;
+
   void onSubscriptionUpdate(PaginationInfo status) {
     pages.clear();
+    pageRoutes.clear();
     currentPage = status.currentPage;
-    pages.addAll(status.pageParams);
+    pageRoutes.addAll(status.pageParams);
+
+    for(int i = 0;i<status.pageParams.length;i++) {
+      if(i!=0&&i!=status.pageParams.length-1&&(i<currentPage-pageRange||i>currentPage+pageRange)) {
+        continue;
+      }
+
+      final _PaginatorEntry entry = new _PaginatorEntry();
+      entry.page = i+1;
+      entry.route = status.pageParams[i];
+      pages.add(entry);
+    }
+
   }
+}
+
+class _PaginatorEntry {
+  int page;
+  dynamic route;
 }

@@ -42,6 +42,13 @@ class ItemSearchService {
     _totalPages = 0;
   }
 
+  void clearTags() {
+    if(_tags.length>0) {
+      _tags.clear();
+      clear();
+    }
+  }
+
   void setTags(TagList tags) {
     if(!this._tags.compare(tags)) {
       clear();
