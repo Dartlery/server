@@ -82,7 +82,7 @@ class ItemSearchService {
         final List<String> pageResults = _results[page];
         int i = pageResults.indexOf(item);
         if(i==pageResults.length-1) {
-          if(_results.containsKey(page+1)) {
+          if(_results.containsKey(page+1)&&_results[page+1].isNotEmpty) {
             return _results[page+1].first;
           } else if(page+1<=_totalPages) {
             return await _getNextPageForItem(item, page);

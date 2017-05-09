@@ -127,6 +127,10 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
         model = await _api.items.getById(itemId);
 
+
+        nextItem = await _searchService.getNextItem(model.id);
+        previousItem = await _searchService.getPreviousItem(model.id);
+
     });
   }
 
@@ -139,16 +143,9 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   void clear() {
   }
 
-  Future<Null> nextItemClicked() async {
-    final String next  = await _searchService.getNextItem(model.id);
-    if(StringTools.isNotNullOrWhitespace(next)) {
-      await _router.navigate([itemViewRoute.name, {idRouteParameter: next}]);
-    }
-  }
-  Future<Null> previousItemClicked() async {
-    final String next  = await _searchService.getPreviousItem(model.id);
-    if(StringTools.isNotNullOrWhitespace(next)) {
-      await _router.navigate([itemViewRoute.name, {idRouteParameter: next}]);
-    }
-  }
+  String nextItem;
+  bool get nextItemAvailable => nextItem!=null;
+  String previousItem;
+  bool get previousItemAvailable => previousItem!=null;
+
 }

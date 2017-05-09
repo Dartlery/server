@@ -66,6 +66,8 @@ class PaginatorComponent implements OnDestroy {
     pages.clear();
     pageRoutes.clear();
     currentPage = status.currentPage;
+    if(status.pageParams.length<=1)
+      return;
     pageRoutes.addAll(status.pageParams);
 
     for(int i = 0;i<status.pageParams.length;i++) {
