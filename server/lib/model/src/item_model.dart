@@ -429,7 +429,7 @@ class ItemModel extends AIdBasedModel<Item> {
           }
         }
 
-      } else if (MimeTypes.videoTypes.contains(mime)) {
+      } else if (MimeTypes.videoTypes.contains(mime)||mime==MimeTypes.swf) {
         item.video = true;
         originalImage = decodePng(
             await generateFfmpegThumbnail(originalFile));
