@@ -172,8 +172,13 @@ class ItemModel extends AIdBasedModel<Item> {
       item.errors.add("Error while getting video duration: ${error}");
     } else {
       final String durationString = result.stdout.toString().trim();
-      final double durationDouble = double.parse(durationString);
-      item.duration = (durationDouble * 1000).floor();
+      try {
+        final double durationDouble = double.parse(durationString);
+        item.duration = (durationDouble * 1000).floor();
+      } on FormatException catch(e,st) {
+        item.errors.add("Could not interpret item duration: $durationString");
+        _log.warning("Could not interpret item duration: $durationString",e,st);
+      }
     }
     result = await Process.run("ffprobe",
         ['-i', originalFile, '-show_streams', '-select_streams', 'v']);
