@@ -226,8 +226,8 @@ class ItemModel extends AIdBasedModel<Item> {
         ['-i', originalFile, '-show_streams', '-select_streams', 'a']);
     if (result.exitCode != 0) {
       final String error = result.stderr.toString();
-      _log.warning("Error while getting audio sream data: ${error}");
-      item.errors.add("Error while getting audio sream data: ${error}");
+      _log.warning("Error while getting audio stream data: ${error}");
+      item.errors.add("Error while getting audio stream data: ${error}");
     } else {
       final String audioStreams = result.stdout.toString();
       if (audioStreams.contains("[STREAM]")) {

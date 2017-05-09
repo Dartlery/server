@@ -118,6 +118,7 @@ class ImportModel {
           tag.category = poolTagCategory.id;
           newItem.tags.add(tag);
         }
+        _log.info(newItem.tags);
 
 
         await _createItem(newItem, result);
