@@ -434,6 +434,8 @@ class ItemModel extends AIdBasedModel<Item> {
         originalImage = decodePng(
             await generateFfmpegThumbnail(originalFile));
         await getFfprobeData(item, originalFile);
+      } else {
+        throw new InvalidInputException("MIME type not supported: $mime");
       }
       item.height = originalImage.height;
       item.width = originalImage.width;

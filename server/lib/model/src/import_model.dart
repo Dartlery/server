@@ -142,7 +142,11 @@ class ImportModel {
 
   Future<Null> _createItem(Item newItem, ImportResult result) async {
     try {
-      result.id = await itemModel.create(newItem, bypassAuthentication: true);
+      try {
+        await itemModel.create(newItem, bypassAuthentication: true);
+      } finally {
+        result.id = newItem.id;
+      }
       _log.info("Imported new file ${result.id}");
       result.result = "added";
     } on DuplicateItemException {
@@ -208,7 +212,7 @@ class ImportModel {
           newItem.fileData = await getFileData(entity.path);
           newItem.fileName = result.fileName;
           newItem.extension = path.extension(entity.path).substring(1);
-          await _createItem(newItem, result);
+            await _createItem(newItem, result);
           _log.info("Imported file ${entity.path}");
         } catch(e,st) {
           _log.severe(e,st);
