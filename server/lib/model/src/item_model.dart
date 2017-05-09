@@ -121,6 +121,7 @@ class ItemModel extends AIdBasedModel<Item> {
     return output;
   }
   Future<List<int>> generateFfmpegThumbnail(String originalFile) async {
+    _log.info("generateFfmpegThumbnail start");
     final Directory tempFolder =
         await Directory.systemTemp.createTemp("dartlery_ffempeg_output");
     final String tempfile = path.join(tempFolder.path, "thumbnail.png");
@@ -139,6 +140,7 @@ class ItemModel extends AIdBasedModel<Item> {
       } catch (e, st) {
         _log.warning("Error while deleting thumbnail temp file", e, st);
       }
+      _log.info("generateFfmpegThumbnail end");
     }
   }
 
@@ -153,6 +155,7 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<Null> getFfprobeData(Item item, String originalFile) async {
+    _log.info("getFfprobeData start");
     ProcessResult result = await Process.run(
         "ffprobe",
         [
@@ -252,6 +255,7 @@ class ItemModel extends AIdBasedModel<Item> {
         item.audio = false;
       }
     }
+    _log.info("getFfprobeData end");
   }
 
   Future<PaginatedIdData<Item>> getVisible(
@@ -352,6 +356,7 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<File> _createAndSaveThumbnail(Image image, String hash) async {
+    _log.info("_createAndSaveThumbnail start");
     final List<int> thumbnailData = await _resizeImage(image);
 
     final File thumbnailFile = new File(getThumbnailFilePathForHash(hash));
@@ -371,28 +376,37 @@ class ItemModel extends AIdBasedModel<Item> {
       } catch (e2, st) {
         _log.warning(e2, st);
       }
+      _log.info("_createAndSaveThumbnail end");
     }
+
 
     return thumbnailFile;
   }
 
   Future<Null> _handleFileUpload(Item item) async {
+    _log.info("_handleFileUpload start");
     item.length = item.fileData.length;
 
     final List<int> data = item.fileData;
+    _log.info("Generating file hash...");
     item.id = generateHash(data);
 
     if (StringTools.isNullOrWhitespace(item.id))
       throw new Exception("No hash generated for file data");
 
+    _log.info("File hash: ${item.id}");
+
     final List<FileSystemEntity> filesWritten = <FileSystemEntity>[];
 
     try {
+      _log.info("Getting MIME type");
       final String mime = mediaMimeResolver.getMimeType(data);
 
       if (StringTools.isNullOrWhitespace(mime)) {
         throw new InvalidInputException("Mime type of file is unknown");
       }
+
+      _log.info("MIME type: ${mime}");
 
       item.mime = mime;
 
@@ -402,15 +416,21 @@ class ItemModel extends AIdBasedModel<Item> {
 
       Image originalImage;
       if (MimeTypes.imageTypes.contains(mime)) {
+        _log.info("Is image MIME type");
         if (MimeTypes.animatableImageTypes.contains(mime)) {
+          _log.info("Is animatable image MIME type");
           try {
+            _log.info("Decoding animation");
             final Animation anim = decodeAnimation(data);
+            _log.info("Animation decoded");
             if (anim.length > 1) {
+              _log.info("Has more than one frame, marking as video");
               item.video = true;
               item.duration = 0;
               for (Image i in anim) {
                 item.duration += i.duration;
               }
+              _log.info("Duration: ${item.duration}");
             }
             originalImage = anim[0];
           } catch (e, st) {
@@ -419,15 +439,19 @@ class ItemModel extends AIdBasedModel<Item> {
             originalImage = decodeImage(item.fileData);
           }
         } else {
+          _log.info("Decoding image");
           originalImage = decodeImage(item.fileData);
+          _log.info("image decoded");
         }
         if(mime==MimeTypes.jpeg||mime==MimeTypes.tiff) {
           try {
+            _log.info("Reading exif data");
             final Map<String, IfdTag> data = await readExifFromFile(
                 new File(originalFile));
             for (String key in data.keys) {
               item.metadata[key] = data[key].toString();
             }
+            _log.info("Done reading exif data", item.metadata);
           } catch (e,st) {
             _log.warning("Error while fetching exif data", e,st);
             item.errors.add("Error while fetching exif data: ${e.toString()}");
@@ -435,6 +459,7 @@ class ItemModel extends AIdBasedModel<Item> {
         }
 
       } else if (MimeTypes.videoTypes.contains(mime)||mime==MimeTypes.swf) {
+        _log.info("Is video mime type");
         item.video = true;
         originalImage = decodePng(
             await generateFfmpegThumbnail(originalFile));
@@ -446,12 +471,15 @@ class ItemModel extends AIdBasedModel<Item> {
       item.width = originalImage.width;
 
       if (MimeTypes.webFriendlyTypes.contains(mime)) {
+        _log.info("Web-friendly MIME type, using original file for display");
         //filesWritten.add(await new Link(getFullFilePathForHash(item.id))
         //.create(getOriginalFilePathForHash(item.id), recursive: true));
       } else {
+        _log.info("Non-web-friendly MIME type, generating full-size image for display");
         filesWritten.add(await _writeBytes(getFullFilePathForHash(item.id),
             encodeJpg(originalImage, quality: 90),
             deleteExisting: true));
+        _log.info("Full-size image generated");
         item.fullFileAvailable = true;
       }
 
@@ -473,6 +501,8 @@ class ItemModel extends AIdBasedModel<Item> {
         }
       }
       rethrow;
+    } finally {
+      _log.info("_handleFileUpload end");
     }
   }
 
