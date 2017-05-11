@@ -17,6 +17,8 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
       String userUuid, List<Tag> tags,
       {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate});
 
+  Future<Stream<Item>> streamByMimeType(String mimeType);
+
   Future<Stream<Item>> streamAll();
 
 }

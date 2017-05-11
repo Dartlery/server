@@ -98,7 +98,12 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   Future<Stream<Item>> streamAll() async {
     return await streamFromDb(where.sortBy(uploadedField, descending: false));
   }
-  
+
+
+  @override
+  Future<Stream<Item>> streamByMimeType(String mimeType) async {
+    return await streamFromDb(where.eq(mimeField, mimeType).sortBy(uploadedField, descending: false));
+  }
   @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getItemsCollection();
@@ -152,6 +157,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
             limit: perPage,
             offset: getOffset(page, perPage)));
   }
+
+
 
   @override
   void updateMap(Item item, Map<String, dynamic> data) {

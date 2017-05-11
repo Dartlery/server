@@ -398,6 +398,115 @@ class ItemModel extends AIdBasedModel<Item> {
     return thumbnailFile;
   }
 
+  Future<List<FileSystemEntity>> processItem(Item item) async {
+    final List<FileSystemEntity> filesWritten = <FileSystemEntity>[];
+
+    final List<int> data = item.fileData;
+
+    _log.fine("Getting MIME type");
+    final String mime = mediaMimeResolver.getMimeType(data);
+
+    if (StringTools.isNullOrWhitespace(mime)) {
+      throw new InvalidInputException("Mime type of file is unknown");
+    }
+
+    _log.fine("MIME type: $mime");
+
+    item.mime = mime;
+
+    final String originalFile = getOriginalFilePathForHash(item.id);
+
+    filesWritten.add(await _writeBytes(originalFile, item.fileData));
+
+    Image originalImage;
+    if (MimeTypes.imageTypes.contains(mime)) {
+      _log.fine("Is image MIME type");
+      if (MimeTypes.animatableImageTypes.contains(mime)) {
+        _log.fine("Is animatable image MIME type");
+        try {
+          _log.fine("Decoding animation");
+          final Animation anim = decodeAnimation(data);
+          _log.fine("Animation decoded");
+          if (anim.length > 1) {
+            _log.fine("Has more than one frame, marking as video");
+            item.video = true;
+            item.duration = 0;
+            for (Image i in anim) {
+              item.duration += i.duration;
+            }
+            _log.fine("Duration: ${item.duration}");
+          }
+          originalImage = anim[0];
+        } catch (e, st) {
+          // Not an animation
+          _log.fine("Not an animation!", e, st);
+          originalImage = decodeImage(item.fileData);
+        }
+      } else {
+        _log.fine("Decoding image");
+        originalImage = decodeImage(item.fileData);
+        _log.fine("image decoded");
+      }
+      if(mime==MimeTypes.jpeg||mime==MimeTypes.tiff) {
+        try {
+          _log.fine("Reading exif data");
+          final Map<String, IfdTag> data = await readExifFromFile(
+              new File(originalFile));
+          for (String key in data.keys) {
+            item.metadata[key] = data[key].toString();
+          }
+          _log.fine("Done reading exif data", item.metadata);
+        } catch (e,st) {
+          _log.warning("Error while fetching exif data", e,st);
+          item.errors.add("Error while fetching exif data: ${e.toString()}");
+        }
+      }
+
+    } else if (MimeTypes.videoTypes.contains(mime)||mime==MimeTypes.swf) {
+      try {
+        _log.fine("Is video mime type");
+        item.video = true;
+        originalImage = decodePng(
+            await generateFfmpegThumbnail(originalFile));
+        await getFfprobeData(item, originalFile);
+      } catch(e,st) {
+        if(mime==MimeTypes.swf) {
+          _log.warning("Error while genereting thumbnail of swf",e,st);
+        } else {
+          rethrow;
+        }
+      }
+    } else {
+      throw new InvalidInputException("MIME type not supported: $mime");
+    }
+    item.height = originalImage.height;
+    item.width = originalImage.width;
+
+    if (MimeTypes.webFriendlyTypes.contains(mime)) {
+      _log.fine("Web-friendly MIME type, using original file for display");
+      //filesWritten.add(await new Link(getFullFilePathForHash(item.id))
+      //.create(getOriginalFilePathForHash(item.id), recursive: true));
+    } else {
+      _log.fine("Non-web-friendly MIME type, generating full-size image for display");
+      filesWritten.add(await _writeBytes(getFullFilePathForHash(item.id),
+          encodeJpg(originalImage, quality: 90),
+          deleteExisting: true));
+      _log.fine("Full-size image generated");
+      item.fullFileAvailable = true;
+    }
+
+    try {
+      filesWritten.add(await _createAndSaveThumbnail(originalImage, item.id));
+    } catch (e, st) {
+      _log.warning("Error while generating thumbnail for ${item.id}", e, st);
+      item.errors.add(
+          "Error while generating thumbnail for ${item.id}: ${e.toString()}");
+    }
+
+    return filesWritten;
+  }
+
+
   Future<Null> _handleFileUpload(Item item) async {
     _log.fine("_handleFileUpload start");
     item.length = item.fileData.length;
@@ -418,100 +527,13 @@ class ItemModel extends AIdBasedModel<Item> {
     final List<FileSystemEntity> filesWritten = <FileSystemEntity>[];
 
     try {
-      _log.fine("Getting MIME type");
-      final String mime = mediaMimeResolver.getMimeType(data);
-
-      if (StringTools.isNullOrWhitespace(mime)) {
-        throw new InvalidInputException("Mime type of file is unknown");
-      }
-
-      _log.fine("MIME type: $mime");
-
-      item.mime = mime;
-
-      final String originalFile = getOriginalFilePathForHash(item.id);
-
-      filesWritten.add(await _writeBytes(originalFile, item.fileData));
-
-      Image originalImage;
-      if (MimeTypes.imageTypes.contains(mime)) {
-        _log.fine("Is image MIME type");
-        if (MimeTypes.animatableImageTypes.contains(mime)) {
-          _log.fine("Is animatable image MIME type");
-          try {
-            _log.fine("Decoding animation");
-            final Animation anim = decodeAnimation(data);
-            _log.fine("Animation decoded");
-            if (anim.length > 1) {
-              _log.fine("Has more than one frame, marking as video");
-              item.video = true;
-              item.duration = 0;
-              for (Image i in anim) {
-                item.duration += i.duration;
-              }
-              _log.fine("Duration: ${item.duration}");
-            }
-            originalImage = anim[0];
-          } catch (e, st) {
-            // Not an animation
-            _log.fine("Not an animation!", e, st);
-            originalImage = decodeImage(item.fileData);
-          }
-        } else {
-          _log.fine("Decoding image");
-          originalImage = decodeImage(item.fileData);
-          _log.fine("image decoded");
-        }
-        if(mime==MimeTypes.jpeg||mime==MimeTypes.tiff) {
-          try {
-            _log.fine("Reading exif data");
-            final Map<String, IfdTag> data = await readExifFromFile(
-                new File(originalFile));
-            for (String key in data.keys) {
-              item.metadata[key] = data[key].toString();
-            }
-            _log.fine("Done reading exif data", item.metadata);
-          } catch (e,st) {
-            _log.warning("Error while fetching exif data", e,st);
-            item.errors.add("Error while fetching exif data: ${e.toString()}");
-          }
-        }
-
-      } else if (MimeTypes.videoTypes.contains(mime)||mime==MimeTypes.swf) {
-        _log.fine("Is video mime type");
-        item.video = true;
-        originalImage = decodePng(
-            await generateFfmpegThumbnail(originalFile));
-        await getFfprobeData(item, originalFile);
-      } else {
-        throw new InvalidInputException("MIME type not supported: $mime");
-      }
-      item.height = originalImage.height;
-      item.width = originalImage.width;
-
-      if (MimeTypes.webFriendlyTypes.contains(mime)) {
-        _log.fine("Web-friendly MIME type, using original file for display");
-        //filesWritten.add(await new Link(getFullFilePathForHash(item.id))
-        //.create(getOriginalFilePathForHash(item.id), recursive: true));
-      } else {
-        _log.fine("Non-web-friendly MIME type, generating full-size image for display");
-        filesWritten.add(await _writeBytes(getFullFilePathForHash(item.id),
-            encodeJpg(originalImage, quality: 90),
-            deleteExisting: true));
-        _log.fine("Full-size image generated");
-        item.fullFileAvailable = true;
-      }
-
-      try {
-        filesWritten.add(await _createAndSaveThumbnail(originalImage, item.id));
-      } catch (e, st) {
-        _log.warning("Error while generating thumbnail for ${item.id}", e, st);
-        item.errors.add(
-            "Error while generating thumbnail for ${item.id}: ${e.toString()}");
-      }
+      filesWritten.addAll(await processItem(item));
     } catch (e, st) {
       _log.severe(e, st);
       for (FileSystemEntity fse in filesWritten) {
+        if(fse==null)
+          continue;
+
         try {
           final bool exists = await fse.exists();
           if (exists) await fse.delete();
@@ -586,6 +608,9 @@ class ItemModel extends AIdBasedModel<Item> {
       }
     } else if (size != bytes.length) {
       throw new Exception("File already exists with a different size");
+    } else {
+      // Same size, we didn't write anything, we leave it alone
+      return null;
     }
     return file;
   }
