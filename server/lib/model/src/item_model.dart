@@ -47,17 +47,17 @@ class ItemModel extends AIdBasedModel<Item> {
   @override
   Future<Null> performAdjustments(Item t) async {
     final StringBuffer downloadName = new StringBuffer();
-    downloadName.write(t.uploaded.year.toString().substring(2,4));
-    downloadName.write(t.uploaded.month.toString().padLeft(2,'0'));
-    downloadName.write(t.uploaded.day.toString().padLeft(2,'0'));
-    downloadName.write(t.uploaded.hour.toString().padLeft(2,'0'));
-    downloadName.write(t.uploaded.minute.toString().padLeft(2,'0'));
-    downloadName.write(t.uploaded.second.toString().padLeft(2,'0'));
-    downloadName.write(t.uploaded.millisecond.toString().padLeft(3,'0'));
+    downloadName.write(t.uploaded.year.toString().substring(2, 4));
+    downloadName.write(t.uploaded.month.toString().padLeft(2, '0'));
+    downloadName.write(t.uploaded.day.toString().padLeft(2, '0'));
+    downloadName.write(t.uploaded.hour.toString().padLeft(2, '0'));
+    downloadName.write(t.uploaded.minute.toString().padLeft(2, '0'));
+    downloadName.write(t.uploaded.second.toString().padLeft(2, '0'));
+    downloadName.write(t.uploaded.millisecond.toString().padLeft(3, '0'));
     downloadName.write(" - ");
     downloadName.write(t.tags.join(" ").replaceAll(":", ","));
 
-    if(!MimeTypes.extensions.containsKey(t.mime)) {
+    if (!MimeTypes.extensions.containsKey(t.mime)) {
       throw new Exception("Don't know extension for mime type: ${t.mime}");
     }
     downloadName.write(".");
@@ -106,6 +106,7 @@ class ItemModel extends AIdBasedModel<Item> {
 
     return itemId;
   }
+
   @override
   Future<String> delete(String id) async {
     await _extensionServices.sendDeletingItem(id);
@@ -130,14 +131,22 @@ class ItemModel extends AIdBasedModel<Item> {
 
     return output;
   }
+
   Future<List<int>> generateFfmpegThumbnail(String originalFile) async {
     _log.fine("generateFfmpegThumbnail start");
     final Directory tempFolder =
         await Directory.systemTemp.createTemp("dartlery_ffempeg_output");
     final String tempfile = path.join(tempFolder.path, "thumbnail.png");
     try {
-      final ProcessResult result = await Process.run("ffmpeg",
-          <String>['-i', originalFile, '-vf', "thumbnail", '-frames:v', '1', tempfile]);
+      final ProcessResult result = await Process.run("ffmpeg", <String>[
+        '-i',
+        originalFile,
+        '-vf',
+        "thumbnail",
+        '-frames:v',
+        '1',
+        tempfile
+      ]);
       if (result.exitCode != 0) {
         throw new Exception(
             "Error while generating video thumbnail: ${result.stderr
@@ -188,9 +197,10 @@ class ItemModel extends AIdBasedModel<Item> {
       try {
         final double durationDouble = double.parse(durationString);
         item.duration = (durationDouble * 1000).floor();
-      } on FormatException catch(e,st) {
+      } on FormatException catch (e, st) {
         item.errors.add("Could not interpret item duration: $durationString");
-        _log.warning("Could not interpret item duration: $durationString",e,st);
+        _log.warning(
+            "Could not interpret item duration: $durationString", e, st);
       }
     }
     result = await Process.run("ffprobe",
@@ -205,8 +215,9 @@ class ItemModel extends AIdBasedModel<Item> {
         if (_codecNameRegex.hasMatch(videoStreams)) {
           item.metadata["video_codec"] =
               _codecNameRegex.firstMatch(videoStreams).group(1);
-          if(item.mime==MimeTypes.mkv) {
-            if(item.metadata["video_codec"].contains("VP8")||item.metadata["video_codec"].contains("VP9")) {
+          if (item.mime == MimeTypes.mkv) {
+            if (item.metadata["video_codec"].contains("VP8") ||
+                item.metadata["video_codec"].contains("VP9")) {
               item.mime = MimeTypes.webm;
             }
           }
@@ -394,7 +405,6 @@ class ItemModel extends AIdBasedModel<Item> {
       _log.fine("_createAndSaveThumbnail end");
     }
 
-
     return thumbnailFile;
   }
 
@@ -447,32 +457,31 @@ class ItemModel extends AIdBasedModel<Item> {
         originalImage = decodeImage(item.fileData);
         _log.fine("image decoded");
       }
-      if(mime==MimeTypes.jpeg||mime==MimeTypes.tiff) {
+      if (mime == MimeTypes.jpeg || mime == MimeTypes.tiff) {
         try {
           _log.fine("Reading exif data");
-          final Map<String, IfdTag> data = await readExifFromFile(
-              new File(originalFile));
+          final Map<String, IfdTag> data =
+              await readExifFromFile(new File(originalFile));
           for (String key in data.keys) {
             item.metadata[key] = data[key].toString();
           }
           _log.fine("Done reading exif data", item.metadata);
-        } catch (e,st) {
-          _log.warning("Error while fetching exif data", e,st);
+        } catch (e, st) {
+          _log.warning("Error while fetching exif data", e, st);
           item.errors.add("Error while fetching exif data: ${e.toString()}");
         }
       }
-
-    } else if (MimeTypes.videoTypes.contains(mime)||mime==MimeTypes.swf) {
+    } else if (MimeTypes.videoTypes.contains(mime) || mime == MimeTypes.swf) {
       try {
         _log.fine("Is video mime type");
         item.video = true;
-        originalImage = decodePng(
-            await generateFfmpegThumbnail(originalFile));
+        originalImage = decodePng(await generateFfmpegThumbnail(originalFile));
         await getFfprobeData(item, originalFile);
-      } catch(e,st) {
-        if(mime==MimeTypes.swf) {
-          _log.warning("Error while genereting thumbnail of swf",e,st);
-          item.errors.add("Error while genereting thumbnail of swf: ${e.toString()}");
+      } catch (e, st) {
+        if (mime == MimeTypes.swf) {
+          _log.warning("Error while genereting thumbnail of swf", e, st);
+          item.errors
+              .add("Error while genereting thumbnail of swf: ${e.toString()}");
         } else {
           rethrow;
         }
@@ -480,35 +489,35 @@ class ItemModel extends AIdBasedModel<Item> {
     } else {
       throw new InvalidInputException("MIME type not supported: $mime");
     }
-    if(item!=null) {
+    if (originalImage != null) {
       item.height = originalImage.height;
       item.width = originalImage.width;
 
-    if (MimeTypes.webFriendlyTypes.contains(mime)) {
-      _log.fine("Web-friendly MIME type, using original file for display");
-      //filesWritten.add(await new Link(getFullFilePathForHash(item.id))
-      //.create(getOriginalFilePathForHash(item.id), recursive: true));
-    } else {
-      _log.fine("Non-web-friendly MIME type, generating full-size image for display");
-      filesWritten.add(await _writeBytes(getFullFilePathForHash(item.id),
-          encodeJpg(originalImage, quality: 90),
-          deleteExisting: true));
-      _log.fine("Full-size image generated");
-      item.fullFileAvailable = true;
-    }
+      if (MimeTypes.webFriendlyTypes.contains(mime)) {
+        _log.fine("Web-friendly MIME type, using original file for display");
+        //filesWritten.add(await new Link(getFullFilePathForHash(item.id))
+        //.create(getOriginalFilePathForHash(item.id), recursive: true));
+      } else {
+        _log.fine(
+            "Non-web-friendly MIME type, generating full-size image for display");
+        filesWritten.add(await _writeBytes(getFullFilePathForHash(item.id),
+            encodeJpg(originalImage, quality: 90),
+            deleteExisting: true));
+        _log.fine("Full-size image generated");
+        item.fullFileAvailable = true;
+      }
 
-    try {
-      filesWritten.add(await _createAndSaveThumbnail(originalImage, item.id));
-    } catch (e, st) {
-      _log.warning("Error while generating thumbnail for ${item.id}", e, st);
-      item.errors.add(
-          "Error while generating thumbnail for ${item.id}: ${e.toString()}");
-    }
+      try {
+        filesWritten.add(await _createAndSaveThumbnail(originalImage, item.id));
+      } catch (e, st) {
+        _log.warning("Error while generating thumbnail for ${item.id}", e, st);
+        item.errors.add(
+            "Error while generating thumbnail for ${item.id}: ${e.toString()}");
+      }
     }
 
     return filesWritten;
   }
-
 
   Future<Null> _handleFileUpload(Item item) async {
     _log.fine("_handleFileUpload start");
@@ -524,7 +533,7 @@ class ItemModel extends AIdBasedModel<Item> {
     _log.fine("File hash: ${item.id}");
 
     _log.fine("Checking if item already exists");
-    if(await itemDataSource.existsById(item.id))
+    if (await itemDataSource.existsById(item.id))
       throw new DuplicateItemException("Item ${item.id} already imported");
 
     final List<FileSystemEntity> filesWritten = <FileSystemEntity>[];
@@ -534,8 +543,7 @@ class ItemModel extends AIdBasedModel<Item> {
     } catch (e, st) {
       _log.severe(e, st);
       for (FileSystemEntity fse in filesWritten) {
-        if(fse==null)
-          continue;
+        if (fse == null) continue;
 
         try {
           final bool exists = await fse.exists();
