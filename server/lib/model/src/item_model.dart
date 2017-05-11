@@ -472,6 +472,7 @@ class ItemModel extends AIdBasedModel<Item> {
       } catch(e,st) {
         if(mime==MimeTypes.swf) {
           _log.warning("Error while genereting thumbnail of swf",e,st);
+          item.errors.add("Error while genereting thumbnail of swf: ${e.toString()}");
         } else {
           rethrow;
         }
@@ -479,8 +480,9 @@ class ItemModel extends AIdBasedModel<Item> {
     } else {
       throw new InvalidInputException("MIME type not supported: $mime");
     }
-    item.height = originalImage.height;
-    item.width = originalImage.width;
+    if(item!=null) {
+      item.height = originalImage.height;
+      item.width = originalImage.width;
 
     if (MimeTypes.webFriendlyTypes.contains(mime)) {
       _log.fine("Web-friendly MIME type, using original file for display");
@@ -501,6 +503,7 @@ class ItemModel extends AIdBasedModel<Item> {
       _log.warning("Error while generating thumbnail for ${item.id}", e, st);
       item.errors.add(
           "Error while generating thumbnail for ${item.id}: ${e.toString()}");
+    }
     }
 
     return filesWritten;
