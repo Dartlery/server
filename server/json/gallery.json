@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "0a42838eb8e447da3061ed3b5642c3832f03495b",
+ "etag": "2aaa2773b2d21c9636c9524e468a49f86d53e384",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -41,6 +41,9 @@
      }
     },
     "fileName": {
+     "type": "string"
+    },
+    "downloadName": {
      "type": "string"
     },
     "length": {

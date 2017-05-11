@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:intl/intl.dart';
 
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
@@ -41,13 +42,28 @@ class ItemModel extends AIdBasedModel<Item> {
   final RegExp _videoPixelFormatRegex =
       new RegExp(r"^pix_fmt=(.+)$", multiLine: true);
 
-//  @override
-//  _performAdjustments(Item item) {
-//    // TODO: filter this down to just image fields?
-//    for(String key in item.values.keys) {
-//      item.values[key] = _handleImageLink(item.values[key]);
-//    }
-//  }
+  DateFormat downloadNameDateFormat = new DateFormat('yMdHms');
+
+  @override
+  Future<Null> performAdjustments(Item t) async {
+    final StringBuffer downloadName = new StringBuffer();
+    downloadName.write(t.uploaded.year.toString().substring(2,4));
+    downloadName.write(t.uploaded.month.toString().padLeft(2,'0'));
+    downloadName.write(t.uploaded.day.toString().padLeft(2,'0'));
+    downloadName.write(t.uploaded.hour.toString().padLeft(2,'0'));
+    downloadName.write(t.uploaded.minute.toString().padLeft(2,'0'));
+    downloadName.write(t.uploaded.second.toString().padLeft(2,'0'));
+    downloadName.write(t.uploaded.millisecond.toString().padLeft(3,'0'));
+    downloadName.write(" - ");
+    downloadName.write(t.tags.join(" ").replaceAll(":", ","));
+
+    if(!MimeTypes.extensions.containsKey(t.mime)) {
+      throw new Exception("Don't know extension for mime type: ${t.mime}");
+    }
+    downloadName.write(".");
+    downloadName.write(MimeTypes.extensions[t.mime]);
+    t.downloadName = downloadName.toString();
+  }
 
   final RegExp _videoFrameRateRegex =
       new RegExp(r"^avg_frame_rate=(\d+)\/(\d+)$", multiLine: true);
@@ -189,6 +205,11 @@ class ItemModel extends AIdBasedModel<Item> {
         if (_codecNameRegex.hasMatch(videoStreams)) {
           item.metadata["video_codec"] =
               _codecNameRegex.firstMatch(videoStreams).group(1);
+          if(item.mime==MimeTypes.mkv) {
+            if(item.metadata["video_codec"].contains("VP8")||item.metadata["video_codec"].contains("VP9")) {
+              item.mime = MimeTypes.webm;
+            }
+          }
         }
 
         if (_videoPixelFormatRegex.hasMatch(videoStreams)) {

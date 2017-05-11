@@ -193,6 +193,7 @@ buildItem() {
   buildCounterItem++;
   if (buildCounterItem < 3) {
     o.audio = true;
+    o.downloadName = "foo";
     o.duration = 42;
     o.errors = buildUnnamed0();
     o.extension = "foo";
@@ -219,6 +220,7 @@ checkItem(api.Item o) {
   buildCounterItem++;
   if (buildCounterItem < 3) {
     unittest.expect(o.audio, unittest.isTrue);
+    unittest.expect(o.downloadName, unittest.equals('foo'));
     unittest.expect(o.duration, unittest.equals(42));
     checkUnnamed0(o.errors);
     unittest.expect(o.extension, unittest.equals('foo'));

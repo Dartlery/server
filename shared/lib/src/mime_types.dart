@@ -1,4 +1,27 @@
 class MimeTypes {
+
+  static const Map<String,String> extensions = const <String,String>
+  {jpeg: "jpg",
+  gif: "gif",
+  png: "png",
+  tga: "tga",
+  tiff: "tiff",
+  webp: "webp",
+  psd: "psd",
+  pvr: "pvr",
+  openExr: "exr",
+  webm: "webm",
+  mp4: "mp4",
+  flv: "flv",
+  quicktime: "mov",
+  avi: "avi",
+  asf: "asf",
+  mpeg: "mpeg",
+  mkv: "mkv",
+  swf: "swf"
+  };
+
+
   static const String jpeg = "image/jpeg";
   static const String gif = "image/gif";
   static const String png = "image/png";
@@ -17,6 +40,7 @@ class MimeTypes {
   static const String asf = 'video/x-ms-asf';
   static const String mpeg = 'video/mpeg';
   static const String mkv = 'video/x-matroska';
+  static const String swf = "application/x-shockwave-flash";
 
   static const List<String> animatableImageTypes = const <String>[
     gif,png,webp
@@ -55,6 +79,5 @@ class MimeTypes {
     mkv
   ];
 
-  static const String swf = "application/x-shockwave-flash";
 
 }

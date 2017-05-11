@@ -10,7 +10,7 @@ class MediaMimeResolver extends MimeTypeResolver{
     //addMagicNumber(<int>[0x1A, 0x45, 0xDF, 0xA3, 0x93, 0x42, 0x82, 0x88,
       //              0x6D, 0x61, 0x74, 0x72, 0x6F, 0x73, 0x6B, 0x61], MimeTypes.mkv);
 
-    addMagicNumber(<int>[0x1A, 0x45, 0xDF, 0xA3],  MimeTypes.webm);
+    addMagicNumber(<int>[0x1A, 0x45, 0xDF, 0xA3],  MimeTypes.mkv);
 
 
     addMagicNumber(<int>[0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x6D, 0x70, 0x34], MimeTypes.mp4,
@@ -62,7 +62,7 @@ class MediaMimeResolver extends MimeTypeResolver{
       lookupBytes = data;
     }
 
-    _log.fine("Header bytes: ${HEX.encode(lookupBytes)}");
+    _log.info("Header bytes: ${HEX.encode(lookupBytes)}");
 
     return  lookup("", headerBytes: lookupBytes);
   }

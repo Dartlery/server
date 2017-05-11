@@ -1314,6 +1314,7 @@ class IdResponse {
 
 class Item {
   core.bool audio;
+  core.String downloadName;
   core.int duration;
   core.List<core.String> errors;
   core.String extension;
@@ -1337,6 +1338,9 @@ class Item {
   Item.fromJson(core.Map _json) {
     if (_json.containsKey("audio")) {
       audio = _json["audio"];
+    }
+    if (_json.containsKey("downloadName")) {
+      downloadName = _json["downloadName"];
     }
     if (_json.containsKey("duration")) {
       duration = _json["duration"];
@@ -1395,6 +1399,9 @@ class Item {
     var _json = new core.Map();
     if (audio != null) {
       _json["audio"] = audio;
+    }
+    if (downloadName != null) {
+      _json["downloadName"] = downloadName;
     }
     if (duration != null) {
       _json["duration"] = duration;

@@ -1,4 +1,4 @@
-<span *ngIf="model.id!=null">
+<span *ngIf="model.id!=null" style="background-color: black;">
 <img *ngIf="isImage" src="{{getFullFileUrl(model)}}" [style.width]="widthString" style="max-height:100%;margin-left:auto;margin-right:auto;" />
 <video  *ngIf="isVideo" controls loop autoplay muted poster="{{getThumbnailFileUrl(model.id)}}" style="width:100%;">
     <source src="{{getOriginalFileUrl(model.id)}}" type="{{model.mime}}">
@@ -7,12 +7,12 @@
 
 
 <div style="position: fixed; right: 8pt; bottom: 8pt;z-index:10;text-align: right;">
-    <a href="{{getOriginalFileUrl(model.id)}}" target="{{model.id}}">
-    <material-fab raised mini class="red" style="">
-        <glyph icon="open_in_new"></glyph>
+    <a href="{{getOriginalFileUrl(model.id)}}" download="{{model.downloadName}}">
+    <material-fab raised mini class="red" style="" style="margin-top:8pt;">
+        <glyph icon="file_download"></glyph>
     </material-fab></a><br/>
     <a href="{{getOriginalFileUrl(model.id)}}" target="{{model.id}}">
-    <material-fab raised mini class="red" style="">
+    <material-fab raised mini class="red" style="" style="margin-top:8pt;">
         <glyph icon="open_in_new"></glyph>
     </material-fab></a><br/>
     <a  *ngIf="previousItemAvailable" [routerLink]="['Item', {id: previousItem}]">

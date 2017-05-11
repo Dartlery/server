@@ -9,6 +9,7 @@ class Item extends AIdData {
   String extension;
   List<int> fileData;
   String fileName;
+  String downloadName;
   int length;
   int height;
   int width;
