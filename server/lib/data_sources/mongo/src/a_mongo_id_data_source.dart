@@ -68,7 +68,7 @@ abstract class AMongoIdDataSource<T extends AIdData>
   Future<PaginatedIdData<T>> getPaginatedListFromDb(SelectorBuilder selector,
           {int offset: 0,
           int limit: paginatedDataLimit,
-          String sortField: idField, bool sortDescending: false}) async =>
+          String sortField, bool sortDescending: false}) async =>
       new PaginatedIdData<T>.copyPaginatedData(await getPaginatedFromDb(
           selector,
           offset: offset,

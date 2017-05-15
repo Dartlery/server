@@ -54,10 +54,10 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   }
 
   Future<List<T>> getFromDb(SelectorBuilder selector) async {
-    final List<dynamic> results = await genericFind(selector);
+    final Stream<T> stream = await streamFromDb(selector);
     final List<T> output = new List<T>();
-    for (dynamic result in results) {
-      output.add(createObject(result));
+    await for(T result in stream) {
+      output.add(result);
     }
     return output;
   }
@@ -65,6 +65,8 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   Future<Stream<T>> streamFromDb(dynamic selector) async {
     final Stream<Map> outputStream = await genericFindStream(selector);
     return outputStream.map((Map data) {
+      if(data.containsKey("\$err"))
+        throw new Exception("Database error: $data['\$err']");
       return createObject(data);
     });
   }

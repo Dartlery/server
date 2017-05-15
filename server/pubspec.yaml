@@ -14,7 +14,7 @@ dependencies:
   connection_pool: ^0.1.2
   crypt: ^1.0.2
   http_server: ^0.9.6
-  image: ^1.1.26
+  image: ^1.1.27
   di: ^3.0.0
   logging_handlers: ^0.8.0
   meta: ^1.0.5
@@ -41,8 +41,6 @@ dev_dependencies:
 dependency_overrides:
   shelf_static:
     git: https://github.com/dartalog/shelf_static.git
-  image:
-    git: https://github.com/brendan-duncan/image.git
 #  image_hash:
 #    path: ../../image_hash/
 executables:

@@ -68,13 +68,12 @@ abstract class AMongoDataSource {
 
   @protected
   Future<Option<dynamic>> genericFindOne(SelectorBuilder selector) async {
-    final List<dynamic> output = await genericFind(selector.limit(1));
+    final List<dynamic> output = await _genericFind(selector.limit(1));
     if (output.length == 0) return new None<dynamic>();
     return new Some<dynamic>(output[0]);
   }
 
-  @protected
-  Future<List<Map>> genericFind(SelectorBuilder selector) async {
+  Future<List<Map>> _genericFind(SelectorBuilder selector) async {
     return await collectionWrapper((DbCollection collection) async {
       final Stream<dynamic> str = collection.find(selector);
       final List<dynamic> output = await str.toList();
