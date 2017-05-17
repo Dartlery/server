@@ -75,6 +75,7 @@ class MainApp implements OnInit, OnDestroy {
   bool showDeleteButton = false;
   bool showTagButton = false;
   bool showOpenInNewButton = false;
+  bool showCompareButton = false;
 
   bool userIsModerator = false;
   bool userIsAdmin = false;
@@ -154,6 +155,7 @@ class MainApp implements OnInit, OnDestroy {
     showSearch = actions.contains(PageActions.Search);
     showDeleteButton = actions.contains(PageActions.Delete);
     showOpenInNewButton = actions.contains(PageActions.OpenInNew);
+    showCompareButton = actions.contains(PageActions.Compare);
   }
 
   void onPageTitleChanged(String title) {
@@ -174,6 +176,9 @@ class MainApp implements OnInit, OnDestroy {
 
   void refreshClicked() {
     _pageControl.requestPageAction(PageActions.Refresh);
+  }
+  void compareClicked() {
+    _pageControl.requestPageAction(PageActions.Compare);
   }
   void tagClicked() {
     _pageControl.requestPageAction(PageActions.Tag);

@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:html' as html;
 
 import 'package:angular2/angular2.dart';
-import 'package:angular2/platform/common.dart';
 import 'package:angular2/platform/browser.dart';
+import 'package:angular2/platform/common.dart';
 import 'package:angular2/router.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
@@ -31,88 +31,67 @@ import '../src/a_page.dart';
       ErrorOutputComponent,
       commonControls
     ],
-    styleUrls: const <String>["../../shared.css"],
-    styles: const <String>[
-      "span.win { color:green;}",
-      "span.lose { color:red; }",
-      "span.tie {color:orange; } "
-    ],
+    styleUrls: const <String>["../../shared.css", "deduplicate.css"],
     templateUrl: "deduplicate.html")
 class DeduplicatePage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("DeduplicatePage");
 
+  static const double _animationSpeed =
+      0.01;
   ExtensionData model;
   Item firstComparisonItem = new Item();
+
   Item secondComparisonItem = new Item();
 
   int currentImage = 0;
 
   ApiService _api;
-
   Router _router;
+
   AuthenticationService _auth;
 
   Location _location;
 
   RouteParams _params;
-
   StreamSubscription<PageActions> _pageActionSubscription;
   String filterItemId;
   final NumberFormat f = new NumberFormat.decimalPattern();
-  DeduplicatePage(PageControlService pageControl, this._api, this._auth, this._router,
-      this._params, this._location)
-      : super(_auth, _router, pageControl) {
-    pageControl.setPageTitle("Deduplicate");
-    pageControl.setAvailablePageActions([PageActions.Refresh]);
-  }
 
   bool animatedComparison = true;
+
+  double _comparisonSplitRatio = 0.5;
+
+  /// true = right, false = left
+  bool animationDirection = true;
+
+  Timer _comparisonTimer;
+
+  DeduplicatePage(PageControlService pageControl, this._api, this._auth,
+      this._router, this._params, this._location)
+      : super(_auth, _router, pageControl) {
+    pageControl.setPageTitle("Deduplicate");
+    pageControl.setAvailablePageActions([PageActions.Refresh, PageActions.Compare]);
+  }
 
   String get comparisonHeight {
     return "${html.window.innerHeight-175}px";
   }
-  String get comparisonWidth {
-    return "${html.window.innerWidth}px";
-  }
 
-  double _comparisonSplitRatio = 0.5;
-
-  int get comparisonSplitPositionInt {
-    int x = (html.window.innerWidth * _comparisonSplitRatio).round();
-    if(x<leftComparisonLimit)
-      x = leftComparisonLimit;
-    if(x>rightComparisonLimit)
-      x=rightComparisonLimit;
-
-    if(x<48)
-      x = 48;
-    return x;
-  }
   String get comparisonSplitPosition {
     return "${comparisonSplitPositionInt}px";
   }
+  int get comparisonSplitPositionInt {
+    int x = (html.window.innerWidth * _comparisonSplitRatio).round();
+    if (x < leftComparisonLimit) x = leftComparisonLimit;
+    if (x > rightComparisonLimit) x = rightComparisonLimit;
 
-  @ViewChild("leftImage")
-  html.ImageElement get leftImage => html.document.getElementById("leftImage");
-  @ViewChild("rightImage")
-  html.ImageElement get rightImage => html.document.getElementById("rightImage");
-
-  int get leftComparisonLimit {
-    return ((html.window.innerWidth/2) - (leftImage.offsetWidth/2)).round();
-  }
-  int get rightComparisonLimit {
-    return ((html.window.innerWidth/2) + (rightImage.offsetWidth/2)).round();
+    if (x < 48) x = 48;
+    return x;
   }
 
-  void comparisonDrag(html.MouseEvent event) {
-    animatedComparison = false;
-    _log.info("Drag: ${event.offset.x}");
-    final double adjustRatio = event.offset.x/html.window.innerWidth ;
-    _comparisonSplitRatio += adjustRatio;
-    event.preventDefault();
-    event.stopPropagation();
+  String get comparisonWidth {
+    return "${html.window.innerWidth}px";
   }
-
 
   String get currentImageUrl {
     if (model == null) return "";
@@ -123,11 +102,16 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     }
   }
 
-  String get firstComparisonWidth => "${firstComparisonItem?.width??0}px";
-  String get secondComparisonWidth => "${secondComparisonItem?.width??0}px";
-
   int get firstComparisonPixelCount =>
       (firstComparisonItem?.height ?? 0) * (firstComparisonItem?.width ?? 0);
+
+  String get firstComparisonWidth => "${firstComparisonItem?.width??0}px";
+
+  int get leftComparisonLimit {
+    return  50; //((html.window.innerWidth / 2) - (leftImage.offsetWidth / 2)).round();
+  }
+  @ViewChild("leftImage")
+  html.ImageElement get leftImage => html.document.getElementById("leftImage");
 
   int get lengthWinner {
     if ((firstComparisonItem?.length ?? 0) >
@@ -140,35 +124,20 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     return -1;
   }
 
-  /// true = right, false = left
-  bool animationDirection = true;
-  static const double _animationSpeed = 0.02; // TODO: Make this calculated against the amount of time between frames
-  Future<Null> animationCallback(Timer t) async {
-    if(animatedComparison&&model!=null&&firstComparisonItem!=null&&secondComparisonItem!=null) {
-      if(animationDirection) { //right
-        if(comparisonSplitPositionInt>leftComparisonLimit) {
-          await wait();
-          _comparisonSplitRatio -= _animationSpeed;
-        } else {
-          animationDirection = false;
-        }
-      } else { //left
-        if(comparisonSplitPositionInt<rightComparisonLimit) {
-          await wait();
-          _comparisonSplitRatio += _animationSpeed;
-        } else {
-          animationDirection = true;
-        }
-      }
-    }
-  }
-
-
   @override
   Logger get loggerImpl => _log;
 
+  int get rightComparisonLimit {
+    return ((html.window.innerWidth / 2) + (rightImage.offsetWidth / 2))
+        .round();
+  }
+  @ViewChild("rightImage")
+  html.ImageElement get rightImage =>
+      html.document.getElementById("rightImage"); // TODO: Make this calculated against the amount of time between frames
   int get secondComparisonPixelCount =>
       (secondComparisonItem?.height ?? 0) * (secondComparisonItem?.width ?? 0);
+
+  String get secondComparisonWidth => "${secondComparisonItem?.width??0}px";
 
   int get sizeWinner {
     if (firstComparisonPixelCount > secondComparisonPixelCount) {
@@ -177,6 +146,31 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
       return 1;
     }
     return -1;
+  }
+
+  Future<Null> animationCallback(Timer t) async {
+    if (animatedComparison &&
+        model != null &&
+        firstComparisonItem != null &&
+        secondComparisonItem != null) {
+      if (animationDirection) {
+        //right
+        if (comparisonSplitPositionInt > leftComparisonLimit) {
+          await wait();
+          _comparisonSplitRatio -= _animationSpeed;
+        } else {
+          animationDirection = false;
+        }
+      } else {
+        //left
+        if (comparisonSplitPositionInt < rightComparisonLimit) {
+          await wait();
+          _comparisonSplitRatio += _animationSpeed;
+        } else {
+          animationDirection = true;
+        }
+      }
+    }
   }
 
   void clear() {
@@ -191,6 +185,15 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
           "itemComparison", "similarItems", model.primaryId, model.secondaryId);
       await refresh();
     });
+  }
+
+  void comparisonDrag(html.MouseEvent event) {
+    animatedComparison = false;
+    _log.info("Drag: ${event.offset.x}");
+    final double adjustRatio = event.offset.x / html.window.innerWidth;
+    _comparisonSplitRatio += adjustRatio;
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   Future<Null> deleteClicked(bool left) async {
@@ -218,8 +221,6 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     });
   }
 
-  Timer _comparisonTimer;
-
   @override
   void ngOnDestroy() {
     _pageActionSubscription.cancel();
@@ -232,18 +233,21 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     filterItemId = _id;
     _pageActionSubscription =
         pageControl.pageActionRequested.listen(onPageActionRequested);
-     refresh();
+    refresh();
 
-     new Timer(new Duration(seconds:1), () {
-       _comparisonTimer = new Timer.periodic(new Duration(milliseconds: 100), animationCallback);
-     });
+    new Timer(new Duration(seconds: 1), () {
+      _comparisonTimer = new Timer.periodic(
+          new Duration(milliseconds: 16), animationCallback);
+    });
   }
-
 
   void onPageActionRequested(PageActions action) {
     switch (action) {
       case PageActions.Refresh:
         this.refresh();
+        break;
+      case PageActions.Compare:
+        animatedComparison = !animatedComparison;
         break;
       default:
         throw new Exception(

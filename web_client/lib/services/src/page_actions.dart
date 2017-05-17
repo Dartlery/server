@@ -1,1 +1,1 @@
-enum PageActions { Refresh, Add, Edit, Search, Delete, OpenInNew, Tag }
+enum PageActions { Refresh, Add, Edit, Search, Delete, OpenInNew, Tag, Compare }

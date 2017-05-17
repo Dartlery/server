@@ -1,13 +1,15 @@
 <div *ngIf="model!=null">
-    <div [style.width]="comparisonWidth" [style.height]='comparisonHeight' style="text-align: center;position:absolute;top:0left:0;">
-        <img src="{{getFullFileUrl(firstComparisonItem)}}" style="max-height: 100%;max-width: 100%" id="leftImage" />
+
+    <div class="itemContainer" style="left:0;">
+        <img src="{{getFullFileUrl(firstComparisonItem)}}" id="leftImage" />
     </div>
-    <div [style.left]="comparisonSplitPosition" [style.height]='comparisonHeight' style="position:absolute;right:0;overflow: hidden;">
-        <div [style.width]="comparisonWidth" [style.height]='comparisonHeight' style="text-align: center;position: absolute;top:0;right:0;">
-            <img src="{{getFullFileUrl(secondComparisonItem)}}" style="max-height: 100%;max-width: 100%" id="rightImage" />
+    <div [style.left]="comparisonSplitPosition" [style.height]='comparisonHeight'
+         style="position:absolute;right:0;top:0;overflow: hidden;">
+        <div class="itemContainer" style="right:0;">
+            <img src="{{getFullFileUrl(secondComparisonItem)}}" id="rightImage" />
         </div>
     </div>
-    <div style="position: absolute; top:0;width:1px;background-color: black;" [style.left]="comparisonSplitPosition" [style.height]="comparisonHeight"></div>
+    <div class="splitter" [style.left]="comparisonSplitPosition"></div>
     <div style="position:absolute;top:50%;height:24px;width: 24px;background-color: black;border-radius: 50%;color:white;margin-left:-12px;margin-top:-12px;cursor:ew-resize;"
          [style.left]="comparisonSplitPosition" draggable="true" (drag)="comparisonDrag($event)" (dragend)="cancelEvent($event)">
         <glyph icon="compare_arrows"></glyph>
@@ -18,10 +20,10 @@
 
 
 
-    <table style="width: 100%;position:absolute;left:0;" [style.top]="comparisonHeight">
+    <div style="width: 100%; text-align: center; position: fixed; bottom: 0; left:0 ; right:0;">
+    <table style="margin: 0 auto;">
         <tr>
-
-            <td>
+            <td style="width: 40px;">
                 <confirm-button icon="delete_forever" (trigger)="deleteClicked(true)"></confirm-button>
             </td>
             <td>
@@ -78,10 +80,17 @@
                 {{f.format(secondComparisonItem?.length??0)}} bytes
             </span>
             </td>
-            <td>
+            <td style="width: 40px;">
                 <confirm-button icon="delete_forever" (trigger)="deleteClicked(false)"></confirm-button>
             </td>
         </tr>
     </table>
+    </div>
 
+    <div style="position: absolute;left:0;top:0;">
+        <b *ngFor="let t of firstComparisonItem.tags">{{formatTag(t)}}<br/></b>
+    </div>
+    <div style="position: absolute;right:0;top:0;text-align:right;">
+        <b *ngFor="let t of secondComparisonItem.tags">{{formatTag(t)}}<br/></b>
+    </div>
 </div>

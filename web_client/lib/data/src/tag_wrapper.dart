@@ -9,7 +9,9 @@ class TagWrapper {
   String get id => tag.toString();
 
   @override
-  String toString() {
+  String toString() =>formatTag(this.tag);
+
+  static String formatTag(Tag tag) {
     if(StringTools.isNotNullOrWhitespace(tag.category)) {
       return "${tag.category}: ${tag.id}";
     } else {

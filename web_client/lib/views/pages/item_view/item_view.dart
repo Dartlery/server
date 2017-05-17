@@ -28,22 +28,7 @@ import 'package:dartlery/views/controls/common_controls.dart';
       ErrorOutputComponent,
       commonControls
     ],
-    styleUrls: const <String>["../../shared.css"],
-    styles: const <String>['''
-    .itemDisplay { 
-      background-color: black; 
-      object-fit: scale-down; 
-      width:100%; 
-      height: calc(100vh - 64px) 
-      }
-      @media (max-width: 600px) {
-    .itemDisplay { 
-      background-color: black; 
-      object-fit: scale-down; 
-      width:100%; 
-      height: calc(100vh - 56px) 
-      }}
-    '''],
+    styleUrls: const <String>["../../shared.css", "item_view.css"],
     templateUrl: "item_view.html")
 class ItemViewPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemViewPage");
