@@ -18,8 +18,6 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   StreamSubscription<PageActions> _pageActionSubscription;
 
-  final PageControlService _pageControl;
-
   @protected
   final ApiService api;
 
@@ -31,13 +29,13 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   final String dataType;
 
 
-  AMaintenancePage(this.dataType, this._pageControl, this.api,
+  AMaintenancePage(this.dataType, PageControlService pageControl, this.api,
       AuthenticationService _auth, Router router)
-      : super(_auth, router) {
-    _pageControl.setAvailablePageActions(
+      : super(_auth, router, pageControl) {
+    pageControl.setAvailablePageActions(
         <PageActions>[PageActions.Refresh, PageActions.Add]);
     _pageActionSubscription =
-        _pageControl.pageActionRequested.listen(onPageActionRequested);
+       pageControl.pageActionRequested.listen(onPageActionRequested);
     this.model = createBlank();
   }
 
@@ -87,7 +85,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   @override
   void ngOnDestroy() {
     _pageActionSubscription.cancel();
-    _pageControl.reset();
+    pageControl.reset();
   }
 
   @override

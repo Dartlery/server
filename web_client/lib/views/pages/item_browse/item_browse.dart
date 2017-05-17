@@ -44,7 +44,6 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   bool userLoggedIn;
   final ApiService _api;
   final RouteParams _routeParams;
-  final PageControlService _pageControl;
   final Router _router;
   final AuthenticationService _auth;
   final List<IdWrapper> items = <IdWrapper>[];
@@ -60,8 +59,8 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
 
   ItemBrowseComponent(
-      this._api, this._routeParams, this._pageControl, this._router, this._auth, this._search)
-      : super(_auth, _router) {
+      this._api, this._routeParams, PageControlService pageControl, this._router, this._auth, this._search)
+      : super(_auth, _router, pageControl) {
     setActions();
   }
 
@@ -95,16 +94,16 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     _pageActionSubscription.cancel();
     _authChangedSubscription.cancel();
     _keyboardSubscription.cancel();
-    _pageControl.reset();
+    pageControl.reset();
   }
 
   @override
   void ngOnInit() {
-    _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
+    _searchSubscription = pageControl.searchChanged.listen(onSearchChanged);
     _authChangedSubscription =
         _auth.authStatusChanged.listen(onAuthStatusChange);
     _pageActionSubscription =
-        _pageControl.pageActionRequested.listen(onPageActionRequested);
+        pageControl.pageActionRequested.listen(onPageActionRequested);
     _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
     refresh();
   }
@@ -224,7 +223,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
         info.pageParams.add([routeName, params]);
       }
       info.currentPage = page;
-      _pageControl.setPaginationInfo(info);
+      pageControl.setPaginationInfo(info);
     });
   }
 
@@ -241,6 +240,6 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 //    if (_auth.hasPrivilege(UserPrivilege.normal)) {
 //      actions.add(PageActions.Add);
 //    }
-    _pageControl.setAvailablePageActions(actions);
+    pageControl.setAvailablePageActions(actions);
   }
 }

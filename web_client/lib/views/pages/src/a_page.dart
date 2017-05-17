@@ -5,17 +5,33 @@ import 'package:dartlery_shared/tools.dart';
 import 'package:angular2/router.dart';
 import '../../src/a_api_error_thing.dart';
 import 'package:dartlery/api/api.dart';
+import 'dart:math';
 
 abstract class APage extends AApiErrorThing {
+  final PageControlService pageControl;
 
+  APage(AuthenticationService auth, Router router, this.pageControl): super(router, auth);
 
-
-  APage(AuthenticationService auth, Router router): super(router, auth);
+  bool popupUnhandledErrors = true;
+  @override
+  set errorMessage(String message) {
+    super.errorMessage = message;
+    if(popupUnhandledErrors&&StringTools.isNotNullOrWhitespace(message))
+      pageControl.sendMessage("Error", message);
+  }
 
   void cancelEvent(html.Event e) {
     e.stopPropagation();
     e.preventDefault();
     e.stopImmediatePropagation();
+  }
+
+  String getViewWidthString([int offset = 0]) {
+    return "${html.window.innerWidth+offset}px";
+  }
+  String getViewHeightString([int offset = 0]) {
+    // The top toolbar is currently permanent, so this height calculation automatically subtracts its height
+    return "${html.window.innerHeight+offset-64}px";
   }
 
   String getFullFileUrl(Item item) {

@@ -3,6 +3,7 @@ import 'package:angular2/angular2.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/api/api.dart';
 import 'api_service.dart';
+import 'package:dartlery/routes.dart';
 
 @Injectable()
 class ItemSearchService {
@@ -133,6 +134,15 @@ class ItemSearchService {
       }
     }
     return null;
+  }
+
+  List<dynamic> getRouterArgsForCurrentSearch() {
+    final List<dynamic> output = <dynamic>[];
+    output.add(itemsSearchRoute.name);
+    final Map<String,String> args = <String,String>{};
+    args[queryRouteParameter] = _tags.toQueryString();
+    output.add(args);
+    return output;
   }
 
 }

@@ -1,11 +1,8 @@
 <auth-status (authedChanged)="onAuthChanged($event)"></auth-status>
 <div *ngIf="noItemsFound&&!processing" class="no-items">No Items Found</div>
 <div *ngFor="let i of items" class="item">
-    <a [routerLink]="['Item', {id: i.id}]" class="item_card" id="link_{{i.id}}">
-        <paper-material class="item_card" data-id="{{i.id}}" title="{{i.id}}" class="container">
-            <iron-image class="fit" sizing="cover"
-                src="{{getThumbnailFileUrl(i.id)}}"></iron-image>
-        </paper-material>
+    <a [routerLink]="['Item', {id: i.id}]" id="link_{{i.id}}">
+        <img src="{{getThumbnailFileUrl(i.id)}}" />
     </a>
     <div class="item-menu">
         <material-checkbox [(checked)]="i.selected" (checkedChange)="itemSelectChanged($event, i.id)" class="item-select-check" data-id="{{i.id}}"></material-checkbox>

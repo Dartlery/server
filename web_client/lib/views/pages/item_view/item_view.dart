@@ -29,6 +29,21 @@ import 'package:dartlery/views/controls/common_controls.dart';
       commonControls
     ],
     styleUrls: const <String>["../../shared.css"],
+    styles: const <String>['''
+    .itemDisplay { 
+      background-color: black; 
+      object-fit: scale-down; 
+      width:100%; 
+      height: calc(100vh - 64px) 
+      }
+      @media (max-width: 600px) {
+    .itemDisplay { 
+      background-color: black; 
+      object-fit: scale-down; 
+      width:100%; 
+      height: calc(100vh - 56px) 
+      }}
+    '''],
     templateUrl: "item_view.html")
 class ItemViewPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemViewPage");
@@ -36,19 +51,6 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   NgForm form;
   final ItemSearchService _searchService;
 
-  String get widthString {
-    if(model.width>html.window.innerWidth)
-      return "100%";
-    else
-      return "${model.width}px";
-  }
-
-  String get heightString {
-    if(model.height>html.window.innerHeight)
-      return "${html.window.innerHeight}px";
-    else
-      return "${model.height}px";
-  }
 
   Item model = new Item();
 
@@ -61,7 +63,6 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   }
 
 
-  PageControlService _pageControl;
   ApiService _api;
   Router _router;
   AuthenticationService _auth;
@@ -73,10 +74,10 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   StreamSubscription<PageActions> _pageActionSubscription;
 
 
-  ItemViewPage(this._pageControl, this._api, this._auth, this._router, this._params, this._location, this._searchService)
-      : super(_auth, _router) {
-    _pageControl.setPageTitle("Item View");
-    _pageControl.setAvailablePageActions([PageActions.Refresh, PageActions.Delete]);
+  ItemViewPage(PageControlService pageControl, this._api, this._auth, this._router, this._params, this._location, this._searchService)
+      : super(_auth, _router, pageControl) {
+    pageControl.setPageTitle("Item View");
+    pageControl.setAvailablePageActions([PageActions.Refresh, PageActions.Delete]);
 
   }
 
@@ -91,7 +92,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
       throw new Exception("Empty ID passed");
     itemId = _id;
     _pageActionSubscription =
-        _pageControl.pageActionRequested.listen(onPageActionRequested);
+        pageControl.pageActionRequested.listen(onPageActionRequested);
     refresh();
   }
 
@@ -119,7 +120,13 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   Future<Null> delete() async {
     await performApiCall(() async {
         model = await _api.items.delete(itemId);
-        _location.back();
+        if(nextItemAvailable) {
+          await _router.navigate([itemViewRoute.name, {"id": nextItem}]);
+        } else if(previousItemAvailable) {
+          await _router.navigate([itemViewRoute.name, {"id": previousItem}]);
+        } else {
+          await _router.navigate([homeRoute.name]);
+        }
     });
   }
 

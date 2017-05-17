@@ -82,6 +82,7 @@ class MainApp implements OnInit, OnDestroy {
   StreamSubscription<String> _pageTitleSubscription;
   StreamSubscription<String> _searchSubscription;
   StreamSubscription<List> _pageActionsSubscription;
+  StreamSubscription<MessageEventArgs> _messageSubscription;
   StreamSubscription<Null> _loginRequestSubscription;
 
   String _pageTitleOverride = "";
@@ -96,6 +97,8 @@ class MainApp implements OnInit, OnDestroy {
     _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
     _pageActionsSubscription =
         _pageControl.availablePageActionsSet.listen(onPageActionsSet);
+    _messageSubscription = _pageControl.messageSent.listen(onMessageSent);
+
   }
 
   bool confirmDeleteVisible = false;
@@ -202,4 +205,13 @@ class MainApp implements OnInit, OnDestroy {
     ]);
   }
 
+  bool errorMessageVisible = false;
+  String errorMessageHeader = "Error";
+  String errorMessage = "Error message";
+
+  void onMessageSent(MessageEventArgs e) {
+    this.errorMessage = e.message;
+    this.errorMessageHeader = e.title;
+    this.errorMessageVisible = true;
+  }
 }

@@ -41,7 +41,9 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String videoField = "video";
   static const String audioField = "audio";
   static const String durationField = "duration";
+  static const String inTrashField = "inTrash";
   static const String fullFileAvailableField = "fullFileAvailable";
+
   MongoItemDataSource(MongoDbConnectionPool pool) : super(pool);
   @override
   Item createObject(Map<String, dynamic> data) {
@@ -61,6 +63,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     output.video = data[videoField];
     output.audio = data[audioField];
     output.duration= data[durationField];
+    output.inTrash= data[inTrashField];
     output.fullFileAvailable= data[fullFileAvailableField];
 
     if (data[tagsField] != null) {
@@ -75,18 +78,19 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     return output;
   }
 
-  Future<Option<SelectorBuilder>> generateVisibleCriteria(String userUuid,
+  Future<Option<SelectorBuilder>> generateVisibleCriteria(String userUuid, bool inTrash,
       {SelectorBuilder selector}) async {
     // TODO: Implement filtering for NSFW levels, etc
     if (selector == null) selector = where;
+    selector.eq(inTrashField, inTrash);
     return new Some<SelectorBuilder>(
         selector.sortBy(uploadedField, descending: true));
   }
 
   @override
   Future<PaginatedIdData<Item>> getAllPaginated(
-      {int page: 0, int perPage: defaultPerPage, bool sortDescending: true}) async {
-    final SelectorBuilder selector = where;
+      {int page: 0, int perPage: defaultPerPage, bool sortDescending: true, bool inTrash: false}) async {
+    final SelectorBuilder selector = where.eq(inTrashField, inTrash);
     return await getPaginatedListFromDb(selector,
         limit: perPage,
         offset: getOffset(page, perPage),
@@ -109,18 +113,18 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       con.getItemsCollection();
 
   @override
-  Future<IdDataList<Item>> getVisible(String userUuid) async {
-    return (await generateVisibleCriteria(userUuid)).cata(
+  Future<IdDataList<Item>> getVisible(String userUuid, {bool inTrash: false}) async {
+    return (await generateVisibleCriteria(userUuid, inTrash)).cata(
         () => new IdDataList<Item>(),
         (SelectorBuilder selector) async => await getListFromDb(selector));
   }
 
   @override
   Future<PaginatedIdData<Item>> getVisiblePaginated(String userUuid,
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate}) async {
+      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
     final SelectorBuilder selector = where;
     if (cutoffDate != null) selector.gte(uploadedField, cutoffDate);
-    return (await generateVisibleCriteria(userUuid, selector: selector)).cata(
+    return (await generateVisibleCriteria(userUuid, inTrash, selector: selector)).cata(
         () => new PaginatedIdData<Item>(), (SelectorBuilder selector) async {
       return await getPaginatedListFromDb(selector,
           limit: perPage, offset: getOffset(page, perPage));
@@ -128,8 +132,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<IdDataList<Item>> searchVisible(String userUuid, String query) async {
-    return (await generateVisibleCriteria(userUuid)).cata(
+  Future<IdDataList<Item>> searchVisible(String userUuid, String query, {bool inTrash: false}) async {
+    return (await generateVisibleCriteria(userUuid, inTrash)).cata(
         () => new IdDataList<Item>(),
         (SelectorBuilder selector) async =>
             await search(query, selector: selector));
@@ -138,7 +142,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   @override
   Future<PaginatedIdData<Item>> searchVisiblePaginated(
       String userUuid, List<Tag> tags,
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate}) async {
+      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
     final SelectorBuilder selector = where;
     if (cutoffDate != null) selector.gte(uploadedField, cutoffDate);
 
@@ -150,7 +154,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       });
     });
 
-    return (await generateVisibleCriteria(userUuid, selector: selector)).cata(
+    return (await generateVisibleCriteria(userUuid, inTrash, selector: selector)).cata(
         () => new PaginatedIdData<Item>(),
         (SelectorBuilder selector) async => await getPaginatedListFromDb(
             selector,
@@ -178,6 +182,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     data[widthField] = item.width;
     data[videoField] = item.video;
     data[audioField] = item.audio;
+    data[inTrashField] = item.inTrash;
     data[durationField] = item.duration;
 
     if (item.tags != null) {
@@ -189,6 +194,12 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       }
       data[tagsField] = tagsList;
     }
+  }
+
+  @override
+  Future<Null> setTrashStatus(String id, bool inTrash) async {
+    final ModifierBuilder modifier = modify.set(inTrashField, inTrash);
+    await genericUpdate(where.eq(idField, id), modifier);
   }
 
   @override

@@ -25,5 +25,8 @@ class Item extends AIdData {
   List<String> errors = <String>[];
   bool fullFileAvailable = false;
 
+  @ApiProperty(ignore: true)
+  bool inTrash =false;
+
   Item();
 }

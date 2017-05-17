@@ -89,3 +89,15 @@
         </div>
     </material-dialog>
 </modal>
+
+<modal [visible]="errorMessageVisible">
+    <material-dialog class="basic-dialog">
+        <h3 header>{{errorMessageHeader}}</h3>
+        <p>
+            {{errorMessage}}
+        </p>
+        <div footer style="text-align: right">
+            <material-button text="OK" (trigger)="errorMessageVisible=false"></material-button>
+        </div>
+    </material-dialog>
+</modal>

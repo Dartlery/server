@@ -8,14 +8,17 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
   static final Logger _log = new Logger('AItemDataSource');
 
   Future<Null> updateTags(String id, List<Tag> tags);
-  Future<IdDataList<Item>> getVisible(String userUuid);
-  Future<IdDataList<Item>> searchVisible(String userUuid, String query);
+  Future<IdDataList<Item>> getVisible(String userUuid, {bool inTrash: false});
+  Future<IdDataList<Item>> searchVisible(String userUuid, String query, {bool inTrash: false});
   Future<PaginatedIdData<Item>> getVisiblePaginated(String userUuid,
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate});
-  Future<PaginatedIdData<Item>> getAllPaginated({int page: 0, int perPage: defaultPerPage, bool sortDescending: true});
+      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false});
+  Future<PaginatedIdData<Item>> getAllPaginated({int page: 0, int perPage: defaultPerPage,
+    bool sortDescending: true, bool inTrash: false});
   Future<PaginatedIdData<Item>> searchVisiblePaginated(
       String userUuid, List<Tag> tags,
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate});
+      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false});
+
+  Future<Null> setTrashStatus(String id, bool inTrash);
 
   Future<Stream<Item>> streamByMimeType(String mimeType);
 

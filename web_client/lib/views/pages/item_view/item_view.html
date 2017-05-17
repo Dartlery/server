@@ -1,6 +1,7 @@
-<span *ngIf="model.id!=null" style="background-color: black;">
-<img *ngIf="isImage" src="{{getFullFileUrl(model)}}" [style.width]="widthString" style="max-height:100%;margin-left:auto;margin-right:auto;" />
-<video  *ngIf="isVideo" controls loop autoplay muted poster="{{getThumbnailFileUrl(model.id)}}" style="width:100%;">
+<span *ngIf="model.id!=null">
+    <img *ngIf="isImage" src="{{getFullFileUrl(model)}}" class="itemDisplay" />
+
+    <video  *ngIf="isVideo" controls loop autoplay muted poster="{{getThumbnailFileUrl(model.id)}}" class="itemDisplay" >
     <source src="{{getOriginalFileUrl(model.id)}}" type="{{model.mime}}">
     Your browser does not support the video tag.
 </video>
@@ -8,24 +9,25 @@
 
 <div style="position: fixed; right: 8pt; bottom: 8pt;z-index:10;text-align: right;">
     <a href="{{getOriginalFileUrl(model.id)}}" download="{{model.downloadName}}">
-    <material-fab raised mini class="red" style="" style="margin-top:8pt;">
+    <material-fab raised mini class="red" style="" style="margin-top:8pt;" materialTooltip="Download">
         <glyph icon="file_download"></glyph>
     </material-fab></a><br/>
     <a href="{{getOriginalFileUrl(model.id)}}" target="{{model.id}}">
-    <material-fab raised mini class="red" style="" style="margin-top:8pt;">
+    <material-fab raised mini class="red" style="" style="margin-top:8pt;" materialTooltip="Open in new window">
         <glyph icon="open_in_new"></glyph>
     </material-fab></a><br/>
     <a  *ngIf="previousItemAvailable" [routerLink]="['Item', {id: previousItem}]">
-    <material-fab  raised mini class="red" style="margin-top:8pt;">
+    <material-fab  raised mini class="red" style="margin-top:8pt;" materialTooltip="Next">
         <glyph icon="chevron_left"></glyph>
     </material-fab></a>
 
     <a *ngIf="nextItemAvailable" [routerLink]="['Item', {id: nextItem}]">
-    <material-fab raised mini class="red" style="margin-top:8pt;">
+    <material-fab raised mini class="red" style="margin-top:8pt;" materialTooltip="Previous" tooltip-placement="Left">
     <glyph icon="chevron_right"></glyph>
     </material-fab>
     </a>
 </div>
 
 <tag-entry *ngIf="model!=null" style="width: 100%" [(selected)]="model.tags"></tag-entry>
+
 </span>

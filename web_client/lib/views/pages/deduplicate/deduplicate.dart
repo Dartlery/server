@@ -47,8 +47,6 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
 
   int currentImage = 0;
 
-  PageControlService _pageControl;
-
   ApiService _api;
 
   Router _router;
@@ -61,11 +59,11 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   StreamSubscription<PageActions> _pageActionSubscription;
   String filterItemId;
   final NumberFormat f = new NumberFormat.decimalPattern();
-  DeduplicatePage(this._pageControl, this._api, this._auth, this._router,
+  DeduplicatePage(PageControlService pageControl, this._api, this._auth, this._router,
       this._params, this._location)
-      : super(_auth, _router) {
-    _pageControl.setPageTitle("Deduplicate");
-    _pageControl.setAvailablePageActions([PageActions.Refresh]);
+      : super(_auth, _router, pageControl) {
+    pageControl.setPageTitle("Deduplicate");
+    pageControl.setAvailablePageActions([PageActions.Refresh]);
   }
 
   bool animatedComparison = true;
@@ -233,7 +231,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     final String _id = _params.get(idRouteParameter);
     filterItemId = _id;
     _pageActionSubscription =
-        _pageControl.pageActionRequested.listen(onPageActionRequested);
+        pageControl.pageActionRequested.listen(onPageActionRequested);
      refresh();
 
      new Timer(new Duration(seconds:1), () {

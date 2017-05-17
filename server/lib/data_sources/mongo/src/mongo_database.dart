@@ -29,35 +29,57 @@ class MongoDatabase {
 
   MongoDatabase(this.db);
 
-
+  //db.getCollection('items').update({}, {$set: {"inTrash": false}}, {multi:true})
   Future<DbCollection> getItemsCollection() async {
     await db.createIndex(_itemsCollection,
-        keys: {MongoItemDataSource.uploadedField: -1}, name: "UploadedIndex");
+        keys: {
+          MongoItemDataSource.inTrashField: 1,
+          MongoItemDataSource.uploadedField: -1
+        },
+        name: "UploadedIndex");
+    await db.createIndex(_itemsCollection,
+        keys: {
+          MongoItemDataSource.inTrashField: 1,
+          MongoItemDataSource.tagsField: -1,
+          MongoItemDataSource.uploadedField: -1
+        },
+        name: "ItemTagsIndex");
 
-    final DbCollection output =
-    await getIdCollection(_itemsCollection);
+    final DbCollection output = await getIdCollection(_itemsCollection);
     return output;
   }
 
   Future<DbCollection> getBackgroundQueueCollection() async {
     final DbCollection output =
-    await getIdCollection(_backgroundQueueCollection);
+        await getIdCollection(_backgroundQueueCollection);
     return output;
   }
 
   Future<DbCollection> getExtensionDataCollection() async {
     await db.createIndex(_extensionDataCollection,
-        keys: {MongoExtensionDataSource.extensionIdField: 1,
+        keys: {
+          MongoExtensionDataSource.extensionIdField: 1,
           MongoExtensionDataSource.keyField: 1,
           MongoExtensionDataSource.primaryIdField: 1,
-          MongoExtensionDataSource.secondaryIdField: 1}, name: "ExtensionDataIndex", unique: true);
+          MongoExtensionDataSource.secondaryIdField: 1
+        },
+        name: "ExtensionDataIndex",
+        unique: true);
     await db.createIndex(_extensionDataCollection,
-        keys: {MongoExtensionDataSource.extensionIdField: 1,
-          MongoExtensionDataSource.keyField: 1}, name: "ExtensionDataKeyIndex", unique: false);
+        keys: {
+          MongoExtensionDataSource.extensionIdField: 1,
+          MongoExtensionDataSource.keyField: 1
+        },
+        name: "ExtensionDataKeyIndex",
+        unique: false);
     await db.createIndex(_extensionDataCollection,
-        keys: {MongoExtensionDataSource.extensionIdField: 1,
+        keys: {
+          MongoExtensionDataSource.extensionIdField: 1,
           MongoExtensionDataSource.keyField: 1,
-        MongoExtensionDataSource.valueField: -1}, name: "ExtensionDataKeyValueDescendingIndex", unique: false);
+          MongoExtensionDataSource.valueField: -1
+        },
+        name: "ExtensionDataKeyValueDescendingIndex",
+        unique: false);
     return db.collection(_extensionDataCollection);
   }
 
@@ -65,21 +87,18 @@ class MongoDatabase {
     return db.collection(_importResultsCollection);
   }
 
-
-
   Future<DbCollection> getTagsCollection() async {
     await db.createIndex(_tagsCollection,
         keys: {idField: 1, "category": 1}, name: "IdIndex", unique: true);
     await db.createIndex(_tagsCollection,
         keys: {r"fullName": "text"}, name: "TagTextIndex");
-    final DbCollection output =  db.collection(_tagsCollection);
-
+    final DbCollection output = db.collection(_tagsCollection);
 
     return output;
   }
+
   Future<DbCollection> getTagCategoriesCollection() async {
-    final DbCollection output =
-    await getIdCollection(_tagCategoriesCollection);
+    final DbCollection output = await getIdCollection(_tagCategoriesCollection);
     return output;
   }
 
@@ -115,5 +134,4 @@ class MongoDatabase {
     final DbCollection transactions = await getTransactionsCollection();
     await transactions.findOne({"state": "initial"});
   }
-
 }

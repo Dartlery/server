@@ -9,7 +9,10 @@ class PageControlService {
   PaginationInfo currentPaginationInfo;
 
   final StreamController<PaginationInfo> _paginationController =
-      new StreamController<PaginationInfo>.broadcast();
+  new StreamController<PaginationInfo>.broadcast();
+
+  final StreamController<MessageEventArgs> _messageController =
+  new StreamController<MessageEventArgs>.broadcast();
 
   final StreamController<String> _pageTitleController =
       new StreamController<String>.broadcast();
@@ -23,6 +26,8 @@ class PageControlService {
   Stream<PageActions> get pageActionRequested => _pageActionController.stream;
 
   Stream<String> get pageTitleChanged => _pageTitleController.stream;
+
+  Stream<MessageEventArgs> get messageSent => _messageController.stream;
 
   Stream<List<PageActions>> get availablePageActionsSet =>
       _availablePageActionController.stream;
@@ -86,4 +91,14 @@ class PageControlService {
   void clearPageTitle() {
     setPageTitle("");
   }
+
+  void sendMessage(String title, String message) {
+    _messageController.add(new MessageEventArgs(title, message));
+  }
+}
+
+class MessageEventArgs {
+  final String title;
+  final String message;
+  MessageEventArgs(this.title, this.message);
 }

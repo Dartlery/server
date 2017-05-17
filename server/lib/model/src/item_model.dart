@@ -107,13 +107,19 @@ class ItemModel extends AIdBasedModel<Item> {
     return itemId;
   }
 
+
+  Future<Null> moveToTrash(String id) async {
+    await validateDeletePrivileges(id);
+    await itemDataSource.setTrashStatus(id, true);
+  }
+
   @override
   Future<String> delete(String id) async {
     await _extensionServices.sendDeletingItem(id);
     final String output = await super.delete(id);
 
     try {
-      final File file = new File(getFullFilePathForHash(id));
+      final File file = new File(getOriginalFilePathForHash(id));
       if (file.existsSync()) {
         await file.delete();
       }
@@ -122,6 +128,14 @@ class ItemModel extends AIdBasedModel<Item> {
     }
     try {
       final File file = new File(getFullFilePathForHash(id));
+      if (file.existsSync()) {
+        await file.delete();
+      }
+    } catch (e, st) {
+      _log.warning("Error while deleting full file", e, st);
+    }
+    try {
+      final File file = new File(getThumbnailFilePathForHash(id));
       if (file.existsSync()) {
         await file.delete();
       }
@@ -298,9 +312,9 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<Item> merge(String targetItemId, String sourceItemId,
-      {bool bypassAuthentication: false}) async {
+      {bool bypassAuthentication: false, bool moveToTrash: true}) async {
     if (!bypassAuthentication) await validateUpdatePrivileges(targetItemId);
-    if (!bypassAuthentication) await validateUpdatePrivileges(sourceItemId);
+    if (!bypassAuthentication) await validateDeletePrivileges(sourceItemId);
 
     final Option<Item> targetItem = await itemDataSource.getById(targetItemId);
     if (targetItem.isEmpty)
@@ -316,7 +330,11 @@ class ItemModel extends AIdBasedModel<Item> {
     }
 
     await itemDataSource.updateTags(targetItemId, newTagList.toList());
-    await delete(sourceItemId);
+    if(moveToTrash) {
+      await this.moveToTrash(sourceItemId);
+    } else {
+      await delete(sourceItemId);
+    }
     return (await itemDataSource.getById(targetItemId)).first;
   }
 

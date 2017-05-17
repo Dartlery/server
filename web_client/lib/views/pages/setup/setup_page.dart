@@ -32,14 +32,13 @@ class SetupPage extends APage implements OnInit {
   SetupRequest request = new SetupRequest();
   String confirmPassword = "";
 
-  PageControlService _pageControl;
   ApiService _api;
   Router _router;
   AuthenticationService _auth;
 
-  SetupPage(this._pageControl, this._api, this._auth, this._router)
-      : super(_auth, _router) {
-    _pageControl.setPageTitle("Setup");
+  SetupPage(PageControlService pageControl, this._api, this._auth, this._router)
+      : super(_auth, _router, pageControl) {
+    pageControl.setPageTitle("Setup");
   }
 
   @override
