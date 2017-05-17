@@ -99,8 +99,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<Stream<Item>> streamAll() async {
-    return await streamFromDb(where.sortBy(uploadedField, descending: false));
+  Future<Stream<Item>> streamAll({bool inTrash: false}) async {
+    return await streamFromDb(where.eq(inTrashField, inTrash).sortBy(uploadedField, descending: false));
   }
 
 

@@ -22,6 +22,6 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
 
   Future<Stream<Item>> streamByMimeType(String mimeType);
 
-  Future<Stream<Item>> streamAll();
+  Future<Stream<Item>> streamAll({bool inTrash: false});
 
 }
