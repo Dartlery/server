@@ -1,5 +1,3 @@
-import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
-import 'package:polymer/polymer.dart';
 import 'package:angular2/platform/browser.dart';
 import 'package:logging_handlers/logging_handlers_shared.dart';
 import "package:intl/intl_browser.dart";
@@ -13,6 +11,5 @@ Future<Null> main() async {
   Logger.root.onRecord.listen(new LogPrintHandler());
   await findSystemLocale();
 
-  await initPolymer();
   await bootstrap(MainApp);
 }

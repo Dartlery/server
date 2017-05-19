@@ -1,78 +1,64 @@
 <auth-status [(authorized)]="userLoggedIn" ></auth-status>
-<paper-drawer-panel responsive-width="1920px">
-    <paper-header-panel drawer>
-        <paper-toolbar>
-            <div *ngIf="userLoggedIn">{{currentUser.name}}
-                <material-button raised
-                                 (trigger)="clearAuthentication()"
-                                 class="blue" >
-                    Log Out
-                </material-button>
-            </div>
+
+<div class="content">
+    <router-outlet></router-outlet>
+    <paginator></paginator>
+    <material-fab *ngIf="showAddButton" raised (trigger)="addClicked()" style="position: fixed; right: 8pt; bottom: 8pt;z-index:10;" class="red">
+        <glyph icon="add"></glyph>
+    </material-fab>
+
+</div>
+
+
+<material-sidenav class="leftSideNav" [(open)]="sideNavOpen" [overlay]="true">
+    <material-toolbar title="{{currentUser?.name??''}}" >
+        <div class="right-content">
+            <material-button raised
+                             (trigger)="clearAuthentication()"
+                             class="blue" *ngIf="userLoggedIn">
+                Log Out
+            </material-button>
             <material-button raised
                              (trigger)="promptForAuthentication()"
                              class="blue" *ngIf="!userLoggedIn" >
                 Log In
             </material-button>
-        </paper-toolbar>
-        <div class="sideMenu">
-            <a [routerLink]="['Home']">
-                <paper-item>
-                    <iron-icon icon="label-outline"></iron-icon>
-                    <paper-item-body>Browse Items</paper-item-body>
-                </paper-item>
-            </a>
-
-            <a [routerLink]="['TagCategories']">
-                <paper-item>
-                    <iron-icon icon="label-outline"></iron-icon>
-                    <paper-item-body>Tag Categories</paper-item-body>
-                </paper-item>
-            </a>
-
-            <a [routerLink]="['Users']">
-                <paper-item>
-                    <iron-icon icon="label-outline"></iron-icon>
-                    <paper-item-body>Users</paper-item-body>
-                </paper-item>
-            </a>
-
-            <a [routerLink]="['Deduplicate']">
-                <paper-item>
-                    <iron-icon icon="label-outline"></iron-icon>
-                    <paper-item-body>Deduplicate</paper-item-body>
-                </paper-item>
-            </a>
-
         </div>
-    </paper-header-panel>
-    <paper-header-panel main>
-        <paper-toolbar class="container">
-            <material-button icon paper-drawer-toggle><glyph icon="menu"></glyph></material-button>
+    </material-toolbar>
+    <div id="menu">
 
-            <span class="title" style="margin-left:0pt;">{{pageTitle}}</span>
+        <menu-item icon="view_module" [routerLink]="['Home']">Browse Items</menu-item>
+        <menu-separator></menu-separator>
+        <menu-item icon="merge_type" [routerLink]="['Deduplicate']">Deduplicate</menu-item>
+        <menu-separator></menu-separator>
+        <menu-item icon="label" [routerLink]="['Tags']">Tags</menu-item>
+        <menu-item icon="label_outline" [routerLink]="['TagCategories']">Tag Categories</menu-item>
+        <menu-item icon="person" [routerLink]="['Users']">Users</menu-item>
+    </div>
+</material-sidenav>
 
-            <tag-entry style="width: 100%" (selectedChanged)="tagSearchChanged($event)"></tag-entry>
 
-            <material-button icon (trigger)="openUploadWindow()"><glyph icon="file_upload"></glyph></material-button>
+<material-toolbar icon="menu"  (iconClick)="navBarIconClicked()" title="{{pageTitle}}" [mediumTall]="showSearchBar">
+    <div class="right-content">
+        <!-- Right-side content -->
+        <material-button icon (trigger)="openUploadWindow()"><glyph icon="file_upload"></glyph></material-button>
 
-            <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" leadingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>
-            <material-button *ngIf="showDeleteButton" icon (trigger)="deleteClicked()"><glyph icon="delete"></glyph></material-button>
-            <!--<material-button *ngIf="showAddButton" icon (trigger)="addClicked()"><glyph icon="add"></glyph></material-button>-->
-            <material-button *ngIf="showTagButton" icon (trigger)="tagClicked()"><glyph icon="label"></glyph></material-button>
-            <material-button *ngIf="showCompareButton" icon (trigger)="compareClicked()"><glyph icon="compare"></glyph></material-button>
-            <material-button *ngIf="showRefreshButton" icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
-            <material-button *ngIf="showOpenInNewButton" icon (trigger)="openInNewClicked()"><glyph icon="open_in_new"></glyph></material-button>
-        </paper-toolbar>
-        <div style="height: 100%;width:100%;">
-            <router-outlet></router-outlet>
-            <paginator></paginator>
-            <material-fab *ngIf="showAddButton" raised (trigger)="addClicked()" style="position: fixed; right: 8pt; bottom: 8pt;z-index:10;" class="red">
-                <glyph icon="add"></glyph>
-            </material-fab>
-        </div>
-    </paper-header-panel>
-</paper-drawer-panel>
+        <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" leadingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>
+
+        <material-button *ngIf="showDeleteButton" icon (trigger)="deleteClicked()"><glyph icon="delete"></glyph></material-button>
+        <!--<material-button *ngIf="showAddButton" icon (trigger)="addClicked()"><glyph icon="add"></glyph></material-button>-->
+        <material-button *ngIf="showTagButton" icon (trigger)="tagClicked()"><glyph icon="label"></glyph></material-button>
+        <material-button *ngIf="showCompareButton" icon (trigger)="compareClicked()"><glyph icon="compare"></glyph></material-button>
+        <material-button *ngIf="showRefreshButton" icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
+        <material-button *ngIf="showOpenInNewButton" icon (trigger)="openInNewClicked()"><glyph icon="open_in_new"></glyph></material-button>
+    </div>
+    <div class="middle-content">
+        <tag-entry style="width: 100%" (selectedChanged)="tagSearchChanged($event)"></tag-entry>
+    </div>
+</material-toolbar>
+
+
+
 <login-form [(visible)]="isLoginOpen" id="userAuthElement"></login-form>
 <item-upload [(visible)]="isUploadOpen" id="uploadElement"></item-upload>
 
@@ -98,7 +84,7 @@
             {{errorMessage}}
         </p>
         <div footer style="text-align: right">
-            <material-button text="OK" (trigger)="errorMessageVisible=false"></material-button>
+            <material-button (trigger)="errorMessageVisible=false">OK</material-button>
         </div>
     </material-dialog>
 </modal>

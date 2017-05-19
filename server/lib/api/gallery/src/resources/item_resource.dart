@@ -87,7 +87,7 @@ class ItemResource extends AIdResource<Item> {
       catchExceptionsAwait(
           () => itemModel.merge(targetItemId, sourceItemId.id));
 
-  @ApiMethod(method: HttpMethod.put, path: 'search/')
+  @ApiMethod(method: HttpMethod.put, path: '$searchApiPath/$_apiPath')
   Future<PaginatedResponse<String>> searchVisible(ItemSearchRequest request) =>
       catchExceptionsAwait(() async =>
           new PaginatedResponse<String>.convertPaginatedData(

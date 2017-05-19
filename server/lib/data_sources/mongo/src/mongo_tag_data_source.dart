@@ -1,4 +1,6 @@
+
 import 'dart:async';
+import 'package:dartlery_shared/tools.dart';
 
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
@@ -83,9 +85,24 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag> with ATagDataSource 
     staticUpdateMap(tag, data);
   }
 
-  static void staticUpdateMap(Tag tag, Map data) {
+  static void staticUpdateMap(Tag tag, Map data, {bool includeFullName: true}) {
     AMongoTwoIdDataSource.staticUpdateMap(tag, data);
-    data[categoryField] = tag.category;
-    data[fullNameField] = tag.fullName;
+    if(StringTools.isNullOrWhitespace(tag.category))
+      data[categoryField] = null;
+    else
+      data[categoryField] = tag.category;
+    if(includeFullName)
+      data[fullNameField] = tag.fullName;
   }
+
+  static List<Map> createTagsList(List<Tag> tags, {bool includeFullName: true}) {
+    final List<Map> output = <Map>[];
+    for (Tag tag in tags) {
+      final Map<dynamic, dynamic> tagMap = <dynamic, dynamic>{};
+      MongoTagDataSource.staticUpdateMap(tag, tagMap, includeFullName: includeFullName);
+      output.add(tagMap);
+    }
+    return output;
+  }
+
 }

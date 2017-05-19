@@ -3,8 +3,8 @@
     <div class="itemContainer" style="left:0;">
         <img src="{{getFullFileUrl(firstComparisonItem)}}" id="leftImage" />
     </div>
-    <div [style.left]="comparisonSplitPosition" [style.height]='comparisonHeight'
-         style="position:absolute;right:0;top:0;overflow: hidden;">
+    <div [style.left]="comparisonSplitPosition"
+         style="position:absolute;right:0;top:0;overflow: hidden;height:100%">
         <div class="itemContainer" style="right:0;">
             <img src="{{getFullFileUrl(secondComparisonItem)}}" id="rightImage" />
         </div>
@@ -77,7 +77,7 @@
                 {{f.format(secondComparisonItem?.length??0)}} bytes
             </span>
                 <span *ngIf="lengthWinner==0" class="lose">
-                {{f.format(secondComparisonItem?.length??0)}} bytes
+                {{f.format(secondComparisonItem?.length??0)}} bytescd
             </span>
             </td>
             <td style="width: 40px;">

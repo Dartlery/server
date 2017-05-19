@@ -470,6 +470,53 @@ checkPasswordChangeRequest(api.PasswordChangeRequest o) {
   buildCounterPasswordChangeRequest--;
 }
 
+buildUnnamed9() {
+  var o = new core.List<api.Tag>();
+  o.add(buildTag());
+  o.add(buildTag());
+  return o;
+}
+
+checkUnnamed9(core.List<api.Tag> o) {
+  unittest.expect(o, unittest.hasLength(2));
+  checkTag(o[0]);
+  checkTag(o[1]);
+}
+
+buildUnnamed10() {
+  var o = new core.List<api.Tag>();
+  o.add(buildTag());
+  o.add(buildTag());
+  return o;
+}
+
+checkUnnamed10(core.List<api.Tag> o) {
+  unittest.expect(o, unittest.hasLength(2));
+  checkTag(o[0]);
+  checkTag(o[1]);
+}
+
+core.int buildCounterReplaceTagsRequest = 0;
+buildReplaceTagsRequest() {
+  var o = new api.ReplaceTagsRequest();
+  buildCounterReplaceTagsRequest++;
+  if (buildCounterReplaceTagsRequest < 3) {
+    o.newTags = buildUnnamed9();
+    o.originalTags = buildUnnamed10();
+  }
+  buildCounterReplaceTagsRequest--;
+  return o;
+}
+
+checkReplaceTagsRequest(api.ReplaceTagsRequest o) {
+  buildCounterReplaceTagsRequest++;
+  if (buildCounterReplaceTagsRequest < 3) {
+    checkUnnamed9(o.newTags);
+    checkUnnamed10(o.originalTags);
+  }
+  buildCounterReplaceTagsRequest--;
+}
+
 core.int buildCounterSetupRequest = 0;
 buildSetupRequest() {
   var o = new api.SetupRequest();
@@ -683,6 +730,15 @@ main() {
       var o = buildPasswordChangeRequest();
       var od = new api.PasswordChangeRequest.fromJson(o.toJson());
       checkPasswordChangeRequest(od);
+    });
+  });
+
+
+  unittest.group("obj-schema-ReplaceTagsRequest", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildReplaceTagsRequest();
+      var od = new api.ReplaceTagsRequest.fromJson(o.toJson());
+      checkReplaceTagsRequest(od);
     });
   });
 
@@ -1368,8 +1424,8 @@ main() {
         pathOffset += 1;
         unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
         pathOffset += 17;
-        unittest.expect(path.substring(pathOffset, pathOffset + 7), unittest.equals("search/"));
-        pathOffset += 7;
+        unittest.expect(path.substring(pathOffset, pathOffset + 12), unittest.equals("search/items"));
+        pathOffset += 12;
 
         var query = (req.url).query;
         var queryOffset = 0;
@@ -1873,6 +1929,53 @@ main() {
 
 
   unittest.group("resource-TagsResourceApi", () {
+    unittest.test("method--replace", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_request = buildReplaceTagsRequest();
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var obj = new api.ReplaceTagsRequest.fromJson(json);
+        checkReplaceTagsRequest(obj);
+
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 5), unittest.equals("tags/"));
+        pathOffset += 5;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = "";
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.replace(arg_request).then(unittest.expectAsync((_) {}));
+    });
+
     unittest.test("method--search", () {
 
       var mock = new HttpServerMock();
@@ -1887,7 +1990,7 @@ main() {
         pathOffset += 1;
         unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
         pathOffset += 17;
-        unittest.expect(path.substring(pathOffset, pathOffset + 12), unittest.equals("tags/search/"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 12), unittest.equals("search/tags/"));
         pathOffset += 12;
         subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset));
         pathOffset = path.length;
@@ -1920,6 +2023,124 @@ main() {
       res.search(arg_query).then(unittest.expectAsync(((api.ListOfTag response) {
         checkListOfTag(response);
       })));
+    });
+
+    unittest.test("method--update", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_request = buildTag();
+      var arg_tagId = "foo";
+      var arg_tagCategory = "foo";
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var obj = new api.Tag.fromJson(json);
+        checkTag(obj);
+
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 5), unittest.equals("tags/"));
+        pathOffset += 5;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_tagId"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_tagCategory"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = "";
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.update(arg_request, arg_tagId, arg_tagCategory).then(unittest.expectAsync((_) {}));
+    });
+
+    unittest.test("method--updateWithoutCategory", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_request = buildTag();
+      var arg_tagId = "foo";
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var obj = new api.Tag.fromJson(json);
+        checkTag(obj);
+
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 5), unittest.equals("tags/"));
+        pathOffset += 5;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_tagId"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = "";
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.updateWithoutCategory(arg_request, arg_tagId).then(unittest.expectAsync((_) {}));
     });
 
   });

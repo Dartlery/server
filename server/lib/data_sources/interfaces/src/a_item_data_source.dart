@@ -24,4 +24,5 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
 
   Future<Stream<Item>> streamAll({bool inTrash: false});
 
+  Future<Null> replaceTags(List<Tag> originalTags, List<Tag> newTags);
 }

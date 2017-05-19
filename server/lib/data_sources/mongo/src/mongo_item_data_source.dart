@@ -16,22 +16,14 @@ import 'mongo_tag_data_source.dart';
 class MongoItemDataSource extends AMongoIdDataSource<Item>
     with AItemDataSource {
   static final Logger _log = new Logger('MongoItemDataSource');
-  @override
-  Logger get childLogger => _log;
 
   static const String metadataField = "metadata";
-
   static const String tagsField = "tags";
-
   static const String fileField = "file";
-
   static const String mimeField = "mime";
-
   static const String uploadedField = "uploaded";
   static const String uploaderField = "uploader";
-
   static const String fileNameField = "fileName";
-
   static const String lengthField = "length";
   static const String errorsField = "errors";
   static const String extensionField = "extension";
@@ -43,8 +35,10 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String durationField = "duration";
   static const String inTrashField = "inTrash";
   static const String fullFileAvailableField = "fullFileAvailable";
-
   MongoItemDataSource(MongoDbConnectionPool pool) : super(pool);
+
+  @override
+  Logger get childLogger => _log;
   @override
   Item createObject(Map<String, dynamic> data) {
     final Item output = new Item();
@@ -62,9 +56,9 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     output.width = data[widthField];
     output.video = data[videoField];
     output.audio = data[audioField];
-    output.duration= data[durationField];
-    output.inTrash= data[inTrashField];
-    output.fullFileAvailable= data[fullFileAvailableField];
+    output.duration = data[durationField];
+    output.inTrash = data[inTrashField];
+    output.fullFileAvailable = data[fullFileAvailableField];
 
     if (data[tagsField] != null) {
       output.tags = <Tag>[];
@@ -74,11 +68,11 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       }
     }
 
-
     return output;
   }
 
-  Future<Option<SelectorBuilder>> generateVisibleCriteria(String userUuid, bool inTrash,
+  Future<Option<SelectorBuilder>> generateVisibleCriteria(
+      String userUuid, bool inTrash,
       {SelectorBuilder selector}) async {
     // TODO: Implement filtering for NSFW levels, etc
     if (selector == null) selector = where;
@@ -89,7 +83,10 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<PaginatedIdData<Item>> getAllPaginated(
-      {int page: 0, int perPage: defaultPerPage, bool sortDescending: true, bool inTrash: false}) async {
+      {int page: 0,
+      int perPage: defaultPerPage,
+      bool sortDescending: true,
+      bool inTrash: false}) async {
     final SelectorBuilder selector = where.eq(inTrashField, inTrash);
     return await getPaginatedListFromDb(selector,
         limit: perPage,
@@ -99,21 +96,12 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<Stream<Item>> streamAll({bool inTrash: false}) async {
-    return await streamFromDb(where.eq(inTrashField, inTrash).sortBy(uploadedField, descending: false));
-  }
-
-
-  @override
-  Future<Stream<Item>> streamByMimeType(String mimeType) async {
-    return await streamFromDb(where.eq(mimeField, mimeType).sortBy(uploadedField, descending: false));
-  }
-  @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getItemsCollection();
 
   @override
-  Future<IdDataList<Item>> getVisible(String userUuid, {bool inTrash: false}) async {
+  Future<IdDataList<Item>> getVisible(String userUuid,
+      {bool inTrash: false}) async {
     return (await generateVisibleCriteria(userUuid, inTrash)).cata(
         () => new IdDataList<Item>(),
         (SelectorBuilder selector) async => await getListFromDb(selector));
@@ -121,18 +109,69 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<PaginatedIdData<Item>> getVisiblePaginated(String userUuid,
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
+      {int page: 0,
+      int perPage: defaultPerPage,
+      DateTime cutoffDate,
+      bool inTrash: false}) async {
     final SelectorBuilder selector = where;
     if (cutoffDate != null) selector.gte(uploadedField, cutoffDate);
-    return (await generateVisibleCriteria(userUuid, inTrash, selector: selector)).cata(
-        () => new PaginatedIdData<Item>(), (SelectorBuilder selector) async {
+    return (await generateVisibleCriteria(userUuid, inTrash,
+            selector: selector))
+        .cata(() => new PaginatedIdData<Item>(),
+            (SelectorBuilder selector) async {
       return await getPaginatedListFromDb(selector,
           limit: perPage, offset: getOffset(page, perPage));
     });
   }
 
   @override
-  Future<IdDataList<Item>> searchVisible(String userUuid, String query, {bool inTrash: false}) async {
+  Future<Null> replaceTags(List<Tag> originalTags, List<Tag> newTags) async {
+    if(originalTags==null||originalTags.length==0)
+      throw new ArgumentError.notNull("originalTags");
+
+    final List<Tag> tagsToAdd = <Tag>[];
+    final List<Tag> tagsToRemove = <Tag>[];
+
+    for(Tag ot in originalTags) {
+      bool found = false;
+      for(Tag nt in newTags) {
+        if(ot.equals(nt)) {
+          found = true;
+        }
+      }
+      if(!found)
+        tagsToRemove.add(ot);
+    }
+    for(Tag nt in newTags) {
+      bool found = false;
+      for(Tag ot in originalTags) {
+        if(ot.equals(nt)) {
+          found = true;
+        }
+      }
+      if(!found)
+        tagsToAdd.add(nt);
+    }
+
+    final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
+
+    if(tagsToAdd.length>0) {
+      final List<dynamic> addTagMapList = MongoTagDataSource.createTagsList(tagsToAdd, includeFullName: false);
+      final ModifierBuilder modifier =  modify.pushAll(tagsField, addTagMapList);
+      await genericUpdate(tagSelector, modifier, multiUpdate: true);
+    }
+
+    if(tagsToRemove.length>0) {
+      final List<dynamic> removeTagMapList = MongoTagDataSource.createTagsList(tagsToRemove, includeFullName: false);
+      final ModifierBuilder modifier = modify
+          .pullAll(tagsField, removeTagMapList);
+      await genericUpdate(tagSelector, modifier, multiUpdate: true);
+    }
+  }
+
+  @override
+  Future<IdDataList<Item>> searchVisible(String userUuid, String query,
+      {bool inTrash: false}) async {
     return (await generateVisibleCriteria(userUuid, inTrash)).cata(
         () => new IdDataList<Item>(),
         (SelectorBuilder selector) async =>
@@ -142,27 +181,41 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   @override
   Future<PaginatedIdData<Item>> searchVisiblePaginated(
       String userUuid, List<Tag> tags,
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
-    final SelectorBuilder selector = where;
+      {int page: 0,
+      int perPage: defaultPerPage,
+      DateTime cutoffDate,
+      bool inTrash: false}) async {
+    final SelectorBuilder selector = _createTagCriteria(tags);
     if (cutoffDate != null) selector.gte(uploadedField, cutoffDate);
 
-    tags.forEach((Tag t) {
-      String category;
-      if (StringTools.isNotNullOrWhitespace(t.category)) category = t.category;
-      selector.eq("tags", {
-        "\$elemMatch": {"id": t.id, "category": category}
-      });
-    });
-
-    return (await generateVisibleCriteria(userUuid, inTrash, selector: selector)).cata(
-        () => new PaginatedIdData<Item>(),
-        (SelectorBuilder selector) async => await getPaginatedListFromDb(
-            selector,
-            limit: perPage,
-            offset: getOffset(page, perPage)));
+    return (await generateVisibleCriteria(userUuid, inTrash,
+            selector: selector))
+        .cata(
+            () => new PaginatedIdData<Item>(),
+            (SelectorBuilder selector) async => await getPaginatedListFromDb(
+                selector,
+                limit: perPage,
+                offset: getOffset(page, perPage)));
   }
 
+  @override
+  Future<Null> setTrashStatus(String id, bool inTrash) async {
+    final ModifierBuilder modifier = modify.set(inTrashField, inTrash);
+    await genericUpdate(where.eq(idField, id), modifier);
+  }
 
+  @override
+  Future<Stream<Item>> streamAll({bool inTrash: false}) async {
+    return await streamFromDb(where
+        .eq(inTrashField, inTrash)
+        .sortBy(uploadedField, descending: false));
+  }
+
+  @override
+  Future<Stream<Item>> streamByMimeType(String mimeType) async {
+    return await streamFromDb(
+        where.eq(mimeField, mimeType).sortBy(uploadedField, descending: false));
+  }
 
   @override
   void updateMap(Item item, Map<String, dynamic> data) {
@@ -189,7 +242,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       final List<dynamic> tagsList = new List<dynamic>();
       for (Tag tag in item.tags) {
         final Map<dynamic, dynamic> tagMap = <dynamic, dynamic>{};
-        MongoTagDataSource.staticUpdateMap(tag, tagMap);
+        MongoTagDataSource.staticUpdateMap(tag, tagMap, includeFullName: false);
         tagsList.add(tagMap);
       }
       data[tagsField] = tagsList;
@@ -197,20 +250,23 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<Null> setTrashStatus(String id, bool inTrash) async {
-    final ModifierBuilder modifier = modify.set(inTrashField, inTrash);
-    await genericUpdate(where.eq(idField, id), modifier);
-  }
-
-  @override
   Future<Null> updateTags(String id, List<Tag> tags) async {
-    final List<dynamic> tagsList = new List<dynamic>();
-    for (Tag tag in tags) {
-      final Map<dynamic, dynamic> tagMap = <dynamic, dynamic>{};
-      MongoTagDataSource.staticUpdateMap(tag, tagMap);
-      tagsList.add(tagMap);
-    }
+    final List<dynamic> tagsList = MongoTagDataSource.createTagsList(tags, includeFullName: false);
     final ModifierBuilder modifier = modify.set(tagsField, tagsList);
     await genericUpdate(where.eq(idField, id), modifier);
   }
+
+  SelectorBuilder _createTagCriteria(List<Tag> tags) {
+    final SelectorBuilder output = where;
+
+    tags.forEach((Tag t) {
+      String category;
+      if (StringTools.isNotNullOrWhitespace(t.category)) category = t.category;
+      output.eq("tags", {
+        "\$elemMatch": {"id": t.id, "category": category}
+      });
+    });
+    return output;
+  }
+
 }

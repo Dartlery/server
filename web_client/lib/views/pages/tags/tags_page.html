@@ -1,0 +1,51 @@
+<auth-status (authorizedChanged)="authorizationChanged($event)" require="admin" [showMessage]="true"></auth-status>
+
+<div *ngIf="userAuthorized">
+    <material-tab-panel>
+        <material-tab label="Edit Tags">
+            <div>
+                <material-input [(ngModel)]="tagQuery" floatingLabl autoFocus label="Search"></material-input>
+                <material-button (trigger)="refresh()" raised>Search</material-button>
+                <div *ngIf="noItemsFound&&!processing" class="no-items">No Tags Found</div>
+
+                <material-expansionpanel-set *ngIf="!noItemsFound">
+                    <material-expansionpanel name="{{t}}" *ngFor="let t of tags" (save)="onSubmit()"
+                                             [saveDisabled]="!editForm.valid" (open)="selectTag(t)" (close)="cancelEdit()"
+                                             (cancel)="cancelEdit()">
+                        <div style="column-width: 200pt;">
+                            <form (ngSubmit)="onSubmit()" #editForm="ngForm">
+                                <material-input [(ngModel)]="model.id" ngControl="id" floatingLabel required
+                                                autoFocus
+                                                label="ID"></material-input>
+                                <br/>
+                                <material-dropdown-select required [options]="categoryOptions" [selection]="categorySelection" [buttonText]="categoryButtonText">
+                                </material-dropdown-select>
+
+                                <span *ngIf="hasErrorMessage" class="error_output">
+                        <glyph icon="error_outline"></glyph>
+                        {{errorMessage}}
+                    </span>
+                                <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+                            </form>
+                        </div>
+                    </material-expansionpanel>
+                </material-expansionpanel-set>
+            </div>
+        </material-tab>
+        <material-tab label="Redirects">
+            <div>
+                Tab 2 contents, on the other hand, look thusly.
+            </div>
+        </material-tab>
+        <material-tab label="Replace">
+            <div>
+                <h3>Tab 3 is serious about its contents</h3>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore magni necessitatibus quam qui quis rerum sit, sunt voluptatum. Commodi, corporis minus nemo officiis quisquam rem. Magni odit quo temporibus veritatis!
+                </p>
+            </div>
+        </material-tab>
+    </material-tab-panel>
+
+
+</div>

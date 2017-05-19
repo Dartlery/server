@@ -5,29 +5,23 @@ import 'package:angular2/angular2.dart';
 import 'package:angular2/platform/common.dart';
 import 'package:angular2/router.dart';
 import 'package:angular_components/angular_components.dart';
+import 'package:material_toolbar/material_toolbar.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
-import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery/views/controls/login_form_component.dart';
 import 'package:dartlery/views/controls/paginator_component.dart';
 import 'package:dartlery/views/controls/item_upload_component.dart';
-
+import 'package:material_menu/material_menu.dart';
+import 'package:material_sidenav/material_sidenav.dart';
 import 'package:dartlery/views/pages/pages.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
-import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
-import 'package:polymer_elements/iron_icon.dart';
-import 'package:polymer_elements/iron_image.dart';
-import 'package:polymer_elements/paper_drawer_panel.dart';
-import 'package:polymer_elements/paper_header_panel.dart';
-import 'package:polymer_elements/paper_item.dart';
-import 'package:polymer_elements/paper_item_body.dart';
-import 'package:polymer_elements/paper_material.dart';
-import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
 import 'package:dartlery/data/data.dart';
+
+
 @Component(
     selector: 'main-app',
     //encapsulation: ViewEncapsulation.Native,
@@ -43,7 +37,10 @@ import 'package:dartlery/data/data.dart';
       LoginFormComponent,
       ItemUploadComponent,
       PaginatorComponent,
-      commonControls
+      commonControls,
+      MaterialToolbarComponent,
+      menuDirectives,
+      MaterialSidenavComponent
     ],
     providers: const [
       FORM_PROVIDERS,
@@ -56,6 +53,7 @@ import 'package:dartlery/data/data.dart';
       AuthenticationService,
       const Provider(APP_BASE_HREF, useValue: "/"),
       const Provider(LocationStrategy, useClass: HashLocationStrategy),
+
     ])
 @RouteConfig(routes)
 class MainApp implements OnInit, OnDestroy {
@@ -76,6 +74,8 @@ class MainApp implements OnInit, OnDestroy {
   bool showTagButton = false;
   bool showOpenInNewButton = false;
   bool showCompareButton = false;
+
+  bool showSearchBar = false;
 
   bool userIsModerator = false;
   bool userIsAdmin = false;
@@ -104,7 +104,7 @@ class MainApp implements OnInit, OnDestroy {
 
   bool confirmDeleteVisible = false;
 
-  User get currentUser => _auth.user.first;
+  User get currentUser => _auth.user.getOrDefault(null);
 
   String get pageTitle {
     if (StringTools.isNotNullOrWhitespace(_pageTitleOverride)) {
@@ -218,5 +218,11 @@ class MainApp implements OnInit, OnDestroy {
     this.errorMessage = e.message;
     this.errorMessageHeader = e.title;
     this.errorMessageVisible = true;
+  }
+
+  bool sideNavOpen = false;
+
+  void navBarIconClicked() {
+    sideNavOpen = !sideNavOpen;
   }
 }

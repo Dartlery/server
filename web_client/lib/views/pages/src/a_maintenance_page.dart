@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 import 'a_page.dart';
 
 abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
-  List<String> items = <String>[];
+  List<dynamic> items = <dynamic>[];
 
   String selectedId;
 
@@ -30,10 +30,9 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
 
   AMaintenancePage(this.dataType, PageControlService pageControl, this.api,
-      AuthenticationService _auth, Router router)
+      AuthenticationService _auth, Router router, {List<PageActions> pageActions: const <PageActions>[PageActions.Refresh, PageActions.Add]})
       : super(_auth, router, pageControl) {
-    pageControl.setAvailablePageActions(
-        <PageActions>[PageActions.Refresh, PageActions.Add]);
+    pageControl.setAvailablePageActions(pageActions);
     _pageActionSubscription =
        pageControl.pageActionRequested.listen(onPageActionRequested);
     this.model = createBlank();
@@ -127,7 +126,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   Future<Null> refresh() async {
     await performApiCall(() async {
 
-      final List<String> data = await getItems();
+      final List<dynamic> data = await getItems();
       items.clear();
       items.addAll(data);
       await refreshInternal();
@@ -135,7 +134,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   }
 
 
-  Future<List<String>> getItems();
+  Future<List<dynamic>> getItems();
 
   Future<Null> refreshInternal() async {}
 

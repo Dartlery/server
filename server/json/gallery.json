@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "2aaa2773b2d21c9636c9524e468a49f86d53e384",
+ "etag": "a814b2e17f5481baea2b8cd0cbbeac92b7c37b11",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -294,6 +294,24 @@
     }
    }
   },
+  "ReplaceTagsRequest": {
+   "id": "ReplaceTagsRequest",
+   "type": "object",
+   "properties": {
+    "originalTags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    },
+    "newTags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    }
+   }
+  },
   "TagCategory": {
    "id": "TagCategory",
    "type": "object",
@@ -486,7 +504,7 @@
     },
     "searchVisible": {
      "id": "GalleryApi.items.searchVisible",
-     "path": "search/",
+     "path": "search/items",
      "httpMethod": "PUT",
      "parameters": {},
      "parameterOrder": [],
@@ -677,7 +695,7 @@
    "methods": {
     "search": {
      "id": "GalleryApi.tags.search",
-     "path": "tags/search/{query}",
+     "path": "search/tags/{query}",
      "httpMethod": "GET",
      "parameters": {
       "query": {
@@ -692,6 +710,61 @@
      ],
      "response": {
       "$ref": "ListOfTag"
+     }
+    },
+    "updateWithoutCategory": {
+     "id": "GalleryApi.tags.updateWithoutCategory",
+     "path": "tags/{tagId}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "tagId": {
+       "type": "string",
+       "description": "Path parameter: 'tagId'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "tagId"
+     ],
+     "request": {
+      "$ref": "Tag"
+     }
+    },
+    "update": {
+     "id": "GalleryApi.tags.update",
+     "path": "tags/{tagId}/{tagCategory}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "tagId": {
+       "type": "string",
+       "description": "Path parameter: 'tagId'.",
+       "required": true,
+       "location": "path"
+      },
+      "tagCategory": {
+       "type": "string",
+       "description": "Path parameter: 'tagCategory'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "tagId",
+      "tagCategory"
+     ],
+     "request": {
+      "$ref": "Tag"
+     }
+    },
+    "replace": {
+     "id": "GalleryApi.tags.replace",
+     "path": "tags/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "ReplaceTagsRequest"
      }
     }
    },

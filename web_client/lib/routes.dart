@@ -6,6 +6,11 @@ const Route tagCategoriesRoute = const Route(
   name: 'TagCategories',
   component: TagCategoriesPage,
 );
+const Route tagsRoute = const Route(
+  path: '/tags',
+  name: 'Tags',
+  component: TagsPage,
+);
 const Route homeRoute = const Route(
     path: '/',
     name: "Home",
@@ -49,7 +54,8 @@ const List<Route> routes = const <Route>[
   tagCategoriesRoute,
   setupRoute,
   usersRoute,
-  deduplicateRoute
+  deduplicateRoute,
+  tagsRoute
 ];
 
 const Route setupRoute = const Route(

@@ -13,10 +13,8 @@ import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
-import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
 
 import '../src/a_page.dart';
 

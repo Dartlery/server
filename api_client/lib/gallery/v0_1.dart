@@ -550,7 +550,7 @@ class ItemsResourceApi {
       _body = convert.JSON.encode((request).toJson());
     }
 
-    _url = 'search/';
+    _url = 'search/items';
 
     var _response = _requester.request(_url,
                                        "PUT",
@@ -928,6 +928,43 @@ class TagsResourceApi {
       _requester = client;
 
   /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future replace(ReplaceTagsRequest request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _downloadOptions = null;
+
+    _url = 'tags/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
    * Request parameters:
    *
    * [query] - Path parameter: 'query'.
@@ -952,7 +989,7 @@ class TagsResourceApi {
       throw new core.ArgumentError("Parameter query is required.");
     }
 
-    _url = 'tags/search/' + commons.Escaper.ecapeVariable('$query');
+    _url = 'search/tags/' + commons.Escaper.ecapeVariable('$query');
 
     var _response = _requester.request(_url,
                                        "GET",
@@ -962,6 +999,95 @@ class TagsResourceApi {
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfTag.fromJson(data));
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [tagId] - Path parameter: 'tagId'.
+   *
+   * [tagCategory] - Path parameter: 'tagCategory'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future update(Tag request, core.String tagId, core.String tagCategory) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (tagId == null) {
+      throw new core.ArgumentError("Parameter tagId is required.");
+    }
+    if (tagCategory == null) {
+      throw new core.ArgumentError("Parameter tagCategory is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'tags/' + commons.Escaper.ecapeVariable('$tagId') + '/' + commons.Escaper.ecapeVariable('$tagCategory') + '/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [tagId] - Path parameter: 'tagId'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future updateWithoutCategory(Tag request, core.String tagId) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (tagId == null) {
+      throw new core.ArgumentError("Parameter tagId is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'tags/' + commons.Escaper.ecapeVariable('$tagId') + '/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
   }
 
 }
@@ -1752,6 +1878,33 @@ class PasswordChangeRequest {
     }
     if (newPassword != null) {
       _json["newPassword"] = newPassword;
+    }
+    return _json;
+  }
+}
+
+class ReplaceTagsRequest {
+  core.List<Tag> newTags;
+  core.List<Tag> originalTags;
+
+  ReplaceTagsRequest();
+
+  ReplaceTagsRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("newTags")) {
+      newTags = _json["newTags"].map((value) => new Tag.fromJson(value)).toList();
+    }
+    if (_json.containsKey("originalTags")) {
+      originalTags = _json["originalTags"].map((value) => new Tag.fromJson(value)).toList();
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (newTags != null) {
+      _json["newTags"] = newTags.map((value) => (value).toJson()).toList();
+    }
+    if (originalTags != null) {
+      _json["originalTags"] = originalTags.map((value) => (value).toJson()).toList();
     }
     return _json;
   }

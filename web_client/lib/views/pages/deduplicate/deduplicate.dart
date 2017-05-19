@@ -85,21 +85,12 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     if (x < leftComparisonLimit) x = leftComparisonLimit;
     if (x > rightComparisonLimit) x = rightComparisonLimit;
 
-    if (x < 48) x = 48;
+    if (x < 0) x = 0;
     return x;
   }
 
   String get comparisonWidth {
     return "${html.window.innerWidth}px";
-  }
-
-  String get currentImageUrl {
-    if (model == null) return "";
-    if (currentImage == 0) {
-      return getFullFileUrl(firstComparisonItem);
-    } else {
-      return getFullFileUrl(secondComparisonItem);
-    }
   }
 
   int get firstComparisonPixelCount =>
@@ -108,7 +99,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   String get firstComparisonWidth => "${firstComparisonItem?.width??0}px";
 
   int get leftComparisonLimit {
-    return  50; //((html.window.innerWidth / 2) - (leftImage.offsetWidth / 2)).round();
+    return  0; //((html.window.innerWidth / 2) - (leftImage.offsetWidth / 2)).round();
   }
   @ViewChild("leftImage")
   html.ImageElement get leftImage => html.document.getElementById("leftImage");
@@ -223,8 +214,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
 
   @override
   void ngOnDestroy() {
-    _pageActionSubscription.cancel();
-    _comparisonTimer.cancel();
+    _pageActionSubscription?.cancel();
+    _comparisonTimer?.cancel();
   }
 
   @override
