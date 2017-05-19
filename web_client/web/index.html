@@ -27,28 +27,16 @@
     <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
     <meta name="msapplication-TileColor" content="#3372DF">
 
-    <script type="text/javascript">
-        window.Polymer = window.Polymer || {};
-        window.Polymer.dom = 'shadow';
-    </script>
-
     <!--<script defer type="application/dart" src="index.dart"></script>-->
-    <script defer type="application/dart" src="main.dart"></script>
+    <script defer src="main.dart" type="application/dart"></script>
     <script defer src="packages/browser/dart.js"></script>
-
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-
     <link rel="stylesheet" href="styles.css">
-
 </head>
 
-<body unresolved class="fullbleed layout vertical" style="overflow: hidden;">
-    <!-- For testing using pub serve directly use: -->
-    <!--<base href="/">-->
-    <!-- For testing in WebStorm use: -->
-    <!--<base href="dartalog/web/">-->
-    <main-app class="flex">Loading...</main-app>
+<body style="overflow: hidden;">
+    <main-app>Loading...</main-app>
 </body>
 </html>
