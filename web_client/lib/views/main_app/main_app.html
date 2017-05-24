@@ -3,10 +3,6 @@
 <div class="content">
     <router-outlet></router-outlet>
     <paginator></paginator>
-    <material-fab *ngIf="showAddButton" raised (trigger)="addClicked()" style="position: fixed; right: 8pt; bottom: 8pt;z-index:10;" class="red">
-        <glyph icon="add"></glyph>
-    </material-fab>
-
 </div>
 
 
@@ -28,6 +24,7 @@
     <div id="menu">
 
         <menu-item icon="view_module" [routerLink]="['Home']">Browse Items</menu-item>
+        <menu-item icon="delete" [routerLink]="['Home']">Trash</menu-item>
         <menu-separator></menu-separator>
         <menu-item icon="merge_type" [routerLink]="['Deduplicate']">Deduplicate</menu-item>
         <menu-separator></menu-separator>
@@ -45,12 +42,7 @@
 
         <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" leadingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>
 
-        <material-button *ngIf="showDeleteButton" icon (trigger)="deleteClicked()"><glyph icon="delete"></glyph></material-button>
-        <!--<material-button *ngIf="showAddButton" icon (trigger)="addClicked()"><glyph icon="add"></glyph></material-button>-->
-        <material-button *ngIf="showTagButton" icon (trigger)="tagClicked()"><glyph icon="label"></glyph></material-button>
-        <material-button *ngIf="showCompareButton" icon (trigger)="compareClicked()"><glyph icon="compare"></glyph></material-button>
-        <material-button *ngIf="showRefreshButton" icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
-        <material-button *ngIf="showOpenInNewButton" icon (trigger)="openInNewClicked()"><glyph icon="open_in_new"></glyph></material-button>
+        <material-button *ngFor="let a of availableActions" icon (trigger)="pageActionTriggered(a)"><glyph icon="{{a.icon}}"></glyph></material-button>
     </div>
     <div class="middle-content">
         <tag-entry style="width: 100%" (selectedChanged)="tagSearchChanged($event)"></tag-entry>

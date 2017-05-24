@@ -153,16 +153,23 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
         tagsToAdd.add(nt);
     }
 
-    final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
 
     if(tagsToAdd.length>0) {
-      final List<dynamic> addTagMapList = MongoTagDataSource.createTagsList(tagsToAdd, includeFullName: false);
-      final ModifierBuilder modifier =  modify.pushAll(tagsField, addTagMapList);
-      await genericUpdate(tagSelector, modifier, multiUpdate: true);
+      for(Tag t in tagsToAdd) {
+        final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
+        tagSelector.ne("tags", {
+          "\$elemMatch": {"id": t.id, "category": t.category}
+        });
+        final List<dynamic> addTagMapList = MongoTagDataSource.createTagsList([t], onlyKeys: true);
+        final ModifierBuilder modifier =  modify.pushAll(tagsField, addTagMapList);
+        await genericUpdate(tagSelector, modifier, multiUpdate: true);
+
+      }
     }
 
     if(tagsToRemove.length>0) {
-      final List<dynamic> removeTagMapList = MongoTagDataSource.createTagsList(tagsToRemove, includeFullName: false);
+      final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
+      final List<dynamic> removeTagMapList = MongoTagDataSource.createTagsList(tagsToRemove, onlyKeys: true);
       final ModifierBuilder modifier = modify
           .pullAll(tagsField, removeTagMapList);
       await genericUpdate(tagSelector, modifier, multiUpdate: true);
@@ -242,7 +249,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       final List<dynamic> tagsList = new List<dynamic>();
       for (Tag tag in item.tags) {
         final Map<dynamic, dynamic> tagMap = <dynamic, dynamic>{};
-        MongoTagDataSource.staticUpdateMap(tag, tagMap, includeFullName: false);
+        MongoTagDataSource.staticUpdateMap(tag, tagMap, onlyKeys: true);
         tagsList.add(tagMap);
       }
       data[tagsField] = tagsList;
@@ -251,7 +258,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<Null> updateTags(String id, List<Tag> tags) async {
-    final List<dynamic> tagsList = MongoTagDataSource.createTagsList(tags, includeFullName: false);
+    final List<dynamic> tagsList = MongoTagDataSource.createTagsList(tags, onlyKeys: true);
     final ModifierBuilder modifier = modify.set(tagsField, tagsList);
     await genericUpdate(where.eq(idField, id), modifier);
   }

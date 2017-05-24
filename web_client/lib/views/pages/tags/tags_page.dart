@@ -35,7 +35,7 @@ class TagsPage extends APage implements OnDestroy {
   api.Tag model = new api.Tag();
 
   TagList tags = new TagList();
-  StreamSubscription<PageActions> _pageActionSubscription;
+  StreamSubscription<PageAction> _pageActionSubscription;
 
   @ViewChild("editForm")
   NgForm form;
@@ -44,7 +44,7 @@ class TagsPage extends APage implements OnDestroy {
       AuthenticationService auth, Router router)
       : super(auth, router, pageControl) {
     pageControl.setPageTitle("Tags");
-    pageControl.setAvailablePageActions(<PageActions>[PageActions.Refresh]);
+    pageControl.setAvailablePageActions(<PageAction>[PageAction.refresh]);
     _pageActionSubscription =
         pageControl.pageActionRequested.listen(onPageActionRequested);
 
@@ -62,10 +62,10 @@ class TagsPage extends APage implements OnDestroy {
 
   bool get noItemsFound => tags.isEmpty;
 
-  void onPageActionRequested(PageActions action) {
+  void onPageActionRequested(PageAction action) {
     try {
       switch (action) {
-        case PageActions.Refresh:
+        case PageAction.refresh:
           this.refresh();
           break;
         default:

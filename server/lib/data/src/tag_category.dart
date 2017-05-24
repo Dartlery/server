@@ -8,5 +8,5 @@ class TagCategory extends AIdData {
   String color = "#000000";
 
   TagCategory();
-  TagCategory.withValues(String id, {this.color}): super.withValues(id);
+  TagCategory.withValues(String id, {this.color: '#000000'}): super.withValues(id);
 }

@@ -18,19 +18,18 @@ import 'package:logging/logging.dart';
 
 import '../src/a_page.dart';
 
-
 @Component(
-    selector: 'item-browse',
+    selector: 'trash-page',
     providers: const [materialProviders],
     directives: const [
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
     ],
-    styleUrls: const ["../../shared.css", "item_browse.css"],
-    templateUrl: 'item_browse.html')
-class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
-  static final Logger _log = new Logger("ItemBrowseComponent");
+    styleUrls: const ["../../shared.css", "trash_page.css"],
+    templateUrl: 'trash_page.html')
+class TrashPage extends APage implements OnInit, OnDestroy {
+  static final Logger _log = new Logger("TrashPage");
   bool curatorAuth = false;
 
   bool userLoggedIn;
@@ -50,7 +49,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   final ItemSearchService _search;
 
 
-  ItemBrowseComponent(
+  TrashPage(
       this._api, this._routeParams, PageControlService pageControl, this._router, this._auth, this._search)
       : super(_auth, _router, pageControl) {
     setActions();

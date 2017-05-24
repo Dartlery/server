@@ -22,6 +22,7 @@ class ItemModel extends AIdBasedModel<Item> {
 
   final AItemDataSource itemDataSource;
   final ATagDataSource tagDataSource;
+  final TagModel _tagModel;
 
   final ATagCategoryDataSource tagCategoryDataSource;
 
@@ -69,7 +70,7 @@ class ItemModel extends AIdBasedModel<Item> {
       new RegExp(r"^avg_frame_rate=(\d+)\/(\d+)$", multiLine: true);
 
   ItemModel(this.itemDataSource, this.tagDataSource, this.tagCategoryDataSource,
-      this._extensionServices, AUserDataSource userDataSource)
+      this._extensionServices, this._tagModel, AUserDataSource userDataSource)
       : super(userDataSource);
 
   @override
@@ -95,7 +96,7 @@ class ItemModel extends AIdBasedModel<Item> {
     item.id = "temporary";
     await validate(item);
 
-    await _handleTags(item.tags);
+    await _tagModel.handleTags(item.tags);
 
     await _handleFileUpload(item);
     item.uploaded = new DateTime.now();
@@ -356,7 +357,7 @@ class ItemModel extends AIdBasedModel<Item> {
       {bool bypassAuthentication: false}) async {
     if (!bypassAuthentication) await validateUpdatePrivileges(id);
 
-    await _handleTags(item.tags);
+    await _tagModel.handleTags(item.tags);
 
     return await super
         .update(id, item, bypassAuthentication: bypassAuthentication);
@@ -369,7 +370,7 @@ class ItemModel extends AIdBasedModel<Item> {
     if (!await itemDataSource.existsById(itemId))
       throw new NotFoundException("Item $itemId not found");
 
-    await _handleTags(newTags);
+    await _tagModel.handleTags(newTags);
     await itemDataSource.updateTags(itemId, newTags);
   }
 
@@ -573,22 +574,6 @@ class ItemModel extends AIdBasedModel<Item> {
       rethrow;
     } finally {
       _log.fine("_handleFileUpload end");
-    }
-  }
-
-  Future<Null> _handleTags(List<Tag> tags) async {
-    for (Tag tag in tags) {
-      final bool result = await tagDataSource.existsById(tag.id, tag.category);
-      if (!result) {
-        if (!StringTools.isNotNullOrWhitespace(tag.category)) {
-          if (StringTools.isNotNullOrWhitespace(tag.category) &&
-              !await tagCategoryDataSource.existsById(tag.category)) {
-            final TagCategory cat = new TagCategory.withValues(tag.category);
-            await tagCategoryDataSource.create(cat);
-          }
-        }
-        await tagDataSource.create(tag);
-      }
     }
   }
 

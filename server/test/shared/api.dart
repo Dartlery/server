@@ -102,6 +102,7 @@ Future<CreateItemRequest> createItemRequest({List<Tag> tags, String file: "test.
 
   msg.bytes = await getFileData("test\\$file");
 
+
   request.item = item;
   request.file = msg;
 
@@ -111,6 +112,7 @@ Future<CreateItemRequest> createItemRequest({List<Tag> tags, String file: "test.
 /// Creates a [Item] object that should meet all validation requirements.
 Item createItem({List<Tag> tags}) {
   final Item item = new Item();
+  item.fileName = generateUuid();
   if(tags==null) {
     item.tags = <Tag>[];
     item.tags.add(new Tag.withValues(generateUuid()));

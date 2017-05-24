@@ -9,6 +9,7 @@ import 'constants.dart';
 import 'mongo_db_connection_pool.dart';
 import 'mongo_extension_data_source.dart';
 import 'mongo_item_data_source.dart';
+import 'mongo_tag_data_source.dart';
 
 class MongoDatabase {
   static final Logger _log = new Logger('_MongoDatabase');
@@ -89,9 +90,11 @@ class MongoDatabase {
 
   Future<DbCollection> getTagsCollection() async {
     await db.createIndex(_tagsCollection,
-        keys: {idField: 1, "category": 1}, name: "IdIndex", unique: true);
+        keys: {idField: 1, MongoTagDataSource.categoryField: 1}, name: "IdIndex", unique: true);
     await db.createIndex(_tagsCollection,
-        keys: {r"fullName": "text"}, name: "TagTextIndex");
+        keys: {MongoTagDataSource.redirectField: 1}, name: "RedirectIndex", unique: false, sparse: true);
+    await db.createIndex(_tagsCollection,
+        keys: {MongoTagDataSource.fullNameField: "text"}, name: "TagTextIndex");
     final DbCollection output = db.collection(_tagsCollection);
 
     return output;

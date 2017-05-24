@@ -44,6 +44,10 @@ class TagList extends Iterable<Tag> {
     return -1;
   }
 
+  @override
+  bool contains(Tag t) => indexOf(t) != -1;
+
+
   static const String categorySeparator = ":";
   static const String tagSeparator = ",";
 

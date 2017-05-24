@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:angular2/core.dart';
 import 'package:dartlery/data/data.dart';
-import 'page_actions.dart';
+import 'page_action.dart';
 
 @Injectable()
 class PageControlService {
@@ -17,24 +17,24 @@ class PageControlService {
   final StreamController<String> _pageTitleController =
       new StreamController<String>.broadcast();
 
-  final StreamController<PageActions> _pageActionController =
-      new StreamController<PageActions>.broadcast();
+  final StreamController<PageAction> _pageActionController =
+      new StreamController<PageAction>.broadcast();
 
-  final StreamController<List<PageActions>> _availablePageActionController =
-      new StreamController<List<PageActions>>.broadcast();
+  final StreamController<List<PageAction>> _availablePageActionController =
+      new StreamController<List<PageAction>>.broadcast();
 
-  Stream<PageActions> get pageActionRequested => _pageActionController.stream;
+  Stream<PageAction> get pageActionRequested => _pageActionController.stream;
 
   Stream<String> get pageTitleChanged => _pageTitleController.stream;
 
   Stream<MessageEventArgs> get messageSent => _messageController.stream;
 
-  Stream<List<PageActions>> get availablePageActionsSet =>
+  Stream<List<PageAction>> get availablePageActionsSet =>
       _availablePageActionController.stream;
 
-  void requestPageAction(PageActions action) {
+  void requestPageAction(PageAction action) {
     switch (action) {
-      case PageActions.Search:
+      case PageAction.search:
         throw new Exception("Use the search() function");
       default:
         this._pageActionController.add(action);
@@ -67,10 +67,10 @@ class PageControlService {
   }
 
   void clearAvailablePageActions() {
-    setAvailablePageActions(<PageActions>[]);
+    setAvailablePageActions(<PageAction>[]);
   }
 
-  void setAvailablePageActions(List<PageActions> actions) {
+  void setAvailablePageActions(List<PageAction> actions) {
     _availablePageActionController.add(actions);
   }
 

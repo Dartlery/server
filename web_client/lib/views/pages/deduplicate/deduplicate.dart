@@ -53,7 +53,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   Location _location;
 
   RouteParams _params;
-  StreamSubscription<PageActions> _pageActionSubscription;
+  StreamSubscription<PageAction> _pageActionSubscription;
   String filterItemId;
   final NumberFormat f = new NumberFormat.decimalPattern();
 
@@ -70,7 +70,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
       this._router, this._params, this._location)
       : super(_auth, _router, pageControl) {
     pageControl.setPageTitle("Deduplicate");
-    pageControl.setAvailablePageActions([PageActions.Refresh, PageActions.Compare]);
+    pageControl.setAvailablePageActions([PageAction.refresh, PageAction.compare]);
   }
 
   String get comparisonHeight {
@@ -232,12 +232,12 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     });
   }
 
-  void onPageActionRequested(PageActions action) {
+  void onPageActionRequested(PageAction action) {
     switch (action) {
-      case PageActions.Refresh:
+      case PageAction.refresh:
         this.refresh();
         break;
-      case PageActions.Compare:
+      case PageAction.compare:
         animatedComparison = !animatedComparison;
         break;
       default:

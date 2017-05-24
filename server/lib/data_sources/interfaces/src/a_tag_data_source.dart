@@ -6,7 +6,10 @@ import 'a_two_id_based_data_source.dart';
 abstract class ATagDataSource extends ATwoIdBasedDataSource<Tag> {
   static final Logger _log = new Logger('ATagDataSource');
 
-  Future<IdDataList<Tag>> getByIds(List<String> ids);
+
+
+  Future<IdDataList<Tag>> getByRedirect(String id, String category);
+  Future<Null> deleteByRedirect(String id, String category);
 
   @override
   Future<IdDataList<Tag>> search(String query, {int limit});

@@ -1,37 +1,42 @@
-import 'a_id_data.dart';
-import 'package:option/option.dart';
-import 'tag_category.dart';
-import 'package:rpc/rpc.dart';
 import 'package:dartlery_shared/tools.dart';
+import 'package:option/option.dart';
+import 'package:rpc/rpc.dart';
+
+import 'a_id_data.dart';
+import 'tag_category.dart';
 
 @ApiMessage(includeSuper: true)
 class Tag extends AIdData {
+  String category;
+
+  @ApiProperty(ignore: true)
+  Tag redirect; // Only here so that the API will generate it as a field
+
+  Tag();
+
+  Tag.withValues(String name, {this.category}) : super.withValues(name);
+
   String get fullName {
-    if(StringTools.isNotNullOrWhitespace(category)) {
+    if (StringTools.isNotNullOrWhitespace(category)) {
       return "$category: $id";
     } else {
       return id;
     }
   }
-  set fullName(String value) {} // Only here so that the API will generate it as a field
 
-  String category;
-
-  Tag();
-
-  Tag.withValues(String name, {this.category}):
-        super.withValues(name);
+  set fullName(
+      String value) {}
 
   bool equals(Tag other) {
-    if(id?.toLowerCase()==other.id?.toLowerCase()) {
-      if(category?.toLowerCase()==other.category?.toLowerCase()||(StringTools.isNullOrWhitespace(this.category)&&StringTools.isNullOrWhitespace(other.category)))
-        return true;
+    if (id?.toLowerCase() == other.id?.toLowerCase()) {
+      if (category?.toLowerCase() == other.category?.toLowerCase() ||
+          (StringTools.isNullOrWhitespace(this.category) &&
+              StringTools.isNullOrWhitespace(other.category))) return true;
     }
-    
+
     return false;
   }
 
   @override
   String toString() => fullName;
 }
-

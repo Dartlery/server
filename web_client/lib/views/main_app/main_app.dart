@@ -21,7 +21,6 @@ import 'package:logging/logging.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
 import 'package:dartlery/data/data.dart';
 
-
 @Component(
     selector: 'main-app',
     //encapsulation: ViewEncapsulation.Native,
@@ -53,7 +52,6 @@ import 'package:dartlery/data/data.dart';
       AuthenticationService,
       const Provider(APP_BASE_HREF, useValue: "/"),
       const Provider(LocationStrategy, useClass: HashLocationStrategy),
-
     ])
 @RouteConfig(routes)
 class MainApp implements OnInit, OnDestroy {
@@ -67,13 +65,7 @@ class MainApp implements OnInit, OnDestroy {
   bool isLoginOpen = false;
   bool isUploadOpen = false;
 
-  bool showRefreshButton = false;
-  bool showAddButton = false;
-  bool showSearch = false;
-  bool showDeleteButton = false;
-  bool showTagButton = false;
-  bool showOpenInNewButton = false;
-  bool showCompareButton = false;
+  final List<PageAction> availableActions = <PageAction>[];
 
   bool showSearchBar = false;
 
@@ -99,7 +91,6 @@ class MainApp implements OnInit, OnDestroy {
     _pageActionsSubscription =
         _pageControl.availablePageActionsSet.listen(onPageActionsSet);
     _messageSubscription = _pageControl.messageSent.listen(onMessageSent);
-
   }
 
   bool confirmDeleteVisible = false;
@@ -114,12 +105,26 @@ class MainApp implements OnInit, OnDestroy {
     }
   }
 
+  bool get showSearch => availableActions.contains(PageAction.search);
+
   bool get userLoggedIn {
     return _auth.isAuthenticated;
   }
 
-  void addClicked() {
-    _pageControl.requestPageAction(PageActions.Add);
+  void pageActionTriggered(PageAction action) {
+    switch (action) {
+      case PageAction.delete:
+        confirmDeleteVisible = true;
+        break;
+      default:
+        _pageControl.requestPageAction(action);
+        break;
+    }
+  }
+
+  void confirmDelete() {
+    confirmDeleteVisible = false;
+    _pageControl.requestPageAction(PageAction.delete);
   }
 
   Future<Null> clearAuthentication() async {
@@ -149,13 +154,9 @@ class MainApp implements OnInit, OnDestroy {
     }
   }
 
-  void onPageActionsSet(List<PageActions> actions) {
-    showRefreshButton = actions.contains(PageActions.Refresh);
-    showAddButton = actions.contains(PageActions.Add);
-    showSearch = actions.contains(PageActions.Search);
-    showDeleteButton = actions.contains(PageActions.Delete);
-    showOpenInNewButton = actions.contains(PageActions.OpenInNew);
-    showCompareButton = actions.contains(PageActions.Compare);
+  void onPageActionsSet(List<PageAction> actions) {
+    this.availableActions.clear();
+    this.availableActions.addAll(actions);
   }
 
   void onPageTitleChanged(String title) {
@@ -172,28 +173,6 @@ class MainApp implements OnInit, OnDestroy {
 
   void openUploadWindow() {
     isUploadOpen = true;
-  }
-
-  void refreshClicked() {
-    _pageControl.requestPageAction(PageActions.Refresh);
-  }
-  void compareClicked() {
-    _pageControl.requestPageAction(PageActions.Compare);
-  }
-  void tagClicked() {
-    _pageControl.requestPageAction(PageActions.Tag);
-  }
-  void deleteClicked() {
-    confirmDeleteVisible = true;
-  }
-
-  void confirmDelete() {
-    confirmDeleteVisible = false;
-    _pageControl.requestPageAction(PageActions.Delete);
-  }
-
-  void openInNewClicked() {
-    _pageControl.requestPageAction(PageActions.OpenInNew);
   }
 
   void searchKeyup(html.KeyboardEvent e) {

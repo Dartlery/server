@@ -21,6 +21,8 @@ import 'package:dartlery/model/model.dart';
 //export 'src/requests/update_item_request.dart';
 //export 'src/requests/transfer_request.dart';
 export 'src/requests/password_change_request.dart';
+export 'src/requests/tag_redirect_request.dart';
+export 'src/requests/replace_tags_requst.dart';
 
 @ApiClass(
     version: galleryApiVersion, name: galleryApiName, description: 'Item REST API')

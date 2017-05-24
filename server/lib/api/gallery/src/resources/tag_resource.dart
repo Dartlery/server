@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 import 'package:dartlery/data/data.dart';
 import '../requests/replace_tags_requst.dart';
+import '../requests/tag_redirect_request.dart';
 
 class TagResource extends AResource {
   static final Logger _log = new Logger('TagResource');
@@ -49,5 +50,21 @@ class TagResource extends AResource {
       await _tagModel.replace(request.originalTags, request.newTags);
     });
   }
+
+  @ApiMethod(method: HttpMethod.put, path: 'tag_redirects/')
+  Future<Null> setRedirect(TagRedirectRequest request) async {
+    return catchExceptionsAwait(() async {
+      await _tagModel.setRedirect(request.startTag, request.endTag);
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.delete, path: 'tag_redirects/{tagId}/{tagCategory}')
+  Future<Null> deleteRedirect(String id, String category) async {
+    return catchExceptionsAwait(() async {
+      throw new NotImplementedException();
+      //await _tagModel.deleteRedirect(id, category);
+    });
+  }
+
 
 }

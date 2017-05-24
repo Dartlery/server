@@ -56,13 +56,13 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
 
   String itemId;
 
-  StreamSubscription<PageActions> _pageActionSubscription;
+  StreamSubscription<PageAction> _pageActionSubscription;
 
 
   ItemViewPage(PageControlService pageControl, this._api, this._auth, this._router, this._params, this._location, this._searchService)
       : super(_auth, _router, pageControl) {
     pageControl.setPageTitle("Item View");
-    pageControl.setAvailablePageActions([PageActions.Refresh, PageActions.Delete]);
+    pageControl.setAvailablePageActions([PageAction.refresh, PageAction.delete]);
 
   }
 
@@ -88,12 +88,12 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   }
 
 
-  void onPageActionRequested(PageActions action) {
+  void onPageActionRequested(PageAction action) {
     switch (action) {
-      case PageActions.Refresh:
+      case PageAction.refresh:
         this.refresh();
         break;
-      case PageActions.Delete:
+      case PageAction.delete:
         delete();
         break;
       default:

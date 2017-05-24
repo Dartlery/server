@@ -16,7 +16,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   dynamic model;
 
-  StreamSubscription<PageActions> _pageActionSubscription;
+  StreamSubscription<PageAction> _pageActionSubscription;
 
   @protected
   final ApiService api;
@@ -30,7 +30,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
 
   AMaintenancePage(this.dataType, PageControlService pageControl, this.api,
-      AuthenticationService _auth, Router router, {List<PageActions> pageActions: const <PageActions>[PageActions.Refresh, PageActions.Add]})
+      AuthenticationService _auth, Router router, {List<PageAction> pageActions: const <PageAction>[PageAction.refresh, PageAction.add]})
       : super(_auth, router, pageControl) {
     pageControl.setAvailablePageActions(pageActions);
     _pageActionSubscription =
@@ -92,13 +92,13 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
     //refresh();
   }
 
-  void onPageActionRequested(PageActions action) {
+  void onPageActionRequested(PageAction action) {
     try {
       switch (action) {
-        case PageActions.Refresh:
+        case PageAction.refresh:
           this.refresh();
           break;
-        case PageActions.Add:
+        case PageAction.add:
           cancelEdit();
           final String id = "";
           items.insert(0, id);
