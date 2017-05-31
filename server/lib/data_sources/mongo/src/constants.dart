@@ -1,8 +1,10 @@
-const String TEXT_COMMAND = "\$text";
-const String UNWIND_COMMAND = "\$unwind";
-const String MATCH_COMMAND = "\$match";
-const String PROJECT_COMMAND = "\$project";
-const String SEARCH_COMMAND = "\$search";
+const String textCommand = "\$text";
+const String unwindCommand = "\$unwind";
+const String matchCommand = "\$match";
+const String projectCommand = "\$project";
+const String searchCommand = "\$search";
+const String elemMatchCommand = r"$elemMatch";
+const String notCommand = r"$not";
 
 const String idField = "id";
 const String nameField = "name";

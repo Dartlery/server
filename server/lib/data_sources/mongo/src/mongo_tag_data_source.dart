@@ -106,6 +106,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
         final Map redirect = {};
         staticUpdateMap(tag.redirect, redirect, onlyKeys: true);
         data[redirectField] = redirect;
+      } else if(data.containsKey(redirectField)) {
+        data.remove(redirectField);
       }
     }
   }

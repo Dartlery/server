@@ -24,7 +24,9 @@ new RpcErrorMatcher<ForbiddenException>();
 
 
 final Matcher throwsDataValidationException =
-    throwsA(new RpcErrorMatcher<DataValidationException>());
+throwsA(new RpcErrorMatcher<DataValidationException>());
+final Matcher throwsInvalidInputException =
+throwsA(new RpcErrorMatcher<InvalidInputException>());
 final Matcher throwsForbiddenException =
     throwsA(isForbiddenException);
 final Matcher throwsNotFoundException =

@@ -16,7 +16,9 @@ class Tag extends AIdData {
 
   Tag.withValues(String name, {this.category}) : super.withValues(name);
 
-  String get fullName {
+  String get fullName => formatTag(id, category);
+
+  static String formatTag(String id, [String category]) {
     if (StringTools.isNotNullOrWhitespace(category)) {
       return "$category: $id";
     } else {
@@ -39,4 +41,7 @@ class Tag extends AIdData {
 
   @override
   String toString() => fullName;
+
+  @override
+  bool operator ==(Tag other) => equals(other);
 }

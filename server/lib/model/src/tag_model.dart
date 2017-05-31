@@ -60,7 +60,9 @@ class TagModel extends ATypedModel<Tag> {
         }
       }
     }
-    return output.toList();
+    tags.clear();
+    tags.addAll(output.toList());
+    return tags;
   }
 
   /// Replaces the $originalTags with the $newTags. This does not actually delete any tags.
@@ -86,11 +88,32 @@ class TagModel extends ATypedModel<Tag> {
     return output;
   }
 
-  Future<Null> setRedirect(Tag start, Tag end) async {
+  Future<Null> clearRedirect(String id, [String category]) async {
     await validateUpdatePrivilegeRequirement();
+
+    final Option<Tag> tag = await _tagDataSource.getById(id, category);
+    if(tag.isEmpty)
+      throw new NotFoundException("Specified tag not found: ${Tag.formatTag(id, category)}");
+
+    tag.first.redirect = null;
+
+    await _tagDataSource.update(id, category, tag.first);
+  }
+
+  Future<Null> setRedirect(RedirectingTag redirect) async {
+    await validateUpdatePrivilegeRequirement();
+
+    final Tag start = redirect.start;
+    Tag end = redirect.end;
 
     await validate(start);
     await validate(end);
+
+    await DataValidationException.performValidation((Map<String,String> fieldErrors) async {
+      if(start==end) {
+        fieldErrors["end"] = "Cannot be the same as start";
+      }
+    });
 
     Option<Tag> dbStart =
         await _tagDataSource.getById(start.id, start.category);
