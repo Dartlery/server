@@ -50,31 +50,6 @@ void main() {
       expect(tags[1]==initialTag, isTrue);
     });
 
-    test("update()", () async {
-      final Tag newTag = new Tag.withValues(generateUuid());
-
-      await api.tags.update(initialCategoryTag.id, initialCategoryTag.category, newTag);
-
-      final Item i = await api.items.getById(initalItemId.id);
-
-      expect(i.tags.length, 3);
-      expect(i.tags[0]==initialTag, isTrue);
-      expect(i.tags[1]==randomTag, isTrue);
-      expect(i.tags[2]==newTag, isTrue);
-    });
-
-    test("updateWithoutCategory()", () async {
-      final Tag newTag = new Tag.withValues(generateUuid());
-
-      await api.tags.updateWithoutCategory(initialTag.id, newTag);
-
-      final Item i = await api.items.getById(initalItemId.id);
-
-      expect(i.tags.length, 3);
-      expect(i.tags[0]==initialCategoryTag, isTrue);
-      expect(i.tags[1]==randomTag, isTrue);
-      expect(i.tags[2]==newTag, isTrue);
-    });
 
     test("replace()", () async {
       final Tag newTag = new Tag.withValues(generateUuid());
@@ -157,6 +132,23 @@ void main() {
     });
 
 
+    test("Multiple redirect", () async {
+      final Tag newTag = new Tag.withValues(generateUuid());
+      final RedirectingTag redirectRequest = new RedirectingTag();
+      redirectRequest.start = randomTag;
+      redirectRequest.end = newTag;
+
+      await api.tags.setRedirect(redirectRequest);
+
+      await api.items.updateTagsForItemId(initalItemId.id, [initialTag, randomTag]);
+
+      final Item i = await api.items.getById(initalItemId.id);
+
+      expect(i.tags.length, 2);
+      expect(i.tags[0]==initialCategoryTag, isTrue);
+      expect(i.tags[1]==newTag, isTrue);
+    });
+
 
     test("Looping redirect", () async {
       RedirectingTag redirectRequest = new RedirectingTag();
@@ -204,7 +196,42 @@ void main() {
       expect(i.tags.length, 2);
       expect(i.tags[0]==newTag, isTrue);
       expect(i.tags[1]==initialCategoryTag, isTrue);
-
     });
+
+    test("Item update", () async {
+      Item i = await api.items.getById(initalItemId.id);
+
+      final Tag newTag = new Tag.withValues(generateUuid());
+
+      i.tags = [initialTag, newTag];
+
+      await api.items.update(i.id, i);
+
+      i = await api.items.getById(initalItemId.id);
+
+      expect(i.tags.length, 2);
+      expect(i.tags[0]==newTag, isTrue);
+      expect(i.tags[1]==initialCategoryTag, isTrue);
+    });
+
+    test("Tag replace", () async {
+      Item i = await api.items.getById(initalItemId.id);
+
+      final Tag newTag = new Tag.withValues(generateUuid());
+
+      i.tags = [initialTag, newTag];
+
+      final ReplaceTagsRequest request = new  ReplaceTagsRequest();
+      request.originalTags = [initialCategoryTag, randomTag];
+      request.newTags = [initialTag];
+
+      await api.tags.replace(request);
+
+      i = await api.items.getById(initalItemId.id);
+
+      expect(i.tags.length, 1);
+      expect(i.tags[0]==initialCategoryTag, isTrue);
+    });
+
   });
 }

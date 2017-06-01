@@ -66,19 +66,19 @@ class TagResource extends AResource {
   }
 
 
-  @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/{tagId}/{tagCategory}/')
-  Future<Null> update(String tagId, String tagCategory, Tag newTag) async {
-    return catchExceptionsAwait(() async {
-      final Tag t = new Tag.withValues(tagId, category: tagCategory);
-      await _tagModel.update(t, newTag);
-    });
-  }
-
-  @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/{tagId}/')
-  Future<Null> updateWithoutCategory(String tagId, Tag newTag) async {
-    return catchExceptionsAwait(() async {
-      final Tag t = new Tag.withValues(tagId, category: null);
-      await _tagModel.update(t, newTag);
-    });
-  }
+//  @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/{tagId}/{tagCategory}/')
+//  Future<Null> update(String tagId, String tagCategory, Tag newTag) async {
+//    return catchExceptionsAwait(() async {
+//      final Tag t = new Tag.withValues(tagId, category: tagCategory);
+//      await _tagModel.update(t, newTag);
+//    });
+//  }
+//
+//  @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/{tagId}/')
+//  Future<Null> updateWithoutCategory(String tagId, Tag newTag) async {
+//    return catchExceptionsAwait(() async {
+//      final Tag t = new Tag.withValues(tagId, category: null);
+//      await _tagModel.update(t, newTag);
+//    });
+//  }
 }

@@ -150,20 +150,20 @@ class TagModel extends ATypedModel<Tag> {
     await _itemDataSource.replaceTags([start], [end]);
   }
 
-  Future<Null> update(Tag originalTag, Tag newTag) async {
-    await validateUpdatePrivilegeRequirement();
-
-    await validate(originalTag);
-    await validate(newTag);
-
-    newTag = (await handleTags([newTag], createMissingTags: false)).first;
-
-    if (originalTag.equals(newTag))
-      throw new InvalidInputException("Please specify different tags");
-
-    await _tagDataSource.update(originalTag.id, originalTag.category, newTag);
-    await _itemDataSource.replaceTags(<Tag>[originalTag], <Tag>[newTag]);
-  }
+//  Future<Null> update(Tag originalTag, Tag newTag) async {
+//    await validateUpdatePrivilegeRequirement();
+//
+//    await validate(originalTag);
+//    await validate(newTag);
+//
+//    newTag = (await handleTags([newTag], createMissingTags: false)).first;
+//
+//    if (originalTag.equals(newTag))
+//      throw new InvalidInputException("Please specify different tags");
+//
+//    await _tagDataSource.update(originalTag.id, originalTag.category, newTag);
+//    await _itemDataSource.replaceTags(<Tag>[originalTag], <Tag>[newTag]);
+//  }
 
   @override
   Future<Null> validateFields(Tag tag, Map<String, String> fieldErrors,
