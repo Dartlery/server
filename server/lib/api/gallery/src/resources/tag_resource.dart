@@ -21,14 +21,6 @@ class TagResource extends AResource {
   @override
   String get resourcePath => tagApiPath;
 
-  @ApiMethod(
-      method: HttpMethod.delete, path: 'tag_redirects/{tagId}/{tagCategory}')
-  Future<Null> deleteRedirect(String id, String category) async {
-    return catchExceptionsAwait(() async {
-      throw new NotImplementedException();
-      //await _tagModel.deleteRedirect(id, category);
-    });
-  }
 
   @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/')
   Future<Null> replace(ReplaceTagsRequest request) async {
