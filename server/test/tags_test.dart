@@ -69,10 +69,7 @@ void main() {
 
 
     test("setRedirect()", () async {
-
-      final RedirectingTag redirectRequest = new RedirectingTag();
-      redirectRequest.start = initialTag;
-      redirectRequest.end = initialCategoryTag;
+      final RedirectingTag redirectRequest = new RedirectingTag.copy(initialTag, initialCategoryTag);
 
       await api.tags.setRedirect(redirectRequest);
 
@@ -84,9 +81,7 @@ void main() {
     });
 
     test("clearRedirect()", () async {
-      final RedirectingTag redirectRequest = new RedirectingTag();
-      redirectRequest.start = initialTag;
-      redirectRequest.end = initialCategoryTag;
+      final RedirectingTag redirectRequest = new RedirectingTag.copy(initialTag, initialCategoryTag);
 
       await api.tags.setRedirect(redirectRequest);
 
@@ -110,18 +105,14 @@ void main() {
 
   group("Redirect tests", () {
     setUp(() async  {
-      final RedirectingTag redirectRequest = new RedirectingTag();
-      redirectRequest.start = initialTag;
-      redirectRequest.end = initialCategoryTag;
+      final RedirectingTag redirectRequest = new RedirectingTag.copy(initialTag, initialCategoryTag);
 
       await api.tags.setRedirect(redirectRequest);
     });
 
 
     test("Chained redirect", () async {
-      final RedirectingTag redirectRequest = new RedirectingTag();
-      redirectRequest.start = initialCategoryTag;
-      redirectRequest.end = randomTag;
+      final RedirectingTag redirectRequest = new RedirectingTag.copy(initialCategoryTag, randomTag);
 
       await api.tags.setRedirect(redirectRequest);
 
@@ -134,9 +125,8 @@ void main() {
 
     test("Multiple redirect", () async {
       final Tag newTag = new Tag.withValues(generateUuid());
-      final RedirectingTag redirectRequest = new RedirectingTag();
-      redirectRequest.start = randomTag;
-      redirectRequest.end = newTag;
+
+      final RedirectingTag redirectRequest = new RedirectingTag.copy(randomTag, newTag);
 
       await api.tags.setRedirect(redirectRequest);
 
@@ -151,23 +141,17 @@ void main() {
 
 
     test("Looping redirect", () async {
-      RedirectingTag redirectRequest = new RedirectingTag();
-      redirectRequest.start = initialCategoryTag;
-      redirectRequest.end = randomTag;
+      RedirectingTag redirectRequest = new RedirectingTag.copy(initialCategoryTag, randomTag);
 
       await api.tags.setRedirect(redirectRequest);
 
-      redirectRequest = new RedirectingTag();
-      redirectRequest.start = randomTag;
-      redirectRequest.end = initialTag;
+      redirectRequest = new RedirectingTag.copy(randomTag, initialTag);
 
       expect(api.tags.setRedirect(redirectRequest), throwsInvalidInputException);
     });
 
     test("Self redirect", () async {
-      final RedirectingTag redirectRequest = new RedirectingTag();
-      redirectRequest.start = randomTag;
-      redirectRequest.end = randomTag;
+      final RedirectingTag redirectRequest = new RedirectingTag.copy(randomTag, randomTag);
 
       expect(api.tags.setRedirect(redirectRequest), throwsDataValidationException);
     });

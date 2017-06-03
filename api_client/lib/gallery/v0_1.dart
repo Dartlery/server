@@ -928,6 +928,117 @@ class TagsResourceApi {
       _requester = client;
 
   /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * [category] - Path parameter: 'category'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future clearRedirect(core.String id, core.String category) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+    if (category == null) {
+      throw new core.ArgumentError("Parameter category is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'tag_redirects/' + commons.Escaper.ecapeVariable('$id') + '/' + commons.Escaper.ecapeVariable('$category') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future clearRedirectWithoutCategory(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'tag_redirects/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [ListOfRedirectingTag].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfRedirectingTag> getRedirects() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'tag_redirects/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfRedirectingTag.fromJson(data));
+  }
+
+  /**
    * [request] - The metadata request object.
    *
    * Request parameters:
@@ -1006,17 +1117,13 @@ class TagsResourceApi {
    *
    * Request parameters:
    *
-   * [tagId] - Path parameter: 'tagId'.
-   *
-   * [tagCategory] - Path parameter: 'tagCategory'.
-   *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
    *
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future update(Tag request, core.String tagId, core.String tagCategory) {
+  async.Future setRedirect(RedirectingTag request) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1027,58 +1134,10 @@ class TagsResourceApi {
     if (request != null) {
       _body = convert.JSON.encode((request).toJson());
     }
-    if (tagId == null) {
-      throw new core.ArgumentError("Parameter tagId is required.");
-    }
-    if (tagCategory == null) {
-      throw new core.ArgumentError("Parameter tagCategory is required.");
-    }
 
     _downloadOptions = null;
 
-    _url = 'tags/' + commons.Escaper.ecapeVariable('$tagId') + '/' + commons.Escaper.ecapeVariable('$tagCategory') + '/';
-
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => null);
-  }
-
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * [tagId] - Path parameter: 'tagId'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future updateWithoutCategory(Tag request, core.String tagId) {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-    if (request != null) {
-      _body = convert.JSON.encode((request).toJson());
-    }
-    if (tagId == null) {
-      throw new core.ArgumentError("Parameter tagId is required.");
-    }
-
-    _downloadOptions = null;
-
-    _url = 'tags/' + commons.Escaper.ecapeVariable('$tagId') + '/';
+    _url = 'tag_redirects/';
 
     var _response = _requester.request(_url,
                                        "PUT",
@@ -1625,6 +1684,32 @@ class ItemSearchRequest {
   }
 }
 
+class ListOfRedirectingTag
+    extends collection.ListBase<RedirectingTag> {
+  final core.List<RedirectingTag> _inner;
+
+  ListOfRedirectingTag() : _inner = [];
+
+  ListOfRedirectingTag.fromJson(core.List json)
+      : _inner = json.map((value) => new RedirectingTag.fromJson(value)).toList();
+
+  core.List toJson() {
+    return _inner.map((value) => (value).toJson()).toList();
+  }
+
+  RedirectingTag operator [](core.int key) => _inner[key];
+
+  void operator []=(core.int key, RedirectingTag value) {
+    _inner[key] = value;
+  }
+
+  core.int get length => _inner.length;
+
+  void set length(core.int newLength) {
+    _inner.length = newLength;
+  }
+}
+
 class ListOfString
     extends collection.ListBase<core.String> {
   final core.List<core.String> _inner;
@@ -1878,6 +1963,40 @@ class PasswordChangeRequest {
     }
     if (newPassword != null) {
       _json["newPassword"] = newPassword;
+    }
+    return _json;
+  }
+}
+
+class RedirectingTag {
+  core.String category;
+  core.String id;
+  Tag redirect;
+
+  RedirectingTag();
+
+  RedirectingTag.fromJson(core.Map _json) {
+    if (_json.containsKey("category")) {
+      category = _json["category"];
+    }
+    if (_json.containsKey("id")) {
+      id = _json["id"];
+    }
+    if (_json.containsKey("redirect")) {
+      redirect = new Tag.fromJson(_json["redirect"]);
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (category != null) {
+      _json["category"] = category;
+    }
+    if (id != null) {
+      _json["id"] = id;
+    }
+    if (redirect != null) {
+      _json["redirect"] = (redirect).toJson();
     }
     return _json;
   }

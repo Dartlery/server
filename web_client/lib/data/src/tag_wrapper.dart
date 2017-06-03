@@ -18,8 +18,18 @@ class TagWrapper {
       return tag.id;
     }
   }
+  static String formatRedirectingTag(RedirectingTag tag) {
+    if(StringTools.isNotNullOrWhitespace(tag.category)) {
+      return "${tag.category}: ${tag.id}";
+    } else {
+      return tag.id;
+    }
+  }
 
   static String createQueryString(Tag tag) {
+    if(tag==null)
+      throw new ArgumentError.notNull("tag");
+
     final String tagString = Uri.encodeFull(tag.id).replaceAll(":", "%3A").replaceAll(",","%2C");
     final String categoryString = Uri.encodeFull(tag.category??"").replaceAll(":", "%3A").replaceAll(",","%2C");
     if(StringTools.isNotNullOrWhitespace(categoryString)) {

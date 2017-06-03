@@ -9,9 +9,6 @@ import 'tag_category.dart';
 class Tag extends AIdData {
   String category;
 
-  @ApiProperty(ignore: true)
-  Tag redirect; // Only here so that the API will generate it as a field
-
   Tag();
 
   Tag.withValues(String name, {this.category}) : super.withValues(name);

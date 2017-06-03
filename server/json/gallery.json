@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "a814b2e17f5481baea2b8cd0cbbeac92b7c37b11",
+ "etag": "2b2f2d523acb5e4a0fd78ec42032d6ea7697484c",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -310,6 +310,28 @@
       "$ref": "Tag"
      }
     }
+   }
+  },
+  "RedirectingTag": {
+   "id": "RedirectingTag",
+   "type": "object",
+   "properties": {
+    "redirect": {
+     "$ref": "Tag"
+    },
+    "category": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "ListOfRedirectingTag": {
+   "id": "ListOfRedirectingTag",
+   "type": "array",
+   "items": {
+    "$ref": "RedirectingTag"
    }
   },
   "TagCategory": {
@@ -693,6 +715,16 @@
   },
   "tags": {
    "methods": {
+    "replace": {
+     "id": "GalleryApi.tags.replace",
+     "path": "tags/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "ReplaceTagsRequest"
+     }
+    },
     "search": {
      "id": "GalleryApi.tags.search",
      "path": "search/tags/{query}",
@@ -712,60 +744,64 @@
       "$ref": "ListOfTag"
      }
     },
-    "updateWithoutCategory": {
-     "id": "GalleryApi.tags.updateWithoutCategory",
-     "path": "tags/{tagId}/",
-     "httpMethod": "PUT",
-     "parameters": {
-      "tagId": {
-       "type": "string",
-       "description": "Path parameter: 'tagId'.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "tagId"
-     ],
-     "request": {
-      "$ref": "Tag"
-     }
-    },
-    "update": {
-     "id": "GalleryApi.tags.update",
-     "path": "tags/{tagId}/{tagCategory}/",
-     "httpMethod": "PUT",
-     "parameters": {
-      "tagId": {
-       "type": "string",
-       "description": "Path parameter: 'tagId'.",
-       "required": true,
-       "location": "path"
-      },
-      "tagCategory": {
-       "type": "string",
-       "description": "Path parameter: 'tagCategory'.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "tagId",
-      "tagCategory"
-     ],
-     "request": {
-      "$ref": "Tag"
-     }
-    },
-    "replace": {
-     "id": "GalleryApi.tags.replace",
-     "path": "tags/",
+    "setRedirect": {
+     "id": "GalleryApi.tags.setRedirect",
+     "path": "tag_redirects/",
      "httpMethod": "PUT",
      "parameters": {},
      "parameterOrder": [],
      "request": {
-      "$ref": "ReplaceTagsRequest"
+      "$ref": "RedirectingTag"
      }
+    },
+    "getRedirects": {
+     "id": "GalleryApi.tags.getRedirects",
+     "path": "tag_redirects/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfRedirectingTag"
+     }
+    },
+    "clearRedirect": {
+     "id": "GalleryApi.tags.clearRedirect",
+     "path": "tag_redirects/{id}/{category}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "category": {
+       "type": "string",
+       "description": "Path parameter: 'category'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id",
+      "category"
+     ]
+    },
+    "clearRedirectWithoutCategory": {
+     "id": "GalleryApi.tags.clearRedirectWithoutCategory",
+     "path": "tag_redirects/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
     }
    },
    "resources": {}

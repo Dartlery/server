@@ -43,6 +43,13 @@ class TagResource extends AResource {
     });
   }
 
+  @ApiMethod(method: HttpMethod.get, path: 'tag_redirects/')
+  Future<List<RedirectingTag>> getRedirects() async {
+    return catchExceptionsAwait(() async {
+      return await _tagModel.getRedirects();
+    });
+  }
+
   @ApiMethod(method: HttpMethod.delete, path: 'tag_redirects/{id}/{category}/')
   Future<Null> clearRedirect(String id, String category) async {
     return catchExceptionsAwait(() async {

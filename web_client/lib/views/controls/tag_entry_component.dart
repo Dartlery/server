@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:html';
-import 'package:angular2/router.dart';
+
 import 'package:angular2/angular2.dart';
+import 'package:angular2/router.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
@@ -21,11 +22,11 @@ import '../src/a_api_error_thing.dart';
     template: '''
     <div style="width: 100%;white-space: nowrap;">
     <material-chips style="float: left;">
-      <material-chip *ngFor="let t of selectedTags" (remove)="deselectTag(t)"><a [routerLink]="['ItemsSearch', {'query':t.toQueryString()}]" >{{t}}</a></material-chip>
+      <material-chip *ngFor="let t of selectedTagsInternal" (remove)="deselectTag(t)"><a [routerLink]="['ItemsSearch', {'query':t.toQueryString()}]" >{{t}}</a></material-chip>
     </material-chips>
+    <span *ngIf="inputVisible" >
     <material-input label="Tag(s)" [(ngModel)]="tagQuery" popupSource #tagListSource="popupSource" (keyup)="searchKeyup(\$event)">
     </material-input>
-    </div>
     <material-popup [source]="tagListSource" [(visible)]="tagListVisible" [offsetY]="26">
       <material-list>
         <material-list-item (trigger)="selectTag(t)"  *ngFor="let t of availableTags">
@@ -33,45 +34,78 @@ import '../src/a_api_error_thing.dart';
         </material-list-item>
       </material-list>
     </material-popup>
+
+    </span>
+    </div>
     ''')
-class TagEntryComponent extends AApiErrorThing {
+class TagEntryComponent extends AApiErrorThing implements OnDestroy {
   static final Logger _log = new Logger("TagEntryComponent");
 
   @Input()
   DetailedApiRequestError error;
 
-  String generateQueryString(Tag t) => TagWrapper.createQueryString(t);
+  @Input()
+  bool singleTag = false;
 
-  TagList selectedTags = new TagList();
+  @Input()
+  bool existingTags = false;
+
+  TagList selectedTagsInternal = new TagList();
 
   TagList availableTags = new TagList();
 
   String tagQuery = "";
 
+  @Input()
   bool tagListVisible = true;
 
   ApiService _api;
 
-  @Input()
-  set selected(List<Tag> tags) {
-    this.selectedTags.clear();
-    this.selectedTags.addTags(tags);
-  }
+  final StreamController<List<Tag>> _selectedTagsChangeController =
+      new StreamController<List<Tag>>();
 
-  List<Tag> get selected => selectedTags.toListOfTags();
-
-  @Output()
-  EventEmitter<List<Tag>> selectedChanged = new EventEmitter<List<Tag>>();
+  final StreamController<Tag> _selectedTagChangeController =
+      new StreamController<Tag>();
 
   TagEntryComponent(this._api, Router router, AuthenticationService auth)
       : super(router, auth);
 
+  bool get inputVisible {
+    if (singleTag && selectedTagsInternal.isNotEmpty) return false;
+    return true;
+  }
+
   @override
   Logger get loggerImpl => _log;
 
+  List<Tag> get selected => selectedTagsInternal.toListOfTags();
+
+  @Input()
+  set selectedTag(Tag tag) {
+    this.selectedTagsInternal.clear();
+    if (tag != null) this.selectedTagsInternal.addTags([tag]);
+  }
+
+  @Output()
+  Stream<Tag> get selectedTagChange => _selectedTagChangeController.stream;
+
+  List<Tag> get selectedTags => selectedTagsInternal.toListOfTags();
+
+  @Input()
+  set selectedTags(List<Tag> tags) {
+    if (singleTag) throw new Exception("Single tag mode, use selectedTag");
+    this.selectedTagsInternal.clear();
+    if(tags!=null)
+      this.selectedTagsInternal.addTags(tags);
+  }
+
+  @Output()
+  Stream<List<Tag>> get selectedTagsChange =>
+      _selectedTagsChangeController.stream;
+
   void deselectTag(TagWrapper t) {
-    if (this.selectedTags.contains(t)) {
-      this.selectedTags.remove(t);
+    if (this.selectedTagsInternal.contains(t)) {
+      this.selectedTagsInternal.remove(t);
       _sendUpdatedTagEvent();
     }
   }
@@ -79,8 +113,7 @@ class TagEntryComponent extends AApiErrorThing {
   Future<Null> fetchAvailableTags() async {
     await performApiCall(() async {
       availableTags.clear();
-      if(StringTools.isNullOrWhitespace(tagQuery))
-        return;
+      if (StringTools.isNullOrWhitespace(tagQuery)) return;
       final List<Tag> tags = await _api.tags.search(tagQuery);
       for (Tag t in tags) {
         availableTags.add(new TagWrapper(t));
@@ -89,16 +122,26 @@ class TagEntryComponent extends AApiErrorThing {
     });
   }
 
+  String generateQueryString(Tag t) => TagWrapper.createQueryString(t);
+
+  @override
+  void ngOnDestroy() {
+    _selectedTagsChangeController.close();
+    _selectedTagChangeController.close();
+  }
+
   void searchKeyup(KeyboardEvent e) {
-    switch(e.keyCode) {
+    switch (e.keyCode) {
       case KeyCode.ENTER:
-        final Tag tag = new Tag();
-        tag.id = tagQuery;
-        selectedTags.add(new TagWrapper(tag));
-        tagQuery = "";
-        _sendUpdatedTagEvent();
+        if (!existingTags) {
+          final Tag tag = new Tag();
+          tag.id = tagQuery;
+          selectTag(new TagWrapper(tag));
+          tagQuery = "";
+          _sendUpdatedTagEvent();
+        }
         break;
-        // TODO: Add up-down arrow handlers to allow for selecting suggested tags via keyboard.
+      // TODO: Add up-down arrow handlers to allow for selecting suggested tags via keyboard.
       default:
         fetchAvailableTags();
         break;
@@ -106,12 +149,22 @@ class TagEntryComponent extends AApiErrorThing {
   }
 
   void selectTag(TagWrapper t) {
-    if (!this.selectedTags.contains(t)) {
-      this.selectedTags.add(t);
+    if (!this.selectedTagsInternal.contains(t)) {
+      if (singleTag) selectedTagsInternal.clear();
+      this.selectedTagsInternal.add(t);
       _sendUpdatedTagEvent();
     }
     tagQuery = "";
   }
-  void _sendUpdatedTagEvent() => selectedChanged.emit(selectedTags.toListOfTags());
 
+  void _sendUpdatedTagEvent() {
+    _selectedTagsChangeController
+        .add(selectedTagsInternal?.toListOfTags() ?? []);
+    if (singleTag) {
+      if (selectedTagsInternal.isEmpty)
+        _selectedTagChangeController.add(null);
+      else
+        _selectedTagChangeController.add(selectedTagsInternal.first.tag);
+    }
+  }
 }

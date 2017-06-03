@@ -31,21 +31,31 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
   }
 
   static Tag staticCreateObject(Map data) {
-    final Tag output = new Tag();
+    dynamic output;
+    if (data[redirectField] != null) {
+      output = new RedirectingTag();
+      output.redirect = staticCreateObject(data[redirectField]);
+    } else {
+      output = new Tag();
+    }
+
     AMongoTwoIdDataSource.setIdForData(output, data);
     output.category = data[categoryField];
 
-    if (data[redirectField] != null) {
-      output.redirect = staticCreateObject(data[redirectField]);
-    }
     return output;
   }
 
   @override
-  Future<IdDataList<Tag>> getByRedirect(String id, String category) async {
-    return await getFromDb(where
+  Future<List<RedirectingTag>> getRedirects() async {
+    return new List<RedirectingTag>.from(await getFromDb(where
+        .exists("$redirectField.$idField")));
+  }
+
+  @override
+  Future<List<RedirectingTag>> getByRedirect(String id, String category) async {
+    return new List<RedirectingTag>.from(await getFromDb(where
         .eq("$redirectField.$idField", id)
-        .eq("$redirectField.$categoryField", category));
+        .eq("$redirectField.$categoryField", category)));
   }
 
   @override
@@ -102,7 +112,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
     if (!onlyKeys) {
       data[fullNameField] = tag.fullName;
 
-      if (tag.redirect != null) {
+      if(tag is RedirectingTag&&tag.redirect!=null) {
         final Map redirect = {};
         staticUpdateMap(tag.redirect, redirect, onlyKeys: true);
         data[redirectField] = redirect;

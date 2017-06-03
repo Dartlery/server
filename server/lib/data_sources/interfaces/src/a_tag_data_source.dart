@@ -8,7 +8,8 @@ abstract class ATagDataSource extends ATwoIdBasedDataSource<Tag> {
 
 
 
-  Future<IdDataList<Tag>> getByRedirect(String id, String category);
+  Future<List<RedirectingTag>> getRedirects();
+  Future<List<RedirectingTag>> getByRedirect(String id, String category);
   Future<Null> deleteByRedirect(String id, String category);
 
   @override

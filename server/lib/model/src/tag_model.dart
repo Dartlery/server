@@ -47,12 +47,18 @@ class TagModel extends ATypedModel<Tag> {
       } else {
         final TagList pastRedirects = new TagList();
         Tag redirect;
-        while (dbTag.first.redirect != null) {
-          redirect = dbTag.first.redirect;
+        while (dbTag.first is RedirectingTag) {
+          final RedirectingTag rTag = dbTag.first;
+          if(rTag.redirect==null)
+            continue;
+
+          redirect = rTag.redirect;
           if (pastRedirects.contains(redirect))
             throw new Exception("Tag redirect loop detected: $pastRedirects");
           pastRedirects.add(redirect);
           dbTag = await _tagDataSource.getById(redirect.id, redirect.category);
+          if(dbTag.isEmpty)
+            throw new Exception("Redirect target not found: $redirect");
         }
         if (redirect != null) {
           if (!output.contains(redirect)) output.add(redirect);
@@ -81,6 +87,12 @@ class TagModel extends ATypedModel<Tag> {
     await _itemDataSource.replaceTags(originalTags, newTags);
   }
 
+  Future<List<RedirectingTag>> getRedirects()  async {
+    await validateReadPrivilegeRequirement();
+
+    return await _tagDataSource.getRedirects();
+  }
+
   Future<List<Tag>> search(String query, {int limit: 10}) async {
     await validateReadPrivilegeRequirement();
 
@@ -91,63 +103,62 @@ class TagModel extends ATypedModel<Tag> {
   Future<Null> clearRedirect(String id, [String category]) async {
     await validateUpdatePrivilegeRequirement();
 
-    final Option<Tag> tag = await _tagDataSource.getById(id, category);
-    if(tag.isEmpty)
+    final Option<Tag> tagOpt = await _tagDataSource.getById(id, category);
+    if(tagOpt.isEmpty)
       throw new NotFoundException("Specified tag not found: ${Tag.formatTag(id, category)}");
 
-    tag.first.redirect = null;
+    final Tag tag = tagOpt.first;
 
-    await _tagDataSource.update(id, category, tag.first);
+    if(tag is RedirectingTag) {
+      tag.redirect = null;
+    }
+
+    await _tagDataSource.update(id, category, tag);
   }
 
   Future<Null> setRedirect(RedirectingTag redirect) async {
     await validateUpdatePrivilegeRequirement();
 
-    final Tag start = redirect.start;
-    Tag end = redirect.end;
-
-    await validate(start);
-    await validate(end);
+    await validate(redirect);
+    await validate(redirect.redirect);
 
     await DataValidationException.performValidation((Map<String,String> fieldErrors) async {
-      if(start==end) {
-        fieldErrors["end"] = "Cannot be the same as start";
+      if(redirect==redirect.redirect) {
+        fieldErrors["redirect"] = "Cannot be the same as start";
       }
     });
 
-    Option<Tag> dbStart =
-        await _tagDataSource.getById(start.id, start.category);
-    if (dbStart.isEmpty) {
-      await _tagDataSource.create(start);
-      dbStart = await _tagDataSource.getById(start.id, start.category);
-    }
-    dbStart.first.redirect = new Tag.withValues(end.id, category: end.category);
+    Tag end = redirect.redirect;
 
     Option<Tag> dbEnd = await _tagDataSource.getById(end.id, end.category);
     if (dbEnd.isEmpty) {
       await _tagDataSource.create(end);
       dbEnd = await _tagDataSource.getById(end.id, end.category);
-    } else {
+    } else if(dbEnd.first is RedirectingTag) {
       final TagList pastRedirects = new TagList();
-      pastRedirects.add(start);
-      Tag redirect;
-      while (dbEnd.first.redirect != null) {
-        redirect = dbEnd.first.redirect;
-        if (pastRedirects.contains(redirect))
+      pastRedirects.add(redirect);
+      RedirectingTag dbRedirect = dbEnd.first;
+      while (dbRedirect.redirect != null) {
+        end = dbRedirect.redirect;
+        if (pastRedirects.contains(end))
           throw new InvalidInputException(
               "Specified redirect would cause a redirect loop: ");
-        pastRedirects.add(redirect);
-        dbEnd = await _tagDataSource.getById(redirect.id, redirect.category);
+        pastRedirects.add(end);
+        dbEnd = await _tagDataSource.getById(end.id, end.category);
         if(dbEnd.isEmpty)
-          throw new Exception("Tag in redirect chain not found: $redirect");
-      }
-      if(redirect!=null) {
-        end = dbEnd.first;
+          throw new Exception("Tag in redirect chain not found: $end");
+        if(!(dbEnd.first is RedirectingTag))
+          break;
+        dbRedirect = dbEnd.first;
       }
     }
 
-    await _tagDataSource.update(start.id, start.category, dbStart.first);
-    await _itemDataSource.replaceTags([start], [end]);
+    if(!await _tagDataSource.existsById(redirect.id, redirect.category)) {
+      await _tagDataSource.create(redirect);
+    } else {
+      await _tagDataSource.update(redirect.id, redirect.category, redirect);
+    }
+    await _itemDataSource.replaceTags([redirect], [end]);
   }
 
 //  Future<Null> update(Tag originalTag, Tag newTag) async {

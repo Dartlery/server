@@ -280,6 +280,19 @@ checkItemSearchRequest(api.ItemSearchRequest o) {
   buildCounterItemSearchRequest--;
 }
 
+buildListOfRedirectingTag() {
+  var o = new api.ListOfRedirectingTag();
+  o.add(buildRedirectingTag());
+  o.add(buildRedirectingTag());
+  return o;
+}
+
+checkListOfRedirectingTag(api.ListOfRedirectingTag o) {
+  unittest.expect(o, unittest.hasLength(2));
+  checkRedirectingTag(o[0]);
+  checkRedirectingTag(o[1]);
+}
+
 buildListOfString() {
   var o = new api.ListOfString();
   o.add("foo");
@@ -468,6 +481,29 @@ checkPasswordChangeRequest(api.PasswordChangeRequest o) {
     unittest.expect(o.newPassword, unittest.equals('foo'));
   }
   buildCounterPasswordChangeRequest--;
+}
+
+core.int buildCounterRedirectingTag = 0;
+buildRedirectingTag() {
+  var o = new api.RedirectingTag();
+  buildCounterRedirectingTag++;
+  if (buildCounterRedirectingTag < 3) {
+    o.category = "foo";
+    o.id = "foo";
+    o.redirect = buildTag();
+  }
+  buildCounterRedirectingTag--;
+  return o;
+}
+
+checkRedirectingTag(api.RedirectingTag o) {
+  buildCounterRedirectingTag++;
+  if (buildCounterRedirectingTag < 3) {
+    unittest.expect(o.category, unittest.equals('foo'));
+    unittest.expect(o.id, unittest.equals('foo'));
+    checkTag(o.redirect);
+  }
+  buildCounterRedirectingTag--;
 }
 
 buildUnnamed9() {
@@ -680,6 +716,15 @@ main() {
   });
 
 
+  unittest.group("obj-schema-ListOfRedirectingTag", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildListOfRedirectingTag();
+      var od = new api.ListOfRedirectingTag.fromJson(o.toJson());
+      checkListOfRedirectingTag(od);
+    });
+  });
+
+
   unittest.group("obj-schema-ListOfString", () {
     unittest.test("to-json--from-json", () {
       var o = buildListOfString();
@@ -730,6 +775,15 @@ main() {
       var o = buildPasswordChangeRequest();
       var od = new api.PasswordChangeRequest.fromJson(o.toJson());
       checkPasswordChangeRequest(od);
+    });
+  });
+
+
+  unittest.group("obj-schema-RedirectingTag", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildRedirectingTag();
+      var od = new api.RedirectingTag.fromJson(o.toJson());
+      checkRedirectingTag(od);
     });
   });
 
@@ -1929,6 +1983,161 @@ main() {
 
 
   unittest.group("resource-TagsResourceApi", () {
+    unittest.test("method--clearRedirect", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_id = "foo";
+      var arg_category = "foo";
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 14), unittest.equals("tag_redirects/"));
+        pathOffset += 14;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_id"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_category"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = "";
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.clearRedirect(arg_id, arg_category).then(unittest.expectAsync((_) {}));
+    });
+
+    unittest.test("method--clearRedirectWithoutCategory", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_id = "foo";
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 14), unittest.equals("tag_redirects/"));
+        pathOffset += 14;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_id"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = "";
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.clearRedirectWithoutCategory(arg_id).then(unittest.expectAsync((_) {}));
+    });
+
+    unittest.test("method--getRedirects", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 14), unittest.equals("tag_redirects/"));
+        pathOffset += 14;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = convert.JSON.encode(buildListOfRedirectingTag());
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.getRedirects().then(unittest.expectAsync(((api.ListOfRedirectingTag response) {
+        checkListOfRedirectingTag(response);
+      })));
+    });
+
     unittest.test("method--replace", () {
 
       var mock = new HttpServerMock();
@@ -2025,16 +2234,14 @@ main() {
       })));
     });
 
-    unittest.test("method--update", () {
+    unittest.test("method--setRedirect", () {
 
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
-      var arg_request = buildTag();
-      var arg_tagId = "foo";
-      var arg_tagCategory = "foo";
+      var arg_request = buildRedirectingTag();
       mock.register(unittest.expectAsync((http.BaseRequest req, json) {
-        var obj = new api.Tag.fromJson(json);
-        checkTag(obj);
+        var obj = new api.RedirectingTag.fromJson(json);
+        checkRedirectingTag(obj);
 
         var path = (req.url).path;
         var pathOffset = 0;
@@ -2044,22 +2251,8 @@ main() {
         pathOffset += 1;
         unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
         pathOffset += 17;
-        unittest.expect(path.substring(pathOffset, pathOffset + 5), unittest.equals("tags/"));
-        pathOffset += 5;
-        index = path.indexOf("/", pathOffset);
-        unittest.expect(index >= 0, unittest.isTrue);
-        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
-        pathOffset = index;
-        unittest.expect(subPart, unittest.equals("$arg_tagId"));
-        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
-        pathOffset += 1;
-        index = path.indexOf("/", pathOffset);
-        unittest.expect(index >= 0, unittest.isTrue);
-        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
-        pathOffset = index;
-        unittest.expect(subPart, unittest.equals("$arg_tagCategory"));
-        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
-        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 14), unittest.equals("tag_redirects/"));
+        pathOffset += 14;
 
         var query = (req.url).query;
         var queryOffset = 0;
@@ -2085,62 +2278,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.update(arg_request, arg_tagId, arg_tagCategory).then(unittest.expectAsync((_) {}));
-    });
-
-    unittest.test("method--updateWithoutCategory", () {
-
-      var mock = new HttpServerMock();
-      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
-      var arg_request = buildTag();
-      var arg_tagId = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
-        var obj = new api.Tag.fromJson(json);
-        checkTag(obj);
-
-        var path = (req.url).path;
-        var pathOffset = 0;
-        var index;
-        var subPart;
-        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
-        pathOffset += 1;
-        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
-        pathOffset += 17;
-        unittest.expect(path.substring(pathOffset, pathOffset + 5), unittest.equals("tags/"));
-        pathOffset += 5;
-        index = path.indexOf("/", pathOffset);
-        unittest.expect(index >= 0, unittest.isTrue);
-        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
-        pathOffset = index;
-        unittest.expect(subPart, unittest.equals("$arg_tagId"));
-        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
-        pathOffset += 1;
-
-        var query = (req.url).query;
-        var queryOffset = 0;
-        var queryMap = {};
-        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
-        parseBool(n) {
-          if (n == "true") return true;
-          if (n == "false") return false;
-          if (n == null) return null;
-          throw new core.ArgumentError("Invalid boolean: $n");
-        }
-        if (query.length > 0) {
-          for (var part in query.split("&")) {
-            var keyvalue = part.split("=");
-            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
-          }
-        }
-
-
-        var h = {
-          "content-type" : "application/json; charset=utf-8",
-        };
-        var resp = "";
-        return new async.Future.value(stringResponse(200, h, resp));
-      }), true);
-      res.updateWithoutCategory(arg_request, arg_tagId).then(unittest.expectAsync((_) {}));
+      res.setRedirect(arg_request).then(unittest.expectAsync((_) {}));
     });
 
   });

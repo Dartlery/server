@@ -9,12 +9,13 @@ import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
-
+import 'tabs/redirects_tab.dart';
+import 'tabs/replace_tab.dart';
 import '../src/a_page.dart';
 
 @Component(
     selector: 'tags-page',
-    directives: const [materialDirectives, commonControls, FORM_DIRECTIVES],
+    directives: const [materialDirectives, commonControls, FORM_DIRECTIVES, RedirectsTab, ReplaceTab],
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css", "tags_page.css"],
     templateUrl: 'tags_page.html')
@@ -105,10 +106,10 @@ class TagsPage extends APage implements OnDestroy {
       else
         model.category = "";
 
-      if(StringTools.isNullOrWhitespace(selectedTag.category))
-        await _api.tags.updateWithoutCategory(model, selectedTag.id);
-      else
-        await _api.tags.update(model, selectedTag.id, selectedTag.category);
+//      if(StringTools.isNullOrWhitespace(selectedTag.category))
+//        await _api.tags.updateWithoutCategory(model, selectedTag.id);
+//      else
+//        await _api.tags.update(model, selectedTag.id, selectedTag.category);
       await this.refresh();
     }, form: form);
   }
