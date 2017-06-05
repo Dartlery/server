@@ -51,6 +51,25 @@ http.StreamedResponse stringResponse(
   return new http.StreamedResponse(stream, status, headers: headers);
 }
 
+core.int buildCounterCountResponse = 0;
+buildCountResponse() {
+  var o = new api.CountResponse();
+  buildCounterCountResponse++;
+  if (buildCounterCountResponse < 3) {
+    o.count = 42;
+  }
+  buildCounterCountResponse--;
+  return o;
+}
+
+checkCountResponse(api.CountResponse o) {
+  buildCounterCountResponse++;
+  if (buildCounterCountResponse < 3) {
+    unittest.expect(o.count, unittest.equals(42));
+  }
+  buildCounterCountResponse--;
+}
+
 core.int buildCounterCreateItemRequest = 0;
 buildCreateItemRequest() {
   var o = new api.CreateItemRequest();
@@ -662,6 +681,15 @@ checkUser(api.User o) {
 
 
 main() {
+  unittest.group("obj-schema-CountResponse", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildCountResponse();
+      var od = new api.CountResponse.fromJson(o.toJson());
+      checkCountResponse(od);
+    });
+  });
+
+
   unittest.group("obj-schema-CreateItemRequest", () {
     unittest.test("to-json--from-json", () {
       var o = buildCreateItemRequest();
@@ -2179,10 +2207,12 @@ main() {
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = "";
+        var resp = convert.JSON.encode(buildCountResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.replace(arg_request).then(unittest.expectAsync((_) {}));
+      res.replace(arg_request).then(unittest.expectAsync(((api.CountResponse response) {
+        checkCountResponse(response);
+      })));
     });
 
     unittest.test("method--search", () {

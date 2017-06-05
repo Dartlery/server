@@ -28,6 +28,9 @@ const int httpStatusServerNeedsSetup = 555;
 
 const int paginatedDataLimit = 60;
 
+const String categoryDeliminator = ";";
+const String tagDeliminator = ",";
+
 const String numericFieldTypeId = "numeric";
 const String stringFieldTypeId = "string";
 const String dateFieldTypeId = "date";

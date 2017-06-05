@@ -22,6 +22,8 @@ export 'package:api_client/gallery/v0_1.dart'
         PaginatedExtensionDataResponse,
         ExtensionData,
         RedirectingTag,
+        ReplaceTagsRequest,
+        CountResponse,
         ItemSearchRequest;
 
 export 'src/api_http_client.dart';

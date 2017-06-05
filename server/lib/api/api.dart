@@ -10,6 +10,7 @@ export 'gallery/src/requests/setup_request.dart';
 export 'gallery/src/responses/setup_response.dart';
 export 'gallery/src/requests/create_item_request.dart';
 export 'gallery/src/requests/update_item_request.dart';
+export 'src/responses/count_response.dart';
 
 const String setupApiPath = "setup";
 const String searchApiPath = "search";

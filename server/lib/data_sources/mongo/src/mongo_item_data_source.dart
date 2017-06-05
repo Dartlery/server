@@ -125,7 +125,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<Null> replaceTags(List<Tag> originalTags, List<Tag> newTags) async {
+  Future<int> replaceTags(List<Tag> originalTags, List<Tag> newTags) async {
     if(originalTags==null||originalTags.length==0)
       throw new ArgumentError.notNull("originalTags");
 
@@ -153,6 +153,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
         tagsToAdd.add(nt);
     }
 
+    final int count = await genericCount(_createTagCriteria(originalTags));
+
 
     if(tagsToAdd.length>0) {
       for(Tag t in tagsToAdd) {
@@ -173,6 +175,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
           .pullAll(tagsField, removeTagMapList);
       await genericUpdate(tagSelector, modifier, multiUpdate: true);
     }
+
+    return count;
   }
 
   @override

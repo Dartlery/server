@@ -33,9 +33,9 @@ abstract class AMongoDataSource {
           await statement(await getCollection(con)));
 
   @protected
-  Future<Null> deleteFromDb(dynamic selector) async {
-    await collectionWrapper((DbCollection collection) async {
-      await collection.remove(selector);
+  Future<Map> deleteFromDb(dynamic selector) async {
+    return await collectionWrapper<Map>((DbCollection collection) async {
+      return await collection.remove(selector);
     });
   }
 
@@ -43,17 +43,17 @@ abstract class AMongoDataSource {
   Future<DbCollection> getCollection(MongoDatabase con);
 
   @protected
-  Future<dynamic> genericUpdate(dynamic selector, dynamic document,
+  Future<Map> genericUpdate(dynamic selector, dynamic document,
       {bool multiUpdate: false}) async {
-    return await collectionWrapper((DbCollection collection) async {
+    return await collectionWrapper<Map>((DbCollection collection) async {
       return await collection.update(selector, document,
           multiUpdate: multiUpdate);
     });
   }
 
   @protected
-  Future<dynamic> aggregate(List<dynamic> pipeline) async {
-    return await collectionWrapper((DbCollection collection) async {
+  Future<Map> aggregate(List<dynamic> pipeline) async {
+    return await collectionWrapper<Map>((DbCollection collection) async {
       return await collection.aggregate(pipeline);
     });
   }
@@ -67,16 +67,16 @@ abstract class AMongoDataSource {
   }
 
   @protected
-  Future<Option<dynamic>> genericFindOne(SelectorBuilder selector) async {
-    final List<dynamic> output = await _genericFind(selector.limit(1));
-    if (output.length == 0) return new None<dynamic>();
-    return new Some<dynamic>(output[0]);
+  Future<Option<Map>> genericFindOne(SelectorBuilder selector) async {
+    final List<Map> output = await _genericFind(selector.limit(1));
+    if (output.length == 0) return new None<Map>();
+    return new Some<Map>(output[0]);
   }
 
   Future<List<Map>> _genericFind(SelectorBuilder selector) async {
     return await collectionWrapper((DbCollection collection) async {
-      final Stream<dynamic> str = collection.find(selector);
-      final List<dynamic> output = await str.toList();
+      final Stream<Map> str = collection.find(selector);
+      final List<Map> output = await str.toList();
       return output;
     });
   }

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "2b2f2d523acb5e4a0fd78ec42032d6ea7697484c",
+ "etag": "8f9499914aa942b831449b08120da606faae9869",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -309,6 +309,16 @@
      "items": {
       "$ref": "Tag"
      }
+    }
+   }
+  },
+  "CountResponse": {
+   "id": "CountResponse",
+   "type": "object",
+   "properties": {
+    "count": {
+     "type": "integer",
+     "format": "int32"
     }
    }
   },
@@ -723,6 +733,9 @@
      "parameterOrder": [],
      "request": {
       "$ref": "ReplaceTagsRequest"
+     },
+     "response": {
+      "$ref": "CountResponse"
      }
     },
     "search": {

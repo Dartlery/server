@@ -58,7 +58,8 @@ void main() {
       replaceRequest.originalTags = [initialTag, initialCategoryTag];
       replaceRequest.newTags = [newTag];
 
-      await api.tags.replace(replaceRequest);
+      final CountResponse response =  await api.tags.replace(replaceRequest);
+      expect(response.count, 1);
 
       final Item i = await api.items.getById(initalItemId.id);
 
@@ -78,6 +79,18 @@ void main() {
       expect(i.tags.length, 2);
       expect(i.tags[0]==initialCategoryTag, isTrue);
       expect(i.tags[1]==randomTag, isTrue);
+    });
+
+    test("delete()", () async {
+      final CountResponse response = await api.tags.deleteWithoutCategory(randomTag.id);
+
+      expect(response.count, 1);
+
+      final Item i = await api.items.getById(initalItemId.id);
+
+      expect(i.tags.length, 2);
+      expect(i.tags[0]==initialTag, isTrue);
+      expect(i.tags[1]==initialCategoryTag, isTrue);
     });
 
     test("clearRedirect()", () async {

@@ -48,8 +48,5 @@ class TagList extends Iterable<Tag> {
   bool contains(Tag t) => indexOf(t) != -1;
 
 
-  static const String categorySeparator = ":";
-  static const String tagSeparator = ",";
-
-
+  //static const String tagSeparator = ",";
 }

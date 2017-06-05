@@ -105,7 +105,7 @@ abstract class AModel {
       validateUserPrivilege(defaultDeletePrivilegeRequirement);
 
   @protected
-  Future<Null> validateDeletePrivileges(String id) async {
+  Future<Null> validateDeletePrivileges([String id]) async {
     if (!userAuthenticated) {
       throw new UnauthorizedException();
     }

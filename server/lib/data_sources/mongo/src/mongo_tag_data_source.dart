@@ -13,6 +13,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
     with ATagDataSource {
   static final Logger _log = new Logger('MongoTagDataSource');
 
+  //db.getCollection('items').aggregate([{ $unwind: "$tags"}, {$group: {_id: "$tags","count": { $sum: 1}}}])
+
   @override
   Logger get childLogger => _log;
 

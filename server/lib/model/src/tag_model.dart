@@ -73,7 +73,8 @@ class TagModel extends ATypedModel<Tag> {
 
   /// Replaces the $originalTags with the $newTags. This does not actually delete any tags.
   /// Images with the original tags will be updated to have the new tags.
-  Future<Null> replace(List<Tag> originalTags, List<Tag> newTags) async {
+  /// Returns the count of items that had their tags updated.
+  Future<int> replace(List<Tag> originalTags, List<Tag> newTags) async {
     await validateUpdatePrivilegeRequirement();
 
     for (Tag t in originalTags) {
@@ -84,7 +85,22 @@ class TagModel extends ATypedModel<Tag> {
     }
     newTags = await handleTags(newTags);
 
-    await _itemDataSource.replaceTags(originalTags, newTags);
+    final int output = await _itemDataSource.replaceTags(originalTags, newTags);
+
+    return output;
+  }
+
+  Future<int> delete(Tag t) async {
+    await validateDeletePrivileges();
+
+    await validate(t);
+
+    final int output = await _itemDataSource.replaceTags([t], []);
+
+    if(await _tagDataSource.existsById(t.id, t.category))
+      await _tagDataSource.deleteById(t.id, t.category);
+
+    return output;
   }
 
   Future<List<RedirectingTag>> getRedirects()  async {

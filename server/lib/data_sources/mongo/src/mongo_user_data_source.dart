@@ -43,7 +43,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   @override
   Future<Option<String>> getPasswordHash(String username) async {
     final SelectorBuilder selector = where.eq(idField, username);
-    final Option<String> data = await genericFindOne(selector);
+    final Option<Map> data = await genericFindOne(selector);
     return data.map((Map user) {
       if (user.containsKey(passwordField)) return user[passwordField];
     });

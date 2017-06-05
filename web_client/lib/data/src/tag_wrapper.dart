@@ -1,5 +1,6 @@
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery_shared/tools.dart';
+import 'package:dartlery_shared/global.dart';
 
 class TagWrapper {
   final Tag tag;
@@ -13,14 +14,14 @@ class TagWrapper {
 
   static String formatTag(Tag tag) {
     if(StringTools.isNotNullOrWhitespace(tag.category)) {
-      return "${tag.category}: ${tag.id}";
+      return "${tag.category}$categoryDeliminator ${tag.id}";
     } else {
       return tag.id;
     }
   }
   static String formatRedirectingTag(RedirectingTag tag) {
     if(StringTools.isNotNullOrWhitespace(tag.category)) {
-      return "${tag.category}: ${tag.id}";
+      return "${tag.category}$categoryDeliminator ${tag.id}";
     } else {
       return tag.id;
     }
@@ -33,7 +34,7 @@ class TagWrapper {
     final String tagString = Uri.encodeFull(tag.id).replaceAll(":", "%3A").replaceAll(",","%2C");
     final String categoryString = Uri.encodeFull(tag.category??"").replaceAll(":", "%3A").replaceAll(",","%2C");
     if(StringTools.isNotNullOrWhitespace(categoryString)) {
-      return "${categoryString}:${tagString}";
+      return "$categoryString$categoryDeliminator$tagString";
     } else {
       return tagString;
     }

@@ -1,4 +1,5 @@
 import 'package:dartlery_shared/tools.dart';
+import 'dart:html' as html;
 import 'dart:async';
 import 'package:angular2/angular2.dart';
 import 'package:angular_components/angular_components.dart';
@@ -18,96 +19,46 @@ import '../../../src/a_api_error_thing.dart';
     template: '''
     <table>
     <tr>
-    <td><tag-entry [singleTag]="true" [existingTags]="true" [(selectedTag)]="startTag"></tag-entry></td>
-    <td><tag-entry [singleTag]="true" [existingTags]="true" [(selectedTag)]="endTag"></tag-entry></td>
-    <td><material-button (trigger)="createRedirect()">Set</material-button></td>
+    <td><tag-entry [singleTag]="false" [existingTags]="true" [(selectedTags)]="originalTags"></tag-entry></td>
+    <td><tag-entry [singleTag]="false" [existingTags]="false" [(selectedTags)]="newTags"></tag-entry></td>
+    <td><material-button (trigger)="performReplacement()">Replace</material-button></td>
     </tr></table>
-    
-    
-    <div *ngIf="noItemsFound&&!processing" class="no-items">No Redirects Found</div>
-    <table>
-    <tr *ngFor="let t of redirects">
-    <td>{{formatRedirectingTag(t)}}</td>
-    <td><glyph icon="arrow_forward"></glyph></td>
-    <td>{{formatTag(t.redirect)}}</td>
-    <td><material-button icon><glyph icon="clear"></glyph></material-button></td>
-    </tr>
-    </table>
     ''')
 class ReplaceTab extends AApiErrorThing implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ReplaceTab");
 
-  bool get noItemsFound => redirects.isEmpty;
+  List<Tag> originalTags = <Tag>[];
+  List<Tag> newTags = <Tag>[];
 
-  Tag startTag;
-  Tag endTag;
-
-  Future<Null> createRedirect() async {
-    if(startTag==null||endTag==null)
+  Future<Null> performReplacement() async {
+    if(originalTags.isEmpty)
       return;
     await performApiCall(() async {
-
-      final RedirectingTag request = new RedirectingTag();
-      request.id = startTag.id;
-      request.category = startTag.category;
-
-      request.redirect = endTag;
-
-      await _api.tags.setRedirect(request);
-      startTag = null;
-      endTag = null;
-      await refresh();
+      final ReplaceTagsRequest request = new ReplaceTagsRequest();
+      request.originalTags = originalTags;
+      request.newTags = newTags;
+      final CountResponse response = await _api.tags.replace(request);
+      html.window.alert("${response.count} items updated");
     });
   }
 
   final ApiService _api;
 
-  ReplaceTab(this._api, this._pageControl, Router router,
+  ReplaceTab(this._api, Router router,
       AuthenticationService authenticationService)
       : super(router, authenticationService);
   @override
   Logger get loggerImpl => _log;
 
-  final PageControlService _pageControl;
-
   String formatTag(Tag t) => TagWrapper.formatTag(t);
   String formatRedirectingTag(RedirectingTag t) => TagWrapper.formatRedirectingTag(t);
 
-  StreamSubscription<PageAction> _pageActionSubscription;
-
-  final List<RedirectingTag> redirects = new List<RedirectingTag>();
-
-  Future<Null> refresh() async {
-    await performApiCall(() async {
-      redirects.clear();
-      redirects.addAll(await _api.tags.getRedirects());
-    });
-  }
-
   @override
   void ngOnInit() {
-    refresh();
-    _pageActionSubscription =
-        _pageControl.pageActionRequested.listen(onPageActionRequested);
   }
 
-  void onPageActionRequested(PageAction action) {
-    try {
-      switch (action) {
-        case PageAction.refresh:
-          this.refresh();
-          break;
-        default:
-          throw new Exception(
-              action.toString() + " not implemented for this page");
-      }
-    } catch (e, st) {
-      handleException(e, st);
-    }
-  }
 
   @override
   void ngOnDestroy() {
-    _pageActionSubscription.cancel();
   }
 }

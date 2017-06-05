@@ -1,4 +1,4 @@
-const String textCommand = "\$text";
+const String $text = "\$text";
 const String unwindCommand = "\$unwind";
 const String matchCommand = "\$match";
 const String projectCommand = "\$project";

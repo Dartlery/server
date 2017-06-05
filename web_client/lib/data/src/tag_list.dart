@@ -2,6 +2,7 @@ import 'package:dartlery/data/data.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery/api/api.dart';
 import 'dart:html';
+import 'package:dartlery_shared/global.dart';
 
 class TagList extends Iterable<TagWrapper> {
   final List<TagWrapper> _list = <TagWrapper>[];
@@ -26,11 +27,11 @@ class TagList extends Iterable<TagWrapper> {
   }
 
   TagList.fromQueryString(String query) {
-    final Iterable<Tag> tags =  query.split(tagSeparator).map((String tagString) {
+    final Iterable<Tag> tags =  query.split(tagDeliminator).map((String tagString) {
       final Tag tag = new Tag();
 
-      if(tagString.contains(categorySeparator)) {
-        final List<String> split = tagString.split(categorySeparator);
+      if(tagString.contains(categoryDeliminator)) {
+        final List<String> split = tagString.split(categoryDeliminator);
         tag.category = Uri.decodeFull(split[0]);
         tag.id = Uri.decodeFull(split[1]);
       } else {
@@ -70,13 +71,10 @@ class TagList extends Iterable<TagWrapper> {
     return -1;
   }
 
-  static const String categorySeparator = ":";
-  static const String tagSeparator = ",";
-
   static String convertToQueryString(List<Tag> tags) {
     return tags.map((Tag t) {
       return TagWrapper.createQueryString(t);
-    }).join(tagSeparator);
+    }).join(tagDeliminator);
   }
 
   String toQueryString() => convertToQueryString(this.toListOfTags());

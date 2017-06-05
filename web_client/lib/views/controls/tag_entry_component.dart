@@ -133,9 +133,18 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
   void searchKeyup(KeyboardEvent e) {
     switch (e.keyCode) {
       case KeyCode.ENTER:
-        if (!existingTags) {
+        if (!existingTags&&StringTools.isNotNullOrWhitespace(tagQuery)) {
           final Tag tag = new Tag();
-          tag.id = tagQuery;
+          if(tagQuery.contains(";")) {
+            tag.id = tagQuery.substring(tagQuery.indexOf(";")+1).trim();
+            if(StringTools.isNullOrWhitespace(tag.id))
+              return;
+            tag.category = tagQuery.substring(0, tagQuery.indexOf(";")).trim();
+            if(StringTools.isNullOrWhitespace(tag.category))
+              return;
+          } else {
+            tag.id = tagQuery.trim();
+          }
           selectTag(new TagWrapper(tag));
           tagQuery = "";
           _sendUpdatedTagEvent();

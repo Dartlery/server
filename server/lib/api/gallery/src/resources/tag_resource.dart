@@ -9,6 +9,7 @@ import 'package:rpc/rpc.dart';
 
 import '../requests/replace_tags_requst.dart';
 
+
 class TagResource extends AResource {
   static final Logger _log = new Logger('TagResource');
 
@@ -23,9 +24,9 @@ class TagResource extends AResource {
 
 
   @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/')
-  Future<Null> replace(ReplaceTagsRequest request) async {
+  Future<CountResponse> replace(ReplaceTagsRequest request) async {
     return catchExceptionsAwait(() async {
-      await _tagModel.replace(request.originalTags, request.newTags);
+      return new CountResponse(await _tagModel.replace(request.originalTags, request.newTags));
     });
   }
 
@@ -61,6 +62,20 @@ class TagResource extends AResource {
   Future<Null> clearRedirectWithoutCategory(String id) async {
     return catchExceptionsAwait(() async {
       await _tagModel.clearRedirect(id);
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.delete, path: 'tag/{id}/{category}/')
+  Future<CountResponse> delete(String id, String category) async {
+    return catchExceptionsAwait(() async {
+      return new CountResponse(await _tagModel.delete(new Tag.withValues(id, category: category)));
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.delete, path: 'tag/{id}/')
+  Future<CountResponse> deleteWithoutCategory(String id) async {
+    return catchExceptionsAwait(() async {
+      return new CountResponse(await _tagModel.delete(new Tag.withValues(id)));
     });
   }
 

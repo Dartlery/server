@@ -4,6 +4,7 @@ import 'package:rpc/rpc.dart';
 
 import 'a_id_data.dart';
 import 'tag_category.dart';
+import 'package:dartlery_shared/global.dart';
 
 @ApiMessage(includeSuper: true)
 class Tag extends AIdData {
@@ -17,7 +18,7 @@ class Tag extends AIdData {
 
   static String formatTag(String id, [String category]) {
     if (StringTools.isNotNullOrWhitespace(category)) {
-      return "$category: $id";
+      return "$category$categoryDeliminator $id";
     } else {
       return id;
     }

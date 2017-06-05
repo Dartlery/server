@@ -1043,13 +1043,15 @@ class TagsResourceApi {
    *
    * Request parameters:
    *
+   * Completes with a [CountResponse].
+   *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
    *
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future replace(ReplaceTagsRequest request) {
+  async.Future<CountResponse> replace(ReplaceTagsRequest request) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1061,8 +1063,6 @@ class TagsResourceApi {
       _body = convert.JSON.encode((request).toJson());
     }
 
-    _downloadOptions = null;
-
     _url = 'tags/';
 
     var _response = _requester.request(_url,
@@ -1072,7 +1072,7 @@ class TagsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => null);
+    return _response.then((data) => new CountResponse.fromJson(data));
   }
 
   /**
@@ -1388,6 +1388,26 @@ class UsersResourceApi {
 }
 
 
+
+class CountResponse {
+  core.int count;
+
+  CountResponse();
+
+  CountResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("count")) {
+      count = _json["count"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (count != null) {
+      _json["count"] = count;
+    }
+    return _json;
+  }
+}
 
 class CreateItemRequest {
   MediaMessage file;

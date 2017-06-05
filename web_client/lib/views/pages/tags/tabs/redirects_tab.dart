@@ -1,14 +1,16 @@
-import 'package:dartlery_shared/tools.dart';
 import 'dart:async';
+
 import 'package:angular2/angular2.dart';
-import 'package:angular_components/angular_components.dart';
-import 'package:dartlery/services/services.dart';
-import 'package:dartlery/data/data.dart';
-import 'package:logging/logging.dart';
-import 'package:dartlery_shared/global.dart';
-import 'package:dartlery/views/controls/common_controls.dart';
-import 'package:dartlery/api/api.dart';
 import 'package:angular2/router.dart';
+import 'package:angular_components/angular_components.dart';
+import 'package:dartlery/api/api.dart';
+import 'package:dartlery/data/data.dart';
+import 'package:dartlery/services/services.dart';
+import 'package:dartlery/views/controls/common_controls.dart';
+import 'package:dartlery_shared/global.dart';
+import 'package:dartlery_shared/tools.dart';
+import 'package:logging/logging.dart';
+
 import '../../../src/a_api_error_thing.dart';
 
 @Component(
@@ -30,23 +32,44 @@ import '../../../src/a_api_error_thing.dart';
     <td>{{formatRedirectingTag(t)}}</td>
     <td><glyph icon="arrow_forward"></glyph></td>
     <td>{{formatTag(t.redirect)}}</td>
-    <td><material-button icon><glyph icon="clear"></glyph></material-button></td>
+    <td><material-button icon (trigger)="clearRedirect(t)"><glyph icon="clear"></glyph></material-button></td>
     </tr>
     </table>
     ''')
 class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
   static final Logger _log = new Logger("RedirectsTab");
 
+  Tag startTag;
+
+  Tag endTag;
+  final ApiService _api;
+  final PageControlService _pageControl;
+
+  StreamSubscription<PageAction> _pageActionSubscription;
+
+  final List<RedirectingTag> redirects = new List<RedirectingTag>();
+
+  RedirectsTab(this._api, this._pageControl, Router router,
+      AuthenticationService authenticationService)
+      : super(router, authenticationService);
+  @override
+  Logger get loggerImpl => _log;
+
   bool get noItemsFound => redirects.isEmpty;
 
-  Tag startTag;
-  Tag endTag;
-
-  Future<Null> createRedirect() async {
-    if(startTag==null||endTag==null)
-      return;
+  Future<Null> clearRedirect(RedirectingTag t) async {
     await performApiCall(() async {
-
+      if (t.category == null) {
+        await _api.tags.clearRedirectWithoutCategory(t.id);
+      } else {
+        await _api.tags.clearRedirect(t.id, t.category);
+      }
+      await refresh();
+    });
+  }
+  Future<Null> createRedirect() async {
+    if (startTag == null || endTag == null) return;
+    await performApiCall(() async {
       final RedirectingTag request = new RedirectingTag();
       request.id = startTag.id;
       request.category = startTag.category;
@@ -60,28 +83,14 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
     });
   }
 
-  final ApiService _api;
-
-  RedirectsTab(this._api, this._pageControl, Router router,
-      AuthenticationService authenticationService)
-      : super(router, authenticationService);
-  @override
-  Logger get loggerImpl => _log;
-
-  final PageControlService _pageControl;
+  String formatRedirectingTag(RedirectingTag t) =>
+      TagWrapper.formatRedirectingTag(t);
 
   String formatTag(Tag t) => TagWrapper.formatTag(t);
-  String formatRedirectingTag(RedirectingTag t) => TagWrapper.formatRedirectingTag(t);
 
-  StreamSubscription<PageAction> _pageActionSubscription;
-
-  final List<RedirectingTag> redirects = new List<RedirectingTag>();
-
-  Future<Null> refresh() async {
-    await performApiCall(() async {
-      redirects.clear();
-      redirects.addAll(await _api.tags.getRedirects());
-    });
+  @override
+  void ngOnDestroy() {
+    _pageActionSubscription.cancel();
   }
 
   @override
@@ -106,8 +115,10 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
     }
   }
 
-  @override
-  void ngOnDestroy() {
-    _pageActionSubscription.cancel();
+  Future<Null> refresh() async {
+    await performApiCall(() async {
+      redirects.clear();
+      redirects.addAll(await _api.tags.getRedirects());
+    });
   }
 }
