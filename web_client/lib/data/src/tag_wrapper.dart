@@ -3,29 +3,39 @@ import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery_shared/global.dart';
 
 class TagWrapper {
-  final Tag tag;
+  Tag _tag;
+  TagInfo _tagInfo;
 
-  TagWrapper(this.tag);
+  Tag get tag {
+    if(_tag!=null) {
+      return _tag;
+    }
+    final Tag output = new Tag();
+    output.id=this.id;
+    output.category==this.category;
+    return output;
+  }
 
-  String get id => tag.toString();
+  String get id => _tag?.id??_tagInfo.id;
+  String get category => _tag?.category??_tagInfo?.category;
+
+  TagWrapper.fromTag(this._tag);
+  TagWrapper.fromTagInfo(this._tagInfo);
 
   @override
-  String toString() =>formatTag(this.tag);
+  String toString() =>format(id, category);
 
-  static String formatTag(Tag tag) {
-    if(StringTools.isNotNullOrWhitespace(tag.category)) {
-      return "${tag.category}$categoryDeliminator ${tag.id}";
+
+  static String format(String id, [String category]) {
+    if(StringTools.isNotNullOrWhitespace(category)) {
+      return "$category$categoryDeliminator $id";
     } else {
-      return tag.id;
+      return id;
     }
   }
-  static String formatRedirectingTag(RedirectingTag tag) {
-    if(StringTools.isNotNullOrWhitespace(tag.category)) {
-      return "${tag.category}$categoryDeliminator ${tag.id}";
-    } else {
-      return tag.id;
-    }
-  }
+
+  static String formatTag(Tag tag) => format(tag.id, tag.category);
+  static String formatTagInfo(TagInfo tag) => format(tag.id, tag.category);
 
   static String createQueryString(Tag tag) {
     if(tag==null)
@@ -43,8 +53,8 @@ class TagWrapper {
   String toQueryString() => createQueryString(tag);
 
   bool equals(TagWrapper other) {
-    if(tag.id?.toLowerCase()==other.tag.id?.toLowerCase()
-        &&tag.category?.toLowerCase()==other.tag.category?.toLowerCase()) {
+    if(id?.toLowerCase()==other.id?.toLowerCase()
+        &&category?.toLowerCase()==other.category?.toLowerCase()) {
       return true;
     }
     return false;

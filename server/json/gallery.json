@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "8f9499914aa942b831449b08120da606faae9869",
+ "etag": "e9a7c31953357c9878926fd4ffa50c51e5702cf5",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -322,10 +322,21 @@
     }
    }
   },
-  "RedirectingTag": {
-   "id": "RedirectingTag",
+  "ListOfTagInfo": {
+   "id": "ListOfTagInfo",
+   "type": "array",
+   "items": {
+    "$ref": "TagInfo"
+   }
+  },
+  "TagInfo": {
+   "id": "TagInfo",
    "type": "object",
    "properties": {
+    "count": {
+     "type": "integer",
+     "format": "int32"
+    },
     "redirect": {
      "$ref": "Tag"
     },
@@ -335,13 +346,6 @@
     "id": {
      "type": "string"
     }
-   }
-  },
-  "ListOfRedirectingTag": {
-   "id": "ListOfRedirectingTag",
-   "type": "array",
-   "items": {
-    "$ref": "RedirectingTag"
    }
   },
   "TagCategory": {
@@ -738,6 +742,61 @@
       "$ref": "CountResponse"
      }
     },
+    "getAllTagInfo": {
+     "id": "GalleryApi.tags.getAllTagInfo",
+     "path": "tags/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfTagInfo"
+     }
+    },
+    "getTagInfo": {
+     "id": "GalleryApi.tags.getTagInfo",
+     "path": "tags/{id}/{category}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "category": {
+       "type": "string",
+       "description": "Path parameter: 'category'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id",
+      "category"
+     ],
+     "response": {
+      "$ref": "TagInfo"
+     }
+    },
+    "getTagInfoWithoutCategory": {
+     "id": "GalleryApi.tags.getTagInfoWithoutCategory",
+     "path": "tags/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "TagInfo"
+     }
+    },
     "search": {
      "id": "GalleryApi.tags.search",
      "path": "search/tags/{query}",
@@ -754,7 +813,7 @@
       "query"
      ],
      "response": {
-      "$ref": "ListOfTag"
+      "$ref": "ListOfTagInfo"
      }
     },
     "setRedirect": {
@@ -764,7 +823,7 @@
      "parameters": {},
      "parameterOrder": [],
      "request": {
-      "$ref": "RedirectingTag"
+      "$ref": "TagInfo"
      }
     },
     "getRedirects": {
@@ -774,8 +833,15 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "ListOfRedirectingTag"
+      "$ref": "ListOfTagInfo"
      }
+    },
+    "resetTagInfo": {
+     "id": "GalleryApi.tags.resetTagInfo",
+     "path": "tag_info/",
+     "httpMethod": "DELETE",
+     "parameters": {},
+     "parameterOrder": []
     },
     "clearRedirect": {
      "id": "GalleryApi.tags.clearRedirect",
@@ -815,6 +881,51 @@
      "parameterOrder": [
       "id"
      ]
+    },
+    "delete": {
+     "id": "GalleryApi.tags.delete",
+     "path": "tag/{id}/{category}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "category": {
+       "type": "string",
+       "description": "Path parameter: 'category'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id",
+      "category"
+     ],
+     "response": {
+      "$ref": "CountResponse"
+     }
+    },
+    "deleteWithoutCategory": {
+     "id": "GalleryApi.tags.deleteWithoutCategory",
+     "path": "tag/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "CountResponse"
+     }
     }
    },
    "resources": {}

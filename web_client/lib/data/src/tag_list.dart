@@ -17,7 +17,12 @@ class TagList extends Iterable<TagWrapper> {
 
   void addTags(List<Tag> tags) {
     for(Tag t in tags) {
-      this.add(new TagWrapper(t));
+      this.add(new TagWrapper.fromTag(t));
+    }
+  }
+  void addTagInfos(List<TagInfo> tags) {
+    for(TagInfo t in tags) {
+      this.add(new TagWrapper.fromTagInfo(t));
     }
   }
   void addTagList(TagList tags) {
@@ -40,7 +45,7 @@ class TagList extends Iterable<TagWrapper> {
       return tag;
     });
     for(Tag t in tags) {
-      this.add(new TagWrapper(t));
+      this.add(new TagWrapper.fromTag(t));
     }
   }
 

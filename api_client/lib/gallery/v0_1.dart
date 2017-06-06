@@ -1009,7 +1009,11 @@ class TagsResourceApi {
   /**
    * Request parameters:
    *
-   * Completes with a [ListOfRedirectingTag].
+   * [id] - Path parameter: 'id'.
+   *
+   * [category] - Path parameter: 'category'.
+   *
+   * Completes with a [CountResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -1017,7 +1021,114 @@ class TagsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfRedirectingTag> getRedirects() {
+  async.Future<CountResponse> delete(core.String id, core.String category) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+    if (category == null) {
+      throw new core.ArgumentError("Parameter category is required.");
+    }
+
+    _url = 'tag/' + commons.Escaper.ecapeVariable('$id') + '/' + commons.Escaper.ecapeVariable('$category') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new CountResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [CountResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<CountResponse> deleteWithoutCategory(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _url = 'tag/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new CountResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [ListOfTagInfo].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfTagInfo> getAllTagInfo() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'tags/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfTagInfo.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [ListOfTagInfo].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfTagInfo> getRedirects() {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1035,7 +1146,86 @@ class TagsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfRedirectingTag.fromJson(data));
+    return _response.then((data) => new ListOfTagInfo.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * [category] - Path parameter: 'category'.
+   *
+   * Completes with a [TagInfo].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<TagInfo> getTagInfo(core.String id, core.String category) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+    if (category == null) {
+      throw new core.ArgumentError("Parameter category is required.");
+    }
+
+    _url = 'tags/' + commons.Escaper.ecapeVariable('$id') + '/' + commons.Escaper.ecapeVariable('$category') + '/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new TagInfo.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [TagInfo].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<TagInfo> getTagInfoWithoutCategory(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _url = 'tags/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new TagInfo.fromJson(data));
   }
 
   /**
@@ -1078,9 +1268,41 @@ class TagsResourceApi {
   /**
    * Request parameters:
    *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future resetTagInfo() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _downloadOptions = null;
+
+    _url = 'tag_info/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * Request parameters:
+   *
    * [query] - Path parameter: 'query'.
    *
-   * Completes with a [ListOfTag].
+   * Completes with a [ListOfTagInfo].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -1088,7 +1310,7 @@ class TagsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfTag> search(core.String query) {
+  async.Future<ListOfTagInfo> search(core.String query) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1109,7 +1331,7 @@ class TagsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfTag.fromJson(data));
+    return _response.then((data) => new ListOfTagInfo.fromJson(data));
   }
 
   /**
@@ -1123,7 +1345,7 @@ class TagsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future setRedirect(RedirectingTag request) {
+  async.Future setRedirect(TagInfo request) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1704,32 +1926,6 @@ class ItemSearchRequest {
   }
 }
 
-class ListOfRedirectingTag
-    extends collection.ListBase<RedirectingTag> {
-  final core.List<RedirectingTag> _inner;
-
-  ListOfRedirectingTag() : _inner = [];
-
-  ListOfRedirectingTag.fromJson(core.List json)
-      : _inner = json.map((value) => new RedirectingTag.fromJson(value)).toList();
-
-  core.List toJson() {
-    return _inner.map((value) => (value).toJson()).toList();
-  }
-
-  RedirectingTag operator [](core.int key) => _inner[key];
-
-  void operator []=(core.int key, RedirectingTag value) {
-    _inner[key] = value;
-  }
-
-  core.int get length => _inner.length;
-
-  void set length(core.int newLength) {
-    _inner.length = newLength;
-  }
-}
-
 class ListOfString
     extends collection.ListBase<core.String> {
   final core.List<core.String> _inner;
@@ -1772,6 +1968,32 @@ class ListOfTag
   Tag operator [](core.int key) => _inner[key];
 
   void operator []=(core.int key, Tag value) {
+    _inner[key] = value;
+  }
+
+  core.int get length => _inner.length;
+
+  void set length(core.int newLength) {
+    _inner.length = newLength;
+  }
+}
+
+class ListOfTagInfo
+    extends collection.ListBase<TagInfo> {
+  final core.List<TagInfo> _inner;
+
+  ListOfTagInfo() : _inner = [];
+
+  ListOfTagInfo.fromJson(core.List json)
+      : _inner = json.map((value) => new TagInfo.fromJson(value)).toList();
+
+  core.List toJson() {
+    return _inner.map((value) => (value).toJson()).toList();
+  }
+
+  TagInfo operator [](core.int key) => _inner[key];
+
+  void operator []=(core.int key, TagInfo value) {
     _inner[key] = value;
   }
 
@@ -1988,40 +2210,6 @@ class PasswordChangeRequest {
   }
 }
 
-class RedirectingTag {
-  core.String category;
-  core.String id;
-  Tag redirect;
-
-  RedirectingTag();
-
-  RedirectingTag.fromJson(core.Map _json) {
-    if (_json.containsKey("category")) {
-      category = _json["category"];
-    }
-    if (_json.containsKey("id")) {
-      id = _json["id"];
-    }
-    if (_json.containsKey("redirect")) {
-      redirect = new Tag.fromJson(_json["redirect"]);
-    }
-  }
-
-  core.Map toJson() {
-    var _json = new core.Map();
-    if (category != null) {
-      _json["category"] = category;
-    }
-    if (id != null) {
-      _json["id"] = id;
-    }
-    if (redirect != null) {
-      _json["redirect"] = (redirect).toJson();
-    }
-    return _json;
-  }
-}
-
 class ReplaceTagsRequest {
   core.List<Tag> newTags;
   core.List<Tag> originalTags;
@@ -2145,6 +2333,47 @@ class TagCategory {
     }
     if (id != null) {
       _json["id"] = id;
+    }
+    return _json;
+  }
+}
+
+class TagInfo {
+  core.String category;
+  core.int count;
+  core.String id;
+  Tag redirect;
+
+  TagInfo();
+
+  TagInfo.fromJson(core.Map _json) {
+    if (_json.containsKey("category")) {
+      category = _json["category"];
+    }
+    if (_json.containsKey("count")) {
+      count = _json["count"];
+    }
+    if (_json.containsKey("id")) {
+      id = _json["id"];
+    }
+    if (_json.containsKey("redirect")) {
+      redirect = new Tag.fromJson(_json["redirect"]);
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (category != null) {
+      _json["category"] = category;
+    }
+    if (count != null) {
+      _json["count"] = count;
+    }
+    if (id != null) {
+      _json["id"] = id;
+    }
+    if (redirect != null) {
+      _json["redirect"] = (redirect).toJson();
     }
     return _json;
   }

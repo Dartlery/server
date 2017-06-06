@@ -19,4 +19,4 @@ export 'src/import_result.dart';
 export 'src/background_queue_item.dart';
 export 'src/extension_data.dart';
 export 'src/extension_data.list.dart';
-export 'src/redirecting_tag.dart';
+export 'src/tag_info.dart';

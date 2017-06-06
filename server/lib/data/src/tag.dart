@@ -12,7 +12,7 @@ class Tag extends AIdData {
 
   Tag();
 
-  Tag.withValues(String name, {this.category}) : super.withValues(name);
+  Tag.withValues(String name, [this.category]) : super.withValues(name);
 
   String get fullName => formatTag(id, category);
 

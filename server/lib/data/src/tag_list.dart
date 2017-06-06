@@ -46,7 +46,42 @@ class TagList extends Iterable<Tag> {
 
   @override
   bool contains(Tag t) => indexOf(t) != -1;
+}
 
+class TagDiff {
+  final List<Tag> different = <Tag>[];
+  final List<Tag> onlyFirst = <Tag>[];
+  final List<Tag> onlySecond = <Tag>[];
+  final List<Tag> both = <Tag>[];
+  TagDiff(List<Tag> a, List<Tag> b) {
+    for(Tag ta in a) {
+      bool found = false;
+      for(Tag tb in b) {
+        if(ta==tb) {
+          found = true;
+          break;
+        }
+      }
+      if(!found) {
+        different.add(ta);
+        onlyFirst.add(ta);
+      } else {
+        both.add(ta);
+      }
+    }
 
-  //static const String tagSeparator = ",";
+    for(Tag tb in b) {
+      bool found = false;
+      for(Tag ta in a) {
+        if(ta==tb) {
+          found = true;
+          break;
+        }
+      }
+      if(!found) {
+        onlySecond.add(tb);
+        different.add(tb);
+      }
+    }
+  }
 }

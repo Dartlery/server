@@ -299,19 +299,6 @@ checkItemSearchRequest(api.ItemSearchRequest o) {
   buildCounterItemSearchRequest--;
 }
 
-buildListOfRedirectingTag() {
-  var o = new api.ListOfRedirectingTag();
-  o.add(buildRedirectingTag());
-  o.add(buildRedirectingTag());
-  return o;
-}
-
-checkListOfRedirectingTag(api.ListOfRedirectingTag o) {
-  unittest.expect(o, unittest.hasLength(2));
-  checkRedirectingTag(o[0]);
-  checkRedirectingTag(o[1]);
-}
-
 buildListOfString() {
   var o = new api.ListOfString();
   o.add("foo");
@@ -336,6 +323,19 @@ checkListOfTag(api.ListOfTag o) {
   unittest.expect(o, unittest.hasLength(2));
   checkTag(o[0]);
   checkTag(o[1]);
+}
+
+buildListOfTagInfo() {
+  var o = new api.ListOfTagInfo();
+  o.add(buildTagInfo());
+  o.add(buildTagInfo());
+  return o;
+}
+
+checkListOfTagInfo(api.ListOfTagInfo o) {
+  unittest.expect(o, unittest.hasLength(2));
+  checkTagInfo(o[0]);
+  checkTagInfo(o[1]);
 }
 
 buildUnnamed5() {
@@ -502,29 +502,6 @@ checkPasswordChangeRequest(api.PasswordChangeRequest o) {
   buildCounterPasswordChangeRequest--;
 }
 
-core.int buildCounterRedirectingTag = 0;
-buildRedirectingTag() {
-  var o = new api.RedirectingTag();
-  buildCounterRedirectingTag++;
-  if (buildCounterRedirectingTag < 3) {
-    o.category = "foo";
-    o.id = "foo";
-    o.redirect = buildTag();
-  }
-  buildCounterRedirectingTag--;
-  return o;
-}
-
-checkRedirectingTag(api.RedirectingTag o) {
-  buildCounterRedirectingTag++;
-  if (buildCounterRedirectingTag < 3) {
-    unittest.expect(o.category, unittest.equals('foo'));
-    unittest.expect(o.id, unittest.equals('foo'));
-    checkTag(o.redirect);
-  }
-  buildCounterRedirectingTag--;
-}
-
 buildUnnamed9() {
   var o = new core.List<api.Tag>();
   o.add(buildTag());
@@ -654,6 +631,31 @@ checkTagCategory(api.TagCategory o) {
   buildCounterTagCategory--;
 }
 
+core.int buildCounterTagInfo = 0;
+buildTagInfo() {
+  var o = new api.TagInfo();
+  buildCounterTagInfo++;
+  if (buildCounterTagInfo < 3) {
+    o.category = "foo";
+    o.count = 42;
+    o.id = "foo";
+    o.redirect = buildTag();
+  }
+  buildCounterTagInfo--;
+  return o;
+}
+
+checkTagInfo(api.TagInfo o) {
+  buildCounterTagInfo++;
+  if (buildCounterTagInfo < 3) {
+    unittest.expect(o.category, unittest.equals('foo'));
+    unittest.expect(o.count, unittest.equals(42));
+    unittest.expect(o.id, unittest.equals('foo'));
+    checkTag(o.redirect);
+  }
+  buildCounterTagInfo--;
+}
+
 core.int buildCounterUser = 0;
 buildUser() {
   var o = new api.User();
@@ -744,15 +746,6 @@ main() {
   });
 
 
-  unittest.group("obj-schema-ListOfRedirectingTag", () {
-    unittest.test("to-json--from-json", () {
-      var o = buildListOfRedirectingTag();
-      var od = new api.ListOfRedirectingTag.fromJson(o.toJson());
-      checkListOfRedirectingTag(od);
-    });
-  });
-
-
   unittest.group("obj-schema-ListOfString", () {
     unittest.test("to-json--from-json", () {
       var o = buildListOfString();
@@ -767,6 +760,15 @@ main() {
       var o = buildListOfTag();
       var od = new api.ListOfTag.fromJson(o.toJson());
       checkListOfTag(od);
+    });
+  });
+
+
+  unittest.group("obj-schema-ListOfTagInfo", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildListOfTagInfo();
+      var od = new api.ListOfTagInfo.fromJson(o.toJson());
+      checkListOfTagInfo(od);
     });
   });
 
@@ -803,15 +805,6 @@ main() {
       var o = buildPasswordChangeRequest();
       var od = new api.PasswordChangeRequest.fromJson(o.toJson());
       checkPasswordChangeRequest(od);
-    });
-  });
-
-
-  unittest.group("obj-schema-RedirectingTag", () {
-    unittest.test("to-json--from-json", () {
-      var o = buildRedirectingTag();
-      var od = new api.RedirectingTag.fromJson(o.toJson());
-      checkRedirectingTag(od);
     });
   });
 
@@ -857,6 +850,15 @@ main() {
       var o = buildTagCategory();
       var od = new api.TagCategory.fromJson(o.toJson());
       checkTagCategory(od);
+    });
+  });
+
+
+  unittest.group("obj-schema-TagInfo", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildTagInfo();
+      var od = new api.TagInfo.fromJson(o.toJson());
+      checkTagInfo(od);
     });
   });
 
@@ -2121,6 +2123,165 @@ main() {
       res.clearRedirectWithoutCategory(arg_id).then(unittest.expectAsync((_) {}));
     });
 
+    unittest.test("method--delete", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_id = "foo";
+      var arg_category = "foo";
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 4), unittest.equals("tag/"));
+        pathOffset += 4;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_id"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_category"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = convert.JSON.encode(buildCountResponse());
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.delete(arg_id, arg_category).then(unittest.expectAsync(((api.CountResponse response) {
+        checkCountResponse(response);
+      })));
+    });
+
+    unittest.test("method--deleteWithoutCategory", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_id = "foo";
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 4), unittest.equals("tag/"));
+        pathOffset += 4;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_id"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = convert.JSON.encode(buildCountResponse());
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.deleteWithoutCategory(arg_id).then(unittest.expectAsync(((api.CountResponse response) {
+        checkCountResponse(response);
+      })));
+    });
+
+    unittest.test("method--getAllTagInfo", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 5), unittest.equals("tags/"));
+        pathOffset += 5;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = convert.JSON.encode(buildListOfTagInfo());
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.getAllTagInfo().then(unittest.expectAsync(((api.ListOfTagInfo response) {
+        checkListOfTagInfo(response);
+      })));
+    });
+
     unittest.test("method--getRedirects", () {
 
       var mock = new HttpServerMock();
@@ -2158,11 +2319,125 @@ main() {
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = convert.JSON.encode(buildListOfRedirectingTag());
+        var resp = convert.JSON.encode(buildListOfTagInfo());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getRedirects().then(unittest.expectAsync(((api.ListOfRedirectingTag response) {
-        checkListOfRedirectingTag(response);
+      res.getRedirects().then(unittest.expectAsync(((api.ListOfTagInfo response) {
+        checkListOfTagInfo(response);
+      })));
+    });
+
+    unittest.test("method--getTagInfo", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_id = "foo";
+      var arg_category = "foo";
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 5), unittest.equals("tags/"));
+        pathOffset += 5;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_id"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_category"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = convert.JSON.encode(buildTagInfo());
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.getTagInfo(arg_id, arg_category).then(unittest.expectAsync(((api.TagInfo response) {
+        checkTagInfo(response);
+      })));
+    });
+
+    unittest.test("method--getTagInfoWithoutCategory", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_id = "foo";
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 5), unittest.equals("tags/"));
+        pathOffset += 5;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_id"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = convert.JSON.encode(buildTagInfo());
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.getTagInfoWithoutCategory(arg_id).then(unittest.expectAsync(((api.TagInfo response) {
+        checkTagInfo(response);
       })));
     });
 
@@ -2215,6 +2490,49 @@ main() {
       })));
     });
 
+    unittest.test("method--resetTagInfo", () {
+
+      var mock = new HttpServerMock();
+      api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 9), unittest.equals("tag_info/"));
+        pathOffset += 9;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = "";
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.resetTagInfo().then(unittest.expectAsync((_) {}));
+    });
+
     unittest.test("method--search", () {
 
       var mock = new HttpServerMock();
@@ -2256,11 +2574,11 @@ main() {
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = convert.JSON.encode(buildListOfTag());
+        var resp = convert.JSON.encode(buildListOfTagInfo());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.search(arg_query).then(unittest.expectAsync(((api.ListOfTag response) {
-        checkListOfTag(response);
+      res.search(arg_query).then(unittest.expectAsync(((api.ListOfTagInfo response) {
+        checkListOfTagInfo(response);
       })));
     });
 
@@ -2268,10 +2586,10 @@ main() {
 
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
-      var arg_request = buildRedirectingTag();
+      var arg_request = buildTagInfo();
       mock.register(unittest.expectAsync((http.BaseRequest req, json) {
-        var obj = new api.RedirectingTag.fromJson(json);
-        checkRedirectingTag(obj);
+        var obj = new api.TagInfo.fromJson(json);
+        checkTagInfo(obj);
 
         var path = (req.url).path;
         var pathOffset = 0;

@@ -159,8 +159,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     if(tagsToAdd.length>0) {
       for(Tag t in tagsToAdd) {
         final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
-        tagSelector.eq("tags", {notCommand: {
-          elemMatchCommand: {idField: t.id, MongoTagDataSource.categoryField: t.category}
+        tagSelector.eq("tags", {$not: {
+          $elemMatch: {idField: t.id, MongoTagDataSource.categoryField: t.category}
         }});
         final List<dynamic> addTagMapList = MongoTagDataSource.createTagsList([t], onlyKeys: true);
         final ModifierBuilder modifier =  modify.pushAll(tagsField, addTagMapList);

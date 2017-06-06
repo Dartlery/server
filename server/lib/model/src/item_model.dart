@@ -105,6 +105,10 @@ class ItemModel extends AIdBasedModel<Item> {
 
     final String itemId = await itemDataSource.create(item);
 
+    if(item.tags.isNotEmpty) {
+      await tagDataSource.incrementTagCount(item.tags, 1);
+    }
+
     return itemId;
   }
 
@@ -117,7 +121,16 @@ class ItemModel extends AIdBasedModel<Item> {
   @override
   Future<String> delete(String id) async {
     await _extensionServices.sendDeletingItem(id);
+
+    Option<Item> existingItem = await itemDataSource.getById(id);
+    if(existingItem.isEmpty)
+      throw new NotFoundException("Item $id not found");
+
     final String output = await super.delete(id);
+
+    if(existingItem.first.tags.isNotEmpty) {
+      await tagDataSource.incrementTagCount(existingItem.first.tags, -1);
+    }
 
     try {
       final File file = new File(getOriginalFilePathForHash(id));
@@ -336,6 +349,12 @@ class ItemModel extends AIdBasedModel<Item> {
     } else {
       await delete(sourceItemId);
     }
+
+    final TagDiff diff = new TagDiff(targetItem.first.tags, sourceItem.first.tags);
+    if(diff.both.isNotEmpty) {
+      await tagDataSource.incrementTagCount(diff.both, -1);
+    }
+
     return (await itemDataSource.getById(targetItemId)).first;
   }
 
@@ -359,19 +378,42 @@ class ItemModel extends AIdBasedModel<Item> {
 
     await _tagModel.handleTags(item.tags);
 
-    return await super
+    final Option<Item> existingItem = await itemDataSource.getById(id);
+    if(existingItem.isEmpty)
+      throw new NotFoundException("Item $id not found");
+
+    final String output = await super
         .update(id, item, bypassAuthentication: bypassAuthentication);
+
+    final TagDiff diff = new TagDiff(existingItem.first.tags, item.tags);
+    if(diff.onlyFirst.isNotEmpty) {
+      await tagDataSource.incrementTagCount(diff.onlyFirst, -1);
+    }
+    if(diff.onlySecond.isNotEmpty) {
+      await tagDataSource.incrementTagCount(diff.onlySecond, 1);
+    }
+
+    return output;
   }
 
   Future<Null> updateTags(String itemId, List<Tag> newTags,
       {bool bypassAuthentication: false}) async {
     if (!bypassAuthentication) await validateUpdatePrivileges(itemId);
 
-    if (!await itemDataSource.existsById(itemId))
+    final Option<Item> existingItem = await itemDataSource.getById(itemId);
+    if(existingItem.isEmpty)
       throw new NotFoundException("Item $itemId not found");
 
     await _tagModel.handleTags(newTags);
     await itemDataSource.updateTags(itemId, newTags);
+
+    final TagDiff diff = new TagDiff(existingItem.first.tags, newTags);
+    if(diff.onlyFirst.isNotEmpty) {
+      await tagDataSource.incrementTagCount(diff.onlyFirst, -1);
+    }
+    if(diff.onlySecond.isNotEmpty) {
+      await tagDataSource.incrementTagCount(diff.onlySecond, 1);
+    }
   }
 
   @override

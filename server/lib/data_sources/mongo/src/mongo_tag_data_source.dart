@@ -9,11 +9,9 @@ import 'package:dartlery_shared/global.dart';
 import 'a_mongo_two_id_data_source.dart';
 import 'constants.dart';
 
-class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
+class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     with ATagDataSource {
   static final Logger _log = new Logger('MongoTagDataSource');
-
-  //db.getCollection('items').aggregate([{ $unwind: "$tags"}, {$group: {_id: "$tags","count": { $sum: 1}}}])
 
   @override
   Logger get childLogger => _log;
@@ -21,6 +19,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
   static const String categoryField = 'category';
   static const String fullNameField = "fullName";
   static const String redirectField = "redirect";
+  static const String countField = "count";
 
   MongoTagDataSource(MongoDbConnectionPool pool) : super(pool);
 
@@ -28,34 +27,31 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
   String get secondIdField => categoryField;
 
   @override
-  Tag createObject(Map data) {
+  TagInfo createObject(Map data) {
     return staticCreateObject(data);
   }
 
   static Tag staticCreateObject(Map data) {
-    dynamic output;
+    final TagInfo output = new TagInfo();
     if (data[redirectField] != null) {
-      output = new RedirectingTag();
       output.redirect = staticCreateObject(data[redirectField]);
-    } else {
-      output = new Tag();
     }
 
     AMongoTwoIdDataSource.setIdForData(output, data);
     output.category = data[categoryField];
-
+    output.count = data[countField]??0;
     return output;
   }
 
   @override
-  Future<List<RedirectingTag>> getRedirects() async {
-    return new List<RedirectingTag>.from(await getFromDb(where
+  Future<List<TagInfo>> getRedirects() async {
+    return new List<TagInfo>.from(await getFromDb(where
         .exists("$redirectField.$idField")));
   }
 
   @override
-  Future<List<RedirectingTag>> getByRedirect(String id, String category) async {
-    return new List<RedirectingTag>.from(await getFromDb(where
+  Future<List<TagInfo>> getByRedirect(String id, String category) async {
+    return new List<TagInfo>.from(await getFromDb(where
         .eq("$redirectField.$idField", id)
         .eq("$redirectField.$categoryField", category)));
   }
@@ -79,7 +75,15 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
   }
 
   @override
-  Future<IdDataList<Tag>> search(String query,
+  Future<int> countTagUse(Tag t) async {
+    return databaseWrapper<int>((MongoDatabase con) async {
+      final DbCollection itemsCol = await con.getItemsCollection();
+      return await itemsCol.count(where.eq("tags", {$elemMatch: { idField: t.id, categoryField: t.category}}));
+    });
+  }
+
+  @override
+  Future<IdDataList<TagInfo>> search(String query,
       {SelectorBuilder selector, String sortBy, int limit}) async {
     SelectorBuilder sb;
     if (selector == null)
@@ -97,11 +101,63 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
   }
 
   @override
+  Future<Null> refreshTagCount(List<Tag> tags) async {
+    if(tags.length==0)
+      throw new ArgumentError.notNull("tags");
+
+    for(Tag t in tags) {
+      final int count = await countTagUse(t);
+      final SelectorBuilder select =where.eq(idField, t.id).eq(categoryField, t.category);
+      await genericUpdate(select,
+          modify.set(countField, count), multiUpdate: false);
+    }
+  }
+
+  @override
+  Future<Null> incrementTagCount(List<Tag> tags, int amount) async {
+    if(tags.length==0)
+      throw new ArgumentError.notNull("tags");
+    if(amount==0)
+      throw new ArgumentError.value(amount, "amount");
+
+    final SelectorBuilder select = where.eq(idField, tags[0].id).eq(categoryField, tags[0].category);
+    for(int i = 1; i< tags.length; i++) {
+      select.or(where.eq(idField, tags[i].id).eq(categoryField, tags[i].category));
+    }
+
+    final ModifierBuilder modifier = modify.inc(countField, amount);
+
+    await genericUpdate(select, modifier, multiUpdate: true);
+  }
+
+  @override
+  Future<Null> cleanUpTags() async  {
+    await databaseWrapper((MongoDatabase con) async {
+      final DbCollection itemsCol = await con.getItemsCollection();
+      final DbCollection tagCol = await con.getTagsCollection();
+
+      final Stream<Map> pipe = itemsCol.aggregateToStream([{ $unwind: "\$tags"}, {$group: {"_id": "\$tags","count": { $sum: 1}}}]);
+      await for(Map agr in pipe) {
+        final Tag t = new Tag.withValues(agr["_id"][idField], agr["_id"][categoryField]);
+
+        if(!await existsById(t.id,t.category))
+          await create(new TagInfo.copy(t));
+
+        await tagCol.update(where.eq(idField, t.id).eq(categoryField, t.category),
+            modify.set(countField, agr["count"]), multiUpdate: false);
+      }
+
+      final SelectorBuilder select = where.eq(countField, 0).notExists(redirectField);
+      await tagCol.remove(select);
+    });
+ }
+
+  @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getTagsCollection();
 
   @override
-  void updateMap(Tag tag, Map data) {
+  void updateMap(TagInfo tag, Map data) {
     staticUpdateMap(tag, data);
   }
 
@@ -114,7 +170,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
     if (!onlyKeys) {
       data[fullNameField] = tag.fullName;
 
-      if(tag is RedirectingTag&&tag.redirect!=null) {
+      if(tag is TagInfo&&tag.redirect!=null) {
         final Map redirect = {};
         staticUpdateMap(tag.redirect, redirect, onlyKeys: true);
         data[redirectField] = redirect;
@@ -122,6 +178,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<Tag>
         data.remove(redirectField);
       }
     }
+    // Note: We do not update the tag count, that is only done by increment functions
   }
 
   static List<Map> createTagsList(List<Tag> tags, {bool onlyKeys: false}) {

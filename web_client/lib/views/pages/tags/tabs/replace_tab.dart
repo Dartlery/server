@@ -50,9 +50,6 @@ class ReplaceTab extends AApiErrorThing implements OnInit, OnDestroy {
   @override
   Logger get loggerImpl => _log;
 
-  String formatTag(Tag t) => TagWrapper.formatTag(t);
-  String formatRedirectingTag(RedirectingTag t) => TagWrapper.formatRedirectingTag(t);
-
   @override
   void ngOnInit() {
   }

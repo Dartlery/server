@@ -14,8 +14,8 @@ import 'package:option/option.dart';
 
 import 'a_typed_model.dart';
 
-class TagModel extends ATypedModel<Tag> {
-  static final Logger _log = new Logger('UserModel');
+class TagModel extends ATypedModel<TagInfo> {
+  static final Logger _log = new Logger('TagModel');
 
   final ATagDataSource _tagDataSource;
   final AItemDataSource _itemDataSource;
@@ -32,25 +32,21 @@ class TagModel extends ATypedModel<Tag> {
   Future<List<Tag>> handleTags(List<Tag> tags, {bool createMissingTags: true}) async {
     final TagList output = new TagList.from(tags);
     for (Tag tag in tags) {
-      Option<Tag> dbTag = await _tagDataSource.getById(tag.id, tag.category);
+      Option<TagInfo> dbTag = await _tagDataSource.getById(tag.id, tag.category);
       if (dbTag.isEmpty) {
         if(createMissingTags) {
-          if (!StringTools.isNotNullOrWhitespace(tag.category)) {
-            if (StringTools.isNotNullOrWhitespace(tag.category) &&
-                !await _tagCategoryDataSource.existsById(tag.category)) {
-              final TagCategory cat = new TagCategory.withValues(tag.category);
-              await _tagCategoryDataSource.create(cat);
-            }
+          if (StringTools.isNotNullOrWhitespace(tag.category) &&
+              !await _tagCategoryDataSource.existsById(tag.category)) {
+            final TagCategory cat = new TagCategory.withValues(tag.category);
+            await _tagCategoryDataSource.create(cat);
           }
-          await _tagDataSource.create(tag);
+          await _tagDataSource.create(new TagInfo.copy(tag));
         }
       } else {
         final TagList pastRedirects = new TagList();
         Tag redirect;
-        while (dbTag.first is RedirectingTag) {
-          final RedirectingTag rTag = dbTag.first;
-          if(rTag.redirect==null)
-            continue;
+        while (dbTag.first.redirect!=null) {
+          final TagInfo rTag = dbTag.first;
 
           redirect = rTag.redirect;
           if (pastRedirects.contains(redirect))
@@ -71,6 +67,22 @@ class TagModel extends ATypedModel<Tag> {
     return tags;
   }
 
+  Future<Null> validateTag(Tag t) {
+    return validate(new TagInfo.copy(t));
+  }
+
+  Future<TagInfo> getInfo(String id, [String category]) async {
+    final Option<TagInfo> output = await _tagDataSource.getById(id, category);
+    if(output.isEmpty)
+      throw new NotFoundException("Tag not found: ${Tag.formatTag(id, category)}");
+    return output.first;
+  }
+
+  Future<List<TagInfo>> getAllInfo() async {
+    final List<TagInfo> output = await _tagDataSource.getAll();;
+    return output;
+  }
+
   /// Replaces the $originalTags with the $newTags. This does not actually delete any tags.
   /// Images with the original tags will be updated to have the new tags.
   /// Returns the count of items that had their tags updated.
@@ -78,22 +90,25 @@ class TagModel extends ATypedModel<Tag> {
     await validateUpdatePrivilegeRequirement();
 
     for (Tag t in originalTags) {
-      await validate(t);
+      await validateTag(t);
     }
     for (Tag t in newTags) {
-      await validate(t);
+      await validateTag(t);
     }
     newTags = await handleTags(newTags);
 
     final int output = await _itemDataSource.replaceTags(originalTags, newTags);
 
+    await _tagDataSource.refreshTagCount(new TagDiff(originalTags, newTags).different);
+
     return output;
   }
 
-  Future<int> delete(Tag t) async {
+  Future<int> delete(String id, String category) async {
     await validateDeletePrivileges();
 
-    await validate(t);
+    final TagInfo t = new TagInfo.withValues(id, category);
+    validate(t);
 
     final int output = await _itemDataSource.replaceTags([t], []);
 
@@ -103,13 +118,12 @@ class TagModel extends ATypedModel<Tag> {
     return output;
   }
 
-  Future<List<RedirectingTag>> getRedirects()  async {
+  Future<List<TagInfo>> getRedirects()  async {
     await validateReadPrivilegeRequirement();
-
     return await _tagDataSource.getRedirects();
   }
 
-  Future<List<Tag>> search(String query, {int limit: 10}) async {
+  Future<List<TagInfo>> search(String query, {int limit: 10}) async {
     await validateReadPrivilegeRequirement();
 
     final List<Tag> output = await _tagDataSource.search(query, limit: limit);
@@ -119,26 +133,25 @@ class TagModel extends ATypedModel<Tag> {
   Future<Null> clearRedirect(String id, [String category]) async {
     await validateUpdatePrivilegeRequirement();
 
-    final Option<Tag> tagOpt = await _tagDataSource.getById(id, category);
+    final Option<TagInfo> tagOpt = await _tagDataSource.getById(id, category);
+
     if(tagOpt.isEmpty)
       throw new NotFoundException("Specified tag not found: ${Tag.formatTag(id, category)}");
 
-    final Tag tag = tagOpt.first;
+    final TagInfo tag = tagOpt.first;
 
-    if(tag is RedirectingTag) {
-      tag.redirect = null;
-    }
+    tag.redirect = null;
 
     await _tagDataSource.update(id, category, tag);
   }
 
-  Future<Null> setRedirect(RedirectingTag redirect) async {
+  Future<int> setRedirect(TagInfo redirect) async {
     await validateUpdatePrivilegeRequirement();
 
     await validate(redirect);
-    await validate(redirect.redirect);
+    await validateTag(redirect.redirect);
 
-    await DataValidationException.performValidation((Map<String,String> fieldErrors) async {
+    await DataValidationException.performValidation<int>((Map<String,String> fieldErrors) async {
       if(redirect==redirect.redirect) {
         fieldErrors["redirect"] = "Cannot be the same as start";
       }
@@ -146,35 +159,46 @@ class TagModel extends ATypedModel<Tag> {
 
     Tag end = redirect.redirect;
 
-    Option<Tag> dbEnd = await _tagDataSource.getById(end.id, end.category);
+    Option<TagInfo> dbEnd = await _tagDataSource.getById(end.id, end.category);
     if (dbEnd.isEmpty) {
-      await _tagDataSource.create(end);
+      await _tagDataSource.create(new TagInfo.copy(end));
       dbEnd = await _tagDataSource.getById(end.id, end.category);
-    } else if(dbEnd.first is RedirectingTag) {
-      final TagList pastRedirects = new TagList();
-      pastRedirects.add(redirect);
-      RedirectingTag dbRedirect = dbEnd.first;
-      while (dbRedirect.redirect != null) {
-        end = dbRedirect.redirect;
-        if (pastRedirects.contains(end))
-          throw new InvalidInputException(
-              "Specified redirect would cause a redirect loop: ");
-        pastRedirects.add(end);
-        dbEnd = await _tagDataSource.getById(end.id, end.category);
-        if(dbEnd.isEmpty)
-          throw new Exception("Tag in redirect chain not found: $end");
-        if(!(dbEnd.first is RedirectingTag))
-          break;
-        dbRedirect = dbEnd.first;
-      }
     }
+
+    final TagList pastRedirects = new TagList();
+    pastRedirects.add(redirect);
+    TagInfo dbRedirect = dbEnd.first;
+    while (dbRedirect.redirect != null) {
+      end = dbRedirect.redirect;
+      if (pastRedirects.contains(end))
+        throw new InvalidInputException(
+            "Specified redirect would cause a redirect loop: ");
+      pastRedirects.add(end);
+      dbEnd = await _tagDataSource.getById(end.id, end.category);
+      if(dbEnd.isEmpty)
+        throw new Exception("Tag in redirect chain not found: $end");
+      if(!(dbEnd.first is TagInfo))
+        break;
+      dbRedirect = dbEnd.first;
+    }
+
+    redirect.count = 0;
 
     if(!await _tagDataSource.existsById(redirect.id, redirect.category)) {
       await _tagDataSource.create(redirect);
     } else {
       await _tagDataSource.update(redirect.id, redirect.category, redirect);
     }
-    await _itemDataSource.replaceTags([redirect], [end]);
+    final int changed = await _itemDataSource.replaceTags([redirect], [end]);
+
+    await _tagDataSource.refreshTagCount([redirect, end]);
+
+
+    return changed;
+  }
+
+  Future<Null> resetTagInfo() async {
+    await _tagDataSource.cleanUpTags();
   }
 
 //  Future<Null> update(Tag originalTag, Tag newTag) async {
@@ -193,15 +217,12 @@ class TagModel extends ATypedModel<Tag> {
 //  }
 
   @override
-  Future<Null> validateFields(Tag tag, Map<String, String> fieldErrors,
+  Future<Null> validateFields(TagInfo tag, Map<String, String> fieldErrors,
       {String existingId: null}) async {
     if (StringTools.isNullOrWhitespace(tag.id)) fieldErrors["id"] = "Required";
-
-    if (StringTools.isNotNullOrWhitespace(tag.category)) {
-      final bool result = await _tagCategoryDataSource.existsById(tag.category);
-      if (!result) {
-        fieldErrors["category"] = "Not found";
-      }
+    
+    if(tag.redirect!=null) {
+      await validate(new TagInfo.copy(tag.redirect));
     }
   }
 }

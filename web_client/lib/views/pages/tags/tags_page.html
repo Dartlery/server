@@ -8,8 +8,14 @@
                 <material-button (trigger)="refresh()" raised>Search</material-button>
                 <div *ngIf="noItemsFound&&!processing" class="no-items">No Tags Found</div>
 
-                <material-expansionpanel-set *ngIf="!noItemsFound">
-                    <material-expansionpanel name="{{t}}" *ngFor="let t of tags" (save)="onSubmit()"
+                <table *ngIf="!noItemsFound">
+                    <tr *ngFor="let t of tags" >
+                        <td>{{t}}</td>
+                    </tr>
+                </table>
+
+                <material-expansionpanel-set>
+                    <material-expansionpanel name="" (save)="onSubmit()"
                                              [saveDisabled]="!editForm.valid" (open)="selectTag(t)" (close)="cancelEdit()"
                                              (cancel)="cancelEdit()">
                         <div style="column-width: 200pt;">

@@ -19,7 +19,8 @@ abstract class AMongoDataSource {
 
   int getOffset(int page, int perPage) => page * perPage;
 
-  Future<T> _databaseWrapper<T>(
+  @protected
+  Future<T> databaseWrapper<T>(
           Future<T> statement(MongoDatabase db),
           {int retries: 5})  async {
       return await dbConnectionPool.databaseWrapper<T>(statement, retries: retries);
@@ -29,7 +30,7 @@ abstract class AMongoDataSource {
   @protected
   Future<T> collectionWrapper<T>(
           Future<T> statement(DbCollection c)) =>
-      _databaseWrapper((MongoDatabase con) async =>
+      databaseWrapper((MongoDatabase con) async =>
           await statement(await getCollection(con)));
 
   @protected

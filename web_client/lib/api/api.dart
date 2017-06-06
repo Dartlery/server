@@ -21,7 +21,7 @@ export 'package:api_client/gallery/v0_1.dart'
         TagCategoriesResourceApi,
         PaginatedExtensionDataResponse,
         ExtensionData,
-        RedirectingTag,
+        TagInfo,
         ReplaceTagsRequest,
         CountResponse,
         ItemSearchRequest;

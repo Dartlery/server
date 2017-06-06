@@ -47,7 +47,7 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
 
   StreamSubscription<PageAction> _pageActionSubscription;
 
-  final List<RedirectingTag> redirects = new List<RedirectingTag>();
+  final List<TagInfo> redirects = new List<TagInfo>();
 
   RedirectsTab(this._api, this._pageControl, Router router,
       AuthenticationService authenticationService)
@@ -57,7 +57,7 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
 
   bool get noItemsFound => redirects.isEmpty;
 
-  Future<Null> clearRedirect(RedirectingTag t) async {
+  Future<Null> clearRedirect(TagInfo t) async {
     await performApiCall(() async {
       if (t.category == null) {
         await _api.tags.clearRedirectWithoutCategory(t.id);
@@ -70,7 +70,7 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
   Future<Null> createRedirect() async {
     if (startTag == null || endTag == null) return;
     await performApiCall(() async {
-      final RedirectingTag request = new RedirectingTag();
+      final TagInfo request = new TagInfo();
       request.id = startTag.id;
       request.category = startTag.category;
 
@@ -83,8 +83,8 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
     });
   }
 
-  String formatRedirectingTag(RedirectingTag t) =>
-      TagWrapper.formatRedirectingTag(t);
+  String formatRedirectingTag(TagInfo t) =>
+      TagWrapper.formatTagInfo(t);
 
   String formatTag(Tag t) => TagWrapper.formatTag(t);
 

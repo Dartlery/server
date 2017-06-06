@@ -100,7 +100,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   SelectorBuilder _prepareTextSearch(String query,
       {SelectorBuilder selector, String sortBy}) {
     SelectorBuilder searchSelector =
-        where.eq($text, {searchCommand: query});
+        where.eq($text, {$search: query});
     if (selector != null) searchSelector = searchSelector.and(selector);
     if (!StringTools.isNullOrWhitespace(sortBy)) {
       searchSelector = searchSelector.sortBy(sortBy);

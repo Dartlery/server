@@ -114,9 +114,9 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
     await performApiCall(() async {
       availableTags.clear();
       if (StringTools.isNullOrWhitespace(tagQuery)) return;
-      final List<Tag> tags = await _api.tags.search(tagQuery);
-      for (Tag t in tags) {
-        availableTags.add(new TagWrapper(t));
+      final List<TagInfo> tags = await _api.tags.search(tagQuery);
+      for (TagInfo t in tags) {
+        availableTags.add(new TagWrapper.fromTagInfo(t));
       }
       tagListVisible = tags.isNotEmpty;
     });
@@ -135,17 +135,17 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
       case KeyCode.ENTER:
         if (!existingTags&&StringTools.isNotNullOrWhitespace(tagQuery)) {
           final Tag tag = new Tag();
-          if(tagQuery.contains(";")) {
-            tag.id = tagQuery.substring(tagQuery.indexOf(";")+1).trim();
+          if(tagQuery.contains(categoryDeliminator)) {
+            tag.id = tagQuery.substring(tagQuery.indexOf(categoryDeliminator)+1).trim();
             if(StringTools.isNullOrWhitespace(tag.id))
               return;
-            tag.category = tagQuery.substring(0, tagQuery.indexOf(";")).trim();
+            tag.category = tagQuery.substring(0, tagQuery.indexOf(categoryDeliminator)).trim();
             if(StringTools.isNullOrWhitespace(tag.category))
               return;
           } else {
             tag.id = tagQuery.trim();
           }
-          selectTag(new TagWrapper(tag));
+          selectTag(new TagWrapper.fromTag(tag));
           tagQuery = "";
           _sendUpdatedTagEvent();
         }

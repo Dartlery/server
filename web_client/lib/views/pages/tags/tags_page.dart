@@ -122,8 +122,8 @@ class TagsPage extends APage implements OnDestroy {
 
       tags.clear();
       if (StringTools.isNullOrWhitespace(tagQuery)) return <api.Tag>[];
-      final List<api.Tag> data = await _api.tags.search(tagQuery);
-      tags.addTags(data);
+      final List<api.TagInfo> data = await _api.tags.search(tagQuery);
+      tags.addTagInfos(data);
     });
   }
 
