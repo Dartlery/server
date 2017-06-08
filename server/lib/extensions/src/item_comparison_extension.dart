@@ -84,7 +84,7 @@ class ItemComparisonExtension extends AExtension {
           }
       }
       if(lastProcessedDate!=null) {
-        await _backgroundQueueDataSource.addToQueue(this.extensionId, "$itemId:$lastProcessedDate");
+        await _backgroundQueueDataSource.addToQueue(this.extensionId, "$itemId:$lastProcessedDate", priority: item.priority+1);
       }
 
     } catch (e, st) {
