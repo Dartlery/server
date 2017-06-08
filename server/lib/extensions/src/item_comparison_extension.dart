@@ -49,13 +49,17 @@ class ItemComparisonExtension extends AExtension {
       final Option<Item> sourceItem = await _itemDataSource.getById(itemId);
 
       if (sourceItem.isEmpty) return;
+
       if (!MimeTypes.imageTypes.contains(sourceItem.first.mime)) return;
 
+      if(startPoint==null)
+        startPoint = sourceItem.first.uploaded;
 
-
+      _log.info("Checking for item $itemId starting with $startPoint");
+      
       final ImageHash sourceHash = await _getPerceptualHash(itemId);
 
-      final Stream<Item> itemStream = await _itemDataSource.streamAll(limit: 100, startDate: startPoint, addedDesc: true);
+      final Stream<Item> itemStream = await _itemDataSource.streamAll(limit: 500, startDate: startPoint, addedDesc: true);
       DateTime lastProcessedDate;
       await for (Item targetItem in itemStream) {
         lastProcessedDate = targetItem.uploaded;
@@ -84,6 +88,7 @@ class ItemComparisonExtension extends AExtension {
           }
       }
       if(lastProcessedDate!=null) {
+        _log.info("Re-enqueing with new start point of $lastProcessedDate");
         await _backgroundQueueDataSource.addToQueue(this.extensionId, "$itemId:$lastProcessedDate", priority: item.priority+1);
       }
 
@@ -149,7 +154,7 @@ class ItemComparisonExtension extends AExtension {
         new ImageHash.forImage(decodeImage(f.readAsBytesSync()), size: 16);
 
     final String perceptualHash = imageHash.toString();
-    _log.info("Perceptual hash: ${perceptualHash}");
+    _log.info("Perceptual hash: $perceptualHash");
 
     final ExtensionData newData = new ExtensionData();
     newData.extensionId = extensionId;
