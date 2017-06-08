@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dartlery/data/data.dart';
 
 
@@ -11,6 +12,28 @@ class TagList extends Iterable<Tag> {
       this.add(t);
     }
   }
+
+  TagList.fromJson(String json) {
+    final JsonDecoder decode = new JsonDecoder();
+    final dynamic data = decode.convert(json);
+    if(!(data is List)) {
+      throw new ArgumentError.value(json, "json", "JSON list expected");
+    }
+    final List tagData = data;
+    for(dynamic subData in tagData) {
+      if(!(subData is Map)) {
+        throw new ArgumentError.value(json, "json", "Non-map entry in list encountered");
+      }
+      final Map tagSubData = subData;
+      final Tag tag = new Tag();
+      tag.id = tagSubData["id"];
+      if(tagSubData.containsKey("category")) {
+        tag.category = tagSubData["category"];
+      }
+      this.add(tag);
+    }
+  }
+
   @override
   Iterator<Tag> get iterator => _list.iterator;
 

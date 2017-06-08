@@ -9,9 +9,14 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
 
   Future<Null> updateTags(String id, List<Tag> tags);
   Future<IdDataList<Item>> getVisible(String userUuid, {bool inTrash: false});
+
+  Future<List<Item>> getVisibleRandom(String userUuid, {List<Tag> filterTags, int perPage: defaultPerPage, bool inTrash: false});
+
   Future<IdDataList<Item>> searchVisible(String userUuid, String query, {bool inTrash: false});
+
   Future<PaginatedIdData<Item>> getVisiblePaginated(String userUuid,
       {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false});
+
   Future<PaginatedIdData<Item>> getAllPaginated({int page: 0, int perPage: defaultPerPage,
     bool sortDescending: true, bool inTrash: false});
   Future<PaginatedIdData<Item>> searchVisiblePaginated(
@@ -22,7 +27,7 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
 
   Future<Stream<Item>> streamByMimeType(String mimeType);
 
-  Future<Stream<Item>> streamAll({bool inTrash: false});
+  Future<Stream<Item>> streamAll({DateTime cutoff, int limit});
 
   Future<Null> replaceTags(List<Tag> originalTags, List<Tag> newTags);
 }

@@ -46,6 +46,7 @@ class ItemUploadComponent extends AApiErrorThing {
 
   List<Tag> tags = <Tag>[];
 
+  String fileName;
   MediaMessage msg;
 
   bool loading = false;
@@ -88,6 +89,8 @@ class ItemUploadComponent extends AApiErrorThing {
       if (input.files.length == 0) return;
       final File file = input.files[0];
 
+      fileName = file.name;
+
       loading = true;
       processing = true;
 
@@ -114,7 +117,9 @@ class ItemUploadComponent extends AApiErrorThing {
       final CreateItemRequest request = new CreateItemRequest();
       request.item = new Item();
       request.item.tags = tags;
+      request.item.fileName = fileName;
       request.file = msg;
+
 
       await _api.items.createItem(request);
 

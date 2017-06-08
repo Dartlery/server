@@ -9,6 +9,7 @@ import 'package:rpc/rpc.dart';
 
 import '../../gallery_api.dart';
 import '../requests/password_change_request.dart';
+import 'package:dartlery_shared/global.dart';
 
 class TagCategoriesResource extends AIdResource<TagCategory> {
   static final Logger _log = new Logger('UserResource');
@@ -51,6 +52,8 @@ class TagCategoriesResource extends AIdResource<TagCategory> {
 
   @override
   @ApiMethod(method: 'PUT', path: '${tagCategoriesApiPath}/{id}/')
-  Future<IdResponse> update(String id, TagCategory tagCategory) =>
-      updateWithCatch(id, tagCategory);
+  Future<IdResponse> update(String id, TagCategory tagCategory) async {
+    throw new NotImplementedException();
+   // updateWithCatch(id, tagCategory);
+  }
 }

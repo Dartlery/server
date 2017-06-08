@@ -36,18 +36,29 @@ class ItemComparisonExtension extends AExtension {
   @override
   Future<Null> onBackgroundCycle(BackgroundQueueItem item) async {
     try {
-      final Option<Item> sourceItem = await _itemDataSource.getById(item.data);
+      String itemId;
+      DateTime startPoint;
+      if(item.data.contains(":")){
+        final int i = item.data.indexOf(":");
+        itemId = item.data.substring(0,i);
+        startPoint = DateTime.parse(item.data.substring(i+1));
+      } else {
+        itemId = item.data;
+      }
+
+      final Option<Item> sourceItem = await _itemDataSource.getById(itemId);
 
       if (sourceItem.isEmpty) return;
       if (!MimeTypes.imageTypes.contains(sourceItem.first.mime)) return;
 
-      final ImageHash sourceHash = await _getPerceptualHash(item.data);
 
 
-      final Stream<Item> itemStream = await _itemDataSource.streamAll();
+      final ImageHash sourceHash = await _getPerceptualHash(itemId);
 
+      final Stream<Item> itemStream = await _itemDataSource.streamAll(limit: 100, cutoff: startPoint);
+      DateTime lastProcessedDate;
       await for (Item targetItem in itemStream) {
-
+        lastProcessedDate = targetItem.uploaded;
         if (sourceItem.first.id == targetItem.id) continue;
           if (!MimeTypes.imageTypes.contains(targetItem.mime)) continue;
 
@@ -72,6 +83,10 @@ class ItemComparisonExtension extends AExtension {
             _log.warning(e, st);
           }
       }
+      if(lastProcessedDate!=null) {
+        await _backgroundQueueDataSource.addToQueue(this.extensionId, "$itemId:$lastProcessedDate");
+      }
+
     } catch (e, st) {
       _log.severe(e, st);
     }
@@ -90,11 +105,9 @@ class ItemComparisonExtension extends AExtension {
 
   @override
   Future<Null> onCreatingItem(Item item) async {
-    if(item.id=="94795b7b0c8c4b09cd455a09c14961ac44bc807eb0617a4b3b791db34a3b52e7")
-      _log.info(item);
     try {
       if (MimeTypes.imageTypes.contains(item.mime)) {
-        await _backgroundQueueDataSource.addToQueue(this.extensionId, item.id);
+        await _backgroundQueueDataSource.addToQueue(this.extensionId, item.id, priority: 20);
       }
     } catch (e, st) {
       _log.severe("Error queueing image comparison for ${e.item.id}", e, st);

@@ -1,3 +1,4 @@
+import 'package:rpc/rpc.dart';
 
 export 'src/exceptions/redirecting_exception.dart';
 export 'src/a_id_resource.dart';
@@ -11,6 +12,7 @@ export 'gallery/src/responses/setup_response.dart';
 export 'gallery/src/requests/create_item_request.dart';
 export 'gallery/src/requests/update_item_request.dart';
 export 'src/responses/count_response.dart';
+export 'feeds/feed_api.dart';
 
 const String setupApiPath = "setup";
 const String searchApiPath = "search";

@@ -122,7 +122,7 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
     });
   }
 
-  String generateQueryString(Tag t) => TagWrapper.createQueryString(t);
+  String generateQueryString(Tag t) => TagWrapper.createQueryStringForTag(t);
 
   @override
   void ngOnDestroy() {

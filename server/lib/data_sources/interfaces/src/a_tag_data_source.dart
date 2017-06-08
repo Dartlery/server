@@ -11,7 +11,7 @@ abstract class ATagDataSource extends ATwoIdBasedDataSource<TagInfo> {
   Future<Null> deleteByRedirect(String id, String category);
 
   @override
-  Future<IdDataList<Tag>> search(String query, {int limit});
+  Future<IdDataList<Tag>> search(String query, {int limit, bool countAsc: true});
 
   /// This function should cause all tags to be re-counted
   /// and unused tags to be deleted.

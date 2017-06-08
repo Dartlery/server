@@ -358,6 +358,13 @@ class ItemModel extends AIdBasedModel<Item> {
     return (await itemDataSource.getById(targetItemId)).first;
   }
 
+  Future<List<Item>> getRandom({List<Tag> filterTags,
+      int perPage: defaultPerPage}) async {
+    await validateSearchPrivileges();
+
+    return itemDataSource.getVisibleRandom(this.currentUserId, perPage: perPage, filterTags: filterTags);
+  }
+
   Future<PaginatedIdData<Item>> searchVisible(List<Tag> tags,
       {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate}) async {
     if (page < 0) {

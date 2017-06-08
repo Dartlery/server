@@ -13,6 +13,7 @@ class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory> with AT
   @override
   Logger get childLogger => _log;
 
+
 static const String colorField = "color";
 
   MongoTagCategoryDataSource(MongoDbConnectionPool pool): super(pool);

@@ -18,6 +18,8 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
   static const String dataField = 'data';
   static const String addedField = "added";
   static const String extensionIdField = "extensionId";
+  static const String priorityField = "priority";
+  static const int _defaultPriority = 50;
 
   MongoBackgroundQueueDataSource(MongoDbConnectionPool pool): super(pool);
 
@@ -27,12 +29,13 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
       con.getBackgroundQueueCollection();
 
   @override
-  Future<Null> addToQueue(String extensionId, dynamic data) async {
+  Future<Null> addToQueue(String extensionId, dynamic data, {int priority:_defaultPriority}) async {
     final BackgroundQueueItem item = new BackgroundQueueItem();
     item.id = generateUuid();
     item.data = data;
     item.extensionId = extensionId;
     item.added = new DateTime.now();
+    item.priority = priority;
     await super.insertIntoDb(item);
   }
 
@@ -42,6 +45,7 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
     data[dataField] = item.data;
     data[addedField] = item.added;
     data[extensionIdField] = item.extensionId;
+    data[priorityField] = item.priority;
   }
 
   @override
@@ -51,6 +55,7 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
     output.data = data[dataField];
     output.added = data[addedField];
     output.extensionId = data[extensionIdField];
+    output.priority = data[priorityField]??_defaultPriority;
     return output;
   }
 
@@ -61,7 +66,7 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
 
   @override
   Future<Option<BackgroundQueueItem>> getNextItem() async {
-    return await super.getForOneFromDb(where.sortBy(addedField, descending: false));
+    return await super.getForOneFromDb(where.sortBy(priorityField, descending: false).sortBy(addedField, descending: false));
   }
 
 }

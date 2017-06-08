@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartlery/api/gallery/gallery_api.dart';
+import 'package:dartlery/api/feeds/feed_api.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/model/model.dart';
@@ -30,6 +31,7 @@ import 'src/exceptions/setup_required_exception.dart';
 import 'tools.dart';
 import 'package:dartlery/services/background_service.dart';
 
+
 export 'src/exceptions/setup_disabled_exception.dart';
 export 'src/exceptions/setup_required_exception.dart';
 export 'src/settings.dart';
@@ -41,6 +43,8 @@ final String setupLockFilePath = "$rootDirectory/setup.lock";
 
 bool _setupDisabled = false;
 
+const String apiPrefix = 'api';
+const String filesPath = "files";
 //String getImagesRootUrl() {
 //  return rpc.context.baseUrl + "/images/";
 //}
@@ -54,6 +58,8 @@ void disableSetup() {
   _setupDisabled = true;
 }
 
+
+
 final String fullFilePath =
 path.join(rootDirectory, hostedFilesFullPath);
 final String thumbnailFilePath =
@@ -65,12 +71,14 @@ final Directory originalDir = new Directory(originalFilePath);
 final Directory fullFileDir = new Directory(fullFilePath);
 final Directory thumbnailDir = new Directory(thumbnailFilePath);
 
+const int fileHashPrefixLength = 2;
+
 String getFullFilePathForHash(String hash) =>
-    path.join(fullFilePath, hash.substring(0, 2), hash);
+    path.join(fullFilePath, hash.substring(0, fileHashPrefixLength), hash);
 String getOriginalFilePathForHash(String hash) =>
-    path.join(originalFilePath, hash.substring(0, 2), hash);
+    path.join(originalFilePath, hash.substring(0, fileHashPrefixLength), hash);
 String getThumbnailFilePathForHash(String hash) =>
-    path.join(thumbnailFilePath, hash.substring(0, 2), hash);
+    path.join(thumbnailFilePath, hash.substring(0, fileHashPrefixLength), hash);
 
 Future<bool> isSetupAvailable() async {
   if (_setupDisabled) return false;
@@ -90,10 +98,10 @@ Future<Map<String, dynamic>> loadJSONFile(String path) async {
 }
 
 class Server {
-  static const String _apiPrefix = '/api';
 
   final Logger _log = new Logger('Server');
   final GalleryApi galleryApi;
+  final FeedApi feedApi;
   final AUserDataSource userDataSource;
   final UserModel userModel;
 
@@ -102,11 +110,11 @@ class Server {
   ModuleInjector injector;
 
   final ApiServer _apiServer =
-  new ApiServer(apiPrefix: _apiPrefix, prettyPrint: true);
+  new ApiServer(apiPrefix: "$apiPrefix/", prettyPrint: true);
 
   HttpServer _server;
 
-  Server(this.galleryApi, this.userDataSource, this.userModel) {
+  Server(this.galleryApi, this.userDataSource, this.userModel, this.feedApi) {
     _log.fine("new Server($galleryApi, $userDataSource, $userModel)");
   }
 
@@ -129,6 +137,7 @@ class Server {
 
 
       _apiServer.addApi(this.galleryApi);
+      _apiServer.addApi(this.feedApi);
       _apiServer.enableDiscoveryApi();
 
       final JwtSessionHandler<Principal, SessionClaimSet> sessionHandler =
@@ -160,9 +169,9 @@ class Server {
       final Router<dynamic> root = router()
         ..add(
             '/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)..add(
-            "/files/", <String>['GET', 'OPTIONS'], staticImagesHandler,
+            "/$filesPath/", <String>['GET', 'OPTIONS'], staticImagesHandler,
             exactMatch: false)..add(
-            '/api/',
+            '/$apiPrefix/',
             <String>['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
             apiPipeline,
             exactMatch: false)..add(
@@ -266,8 +275,9 @@ class Server {
 
     final ModuleInjector injector = new ModuleInjector(
         <Module>[
-        GalleryApi.injectorModules, new Module()
-          ..bind(Server)
+        GalleryApi.injectorModules,
+        FeedApi.injectorModules,
+        new Module()..bind(Server)
         ],
         parentInjector);
 

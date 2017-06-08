@@ -6,36 +6,20 @@
             <div>
                 <material-input [(ngModel)]="tagQuery" floatingLabl autoFocus label="Search"></material-input>
                 <material-button (trigger)="refresh()" raised>Search</material-button>
+                <material-button (trigger)="recountTags()" raised>Re-Count Tags</material-button>
                 <div *ngIf="noItemsFound&&!processing" class="no-items">No Tags Found</div>
 
+
                 <table *ngIf="!noItemsFound">
+                    <tr><th>Tag</th><th>Usage Count</th><th>Redirect</th><th>Delete</th></tr>
                     <tr *ngFor="let t of tags" >
-                        <td>{{t}}</td>
+                        <td><a [routerLink]="['ItemsSearch', {'query':t.toQueryString()}]" >{{t}}</a></td>
+                        <td>{{t.count}}</td>
+                        <td><a [routerLink]="['ItemsSearch', {'query':t.redirect?.toQueryString()}]" >{{t.redirect}}</a></td>
+                        <td><material-button icon (trigger)="deleteTag(t)"><glyph icon="delete"></glyph></material-button></td>
                     </tr>
                 </table>
 
-                <material-expansionpanel-set>
-                    <material-expansionpanel name="" (save)="onSubmit()"
-                                             [saveDisabled]="!editForm.valid" (open)="selectTag(t)" (close)="cancelEdit()"
-                                             (cancel)="cancelEdit()">
-                        <div style="column-width: 200pt;">
-                            <form (ngSubmit)="onSubmit()" #editForm="ngForm">
-                                <material-input [(ngModel)]="model.id" ngControl="id" floatingLabel required
-                                                autoFocus
-                                                label="ID"></material-input>
-                                <br/>
-                                <material-dropdown-select required [options]="categoryOptions" [selection]="categorySelection" [buttonText]="categoryButtonText">
-                                </material-dropdown-select>
-
-                                <span *ngIf="hasErrorMessage" class="error_output">
-                        <glyph icon="error_outline"></glyph>
-                        {{errorMessage}}
-                    </span>
-                                <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
-                            </form>
-                        </div>
-                    </material-expansionpanel>
-                </material-expansionpanel-set>
             </div>
         </material-tab>
         <material-tab label="Redirects">

@@ -2,6 +2,7 @@ library tools;
 
 import 'dart:async';
 import 'package:uuid/uuid.dart';
+import 'package:path/path.dart' as path;
 
 /// A [RegExp]-compatible [String] that matches against [String]s that contain ONLY a formatted [Uuid].
 const String uuidRegexString = "\^$uuidRegexStringSnippet\$";
@@ -16,6 +17,7 @@ final RegExp uuidRegex = new RegExp(uuidRegexString);
 const String hexColorRegexString = r"^#[\da-fA-F]{6}$";
 final RegExp hexColorRegex = new RegExp(hexColorRegexString);
 
+path.Context urlPath = new path.Context(style: path.Style.url);
 
 /// Takes a hex character only uuid string and formats it with dashes at the appropriate locations.
 String formatUuid(String input) {

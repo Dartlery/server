@@ -31,6 +31,7 @@ class TagList extends Iterable<TagWrapper> {
     }
   }
 
+
   TagList.fromQueryString(String query) {
     final Iterable<Tag> tags =  query.split(tagDeliminator).map((String tagString) {
       final Tag tag = new Tag();
@@ -78,7 +79,7 @@ class TagList extends Iterable<TagWrapper> {
 
   static String convertToQueryString(List<Tag> tags) {
     return tags.map((Tag t) {
-      return TagWrapper.createQueryString(t);
+      return TagWrapper.createQueryStringForTag(t);
     }).join(tagDeliminator);
   }
 

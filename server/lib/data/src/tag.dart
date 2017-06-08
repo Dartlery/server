@@ -24,6 +24,9 @@ class Tag extends AIdData {
     }
   }
 
+  @ApiProperty(ignore: true)
+  bool get hasCategory => StringTools.isNotNullOrWhitespace(this.category);
+
   set fullName(
       String value) {}
 

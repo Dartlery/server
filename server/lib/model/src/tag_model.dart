@@ -35,10 +35,14 @@ class TagModel extends ATypedModel<TagInfo> {
       Option<TagInfo> dbTag = await _tagDataSource.getById(tag.id, tag.category);
       if (dbTag.isEmpty) {
         if(createMissingTags) {
-          if (StringTools.isNotNullOrWhitespace(tag.category) &&
-              !await _tagCategoryDataSource.existsById(tag.category)) {
-            final TagCategory cat = new TagCategory.withValues(tag.category);
-            await _tagCategoryDataSource.create(cat);
+          if (tag.hasCategory) {
+            final Option<TagCategory> dbCategory = await _tagCategoryDataSource.getById(tag.category);
+            if(dbCategory.isEmpty) {
+              final TagCategory cat = new TagCategory.withValues(tag.category);
+              await _tagCategoryDataSource.create(cat);
+            } else {
+              tag.category = dbCategory.first.id;
+            }
           }
           await _tagDataSource.create(new TagInfo.copy(tag));
         }
@@ -59,6 +63,9 @@ class TagModel extends ATypedModel<TagInfo> {
         if (redirect != null) {
           if (!output.contains(redirect)) output.add(redirect);
           output.remove(tag);
+        } else {
+          tag.id = dbTag.first.id;
+          tag.category = dbTag.first.category;
         }
       }
     }
@@ -123,10 +130,10 @@ class TagModel extends ATypedModel<TagInfo> {
     return await _tagDataSource.getRedirects();
   }
 
-  Future<List<TagInfo>> search(String query, {int limit: 10}) async {
+  Future<List<TagInfo>> search(String query, {int limit: 10, bool countAsc}) async {
     await validateReadPrivilegeRequirement();
 
-    final List<Tag> output = await _tagDataSource.search(query, limit: limit);
+    final List<Tag> output = await _tagDataSource.search(query, limit: limit, countAsc: countAsc);
     return output;
   }
 
@@ -220,7 +227,7 @@ class TagModel extends ATypedModel<TagInfo> {
   Future<Null> validateFields(TagInfo tag, Map<String, String> fieldErrors,
       {String existingId: null}) async {
     if (StringTools.isNullOrWhitespace(tag.id)) fieldErrors["id"] = "Required";
-    
+
     if(tag.redirect!=null) {
       await validate(new TagInfo.copy(tag.redirect));
     }

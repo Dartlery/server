@@ -3,4 +3,5 @@ class BackgroundQueueItem extends AIdData {
   String data;
   DateTime added;
   String extensionId;
+  int priority = 0;
 }

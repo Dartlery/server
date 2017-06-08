@@ -7,6 +7,10 @@ const String $elemMatch = r"$elemMatch";
 const String $not = r"$not";
 const String $group = r"$group";
 const String $sum = r"$sum";
+const String $sample = r"$sample";
+const String $and = r"$and";
+const String $regex = r"$regex";
+const String $options = r"$options";
 
 const String idField = "id";
 const String nameField = "name";

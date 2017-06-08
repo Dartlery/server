@@ -28,6 +28,14 @@ class TagCategoryModel extends AIdBasedModel<TagCategory> {
 
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.moderator;
+//
+//  @override
+//  Future<String> update(String id, TagCategory t,
+//      {bool bypassAuthentication: false}) async {
+//    final String output = await super.update(id, t, bypassAuthentication: bypassAuthentication);
+//
+//    return output;
+//  }
 
   @override
   Future<Null> validateFields(TagCategory tagCategory,

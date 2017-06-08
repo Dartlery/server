@@ -64,12 +64,18 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
 
   Future<Stream<T>> streamFromDb(dynamic selector) async {
     final Stream<Map> outputStream = await genericFindStream(selector);
-    return outputStream.map((Map data) {
+    return streamToObject(outputStream);
+  }
+
+
+  Future<Stream<T>> streamToObject(Stream str) async {
+    return str.map<T>((Map data) {
       if(data.containsKey("\$err"))
         throw new Exception("Database error: $data['\$err']");
       return createObject(data);
     });
   }
+
 
   @protected
   Future<PaginatedData<T>> getPaginatedFromDb(SelectorBuilder selector,

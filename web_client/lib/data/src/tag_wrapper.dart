@@ -18,6 +18,14 @@ class TagWrapper {
 
   String get id => _tag?.id??_tagInfo.id;
   String get category => _tag?.category??_tagInfo?.category;
+  int get count =>_tagInfo?.count;
+  bool get hasCategory => StringTools.isNotNullOrWhitespace(category);
+  TagWrapper get redirect {
+    if(_tagInfo==null||_tagInfo.redirect==null) {
+      return null;
+    }
+    return new TagWrapper.fromTag(_tagInfo.redirect);
+  }
 
   TagWrapper.fromTag(this._tag);
   TagWrapper.fromTagInfo(this._tagInfo);
@@ -37,12 +45,14 @@ class TagWrapper {
   static String formatTag(Tag tag) => format(tag.id, tag.category);
   static String formatTagInfo(TagInfo tag) => format(tag.id, tag.category);
 
-  static String createQueryString(Tag tag) {
-    if(tag==null)
-      throw new ArgumentError.notNull("tag");
+  static String createQueryStringForTag(Tag t) => createQueryString(t.id, t.category);
 
-    final String tagString = Uri.encodeFull(tag.id).replaceAll(":", "%3A").replaceAll(",","%2C");
-    final String categoryString = Uri.encodeFull(tag.category??"").replaceAll(":", "%3A").replaceAll(",","%2C");
+  static String createQueryString(String id, [String category]) {
+    if(id==null)
+      throw new ArgumentError.notNull("id");
+
+    final String tagString = Uri.encodeFull(id).replaceAll(":", "%3A").replaceAll(",","%2C");
+    final String categoryString = Uri.encodeFull(category??"").replaceAll(":", "%3A").replaceAll(",","%2C");
     if(StringTools.isNotNullOrWhitespace(categoryString)) {
       return "$categoryString$categoryDeliminator$tagString";
     } else {
@@ -50,7 +60,7 @@ class TagWrapper {
     }
   }
 
-  String toQueryString() => createQueryString(tag);
+  String toQueryString() => createQueryString(this.id, this.category);
 
   bool equals(TagWrapper other) {
     if(id?.toLowerCase()==other.id?.toLowerCase()

@@ -21,15 +21,19 @@ const int defaultPerPage = 60;
 
 const String hostedFilesPath = "files";
 
-final String hostedFilesFullPath = path.join(hostedFilesPath,"full");
-final String hostedFilesThumbnailsPath = path.join(hostedFilesPath,"thumbnails");
-final String hostedFilesOriginalPath = path.join(hostedFilesPath,"original");
+const String fullFileFolderName = "full";
+const String thumbnailFileFolderName = "thumbnails";
+const String originalFileFolderName = "original";
+
+final String hostedFilesFullPath = path.join(hostedFilesPath,fullFileFolderName);
+final String hostedFilesThumbnailsPath = path.join(hostedFilesPath,thumbnailFileFolderName);
+final String hostedFilesOriginalPath = path.join(hostedFilesPath,originalFileFolderName);
 const int httpStatusServerNeedsSetup = 555;
 
 const int paginatedDataLimit = 60;
 
 const String categoryDeliminator = ";";
-const String tagDeliminator = ",";
+const String tagDeliminator = "|";
 
 const String numericFieldTypeId = "numeric";
 const String stringFieldTypeId = "string";

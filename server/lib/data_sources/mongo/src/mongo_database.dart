@@ -10,7 +10,7 @@ import 'mongo_db_connection_pool.dart';
 import 'mongo_extension_data_source.dart';
 import 'mongo_item_data_source.dart';
 import 'mongo_tag_data_source.dart';
-
+import 'mongo_background_queue_data_source.dart';
 class MongoDatabase {
   static final Logger _log = new Logger('_MongoDatabase');
 
@@ -51,8 +51,14 @@ class MongoDatabase {
   }
 
   Future<DbCollection> getBackgroundQueueCollection() async {
+    await db.createIndex(_backgroundQueueCollection,
+    keys: {
+        MongoBackgroundQueueDataSource.priorityField: 1,
+        MongoBackgroundQueueDataSource.addedField: 1
+    },
+    name: "BackgroundQueueIndex");
     final DbCollection output =
-        await getIdCollection(_backgroundQueueCollection);
+    await getIdCollection(_backgroundQueueCollection);
     return output;
   }
 

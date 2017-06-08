@@ -126,53 +126,58 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<int> replaceTags(List<Tag> originalTags, List<Tag> newTags) async {
-    if(originalTags==null||originalTags.length==0)
+    if (originalTags == null || originalTags.length == 0)
       throw new ArgumentError.notNull("originalTags");
 
     final List<Tag> tagsToAdd = <Tag>[];
     final List<Tag> tagsToRemove = <Tag>[];
 
-    for(Tag ot in originalTags) {
+    for (Tag ot in originalTags) {
       bool found = false;
-      for(Tag nt in newTags) {
-        if(ot.equals(nt)) {
+      for (Tag nt in newTags) {
+        if (ot.equals(nt)) {
           found = true;
         }
       }
-      if(!found)
-        tagsToRemove.add(ot);
+      if (!found) tagsToRemove.add(ot);
     }
-    for(Tag nt in newTags) {
+    for (Tag nt in newTags) {
       bool found = false;
-      for(Tag ot in originalTags) {
-        if(ot.equals(nt)) {
+      for (Tag ot in originalTags) {
+        if (ot.equals(nt)) {
           found = true;
         }
       }
-      if(!found)
-        tagsToAdd.add(nt);
+      if (!found) tagsToAdd.add(nt);
     }
 
     final int count = await genericCount(_createTagCriteria(originalTags));
 
-
-    if(tagsToAdd.length>0) {
-      for(Tag t in tagsToAdd) {
+    if (tagsToAdd.length > 0) {
+      for (Tag t in tagsToAdd) {
         final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
-        tagSelector.eq("tags", {$not: {
-          $elemMatch: {idField: t.id, MongoTagDataSource.categoryField: t.category}
-        }});
-        final List<dynamic> addTagMapList = MongoTagDataSource.createTagsList([t], onlyKeys: true);
-        final ModifierBuilder modifier =  modify.pushAll(tagsField, addTagMapList);
+        tagSelector.eq("tags", {
+          $not: {
+            $elemMatch: {
+              idField: t.id,
+              MongoTagDataSource.categoryField: t.category
+            }
+          }
+        });
+        final List<dynamic> addTagMapList =
+            MongoTagDataSource.createTagsList([t], onlyKeys: true);
+        final ModifierBuilder modifier =
+            modify.pushAll(tagsField, addTagMapList);
         await genericUpdate(tagSelector, modifier, multiUpdate: true);
       }
     }
 
-    if(tagsToRemove.length>0) {
+    if (tagsToRemove.length > 0) {
       final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
-      final List<dynamic> removeTagMapList = MongoTagDataSource.createTagsList(tagsToRemove, onlyKeys: true);
-      final ModifierBuilder modifier = modify
-          .pullAll(tagsField, removeTagMapList);
+      final List<dynamic> removeTagMapList =
+          MongoTagDataSource.createTagsList(tagsToRemove, onlyKeys: true);
+      final ModifierBuilder modifier =
+          modify.pullAll(tagsField, removeTagMapList);
       await genericUpdate(tagSelector, modifier, multiUpdate: true);
     }
 
@@ -186,6 +191,42 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
         () => new IdDataList<Item>(),
         (SelectorBuilder selector) async =>
             await search(query, selector: selector));
+  }
+
+  @override
+  Future<List<Item>> getVisibleRandom(String userUuid,
+      {List<Tag> filterTags,
+      int perPage: defaultPerPage,
+      bool inTrash: false}) async {
+    final List<Map> matchers = [
+      {inTrashField: inTrash}
+    ];
+
+    filterTags?.forEach((Tag t) {
+      String category;
+      if (StringTools.isNotNullOrWhitespace(t.category)) category = t.category;
+      matchers.add({
+        tagsField: {
+          $elemMatch: {
+            idField: t.id,
+            MongoTagDataSource.categoryField: category
+          }
+        }
+      });
+    });
+
+    return await collectionWrapper<List<Item>>((DbCollection col) async {
+      final List pipeline = [
+        {
+          $match: {$and: matchers}
+        },
+        {
+          $sample: {"size": perPage}
+        }
+      ];
+      final Stream<Map> str = col.aggregateToStream(pipeline);
+      return await (await streamToObject(str)).toList();
+    });
   }
 
   @override
@@ -215,10 +256,13 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<Stream<Item>> streamAll({bool inTrash: false}) async {
-    return await streamFromDb(where
-        .eq(inTrashField, inTrash)
-        .sortBy(uploadedField, descending: false));
+  Future<Stream<Item>> streamAll({DateTime cutoff, int limit: defaultPerPage}) async {
+    SelectorBuilder select = where;
+    if (cutoff != null)
+      select.gt(uploadedField, cutoff);
+    select.sortBy(uploadedField, descending: false).limit(limit);
+
+    return await streamFromDb(select);
   }
 
   @override
@@ -261,7 +305,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<Null> updateTags(String id, List<Tag> tags) async {
-    final List<dynamic> tagsList = MongoTagDataSource.createTagsList(tags, onlyKeys: true);
+    final List<dynamic> tagsList =
+        MongoTagDataSource.createTagsList(tags, onlyKeys: true);
     final ModifierBuilder modifier = modify.set(tagsField, tagsList);
     await genericUpdate(where.eq(idField, id), modifier);
   }
@@ -272,11 +317,10 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     tags.forEach((Tag t) {
       String category;
       if (StringTools.isNotNullOrWhitespace(t.category)) category = t.category;
-      output.eq("tags", {
-        "\$elemMatch": {"id": t.id, "category": category}
+      output.eq(tagsField, {
+        $elemMatch: {idField: t.id, MongoTagDataSource.categoryField: category}
       });
     });
     return output;
   }
-
 }

@@ -52,9 +52,9 @@ class TagResource extends AResource {
   }
 
   @ApiMethod(method: HttpMethod.get, path: '$searchApiPath/$tagApiPath/{query}')
-  Future<List<TagInfo>> search(String query) async {
+  Future<List<TagInfo>> search(String query, {bool countAsc: true}) async {
     return catchExceptionsAwait<List<TagInfo>>(() async {
-      return await _tagModel.search(query);
+      return await _tagModel.search(query, countAsc: countAsc);
     });
   }
 
@@ -76,7 +76,7 @@ class TagResource extends AResource {
   @ApiMethod(method: HttpMethod.delete, path: 'tag_info/')
   Future<Null> resetTagInfo() async {
     return catchExceptionsAwait(() async {
-      await _tagModel.getRedirects();
+      await _tagModel.resetTagInfo();
     });
   }
 
