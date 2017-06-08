@@ -256,11 +256,21 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<Stream<Item>> streamAll({DateTime cutoff, int limit: defaultPerPage}) async {
+  Future<Stream<Item>> streamAll({bool addedDesc: true, DateTime startDate, int limit: defaultPerPage}) async {
     SelectorBuilder select = where;
-    if (cutoff != null)
-      select.gt(uploadedField, cutoff);
-    select.sortBy(uploadedField, descending: false).limit(limit);
+
+
+    if (startDate != null) {
+      if(addedDesc) {
+        select.lt(uploadedField, startDate);
+      } else {
+        select.gt(uploadedField, startDate);
+
+      }
+    }
+
+
+    select.sortBy(uploadedField, descending: addedDesc).limit(limit);
 
     return await streamFromDb(select);
   }

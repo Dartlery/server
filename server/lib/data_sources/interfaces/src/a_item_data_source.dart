@@ -27,7 +27,7 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
 
   Future<Stream<Item>> streamByMimeType(String mimeType);
 
-  Future<Stream<Item>> streamAll({DateTime cutoff, int limit});
+  Future<Stream<Item>> streamAll({bool addedDesc: true, DateTime startDate, int limit});
 
   Future<Null> replaceTags(List<Tag> originalTags, List<Tag> newTags);
 }

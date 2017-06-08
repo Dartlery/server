@@ -55,7 +55,7 @@ class ItemComparisonExtension extends AExtension {
 
       final ImageHash sourceHash = await _getPerceptualHash(itemId);
 
-      final Stream<Item> itemStream = await _itemDataSource.streamAll(limit: 100, cutoff: startPoint);
+      final Stream<Item> itemStream = await _itemDataSource.streamAll(limit: 100, startDate: startPoint, addedDesc: true);
       DateTime lastProcessedDate;
       await for (Item targetItem in itemStream) {
         lastProcessedDate = targetItem.uploaded;
