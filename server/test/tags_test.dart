@@ -152,6 +152,15 @@ void main() {
     });
   });
 
+  group("Validation tests", () {
+    test("Reserved regex chars", () async {
+      final TagInfo newTag = new TagInfo.withValues(reservedRegexChars.join(),reservedRegexChars.join());
+      await api.items.updateTagsForItemId(initialItemId.id, [newTag]);
+      final TagInfo info = await api.tags.getTagInfo(newTag.id, newTag.category);
+      expect(info==newTag,isTrue);
+    });
+  });
+
   group("Redirect tests", () {
     setUp(() async  {
       final TagInfo redirectRequest = new TagInfo.copy(initialTag, initialCategoryTag);

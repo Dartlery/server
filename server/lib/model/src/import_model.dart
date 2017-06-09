@@ -154,8 +154,11 @@ class ImportModel {
       result.id = existingItem.id;
       final TagList existingTags = new TagList.from(existingItem.tags);
       existingTags.addAll(newTags);
-      await itemModel.updateTags(existingItem.id, existingTags.toList(), bypassAuthentication: true);
+      await itemModel.updateTags(
+          existingItem.id, existingTags.toList(), bypassAuthentication: true);
       result.result = "merged";
+    } catch(e,st) {
+      result.id = newItem.id;
     }
 
   }
