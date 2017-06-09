@@ -159,6 +159,7 @@ class ImportModel {
       result.result = "merged";
     } catch(e,st) {
       result.id = newItem.id;
+      rethrow;
     }
 
   }
