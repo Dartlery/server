@@ -52,6 +52,9 @@ class TagModel extends ATypedModel<TagInfo> {
         dbTag = await _tagDataSource.getById(tag.id, tag.category);
       }
 
+      if(dbTag.isEmpty)
+        throw new Exception("dbTag is empty: $tag");
+
       final TagList pastRedirects = new TagList();
       Tag redirect;
       while (dbTag.first.redirect != null) {
