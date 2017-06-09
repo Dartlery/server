@@ -107,7 +107,7 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData> wit
   }
 
   @override
-  ExtensionData createObject(Map<String,dynamic> data) {
+  Future<ExtensionData> createObject(Map<String,dynamic> data) async {
     final ExtensionData output = new ExtensionData();
     output.extensionId = data[extensionIdField];
     output.key = data[keyField];

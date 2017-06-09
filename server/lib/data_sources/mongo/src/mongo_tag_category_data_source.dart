@@ -19,7 +19,7 @@ static const String colorField = "color";
   MongoTagCategoryDataSource(MongoDbConnectionPool pool): super(pool);
 
   @override
-  TagCategory createObject(Map data) {
+  Future<TagCategory> createObject(Map data) async {
     return staticCreateObject(data);
   }
 

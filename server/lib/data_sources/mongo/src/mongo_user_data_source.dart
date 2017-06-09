@@ -23,7 +23,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   MongoUserDataSource(MongoDbConnectionPool pool): super(pool);
 
   @override
-  User createObject(Map data) {
+  Future<User> createObject(Map data) async {
     final User output = new User();
     AMongoIdDataSource.setIdForData(output, data);
     output.name = data[nameField];

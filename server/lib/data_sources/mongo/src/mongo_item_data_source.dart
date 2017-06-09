@@ -35,12 +35,18 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String durationField = "duration";
   static const String inTrashField = "inTrash";
   static const String fullFileAvailableField = "fullFileAvailable";
-  MongoItemDataSource(MongoDbConnectionPool pool) : super(pool);
+
+  final MongoTagDataSource _tagDataSource;
+
+  MongoItemDataSource(MongoDbConnectionPool pool, this._tagDataSource) : super(pool);
+
+
 
   @override
   Logger get childLogger => _log;
+
   @override
-  Item createObject(Map<String, dynamic> data) {
+  Future<Item> createObject(Map<String, dynamic> data) async {
     final Item output = new Item();
     AMongoIdDataSource.setIdForData(output, data);
     output.metadata = data[metadataField];
@@ -62,9 +68,12 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
     if (data[tagsField] != null) {
       output.tags = <Tag>[];
-      for (Map<dynamic, dynamic> tag in data[tagsField]) {
-        final Tag newTag = MongoTagDataSource.staticCreateObject(tag);
-        output.tags.add(newTag);
+
+      for (DbRef tag in data[tagsField]) {
+        final Option<TagInfo> newTag = await _tagDataSource.getByInternalId(tag);
+        if(newTag.isEmpty)
+          continue;
+        output.tags.add(newTag.first);
       }
     }
 
@@ -129,55 +138,23 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     if (originalTags == null || originalTags.length == 0)
       throw new ArgumentError.notNull("originalTags");
 
-    final List<Tag> tagsToAdd = <Tag>[];
-    final List<Tag> tagsToRemove = <Tag>[];
-
-    for (Tag ot in originalTags) {
-      bool found = false;
-      for (Tag nt in newTags) {
-        if (ot.equals(nt)) {
-          found = true;
-        }
-      }
-      if (!found) tagsToRemove.add(ot);
-    }
-    for (Tag nt in newTags) {
-      bool found = false;
-      for (Tag ot in originalTags) {
-        if (ot.equals(nt)) {
-          found = true;
-        }
-      }
-      if (!found) tagsToAdd.add(nt);
-    }
+    final TagDiff diff = new TagDiff(originalTags,newTags);
 
     final int count = await genericCount(_createTagCriteria(originalTags));
 
+    final List<Tag> tagsToAdd = diff.onlySecond;
+    final List<Tag> tagsToRemove = diff.onlyFirst;
+
+    final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
+
     if (tagsToAdd.length > 0) {
-      for (Tag t in tagsToAdd) {
-        final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
-        tagSelector.eq("tags", {
-          $not: {
-            $elemMatch: {
-              idField: t.id,
-              MongoTagDataSource.categoryField: t.category
-            }
-          }
-        });
-        final List<dynamic> addTagMapList =
-            MongoTagDataSource.createTagsList([t], onlyKeys: true);
-        final ModifierBuilder modifier =
-            modify.pushAll(tagsField, addTagMapList);
-        await genericUpdate(tagSelector, modifier, multiUpdate: true);
-      }
+      final ModifierBuilder modifier = modify.addToSet(tagsField, {$each: extractTagIds(tagsToAdd)});
+      await genericUpdate(tagSelector, modifier, multiUpdate: true);
     }
 
     if (tagsToRemove.length > 0) {
-      final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
-      final List<dynamic> removeTagMapList =
-          MongoTagDataSource.createTagsList(tagsToRemove, onlyKeys: true);
       final ModifierBuilder modifier =
-          modify.pullAll(tagsField, removeTagMapList);
+          modify.pullAll(tagsField, extractTagIds(tagsToRemove));
       await genericUpdate(tagSelector, modifier, multiUpdate: true);
     }
 
@@ -199,21 +176,9 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       int perPage: defaultPerPage,
       bool inTrash: false}) async {
     final List<Map> matchers = [
-      {inTrashField: inTrash}
+      {inTrashField: inTrash},
+      {tagsField: {$all: filterTags.map((Tag t) => t.internalId)}}
     ];
-
-    filterTags?.forEach((Tag t) {
-      String category;
-      if (StringTools.isNotNullOrWhitespace(t.category)) category = t.category;
-      matchers.add({
-        tagsField: {
-          $elemMatch: {
-            idField: t.id,
-            MongoTagDataSource.categoryField: category
-          }
-        }
-      });
-    });
 
     return await collectionWrapper<List<Item>>((DbCollection col) async {
       final List pipeline = [
@@ -257,19 +222,14 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<Stream<Item>> streamAll({bool addedDesc: true, DateTime startDate, int limit: defaultPerPage}) async {
-    SelectorBuilder select = where;
-
-
+    final SelectorBuilder select = where;
     if (startDate != null) {
       if(addedDesc) {
         select.lt(uploadedField, startDate);
       } else {
         select.gt(uploadedField, startDate);
-
       }
     }
-
-
     select.sortBy(uploadedField, descending: addedDesc).limit(limit);
 
     return await streamFromDb(select);
@@ -305,9 +265,10 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     if (item.tags != null) {
       final List<dynamic> tagsList = new List<dynamic>();
       for (Tag tag in item.tags) {
-        final Map<dynamic, dynamic> tagMap = <dynamic, dynamic>{};
-        MongoTagDataSource.staticUpdateMap(tag, tagMap, onlyKeys: true);
-        tagsList.add(tagMap);
+        if(tag.internalId==null) {
+          throw new Exception("Internal ID for tag not found");
+        }
+        tagsList.add(tag.internalId);
       }
       data[tagsField] = tagsList;
     }
@@ -315,22 +276,22 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<Null> updateTags(String id, List<Tag> tags) async {
-    final List<dynamic> tagsList =
-        MongoTagDataSource.createTagsList(tags, onlyKeys: true);
+    final List<dynamic> tagsList = extractTagIds(tags);
     final ModifierBuilder modifier = modify.set(tagsField, tagsList);
     await genericUpdate(where.eq(idField, id), modifier);
   }
 
+  List<dynamic> extractTagIds(List<Tag> tags) => new List<dynamic>.from(tags.map((Tag t)  {
+    if(t.internalId==null)
+      throw new Exception("Internal ID not found");
+    return t.internalId;
+  }));
+
   SelectorBuilder _createTagCriteria(List<Tag> tags) {
     final SelectorBuilder output = where;
 
-    tags.forEach((Tag t) {
-      String category;
-      if (StringTools.isNotNullOrWhitespace(t.category)) category = t.category;
-      output.eq(tagsField, {
-        $elemMatch: {idField: t.id, MongoTagDataSource.categoryField: category}
-      });
-    });
+    output.all(tagsField, extractTagIds(tags));
+
     return output;
   }
 }

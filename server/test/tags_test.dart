@@ -226,8 +226,8 @@ void main() {
       final Item i = await api.items.getById(initialItemId.id);
 
       expect(i.tags.length, 2);
-      expect(i.tags[0]==newTag, isTrue);
-      expect(i.tags[1]==initialCategoryTag, isTrue);
+      expect(i.tags[1]==newTag, isTrue);
+      expect(i.tags[0]==initialCategoryTag, isTrue);
     });
 
     test("Item update", () async {
@@ -242,8 +242,8 @@ void main() {
       i = await api.items.getById(initialItemId.id);
 
       expect(i.tags.length, 2);
-      expect(i.tags[0]==newTag, isTrue);
-      expect(i.tags[1]==initialCategoryTag, isTrue);
+      expect(i.tags[1]==newTag, isTrue);
+      expect(i.tags[0]==initialCategoryTag, isTrue);
     });
 
     test("Tag replace", () async {

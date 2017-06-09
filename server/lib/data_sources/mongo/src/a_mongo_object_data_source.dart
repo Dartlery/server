@@ -39,7 +39,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   }
 
   @protected
-  T createObject(Map<String, Map> data);
+  Future<T> createObject(Map<String, Map> data);
 
   @protected
   @override
@@ -69,10 +69,11 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
 
 
   Future<Stream<T>> streamToObject(Stream str) async {
-    return str.map<T>((Map data) {
+
+    return str.asyncMap<T>((Map data) async {
       if(data.containsKey("\$err"))
         throw new Exception("Database error: $data['\$err']");
-      return createObject(data);
+      return await createObject(data);
     });
   }
 

@@ -50,7 +50,7 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult> 
   }
 
   @override
-  ImportResult createObject(Map<String,dynamic> data) {
+  Future<ImportResult> createObject(Map<String,dynamic> data) async {
     final ImportResult output = new ImportResult();
     output.id = data[idField];
     output.fileName = data[fileNameField];

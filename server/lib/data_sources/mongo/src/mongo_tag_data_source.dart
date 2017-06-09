@@ -27,57 +27,65 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   String get secondIdField => categoryField;
 
   @override
-  TagInfo createObject(Map data) {
-    return staticCreateObject(data);
-  }
-
-  static Tag staticCreateObject(Map data) {
+  Future<TagInfo> createObject(Map data) async {
     final TagInfo output = new TagInfo();
+
     if (data[redirectField] != null) {
-      output.redirect = staticCreateObject(data[redirectField]);
+      final Option<TagInfo> redirect = await getByInternalId(data[redirectField]);
+      if(redirect.isEmpty)
+        throw new Exception("Redirect tag target not found");
+
+      output.redirect = redirect.first;
     }
 
     AMongoTwoIdDataSource.setIdForData(output, data);
     output.category = data[categoryField];
     output.count = data[countField] ?? 0;
+    output.internalId = new DbRef(tagsCollection, data[internalIdField]);
     return output;
   }
 
   @override
   Future<List<TagInfo>> getRedirects() async {
     return new List<TagInfo>.from(
-        await getFromDb(where.exists("$redirectField.$idField")));
+        await getFromDb(where.exists(redirectField)));
   }
 
-  SelectorBuilder _createTagCriteria(String id, String category, {String fieldPrefix = ""}) {
-    if(StringTools.isNotNullOrWhitespace(fieldPrefix))
+  SelectorBuilder _createTagCriteria(String id, String category,
+      {String fieldPrefix = ""}) {
+    if (StringTools.isNotNullOrWhitespace(fieldPrefix))
       fieldPrefix = "$fieldPrefix.";
 
-    final SelectorBuilder select = where
-        .eq("$fieldPrefix$idField", {$regex: "^$id\$", $options: '-i'});
+    final SelectorBuilder select =
+        where.eq("$fieldPrefix$idField", {$regex: "^$id\$", $options: '-i'});
 
-    if(StringTools.isNullOrWhitespace(category)) {
-      select.eq(
-          "$fieldPrefix$categoryField",null);
+    if (StringTools.isNullOrWhitespace(category)) {
+      select.eq("$fieldPrefix$categoryField", null);
     } else {
-      select.eq(
-          "$fieldPrefix$categoryField",
+      select.eq("$fieldPrefix$categoryField",
           {$regex: "^$category\$", $options: '-i'});
     }
-
 
     return select;
   }
 
   @override
   Future<List<TagInfo>> getByRedirect(String id, String category) async {
-    final SelectorBuilder select = _createTagCriteria(id, category, fieldPrefix: redirectField);
+    final SelectorBuilder select =
+        _createTagCriteria(id, category, fieldPrefix: redirectField);
     return new List<TagInfo>.from(await getFromDb(select));
   }
 
   @override
   Future<Option<TagInfo>> getById(String id, String category) async {
     final SelectorBuilder select = _createTagCriteria(id, category);
+    return getForOneFromDb(select);
+  }
+
+  Future<Option<TagInfo>> getByInternalId(DbRef internalId) async {
+    if(internalId.collection!=tagsCollection)
+      throw new Exception("DbRef not for this collection");
+    final SelectorBuilder select = where.eq("_id", internalId.id);
     return getForOneFromDb(select);
   }
 
@@ -90,9 +98,11 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   @override
   Future<String> update(String id, String category, Tag object) async {
-    final SelectorBuilder select = _createTagCriteria(id, category, fieldPrefix: redirectField);
+    final SelectorBuilder select =
+        _createTagCriteria(id, category, fieldPrefix: redirectField);
     final String output = await super.update(id, category, object);
-    await genericUpdate(select,
+    await genericUpdate(
+        select,
         modify
             .set("$redirectField.$idField", object.id)
             .set("$redirectField.$categoryField", object.category));
@@ -102,10 +112,10 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   @override
   Future<int> countTagUse(Tag t) async {
     return databaseWrapper<int>((MongoDatabase con) async {
+      if(t.internalId==null)
+        throw new Exception("Tag internal ID missing");
       final DbCollection itemsCol = await con.getItemsCollection();
-      return await itemsCol.count(where.eq("tags", {
-        $elemMatch: {idField: t.id, categoryField: t.category}
-      }));
+      return await itemsCol.count(where.eq("tags", t.internalId));
     });
   }
 
@@ -136,9 +146,10 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     if (tags.length == 0) throw new ArgumentError.notNull("tags");
 
     for (Tag t in tags) {
+      if(t.internalId==null)
+        throw new Exception("Tag internal ID missing");
       final int count = await countTagUse(t);
-      final SelectorBuilder select =
-          where.eq(idField, t.id).eq(categoryField, t.category);
+      final SelectorBuilder select = where.eq(internalIdField, t.internalId.id);
       await genericUpdate(select, modify.set(countField, count),
           multiUpdate: false);
     }
@@ -171,20 +182,18 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
         {$unwind: "\$tags"},
         {
           $group: {
-            "_id": "\$tags",
+            internalIdField: "\$tags",
             "count": {$sum: 1}
           }
         }
       ]);
       await for (Map agr in pipe) {
-        final Tag t =
-            new Tag.withValues(agr["_id"][idField], agr["_id"][categoryField]);
-
-        if (!await existsById(t.id, t.category))
-          await create(new TagInfo.copy(t));
+        final Option<TagInfo> t = await getByInternalId(agr[internalIdField]);
+        if(t.isEmpty)
+          throw new Exception("Item tag missing: ${agr[internalIdField]}");
 
         await tagCol.update(
-            where.eq(idField, t.id).eq(categoryField, t.category),
+            where.eq(internalIdField,agr[internalIdField]),
             modify.set(countField, agr["count"]),
             multiUpdate: false);
       }
@@ -201,36 +210,32 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   @override
   void updateMap(TagInfo tag, Map data) {
-    staticUpdateMap(tag, data);
-  }
-
-  static void staticUpdateMap(Tag tag, Map data, {bool onlyKeys: false}) {
     AMongoTwoIdDataSource.staticUpdateMap(tag, data);
     if (StringTools.isNullOrWhitespace(tag.category))
       data[categoryField] = null;
     else
       data[categoryField] = tag.category;
-    if (!onlyKeys) {
-      data[fullNameField] = tag.fullName;
 
-      if (tag is TagInfo && tag.redirect != null) {
-        final Map redirect = {};
-        staticUpdateMap(tag.redirect, redirect, onlyKeys: true);
-        data[redirectField] = redirect;
-      } else if (data.containsKey(redirectField)) {
-        data.remove(redirectField);
-      }
+    data[fullNameField] = tag.fullName;
+
+    if (tag is TagInfo && tag.redirect != null) {
+      if(tag.redirect.internalId==null)
+        throw new Exception("Redirect tag internal ID not found");
+
+      data[redirectField] = tag.redirect.internalId;
+    } else if (data.containsKey(redirectField)) {
+      data.remove(redirectField);
     }
     // Note: We do not update the tag count, that is only done by increment functions
   }
 
-  static List<Map> createTagsList(List<Tag> tags, {bool onlyKeys: false}) {
-    final List<Map> output = <Map>[];
-    for (Tag tag in tags) {
-      final Map<dynamic, dynamic> tagMap = <dynamic, dynamic>{};
-      MongoTagDataSource.staticUpdateMap(tag, tagMap, onlyKeys: onlyKeys);
-      output.add(tagMap);
-    }
-    return output;
-  }
+//  List<Map> _createTagsList(List<Tag> tags, {bool onlyKeys: false}) {
+//    final List<Map> output = <Map>[];
+//    for (Tag tag in tags) {
+//      final Map<dynamic, dynamic> tagMap = <dynamic, dynamic>{};
+//      updateMap(tag, tagMap, onlyKeys: onlyKeys);
+//      output.add(tagMap);
+//    }
+//    return output;
+//  }
 }

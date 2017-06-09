@@ -16,7 +16,6 @@ class MongoDatabase {
 
   static const String _settingsCollection = "settings";
   static const String _itemsCollection = "items";
-  static const String _tagsCollection = "tags";
   static const String _tagCategoriesCollection = "tagCategories";
   static const String _usersCollection = "users";
   static const String _backgroundQueueCollection = "backgroundQueue";
@@ -41,7 +40,7 @@ class MongoDatabase {
     await db.createIndex(_itemsCollection,
         keys: {
           MongoItemDataSource.inTrashField: 1,
-          MongoItemDataSource.tagsField: -1,
+          MongoItemDataSource.tagsField: 1,
           MongoItemDataSource.uploadedField: -1
         },
         name: "ItemTagsIndex");
@@ -95,13 +94,13 @@ class MongoDatabase {
   }
 
   Future<DbCollection> getTagsCollection() async {
-    await db.createIndex(_tagsCollection,
+    await db.createIndex(tagsCollection,
         keys: {idField: 1, MongoTagDataSource.categoryField: 1}, name: "IdIndex", unique: true);
-    await db.createIndex(_tagsCollection,
+    await db.createIndex(tagsCollection,
         keys: {MongoTagDataSource.redirectField: 1}, name: "RedirectIndex", unique: false, sparse: true);
-    await db.createIndex(_tagsCollection,
+    await db.createIndex(tagsCollection,
         keys: {MongoTagDataSource.fullNameField: "text"}, name: "TagTextIndex");
-    final DbCollection output = db.collection(_tagsCollection);
+    final DbCollection output = db.collection(tagsCollection);
 
     return output;
   }

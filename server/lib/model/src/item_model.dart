@@ -96,7 +96,7 @@ class ItemModel extends AIdBasedModel<Item> {
     item.id = "temporary";
     await validate(item);
 
-    await _tagModel.handleTags(item.tags);
+    await _tagModel.handleTags(item.tags, createTags: true);
 
     await _handleFileUpload(item);
     item.uploaded = new DateTime.now();
@@ -374,6 +374,9 @@ class ItemModel extends AIdBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateSearchPrivileges();
+
+    await _tagModel.handleTags(tags);
+
     return await dataSource.searchVisiblePaginated(this.currentUserId, tags,
         page: page, perPage: perPage, cutoffDate: cutoffDate);
   }
@@ -383,7 +386,7 @@ class ItemModel extends AIdBasedModel<Item> {
       {bool bypassAuthentication: false}) async {
     if (!bypassAuthentication) await validateUpdatePrivileges(id);
 
-    await _tagModel.handleTags(item.tags);
+    await _tagModel.handleTags(item.tags, createTags: true);
 
     final Option<Item> existingItem = await itemDataSource.getById(id);
     if(existingItem.isEmpty)
@@ -411,7 +414,7 @@ class ItemModel extends AIdBasedModel<Item> {
     if(existingItem.isEmpty)
       throw new NotFoundException("Item $itemId not found");
 
-    await _tagModel.handleTags(newTags);
+    await _tagModel.handleTags(newTags, createTags: true);
     await itemDataSource.updateTags(itemId, newTags);
 
     final TagDiff diff = new TagDiff(existingItem.first.tags, newTags);

@@ -11,6 +11,12 @@ const String $sample = r"$sample";
 const String $and = r"$and";
 const String $regex = r"$regex";
 const String $options = r"$options";
+const String $all = r"$all";
+const String $each = r"$each";
+
+const String tagsCollection = "tags";
+
 
 const String idField = "id";
 const String nameField = "name";
+const String internalIdField = "_id";

@@ -49,7 +49,7 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
   }
 
   @override
-  BackgroundQueueItem createObject(Map<String,dynamic> data) {
+  Future<BackgroundQueueItem> createObject(Map<String,dynamic> data) async {
     final BackgroundQueueItem output = new BackgroundQueueItem();
     output.id = data[idField];
     output.data = data[dataField];

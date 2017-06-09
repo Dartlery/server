@@ -8,6 +8,9 @@ import 'package:dartlery_shared/global.dart';
 
 @ApiMessage(includeSuper: true)
 class Tag extends AIdData {
+  @ApiProperty(ignore: true)
+  dynamic internalId;
+
   String category;
 
   Tag();
