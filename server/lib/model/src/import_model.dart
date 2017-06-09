@@ -143,14 +143,11 @@ class ImportModel {
 
   Future<Null> _createItem(Item newItem, ImportResult result) async {
     try {
-      try {
-        await itemModel.create(newItem, bypassAuthentication: true);
-      } finally {
-        result.id = newItem.id;
-      }
+      await itemModel.create(newItem, bypassAuthentication: true);
+      result.id = newItem.id;
       _log.info("Imported new file ${result.id}");
       result.result = "added";
-    } on DuplicateItemException {
+    } on DuplicateItemException catch(e,st) {
       _log.info("Item already exists, merging");
       final TagList newTags = new TagList.from(newItem.tags);
       final Item existingItem = await itemModel.getById(newItem.id);
@@ -160,6 +157,7 @@ class ImportModel {
       await itemModel.updateTags(existingItem.id, existingTags.toList(), bypassAuthentication: true);
       result.result = "merged";
     }
+
   }
 
   final RegExp shimmieFileRegexp = new RegExp(r"^\d+ \- (.+)$");

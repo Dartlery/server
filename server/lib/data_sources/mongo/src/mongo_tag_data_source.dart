@@ -53,17 +53,17 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   SelectorBuilder _createTagCriteria(String id, String category,
       {String fieldPrefix = ""}) {
+
     if (StringTools.isNotNullOrWhitespace(fieldPrefix))
       fieldPrefix = "$fieldPrefix.";
 
     final SelectorBuilder select =
-        where.eq("$fieldPrefix$idField", {$regex: "^$id\$", $options: '-i'});
+        where.match("$fieldPrefix$idField", "^${escapeAll(id)}\$", caseInsensitive: true);
 
     if (StringTools.isNullOrWhitespace(category)) {
       select.eq("$fieldPrefix$categoryField", null);
     } else {
-      select.eq("$fieldPrefix$categoryField",
-          {$regex: "^$category\$", $options: '-i'});
+      select.match("$fieldPrefix$categoryField", "^${escapeAll(category)}\$", caseInsensitive: true);
     }
 
     return select;

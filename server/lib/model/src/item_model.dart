@@ -96,9 +96,10 @@ class ItemModel extends AIdBasedModel<Item> {
     item.id = "temporary";
     await validate(item);
 
+    await _handleFileUpload(item);
+
     await _tagModel.handleTags(item.tags, createTags: true);
 
-    await _handleFileUpload(item);
     item.uploaded = new DateTime.now();
 
     await _extensionServices.sendCreatingItem(item);

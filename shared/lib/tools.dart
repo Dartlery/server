@@ -19,6 +19,18 @@ final RegExp hexColorRegex = new RegExp(hexColorRegexString);
 
 path.Context urlPath = new path.Context(style: path.Style.url);
 
+const List<String> reservedRegexChars = const <String>[r'\', '.', '^', r'$', '*', '+', '-', '?', '(', ')', '[', ']', '{', '}', '|'];
+
+
+
+String escapeAll(String input) {
+  String output = input;
+  reservedRegexChars.forEach((String c) {
+    output = output.replaceAll(c, "\\$c");
+  });
+  return output;
+}
+
 /// Takes a hex character only uuid string and formats it with dashes at the appropriate locations.
 String formatUuid(String input) {
   final StringBuffer output = new StringBuffer();

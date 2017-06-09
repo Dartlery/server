@@ -48,7 +48,11 @@ class TagModel extends ATypedModel<TagInfo> {
             tag.category = dbCategory.first.id;
           }
         }
-        await _tagDataSource.create(new TagInfo.copy(tag));
+        try {
+          await _tagDataSource.create(new TagInfo.copy(tag));
+        } on DuplicateItemException catch(e,st) {
+          rethrow;
+        }
         dbTag = await _tagDataSource.getById(tag.id, tag.category);
       }
 
