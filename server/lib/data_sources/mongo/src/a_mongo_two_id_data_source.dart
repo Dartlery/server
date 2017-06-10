@@ -31,6 +31,11 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
   Future<IdDataList<T>> getAll({String sortField: null}) =>
       getListFromDb(where.sortBy(sortField ?? idField));
 
+  @override
+  Future<PaginatedIdData<T>> getAllPaginated({int page: 0,
+    int perPage: defaultPerPage});
+
+
   Future<PaginatedIdData<T>> getPaginated(
           {String sortField: null,
           int offset: 0,
@@ -79,12 +84,12 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
           sortField: sortField));
 
   @override
-  Future<PaginatedIdData<T>> searchPaginated(String query,
+  Future<PaginatedIdData<T>> genericSearchPaginated(String query,
           {SelectorBuilder selector,
           int offset: 0,
           int limit: paginatedDataLimit}) async =>
       new PaginatedIdData<T>.copyPaginatedData(
-          await super.searchPaginated(query, selector: selector, offset: offset, limit: limit));
+          await super.genericSearchPaginated(query, selector: selector, offset: offset, limit: limit));
 
   @protected
   Future<IdDataList<T>> getListFromDb(dynamic selector) async =>

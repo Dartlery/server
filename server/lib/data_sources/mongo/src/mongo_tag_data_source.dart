@@ -31,8 +31,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   @override
   Future<Null> cleanUpTags() async {
     await databaseWrapper((MongoDatabase con) async {
-        final DbCollection itemsCol = await con.getItemsCollection();
-        final DbCollection tagCol = await con.getTagsCollection();
+      final DbCollection itemsCol = await con.getItemsCollection();
+      final DbCollection tagCol = await con.getTagsCollection();
 
       await tagCol.update({}, modify.set(countField, 0), multiUpdate: true);
 
@@ -98,6 +98,15 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   }
 
   @override
+  Future<PaginatedData<TagInfo>> getAllPaginated({int page: 0,
+    int perPage: defaultPerPage, bool countAsc: null}) async {
+    final SelectorBuilder sb = where;
+    if(countAsc!=null)
+      sb.sortBy(countField, descending: !countAsc);
+    return await getPaginatedFromDb(sb, offset: getOffset(page, perPage), limit: perPage);
+  }
+
+  @override
   Future<Option<TagInfo>> getById(String id, String category) async {
     final SelectorBuilder select = _createTagCriteria(id, category);
     return getForOneFromDb(select);
@@ -157,7 +166,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   Future<IdDataList<TagInfo>> search(String query,
       {SelectorBuilder selector,
       String sortBy,
-      int limit,
+      int limit: defaultPerPage,
       bool countAsc: true}) async {
     SelectorBuilder sb;
     if (selector == null)
@@ -165,14 +174,32 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     else
       sb = selector;
 
-    sb = sb
+    sb
         .match(fullNameField, ".*${escapeAll(query)}.*",
-            multiLine: false, caseInsensitive: true)
-        .sortBy(countField, descending: !countAsc)
-        .sortBy(sortBy ?? fullNameField)
-        .limit(limit ?? 25);
+        multiLine: false, caseInsensitive: true);
+
+    if(countAsc!=null)
+      sb.sortBy(countField, descending: !countAsc);
+
+    sb.sortBy(sortBy ?? fullNameField).limit(limit ?? 25);
 
     return await super.getListFromDb(sb);
+  }
+
+  @override
+  Future<PaginatedData<TagInfo>> searchPaginated(String query,
+      {int page: 0,
+        int perPage: defaultPerPage, bool countAsc: true}) async {
+    final SelectorBuilder sb = where
+        .match(fullNameField, ".*${escapeAll(query)}.*",
+            multiLine: false, caseInsensitive: true);
+
+      if(countAsc!=null)
+        sb.sortBy(countField, descending: !countAsc);
+
+        sb.sortBy(fullNameField);
+
+    return await getPaginatedFromDb(sb, limit: perPage, offset: getOffset(page, perPage));
   }
 
   @override

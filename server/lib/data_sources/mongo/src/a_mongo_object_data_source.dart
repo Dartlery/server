@@ -23,7 +23,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
     return await getFromDb(searchSelector);
   }
 
-  Future<PaginatedData<T>> searchPaginated(String query,
+  Future<PaginatedData<T>> genericSearchPaginated(String query,
       {SelectorBuilder selector,
       int offset: 0,
       int limit: paginatedDataLimit}) async {

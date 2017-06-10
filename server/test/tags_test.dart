@@ -50,9 +50,9 @@ void main() {
     });
 
     test("getAllTagInfo()", () async {
-      final TagList info = new TagList.from(await api.tags.getAllTagInfo());
+      final PaginatedData<TagInfo> info  =  await api.tags.getAllTagInfo();
       expect(info, isNotNull);
-      expect(info.length,3);
+      expect(info.count,3);
     });
 
     test("resetTagInfo()", () async {
@@ -66,11 +66,11 @@ void main() {
     });
 
     test("search()", () async {
-      final List<Tag> tags = await api.tags.search(testTagName);
+      final PaginatedData<TagInfo> tags = await api.tags.search(testTagName);
 
-      expect(tags.length, 2);
+      expect(tags.count, 2);
       expect(tags.first==initialCategoryTag, isTrue);
-      expect(tags[1]==initialTag, isTrue);
+      expect(tags.data[1]==initialTag, isTrue);
     });
 
 

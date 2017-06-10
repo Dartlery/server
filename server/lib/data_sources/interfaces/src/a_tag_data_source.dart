@@ -1,3 +1,4 @@
+import 'package:dartlery_shared/global.dart';
 import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:dartlery/data/data.dart';
@@ -11,7 +12,15 @@ abstract class ATagDataSource extends ATwoIdBasedDataSource<TagInfo> {
   Future<Null> deleteByRedirect(String id, String category);
 
   @override
-  Future<IdDataList<Tag>> search(String query, {int limit, bool countAsc: true});
+  Future<PaginatedData<TagInfo>> getAllPaginated({int page: 0,
+    int perPage: defaultPerPage, bool countAsc: null});
+
+
+  @override
+  Future<IdDataList<TagInfo>> search(String query, {int limit: defaultPerPage, bool countAsc: true});
+
+  Future<PaginatedData<TagInfo>> searchPaginated(String query, {int page: 0,
+    int perPage: defaultPerPage, bool countAsc: true});
 
   /// This function should cause all tags to be re-counted
   /// and unused tags to be deleted.

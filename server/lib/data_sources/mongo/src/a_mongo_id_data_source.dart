@@ -76,12 +76,12 @@ abstract class AMongoIdDataSource<T extends AIdData>
           sortField: sortField, sortDescending: sortDescending));
 
   @override
-  Future<PaginatedIdData<T>> searchPaginated(String query,
+  Future<PaginatedIdData<T>> genericSearchPaginated(String query,
           {SelectorBuilder selector,
           int offset: 0,
           int limit: paginatedDataLimit}) async =>
       new PaginatedIdData<T>.copyPaginatedData(
-          await super.searchPaginated(query, offset: offset, limit: limit));
+          await super.genericSearchPaginated(query, offset: offset, limit: limit));
 
   @protected
   Future<IdDataList<T>> getListFromDb(dynamic selector) async =>

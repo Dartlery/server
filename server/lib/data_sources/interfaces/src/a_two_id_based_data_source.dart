@@ -3,11 +3,14 @@ import 'package:logging/logging.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:option/option.dart';
 import 'a_data_source.dart';
+import 'package:dartlery_shared/global.dart';
 
 abstract class ATwoIdBasedDataSource<T extends AIdData> extends ADataSource {
   static final Logger _log = new Logger('ATwoIdBasedDataSource');
 
   Future<IdDataList<T>> getAll();
+  Future<PaginatedData<T>> getAllPaginated({int page: 0,
+    int perPage: defaultPerPage});
   Future<Option<T>> getById(String id, String id2);
   Future<String> create(T t);
   Future<String> update(String id, String id2, T t);

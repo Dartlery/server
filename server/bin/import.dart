@@ -48,7 +48,7 @@ Future<Null> main(List<String> args) async {
       if (StringTools.isNotNullOrWhitespace(argResults["start"])) {
         final int start = int.parse(argResults["start"]);
         await importModel.importFromShimmie(argResults["path"],
-            stopOnError: true, startAt: start);
+            stopOnError: stopOnError, startAt: start);
       } else {
         await importModel.importFromShimmie(argResults["path"],
             stopOnError: stopOnError);

@@ -1,3 +1,4 @@
+import 'package:options_file/options_file.dart';
 import 'package:rpc/rpc.dart';
 import 'package:test/test.dart';
 import 'package:dartlery/api/api.dart';
@@ -51,7 +52,13 @@ Future<Null> _nukeDatabase(String connectionString) async {
 
 Future<Server> setUpServer() async {
   final String serverUuid = generateUuid();
-  final String connectionString = "mongodb://192.168.1.10:27017/dartlery_test_$serverUuid";
+  String connectionString = "mongodb://127.0.0.1:27017/dartlery_test_$serverUuid";
+
+  try {
+    final OptionsFile optionsFile = new OptionsFile('test.options');
+    connectionString = optionsFile.getString("connection_string",connectionString);
+  } on FileSystemException {}
+
   await _nukeDatabase(connectionString);
   disableSetup();
 

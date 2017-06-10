@@ -23,63 +23,6 @@ class TagResource extends AResource {
   String get resourcePath => tagApiPath;
 
 
-  @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/')
-  Future<CountResponse> replace(ReplaceTagsRequest request) async {
-    return catchExceptionsAwait<CountResponse>(() async {
-      return new CountResponse(await _tagModel.replace(request.originalTags, request.newTags));
-    });
-  }
-
-  @ApiMethod(method: HttpMethod.get, path: '$tagApiPath/')
-  Future<List<TagInfo>> getAllTagInfo() async {
-    return catchExceptionsAwait<List<TagInfo>>(() async {
-      return _tagModel.getAllInfo();
-    });
-  }
-
-  @ApiMethod(method: HttpMethod.get, path: '$tagApiPath/{id}/{category}/')
-  Future<TagInfo> getTagInfo(String id, String category) async {
-    return catchExceptionsAwait<TagInfo>(() async {
-      return _tagModel.getInfo(id, category);
-    });
-  }
-
-  @ApiMethod(method: HttpMethod.get, path: '$tagApiPath/{id}/')
-  Future<TagInfo> getTagInfoWithoutCategory(String id) async {
-    return catchExceptionsAwait<TagInfo>(() async {
-      return _tagModel.getInfo(id);
-    });
-  }
-
-  @ApiMethod(method: HttpMethod.get, path: '$searchApiPath/$tagApiPath/{query}')
-  Future<List<TagInfo>> search(String query, {bool countAsc: true}) async {
-    return catchExceptionsAwait<List<TagInfo>>(() async {
-      return await _tagModel.search(query, countAsc: countAsc);
-    });
-  }
-
-  @ApiMethod(method: HttpMethod.put, path: 'tag_redirects/')
-  Future<Null> setRedirect(TagInfo request) async {
-    return catchExceptionsAwait(() async {
-      await _tagModel.setRedirect(request);
-    });
-  }
-
-  @ApiMethod(method: HttpMethod.get, path: 'tag_redirects/')
-  Future<List<TagInfo>> getRedirects() async {
-    return catchExceptionsAwait<List<TagInfo>>(() async {
-      return await _tagModel.getRedirects();
-    });
-  }
-
-
-  @ApiMethod(method: HttpMethod.delete, path: 'tag_info/')
-  Future<Null> resetTagInfo() async {
-    return catchExceptionsAwait(() async {
-      await _tagModel.resetTagInfo();
-    });
-  }
-
   @ApiMethod(method: HttpMethod.delete, path: 'tag_redirects/{id}/{category}/')
   Future<Null> clearRedirect(String id, String category) async {
     return catchExceptionsAwait(() async {
@@ -105,6 +48,65 @@ class TagResource extends AResource {
   Future<CountResponse> deleteWithoutCategory(String id) async {
     return catchExceptionsAwait(() async {
       return new CountResponse(await _tagModel.delete(id, null));
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.get, path: '$tagApiPath/')
+  Future<PaginatedData<TagInfo>> getAllTagInfo({int page: 0,
+    int perPage: defaultPerPage, bool countAsc: null}) async {
+    return catchExceptionsAwait<PaginatedData<TagInfo>>(() async {
+      return _tagModel.getAllInfo(page: page, perPage: perPage, countAsc: countAsc);
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.get, path: 'tag_redirects/')
+  Future<List<TagInfo>> getRedirects() async {
+    return catchExceptionsAwait<List<TagInfo>>(() async {
+      return await _tagModel.getRedirects();
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.get, path: '$tagApiPath/{id}/{category}/')
+  Future<TagInfo> getTagInfo(String id, String category) async {
+    return catchExceptionsAwait<TagInfo>(() async {
+      return _tagModel.getInfo(id, category);
+    });
+  }
+
+
+  @ApiMethod(method: HttpMethod.get, path: '$tagApiPath/{id}/')
+  Future<TagInfo> getTagInfoWithoutCategory(String id) async {
+    return catchExceptionsAwait<TagInfo>(() async {
+      return _tagModel.getInfo(id);
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/')
+  Future<CountResponse> replace(ReplaceTagsRequest request) async {
+    return catchExceptionsAwait<CountResponse>(() async {
+      return new CountResponse(await _tagModel.replace(request.originalTags, request.newTags));
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.delete, path: 'tag_info/')
+  Future<Null> resetTagInfo() async {
+    return catchExceptionsAwait(() async {
+      await _tagModel.resetTagInfo();
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.get, path: '$searchApiPath/$tagApiPath/{query}')
+  Future<PaginatedData<TagInfo>> search(String query, {int page: 0,
+    int perPage: defaultPerPage, bool countAsc: null}) async {
+    return catchExceptionsAwait<PaginatedData<TagInfo>>(() async {
+      return await _tagModel.search(query, countAsc: countAsc, perPage: perPage, page: page);
+    });
+  }
+
+  @ApiMethod(method: HttpMethod.put, path: 'tag_redirects/')
+  Future<Null> setRedirect(TagInfo request) async {
+    return catchExceptionsAwait(() async {
+      await _tagModel.setRedirect(request);
     });
   }
 
