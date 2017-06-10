@@ -31,7 +31,7 @@ class TagsPage extends APage implements OnDestroy {
   final SelectionModel<String> categorySelection =
     new SelectionModel<String>.withList();
 
-  String tagQuery = "";
+  String tagQuery = "A";
 
   api.Tag model = new api.Tag();
 

@@ -34,7 +34,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
       final DbCollection itemsCol = await con.getItemsCollection();
       final DbCollection tagCol = await con.getTagsCollection();
 
-      await tagCol.update({}, modify.set(countField, 0));
+      await tagCol.update(where, modify.set(countField, 0));
 
       final Stream<Map> pipe = itemsCol.aggregateToStream([
         {$unwind: "\$tags"},
@@ -166,8 +166,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
       sb = selector;
 
     sb = sb
-        .match(fullNameField, ".*$query.*",
-            multiLine: false, caseInsensitive: true, dotAll: true)
+        .match(fullNameField, ".*${escapeAll(query)}.*",
+            multiLine: false, caseInsensitive: true)
         .sortBy(countField, descending: !countAsc)
         .sortBy(sortBy ?? fullNameField)
         .limit(limit ?? 25);
