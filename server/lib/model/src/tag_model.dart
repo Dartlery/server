@@ -159,7 +159,7 @@ class TagModel extends ATypedModel<TagInfo> {
   }
 
   Future<Null> resetTagInfo() async {
-    _tagDataSource.cleanUpTags();
+    await _tagDataSource.cleanUpTags();
   }
 
   Future<List<TagInfo>> search(String query,

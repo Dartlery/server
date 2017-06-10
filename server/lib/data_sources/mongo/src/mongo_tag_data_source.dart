@@ -31,8 +31,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   @override
   Future<Null> cleanUpTags() async {
     await databaseWrapper((MongoDatabase con) async {
-      final DbCollection itemsCol = await con.getItemsCollection();
-      final DbCollection tagCol = await con.getTagsCollection();
+        final DbCollection itemsCol = await con.getItemsCollection();
+        final DbCollection tagCol = await con.getTagsCollection();
 
       await tagCol.update(null, modify.set(countField, 0));
 
