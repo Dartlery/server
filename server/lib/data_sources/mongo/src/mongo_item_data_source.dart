@@ -69,8 +69,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     if (data[tagsField] != null) {
       output.tags = <Tag>[];
 
-      for (DbRef tag in data[tagsField]) {
-        final Option<TagInfo> newTag = await _tagDataSource.getByInternalId(tag);
+      for (ObjectId id in data[tagsField]) {
+        final Option<TagInfo> newTag = await _tagDataSource.getByInternalId(id);
         if(newTag.isEmpty)
           continue;
         output.tags.add(newTag.first);

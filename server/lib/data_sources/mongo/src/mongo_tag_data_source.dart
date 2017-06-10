@@ -41,7 +41,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     AMongoTwoIdDataSource.setIdForData(output, data);
     output.category = data[categoryField];
     output.count = data[countField] ?? 0;
-    output.internalId = new DbRef(tagsCollection, data[internalIdField]);
+    output.internalId = data[internalIdField];
     return output;
   }
 
@@ -82,10 +82,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     return getForOneFromDb(select);
   }
 
-  Future<Option<TagInfo>> getByInternalId(DbRef internalId) async {
-    if(internalId.collection!=tagsCollection)
-      throw new Exception("DbRef not for this collection");
-    final SelectorBuilder select = where.eq("_id", internalId.id);
+  Future<Option<TagInfo>> getByInternalId(ObjectId internalId) async {
+    final SelectorBuilder select = where.eq("_id", internalId);
     return getForOneFromDb(select);
   }
 
@@ -149,7 +147,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
       if(t.internalId==null)
         throw new Exception("Tag internal ID missing");
       final int count = await countTagUse(t);
-      final SelectorBuilder select = where.eq(internalIdField, t.internalId.id);
+      final SelectorBuilder select = where.eq(internalIdField, t.internalId);
       await genericUpdate(select, modify.set(countField, count),
           multiUpdate: false);
     }
@@ -161,10 +159,10 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     if (amount == 0) throw new ArgumentError.value(amount, "amount");
 
     final SelectorBuilder select =
-        where.eq(idField, tags[0].id).eq(categoryField, tags[0].category);
+        where.eq(internalIdField, tags[0].internalId);
     for (int i = 1; i < tags.length; i++) {
       select.or(
-          where.eq(idField, tags[i].id).eq(categoryField, tags[i].category));
+          where.eq(internalIdField, tags[i].internalId));
     }
 
     final ModifierBuilder modifier = modify.inc(countField, amount);
