@@ -38,10 +38,10 @@ class ItemComparisonExtension extends AExtension {
     try {
       String itemId;
       DateTime startPoint;
-      if(item.data.contains(":")){
+      if (item.data.contains(":")) {
         final int i = item.data.indexOf(":");
-        itemId = item.data.substring(0,i);
-        startPoint = DateTime.parse(item.data.substring(i+1));
+        itemId = item.data.substring(0, i);
+        startPoint = DateTime.parse(item.data.substring(i + 1));
       } else {
         itemId = item.data;
       }
@@ -52,46 +52,45 @@ class ItemComparisonExtension extends AExtension {
 
       if (!MimeTypes.imageTypes.contains(sourceItem.first.mime)) return;
 
-      if(startPoint==null)
-        startPoint = sourceItem.first.uploaded;
+      if (startPoint == null) startPoint = sourceItem.first.uploaded;
 
       _log.info("Checking for item $itemId starting with $startPoint");
-      
+
       final ImageHash sourceHash = await _getPerceptualHash(itemId);
 
-      final Stream<Item> itemStream = await _itemDataSource.streamAll(limit: 500, startDate: startPoint, addedDesc: true);
+      final Stream<Item> itemStream = await _itemDataSource.streamAll(
+          limit: 500, startDate: startPoint, addedDesc: true);
       DateTime lastProcessedDate;
       await for (Item targetItem in itemStream) {
         lastProcessedDate = targetItem.uploaded;
         if (sourceItem.first.id == targetItem.id) continue;
-          if (!MimeTypes.imageTypes.contains(targetItem.mime)) continue;
+        if (!MimeTypes.imageTypes.contains(targetItem.mime)) continue;
 
-          // We'll support comparing animated GIFs, but only to other animated GIFs
-          if(sourceItem.first.video!=targetItem.video)
-            continue;
+        // We'll support comparing animated GIFs, but only to other animated GIFs
+        if (sourceItem.first.video != targetItem.video) continue;
 
-          try {
-            if (await _checkForComparisonResult(
-                sourceItem.first.id, targetItem.id)) continue;
+        try {
+          if (await _checkForComparisonResult(
+              sourceItem.first.id, targetItem.id)) continue;
 
-            final ImageHash targetHash =
-                await _getPerceptualHash(targetItem.id);
+          final ImageHash targetHash = await _getPerceptualHash(targetItem.id);
 
-            final double result = sourceHash.compareTo(targetHash);
+          final double result = sourceHash.compareTo(targetHash);
 
-            if (result < similarityCutoff) continue;
+          if (result < similarityCutoff) continue;
 
-            await _recordComparisonResult(
-                sourceItem.first.id, targetItem.id, result);
-          } catch (e, st) {
-            _log.warning(e, st);
-          }
+          await _recordComparisonResult(
+              sourceItem.first.id, targetItem.id, result);
+        } catch (e, st) {
+          _log.warning(e, st);
+        }
       }
-      if(lastProcessedDate!=null) {
+      if (lastProcessedDate != null) {
         _log.info("Re-enqueing with new start point of $lastProcessedDate");
-        await _backgroundQueueDataSource.addToQueue(this.extensionId, "$itemId:$lastProcessedDate", priority: item.priority+1);
+        await _backgroundQueueDataSource.addToQueue(
+            this.extensionId, "$itemId:$lastProcessedDate",
+            priority: item.priority + 1);
       }
-
     } catch (e, st) {
       _log.severe(e, st);
     }
@@ -100,19 +99,21 @@ class ItemComparisonExtension extends AExtension {
   @override
   Future<Null> onDeletingItem(String itemId) async {
     try {
-      await _extensionDataModel.delete(extensionId, perceptualHashKeyName, primaryId: itemId);
-      await _extensionDataModel.deleteBidirectional(extensionId, similarItemsKeyName, itemId);
-    } catch(e,st) {
-      _log.warning(e,st);
+      await _extensionDataModel.delete(extensionId, perceptualHashKeyName,
+          primaryId: itemId);
+      await _extensionDataModel.deleteBidirectional(
+          extensionId, similarItemsKeyName, itemId);
+    } catch (e, st) {
+      _log.warning(e, st);
     }
-
   }
 
   @override
   Future<Null> onCreatingItem(Item item) async {
     try {
       if (MimeTypes.imageTypes.contains(item.mime)) {
-        await _backgroundQueueDataSource.addToQueue(this.extensionId, item.id, priority: 20);
+        await _backgroundQueueDataSource.addToQueue(this.extensionId, item.id,
+            priority: 20);
       }
     } catch (e, st) {
       _log.severe("Error queueing image comparison for ${e.item.id}", e, st);

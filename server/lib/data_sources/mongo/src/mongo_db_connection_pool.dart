@@ -10,28 +10,25 @@ class MongoDbConnectionPool extends ConnectionPool<Db> {
 
   final String uri;
 
-
-  MongoDbConnectionPool(this.uri, [int poolSize= 5]) : super(poolSize);
+  MongoDbConnectionPool(this.uri, [int poolSize = 5]) : super(poolSize);
 
   @override
   void closeConnection(Db conn) {
-      _log.info("Closing mongo connection");
-      conn.close();
+    _log.info("Closing mongo connection");
+    conn.close();
   }
 
   @override
-  Future<Db> openNewConnection() async{
+  Future<Db> openNewConnection() async {
     _log.info("Opening mongo connection");
     final Db conn = new Db(uri);
-    if(await conn.open())
+    if (await conn.open())
       return conn;
     else
       throw new Exception("Could not open connection");
   }
 
-
-  Future<T> databaseWrapper<T>(
-      Future<T> statement(MongoDatabase db),
+  Future<T> databaseWrapper<T>(Future<T> statement(MongoDatabase db),
       {int retries: 5}) async {
     // The number of retries should be at least as much as the number of connections in the connection pool.
     // Otherwise it might run out of retries before invalidating every potentially disconnected connection in the pool.
@@ -54,7 +51,7 @@ class MongoDbConnectionPool extends ConnectionPool<Db> {
         }
         closeConnection = true;
       } catch (e, st) {
-        _log.fine("Error while operating on mongo dataabase", e,st);
+        _log.fine("Error while operating on mongo dataabase", e, st);
         if (e.toString().contains("duplicate key")) {
           throw new DuplicateItemException("Item already exists in database");
         }
@@ -65,8 +62,6 @@ class MongoDbConnectionPool extends ConnectionPool<Db> {
     }
     throw new Exception("Reached unreachable code");
   }
-
-
 
   Future<ManagedConnection<Db>> _getConnection() async {
     ManagedConnection<Db> con = await this.getConnection();
@@ -92,10 +87,9 @@ class MongoDbConnectionPool extends ConnectionPool<Db> {
 
   static Future<Null> testConnectionString(String connectionString) async {
     final MongoDbConnectionPool pool =
-    new MongoDbConnectionPool(connectionString, 1);
+        new MongoDbConnectionPool(connectionString, 1);
     final ManagedConnection<Db> con = await pool.getConnection();
     pool.releaseConnection(con);
     await pool.closeConnections();
   }
-
 }

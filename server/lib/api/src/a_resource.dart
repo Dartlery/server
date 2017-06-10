@@ -18,7 +18,6 @@ abstract class AResource {
 
   String get resourcePath => "";
 
-
   @protected
   Future<T> catchExceptionsAwait<T>(Future<T> toAwait()) async {
     return _catchExceptions(toAwait());
@@ -35,8 +34,7 @@ abstract class AResource {
     dynamic exception, stackTrace;
 
     try {
-      if (resourcePath != setupApiPath &&
-          await isSetupAvailable()) {
+      if (resourcePath != setupApiPath && await isSetupAvailable()) {
         throw new SetupRequiredException();
       }
 

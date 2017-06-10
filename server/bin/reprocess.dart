@@ -35,20 +35,22 @@ Future<Null> main(List<String> args) async {
   final ModuleInjector parentInjector =
       createModelModuleInjector(connectionString);
 
-  final  ModuleInjector extensionInjector = instantiateExtensions(parentInjector);
+  final ModuleInjector extensionInjector =
+      instantiateExtensions(parentInjector);
 
-  final ItemReprocessExtension reprocessExtension = extensionInjector.get(ItemReprocessExtension);
+  final ItemReprocessExtension reprocessExtension =
+      extensionInjector.get(ItemReprocessExtension);
   final AItemDataSource _itemDataSource = parentInjector.get(AItemDataSource);
 
-  final String type =  argResults["mimeType"];
+  final String type = argResults["mimeType"];
 
-  if(StringTools.isNullOrWhitespace(type)) {
+  if (StringTools.isNullOrWhitespace(type)) {
     throw new Exception("mimeType is required");
   }
 
   final Stream<Item> itemStream = await _itemDataSource.streamByMimeType(type);
 
-  await for(Item item in itemStream) {
+  await for (Item item in itemStream) {
     _log.info("Re-processing item ${item.id}");
     final BackgroundQueueItem queueItem = new BackgroundQueueItem();
     queueItem.data = item.id;

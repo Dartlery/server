@@ -31,8 +31,7 @@ class ReplaceTab extends AApiErrorThing implements OnInit, OnDestroy {
   List<Tag> newTags = <Tag>[];
 
   Future<Null> performReplacement() async {
-    if(originalTags.isEmpty)
-      return;
+    if (originalTags.isEmpty) return;
     await performApiCall(() async {
       final ReplaceTagsRequest request = new ReplaceTagsRequest();
       request.originalTags = originalTags;
@@ -44,18 +43,15 @@ class ReplaceTab extends AApiErrorThing implements OnInit, OnDestroy {
 
   final ApiService _api;
 
-  ReplaceTab(this._api, Router router,
-      AuthenticationService authenticationService)
+  ReplaceTab(
+      this._api, Router router, AuthenticationService authenticationService)
       : super(router, authenticationService);
   @override
   Logger get loggerImpl => _log;
 
   @override
-  void ngOnInit() {
-  }
-
+  void ngOnInit() {}
 
   @override
-  void ngOnDestroy() {
-  }
+  void ngOnDestroy() {}
 }

@@ -8,19 +8,19 @@ abstract class ATagDataSource extends ATwoIdBasedDataSource<TagInfo> {
   static final Logger _log = new Logger('ATagDataSource');
 
   Future<List<TagInfo>> getRedirects();
-  Future<List<TagInfo>> getByRedirect(String id, String category);
+//  Future<List<TagInfo>> getByRedirect(String id, String category);
   Future<Null> deleteByRedirect(String id, String category);
 
   @override
-  Future<PaginatedData<TagInfo>> getAllPaginated({int page: 0,
-    int perPage: defaultPerPage, bool countAsc: null});
-
+  Future<PaginatedData<TagInfo>> getAllPaginated(
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: null});
 
   @override
-  Future<IdDataList<TagInfo>> search(String query, {int limit: defaultPerPage, bool countAsc: true});
+  Future<IdDataList<TagInfo>> search(String query,
+      {int limit: defaultPerPage, bool countAsc: true});
 
-  Future<PaginatedData<TagInfo>> searchPaginated(String query, {int page: 0,
-    int perPage: defaultPerPage, bool countAsc: true});
+  Future<PaginatedData<TagInfo>> searchPaginated(String query,
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: true});
 
   /// This function should cause all tags to be re-counted
   /// and unused tags to be deleted.
@@ -29,5 +29,4 @@ abstract class ATagDataSource extends ATwoIdBasedDataSource<TagInfo> {
   Future<int> countTagUse(Tag t);
   Future<Null> incrementTagCount(List<Tag> tags, int amount);
   Future<Null> refreshTagCount(List<Tag> tags);
-
 }

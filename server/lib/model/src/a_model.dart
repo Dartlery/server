@@ -70,10 +70,10 @@ abstract class AModel {
 
   @protected
   Future<User> getCurrentUser() async {
-    final Principal p = userPrincipal.getOrElse(
-        () => throw new UnauthorizedException("Please log in"));
-    return (await userDataSource.getById(p.name)).getOrElse(
-        () => throw new UnauthorizedException("User not found"));
+    final Principal p = userPrincipal
+        .getOrElse(() => throw new UnauthorizedException("Please log in"));
+    return (await userDataSource.getById(p.name))
+        .getOrElse(() => throw new UnauthorizedException("User not found"));
   }
 
   @protected

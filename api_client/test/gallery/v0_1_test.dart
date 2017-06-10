@@ -280,6 +280,7 @@ buildItemSearchRequest() {
   buildCounterItemSearchRequest++;
   if (buildCounterItemSearchRequest < 3) {
     o.cutoffDate = core.DateTime.parse("2002-02-27T14:01:02");
+    o.inTrash = true;
     o.page = 42;
     o.perPage = 42;
     o.tags = buildUnnamed4();
@@ -292,6 +293,7 @@ checkItemSearchRequest(api.ItemSearchRequest o) {
   buildCounterItemSearchRequest++;
   if (buildCounterItemSearchRequest < 3) {
     unittest.expect(o.cutoffDate, unittest.equals(core.DateTime.parse("2002-02-27T14:01:02")));
+    unittest.expect(o.inTrash, unittest.isTrue);
     unittest.expect(o.page, unittest.equals(42));
     unittest.expect(o.perPage, unittest.equals(42));
     checkUnnamed4(o.tags);
@@ -452,33 +454,90 @@ checkUnnamed8(core.List<core.String> o) {
   unittest.expect(o[1], unittest.equals('foo'));
 }
 
-core.int buildCounterPaginatedResponse = 0;
-buildPaginatedResponse() {
-  var o = new api.PaginatedResponse();
-  buildCounterPaginatedResponse++;
-  if (buildCounterPaginatedResponse < 3) {
+buildUnnamed9() {
+  var o = new core.List<api.Tag>();
+  o.add(buildTag());
+  o.add(buildTag());
+  return o;
+}
+
+checkUnnamed9(core.List<api.Tag> o) {
+  unittest.expect(o, unittest.hasLength(2));
+  checkTag(o[0]);
+  checkTag(o[1]);
+}
+
+core.int buildCounterPaginatedItemResponse = 0;
+buildPaginatedItemResponse() {
+  var o = new api.PaginatedItemResponse();
+  buildCounterPaginatedItemResponse++;
+  if (buildCounterPaginatedItemResponse < 3) {
     o.items = buildUnnamed8();
+    o.page = 42;
+    o.pageCount = 42;
+    o.queryTags = buildUnnamed9();
+    o.startIndex = 42;
+    o.totalCount = 42;
+    o.totalPages = 42;
+  }
+  buildCounterPaginatedItemResponse--;
+  return o;
+}
+
+checkPaginatedItemResponse(api.PaginatedItemResponse o) {
+  buildCounterPaginatedItemResponse++;
+  if (buildCounterPaginatedItemResponse < 3) {
+    checkUnnamed8(o.items);
+    unittest.expect(o.page, unittest.equals(42));
+    unittest.expect(o.pageCount, unittest.equals(42));
+    checkUnnamed9(o.queryTags);
+    unittest.expect(o.startIndex, unittest.equals(42));
+    unittest.expect(o.totalCount, unittest.equals(42));
+    unittest.expect(o.totalPages, unittest.equals(42));
+  }
+  buildCounterPaginatedItemResponse--;
+}
+
+buildUnnamed10() {
+  var o = new core.List<api.TagInfo>();
+  o.add(buildTagInfo());
+  o.add(buildTagInfo());
+  return o;
+}
+
+checkUnnamed10(core.List<api.TagInfo> o) {
+  unittest.expect(o, unittest.hasLength(2));
+  checkTagInfo(o[0]);
+  checkTagInfo(o[1]);
+}
+
+core.int buildCounterPaginatedTagResponse = 0;
+buildPaginatedTagResponse() {
+  var o = new api.PaginatedTagResponse();
+  buildCounterPaginatedTagResponse++;
+  if (buildCounterPaginatedTagResponse < 3) {
+    o.items = buildUnnamed10();
     o.page = 42;
     o.pageCount = 42;
     o.startIndex = 42;
     o.totalCount = 42;
     o.totalPages = 42;
   }
-  buildCounterPaginatedResponse--;
+  buildCounterPaginatedTagResponse--;
   return o;
 }
 
-checkPaginatedResponse(api.PaginatedResponse o) {
-  buildCounterPaginatedResponse++;
-  if (buildCounterPaginatedResponse < 3) {
-    checkUnnamed8(o.items);
+checkPaginatedTagResponse(api.PaginatedTagResponse o) {
+  buildCounterPaginatedTagResponse++;
+  if (buildCounterPaginatedTagResponse < 3) {
+    checkUnnamed10(o.items);
     unittest.expect(o.page, unittest.equals(42));
     unittest.expect(o.pageCount, unittest.equals(42));
     unittest.expect(o.startIndex, unittest.equals(42));
     unittest.expect(o.totalCount, unittest.equals(42));
     unittest.expect(o.totalPages, unittest.equals(42));
   }
-  buildCounterPaginatedResponse--;
+  buildCounterPaginatedTagResponse--;
 }
 
 core.int buildCounterPasswordChangeRequest = 0;
@@ -502,27 +561,27 @@ checkPasswordChangeRequest(api.PasswordChangeRequest o) {
   buildCounterPasswordChangeRequest--;
 }
 
-buildUnnamed9() {
+buildUnnamed11() {
   var o = new core.List<api.Tag>();
   o.add(buildTag());
   o.add(buildTag());
   return o;
 }
 
-checkUnnamed9(core.List<api.Tag> o) {
+checkUnnamed11(core.List<api.Tag> o) {
   unittest.expect(o, unittest.hasLength(2));
   checkTag(o[0]);
   checkTag(o[1]);
 }
 
-buildUnnamed10() {
+buildUnnamed12() {
   var o = new core.List<api.Tag>();
   o.add(buildTag());
   o.add(buildTag());
   return o;
 }
 
-checkUnnamed10(core.List<api.Tag> o) {
+checkUnnamed12(core.List<api.Tag> o) {
   unittest.expect(o, unittest.hasLength(2));
   checkTag(o[0]);
   checkTag(o[1]);
@@ -533,8 +592,8 @@ buildReplaceTagsRequest() {
   var o = new api.ReplaceTagsRequest();
   buildCounterReplaceTagsRequest++;
   if (buildCounterReplaceTagsRequest < 3) {
-    o.newTags = buildUnnamed9();
-    o.originalTags = buildUnnamed10();
+    o.newTags = buildUnnamed11();
+    o.originalTags = buildUnnamed12();
   }
   buildCounterReplaceTagsRequest--;
   return o;
@@ -543,8 +602,8 @@ buildReplaceTagsRequest() {
 checkReplaceTagsRequest(api.ReplaceTagsRequest o) {
   buildCounterReplaceTagsRequest++;
   if (buildCounterReplaceTagsRequest < 3) {
-    checkUnnamed9(o.newTags);
-    checkUnnamed10(o.originalTags);
+    checkUnnamed11(o.newTags);
+    checkUnnamed12(o.originalTags);
   }
   buildCounterReplaceTagsRequest--;
 }
@@ -791,11 +850,20 @@ main() {
   });
 
 
-  unittest.group("obj-schema-PaginatedResponse", () {
+  unittest.group("obj-schema-PaginatedItemResponse", () {
     unittest.test("to-json--from-json", () {
-      var o = buildPaginatedResponse();
-      var od = new api.PaginatedResponse.fromJson(o.toJson());
-      checkPaginatedResponse(od);
+      var o = buildPaginatedItemResponse();
+      var od = new api.PaginatedItemResponse.fromJson(o.toJson());
+      checkPaginatedItemResponse(od);
+    });
+  });
+
+
+  unittest.group("obj-schema-PaginatedTagResponse", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildPaginatedTagResponse();
+      var od = new api.PaginatedTagResponse.fromJson(o.toJson());
+      checkPaginatedTagResponse(od);
     });
   });
 
@@ -1390,6 +1458,7 @@ main() {
       var arg_page = 42;
       var arg_perPage = 42;
       var arg_cutoffDate = "foo";
+      var arg_inTrash = true;
       mock.register(unittest.expectAsync((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
@@ -1421,16 +1490,17 @@ main() {
         unittest.expect(core.int.parse(queryMap["page"].first), unittest.equals(arg_page));
         unittest.expect(core.int.parse(queryMap["perPage"].first), unittest.equals(arg_perPage));
         unittest.expect(queryMap["cutoffDate"].first, unittest.equals(arg_cutoffDate));
+        unittest.expect(queryMap["inTrash"].first, unittest.equals("$arg_inTrash"));
 
 
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = convert.JSON.encode(buildPaginatedResponse());
+        var resp = convert.JSON.encode(buildPaginatedItemResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getVisibleIds(page: arg_page, perPage: arg_perPage, cutoffDate: arg_cutoffDate).then(unittest.expectAsync(((api.PaginatedResponse response) {
-        checkPaginatedResponse(response);
+      res.getVisibleIds(page: arg_page, perPage: arg_perPage, cutoffDate: arg_cutoffDate, inTrash: arg_inTrash).then(unittest.expectAsync(((api.PaginatedItemResponse response) {
+        checkPaginatedItemResponse(response);
       })));
     });
 
@@ -1508,8 +1578,8 @@ main() {
         pathOffset += 1;
         unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
         pathOffset += 17;
-        unittest.expect(path.substring(pathOffset, pathOffset + 12), unittest.equals("search/items"));
-        pathOffset += 12;
+        unittest.expect(path.substring(pathOffset, pathOffset + 13), unittest.equals("search/items/"));
+        pathOffset += 13;
 
         var query = (req.url).query;
         var queryOffset = 0;
@@ -1532,11 +1602,11 @@ main() {
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = convert.JSON.encode(buildPaginatedResponse());
+        var resp = convert.JSON.encode(buildPaginatedItemResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.searchVisible(arg_request).then(unittest.expectAsync(((api.PaginatedResponse response) {
-        checkPaginatedResponse(response);
+      res.searchVisible(arg_request).then(unittest.expectAsync(((api.PaginatedItemResponse response) {
+        checkPaginatedItemResponse(response);
       })));
     });
 
@@ -2241,6 +2311,9 @@ main() {
 
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
+      var arg_page = 42;
+      var arg_perPage = 42;
+      var arg_countAsc = true;
       mock.register(unittest.expectAsync((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
@@ -2269,16 +2342,19 @@ main() {
             addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
           }
         }
+        unittest.expect(core.int.parse(queryMap["page"].first), unittest.equals(arg_page));
+        unittest.expect(core.int.parse(queryMap["perPage"].first), unittest.equals(arg_perPage));
+        unittest.expect(queryMap["countAsc"].first, unittest.equals("$arg_countAsc"));
 
 
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = convert.JSON.encode(buildListOfTagInfo());
+        var resp = convert.JSON.encode(buildPaginatedTagResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getAllTagInfo().then(unittest.expectAsync(((api.ListOfTagInfo response) {
-        checkListOfTagInfo(response);
+      res.getAllTagInfo(page: arg_page, perPage: arg_perPage, countAsc: arg_countAsc).then(unittest.expectAsync(((api.PaginatedTagResponse response) {
+        checkPaginatedTagResponse(response);
       })));
     });
 
@@ -2538,6 +2614,9 @@ main() {
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
       var arg_query = "foo";
+      var arg_page = 42;
+      var arg_perPage = 42;
+      var arg_countAsc = true;
       mock.register(unittest.expectAsync((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
@@ -2569,16 +2648,19 @@ main() {
             addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
           }
         }
+        unittest.expect(core.int.parse(queryMap["page"].first), unittest.equals(arg_page));
+        unittest.expect(core.int.parse(queryMap["perPage"].first), unittest.equals(arg_perPage));
+        unittest.expect(queryMap["countAsc"].first, unittest.equals("$arg_countAsc"));
 
 
         var h = {
           "content-type" : "application/json; charset=utf-8",
         };
-        var resp = convert.JSON.encode(buildListOfTagInfo());
+        var resp = convert.JSON.encode(buildPaginatedTagResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.search(arg_query).then(unittest.expectAsync(((api.ListOfTagInfo response) {
-        checkListOfTagInfo(response);
+      res.search(arg_query, page: arg_page, perPage: arg_perPage, countAsc: arg_countAsc).then(unittest.expectAsync(((api.PaginatedTagResponse response) {
+        checkPaginatedTagResponse(response);
       })));
     });
 

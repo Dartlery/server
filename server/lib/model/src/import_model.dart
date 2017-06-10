@@ -41,6 +41,7 @@ class ImportModel {
       {int page: 0, int perPage: defaultPerPage}) async {
     return await _importResultsDataSource.get(page: page, perPage: perPage);
   }
+
   Future<Null> importFromPath(String path,
       {bool interpretShimmieNames: false, bool stopOnError: false}) async {
     final TagList tagList = new TagList();

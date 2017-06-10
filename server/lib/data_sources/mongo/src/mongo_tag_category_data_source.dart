@@ -8,15 +8,15 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'a_mongo_id_data_source.dart';
 import 'constants.dart';
 
-class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory> with ATagCategoryDataSource {
+class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory>
+    with ATagCategoryDataSource {
   static final Logger _log = new Logger('MongoTagCategoryDataSource');
   @override
   Logger get childLogger => _log;
 
+  static const String colorField = "color";
 
-static const String colorField = "color";
-
-  MongoTagCategoryDataSource(MongoDbConnectionPool pool): super(pool);
+  MongoTagCategoryDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
   Future<TagCategory> createObject(Map data) async {
@@ -29,7 +29,6 @@ static const String colorField = "color";
     output.color = data[colorField];
     return output;
   }
-
 
   @override
   Future<DbCollection> getCollection(MongoDatabase con) =>

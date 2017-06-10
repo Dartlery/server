@@ -91,7 +91,7 @@ class SetupPage extends APage implements OnInit {
             rethrow;
           }
         }
-      }, form:  form);
+      }, form: form);
     } catch (e, st) {
       setErrorMessage(e, st);
     }

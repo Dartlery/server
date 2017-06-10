@@ -95,8 +95,7 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
   set selectedTags(List<Tag> tags) {
     if (singleTag) throw new Exception("Single tag mode, use selectedTag");
     this.selectedTagsInternal.clear();
-    if(tags!=null)
-      this.selectedTagsInternal.addTags(tags);
+    if (tags != null) this.selectedTagsInternal.addTags(tags);
   }
 
   @Output()
@@ -114,11 +113,11 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
     await performApiCall(() async {
       availableTags.clear();
       if (StringTools.isNullOrWhitespace(tagQuery)) return;
-      final List<TagInfo> tags = await _api.tags.search(tagQuery);
-      for (TagInfo t in tags) {
+      final PaginatedTagResponse tags = await _api.tags.search(tagQuery);
+      for (TagInfo t in tags.items) {
         availableTags.add(new TagWrapper.fromTagInfo(t));
       }
-      tagListVisible = tags.isNotEmpty;
+      tagListVisible = tags.items.isNotEmpty;
     });
   }
 
@@ -133,15 +132,17 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
   void searchKeyup(KeyboardEvent e) {
     switch (e.keyCode) {
       case KeyCode.ENTER:
-        if (!existingTags&&StringTools.isNotNullOrWhitespace(tagQuery)) {
+        if (!existingTags && StringTools.isNotNullOrWhitespace(tagQuery)) {
           final Tag tag = new Tag();
-          if(tagQuery.contains(categoryDeliminator)) {
-            tag.id = tagQuery.substring(tagQuery.indexOf(categoryDeliminator)+1).trim();
-            if(StringTools.isNullOrWhitespace(tag.id))
-              return;
-            tag.category = tagQuery.substring(0, tagQuery.indexOf(categoryDeliminator)).trim();
-            if(StringTools.isNullOrWhitespace(tag.category))
-              return;
+          if (tagQuery.contains(categoryDeliminator)) {
+            tag.id = tagQuery
+                .substring(tagQuery.indexOf(categoryDeliminator) + 1)
+                .trim();
+            if (StringTools.isNullOrWhitespace(tag.id)) return;
+            tag.category = tagQuery
+                .substring(0, tagQuery.indexOf(categoryDeliminator))
+                .trim();
+            if (StringTools.isNullOrWhitespace(tag.category)) return;
           } else {
             tag.id = tagQuery.trim();
           }

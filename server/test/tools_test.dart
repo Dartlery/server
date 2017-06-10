@@ -3,34 +3,32 @@ import 'package:dartlery/tools.dart';
 
 void main() {
   group("Server tools", () {
-
     group("normalizeReadableId()", () {
-      test("null",() {
+      test("null", () {
         expect(() => normalizeReadableId(null), throwsArgumentError);
       });
-      test("plain",() {
+      test("plain", () {
         final String result = normalizeReadableId("plain");
-        expect(result=="plain", isTrue);
+        expect(result == "plain", isTrue);
       });
-      test("extra whitespace",() {
+      test("extra whitespace", () {
         final String result = normalizeReadableId("  plain  ");
-        expect(result=="plain", isTrue);
+        expect(result == "plain", isTrue);
       });
-      test("uppercase",() {
+      test("uppercase", () {
         final String result = normalizeReadableId("PlaiN");
-        expect(result=="plain", isTrue);
+        expect(result == "plain", isTrue);
       });
-      test("escape characters",() {
+      test("escape characters", () {
         final String result = normalizeReadableId("foo%3Dfoo%26bar%3Dbar");
-        expect(result=="foo=foo&bar=bar", isTrue);
+        expect(result == "foo=foo&bar=bar", isTrue);
       });
 
-      test("combined",() {
-        final String result = normalizeReadableId("foo%3DFOO%26bar%3Dbar%20 %20");
-        expect(result=="foo=foo&bar=bar", isTrue);
+      test("combined", () {
+        final String result =
+            normalizeReadableId("foo%3DFOO%26bar%3Dbar%20 %20");
+        expect(result == "foo=foo&bar=bar", isTrue);
       });
-
-
     });
   });
 }

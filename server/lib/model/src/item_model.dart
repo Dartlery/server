@@ -106,13 +106,12 @@ class ItemModel extends AIdBasedModel<Item> {
 
     final String itemId = await itemDataSource.create(item);
 
-    if(item.tags.isNotEmpty) {
+    if (item.tags.isNotEmpty) {
       await tagDataSource.incrementTagCount(item.tags, 1);
     }
 
     return itemId;
   }
-
 
   Future<Null> moveToTrash(String id) async {
     await validateDeletePrivileges(id);
@@ -124,12 +123,11 @@ class ItemModel extends AIdBasedModel<Item> {
     await _extensionServices.sendDeletingItem(id);
 
     Option<Item> existingItem = await itemDataSource.getById(id);
-    if(existingItem.isEmpty)
-      throw new NotFoundException("Item $id not found");
+    if (existingItem.isEmpty) throw new NotFoundException("Item $id not found");
 
     final String output = await super.delete(id);
 
-    if(existingItem.first.tags.isNotEmpty) {
+    if (existingItem.first.tags.isNotEmpty) {
       await tagDataSource.incrementTagCount(existingItem.first.tags, -1);
     }
 
@@ -314,7 +312,7 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<PaginatedIdData<Item>> getVisible(
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate}) async {
+      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -323,8 +321,22 @@ class ItemModel extends AIdBasedModel<Item> {
     }
     await validateGetAllPrivileges();
     return await dataSource.getVisiblePaginated(this.currentUserId,
-        page: page, perPage: perPage, cutoffDate: cutoffDate);
+        page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: inTrash);
   }
+
+  Future<PaginatedIdData<Item>> getInTrash(
+      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate}) async {
+    if (page < 0) {
+      throw new InvalidInputException("Page must be a non-negative number");
+    }
+    if (perPage < 0) {
+      throw new InvalidInputException("Per-page must be a non-negative number");
+    }
+    await validateGetPrivileges();
+    return await dataSource.getVisiblePaginated(this.currentUserId,
+        page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: true);
+  }
+
 
   Future<Item> merge(String targetItemId, String sourceItemId,
       {bool bypassAuthentication: false, bool moveToTrash: true}) async {
@@ -345,29 +357,31 @@ class ItemModel extends AIdBasedModel<Item> {
     }
 
     await itemDataSource.updateTags(targetItemId, newTagList.toList());
-    if(moveToTrash) {
+    if (moveToTrash) {
       await this.moveToTrash(sourceItemId);
     } else {
       await delete(sourceItemId);
     }
 
-    final TagDiff diff = new TagDiff(targetItem.first.tags, sourceItem.first.tags);
-    if(diff.both.isNotEmpty) {
+    final TagDiff diff =
+        new TagDiff(targetItem.first.tags, sourceItem.first.tags);
+    if (diff.both.isNotEmpty) {
       await tagDataSource.incrementTagCount(diff.both, -1);
     }
 
     return (await itemDataSource.getById(targetItemId)).first;
   }
 
-  Future<List<Item>> getRandom({List<Tag> filterTags,
-      int perPage: defaultPerPage}) async {
+  Future<List<Item>> getRandom(
+      {List<Tag> filterTags, int perPage: defaultPerPage}) async {
     await validateSearchPrivileges();
 
-    return itemDataSource.getVisibleRandom(this.currentUserId, perPage: perPage, filterTags: filterTags);
+    return itemDataSource.getVisibleRandom(this.currentUserId,
+        perPage: perPage, filterTags: filterTags);
   }
 
   Future<PaginatedIdData<Item>> searchVisible(List<Tag> tags,
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate}) async {
+      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -379,7 +393,7 @@ class ItemModel extends AIdBasedModel<Item> {
     await _tagModel.handleTags(tags);
 
     return await dataSource.searchVisiblePaginated(this.currentUserId, tags,
-        page: page, perPage: perPage, cutoffDate: cutoffDate);
+        page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: inTrash);
   }
 
   @override
@@ -390,17 +404,16 @@ class ItemModel extends AIdBasedModel<Item> {
     await _tagModel.handleTags(item.tags, createTags: true);
 
     final Option<Item> existingItem = await itemDataSource.getById(id);
-    if(existingItem.isEmpty)
-      throw new NotFoundException("Item $id not found");
+    if (existingItem.isEmpty) throw new NotFoundException("Item $id not found");
 
     final String output = await super
         .update(id, item, bypassAuthentication: bypassAuthentication);
 
     final TagDiff diff = new TagDiff(existingItem.first.tags, item.tags);
-    if(diff.onlyFirst.isNotEmpty) {
+    if (diff.onlyFirst.isNotEmpty) {
       await tagDataSource.incrementTagCount(diff.onlyFirst, -1);
     }
-    if(diff.onlySecond.isNotEmpty) {
+    if (diff.onlySecond.isNotEmpty) {
       await tagDataSource.incrementTagCount(diff.onlySecond, 1);
     }
 
@@ -412,17 +425,17 @@ class ItemModel extends AIdBasedModel<Item> {
     if (!bypassAuthentication) await validateUpdatePrivileges(itemId);
 
     final Option<Item> existingItem = await itemDataSource.getById(itemId);
-    if(existingItem.isEmpty)
+    if (existingItem.isEmpty)
       throw new NotFoundException("Item $itemId not found");
 
     await _tagModel.handleTags(newTags, createTags: true);
     await itemDataSource.updateTags(itemId, newTags);
 
     final TagDiff diff = new TagDiff(existingItem.first.tags, newTags);
-    if(diff.onlyFirst.isNotEmpty) {
+    if (diff.onlyFirst.isNotEmpty) {
       await tagDataSource.incrementTagCount(diff.onlyFirst, -1);
     }
-    if(diff.onlySecond.isNotEmpty) {
+    if (diff.onlySecond.isNotEmpty) {
       await tagDataSource.incrementTagCount(diff.onlySecond, 1);
     }
   }

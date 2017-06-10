@@ -14,15 +14,10 @@ abstract class AErrorThing {
     _errorMessage = message;
     if (StringTools.isNotNullOrWhitespace(message))
       loggerImpl.severe("Error message set: " + message);
-
   }
 
   void setErrorMessage(Object e, StackTrace st) {
     loggerImpl.severe(e, st);
     _errorMessage = e.toString();
   }
-
-
-
-
 }

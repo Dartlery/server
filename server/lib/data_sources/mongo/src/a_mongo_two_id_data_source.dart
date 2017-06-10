@@ -13,11 +13,9 @@ import 'constants.dart';
 
 abstract class AMongoTwoIdDataSource<T extends AIdData>
     extends AMongoObjectDataSource<T> with ATwoIdBasedDataSource<T> {
-
-  AMongoTwoIdDataSource(MongoDbConnectionPool pool): super(pool);
+  AMongoTwoIdDataSource(MongoDbConnectionPool pool) : super(pool);
 
   String get secondIdField;
-
 
   @override
   Future<Null> deleteById(String id, String id2) =>
@@ -32,9 +30,8 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
       getListFromDb(where.sortBy(sortField ?? idField));
 
   @override
-  Future<PaginatedIdData<T>> getAllPaginated({int page: 0,
-    int perPage: defaultPerPage});
-
+  Future<PaginatedIdData<T>> getAllPaginated(
+      {int page: 0, int perPage: defaultPerPage});
 
   Future<PaginatedIdData<T>> getPaginated(
           {String sortField: null,
@@ -63,12 +60,12 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
   void updateMap(AIdData item, Map<String, dynamic> data) {
     staticUpdateMap(item, data);
   }
+
   static void staticUpdateMap(AIdData item, Map<String, dynamic> data) {
     data[idField] = item.id;
   }
 
-  static void setIdForData(
-      AIdData item, Map<String, dynamic> data) {
+  static void setIdForData(AIdData item, Map<String, dynamic> data) {
     item.id = data[idField];
   }
 
@@ -88,8 +85,9 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
           {SelectorBuilder selector,
           int offset: 0,
           int limit: paginatedDataLimit}) async =>
-      new PaginatedIdData<T>.copyPaginatedData(
-          await super.genericSearchPaginated(query, selector: selector, offset: offset, limit: limit));
+      new PaginatedIdData<T>.copyPaginatedData(await super
+          .genericSearchPaginated(query,
+              selector: selector, offset: offset, limit: limit));
 
   @protected
   Future<IdDataList<T>> getListFromDb(dynamic selector) async =>

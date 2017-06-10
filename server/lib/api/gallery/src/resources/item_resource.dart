@@ -12,6 +12,7 @@ import 'package:rpc/rpc.dart';
 import '../../gallery_api.dart';
 import '../requests/create_item_request.dart';
 import '../requests/item_search_request.dart';
+import '../responses/paginated_item_response.dart';
 
 class ItemResource extends AIdResource<Item> {
   static final Logger _log = new Logger('ItemResource');
@@ -26,11 +27,11 @@ class ItemResource extends AIdResource<Item> {
   @override
   AIdBasedModel<Item> get idModel => itemModel;
 
+  // Created only to satisfy the interface; should not be used.
   @override
   Future<IdResponse> create(Item item) => catchExceptionsAwait(
       () async => throw new NotImplementedException("Use createItem instead"));
 
-  // Created only to satisfy the interface; should not be used, as creating a copy with each item should be required
   @ApiMethod(method: HttpMethod.post, path: '$_apiPath/')
   Future<IdResponse> createItem(CreateItemRequest newItem) =>
       catchExceptionsAwait(() async {
@@ -62,16 +63,16 @@ class ItemResource extends AIdResource<Item> {
       });
 
   @ApiMethod(path: '$_apiPath/')
-  Future<PaginatedResponse<String>> getVisibleIds(
-          {int page: 0, int perPage: defaultPerPage, String cutoffDate}) =>
+  Future<PaginatedItemResponse> getVisibleIds(
+          {int page: 0, int perPage: defaultPerPage, String cutoffDate, bool inTrash: false}) =>
       catchExceptionsAwait(() async {
         DateTime dt;
         if (StringTools.isNotNullOrWhitespace(cutoffDate))
           dt = DateTime.parse(cutoffDate);
 
-        return new PaginatedResponse<String>.convertPaginatedData(
+        return new PaginatedItemResponse.convertPaginatedData(
             await itemModel.getVisible(
-                page: page, perPage: perPage, cutoffDate: dt),
+                page: page, perPage: perPage, cutoffDate: dt, inTrash: inTrash),
             (Item item) => item.id);
       });
 
@@ -84,20 +85,20 @@ class ItemResource extends AIdResource<Item> {
       catchExceptionsAwait(
           () => itemModel.merge(targetItemId, sourceItemId.id));
 
-  @ApiMethod(method: HttpMethod.put, path: '$searchApiPath/$_apiPath')
-  Future<PaginatedResponse<String>> searchVisible(ItemSearchRequest request) =>
+  @ApiMethod(method: HttpMethod.put, path: '$searchApiPath/$_apiPath/')
+  Future<PaginatedItemResponse> searchVisible(ItemSearchRequest request) =>
       catchExceptionsAwait(() async =>
-          new PaginatedResponse<String>.convertPaginatedData(
+          new PaginatedItemResponse.convertPaginatedData(
               await itemModel.searchVisible(request.tags,
                   page: request.page,
                   perPage: request.perPage,
-                  cutoffDate: request.cutoffDate),
-              (Item item) => item.id));
+                  cutoffDate: request.cutoffDate,
+              inTrash: request.inTrash),
+              (Item item) => item.id)..queryTags=request.tags); // Tags should have ben updated
 
   @override
   @ApiMethod(method: HttpMethod.put, path: '$_apiPath/{id}/')
-  Future<IdResponse> update(String id, Item item) =>
-      updateWithCatch(id, item);
+  Future<IdResponse> update(String id, Item item) => updateWithCatch(id, item);
 
   @ApiMethod(method: HttpMethod.put, path: '$_apiPath/{id}/$tagApiPath/')
   Future<Null> updateTagsForItemId(String id, List<Tag> newTags) =>

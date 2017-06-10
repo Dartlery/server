@@ -7,8 +7,7 @@ import 'package:dartlery/api/api.dart';
 import 'package:angular2/core.dart';
 import 'settings_service.dart';
 
-export 'package:dartlery/api/api.dart'
-    show PaginatedResponse;
+export 'package:dartlery/api/api.dart' show PaginatedResponse;
 
 @Injectable()
 class ApiService extends GalleryApi {

@@ -25,7 +25,8 @@ import 'package:dartlery/services/extension_service.dart';
 import 'package:dartlery/services/background_service.dart';
 export 'src/extension_data_model.dart';
 
-ModuleInjector createModelModuleInjector(String connectionString, {ModuleInjector parent}) {
+ModuleInjector createModelModuleInjector(String connectionString,
+    {ModuleInjector parent}) {
   final Module module = new Module()
     ..bind(UserModel)
     ..bind(ItemModel)
@@ -37,8 +38,9 @@ ModuleInjector createModelModuleInjector(String connectionString, {ModuleInjecto
     ..bind(ExtensionDataModel)
     ..bind(ExtensionService);
 
-  final ModuleInjector parent = createDataSourceModuleInjector(connectionString);
-  final ModuleInjector injector =new ModuleInjector([module], parent);
+  final ModuleInjector parent =
+      createDataSourceModuleInjector(connectionString);
+  final ModuleInjector injector = new ModuleInjector([module], parent);
 
   instantiateExtensions(injector);
 

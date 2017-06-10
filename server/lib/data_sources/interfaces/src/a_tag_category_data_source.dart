@@ -5,5 +5,4 @@ import 'a_id_based_data_source.dart';
 
 abstract class ATagCategoryDataSource extends AIdBasedDataSource<TagCategory> {
   static final Logger _log = new Logger('ATagCategoryDataSource');
-
 }

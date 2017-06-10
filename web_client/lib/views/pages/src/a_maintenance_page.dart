@@ -28,13 +28,16 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   final String dataType;
 
-
   AMaintenancePage(this.dataType, PageControlService pageControl, this.api,
-      AuthenticationService _auth, Router router, {List<PageAction> pageActions: const <PageAction>[PageAction.refresh, PageAction.add]})
+      AuthenticationService _auth, Router router,
+      {List<PageAction> pageActions: const <PageAction>[
+        PageAction.refresh,
+        PageAction.add
+      ]})
       : super(_auth, router, pageControl) {
     pageControl.setAvailablePageActions(pageActions);
     _pageActionSubscription =
-       pageControl.pageActionRequested.listen(onPageActionRequested);
+        pageControl.pageActionRequested.listen(onPageActionRequested);
     this.model = createBlank();
   }
 
@@ -125,14 +128,12 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   Future<Null> refresh() async {
     await performApiCall(() async {
-
       final List<dynamic> data = await getItems();
       items.clear();
       items.addAll(data);
       await refreshInternal();
     });
   }
-
 
   Future<List<dynamic>> getItems();
 
@@ -156,5 +157,4 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   }
 
   Future<Null> selectItemInternal(String id) async {}
-
 }

@@ -11,9 +11,7 @@ import 'constants.dart';
 export 'a_mongo_data_source.dart';
 
 abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
-
-  AMongoObjectDataSource(MongoDbConnectionPool pool): super(pool);
-
+  AMongoObjectDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @protected
   Future<List<T>> searchAndSort(String query,
@@ -56,7 +54,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   Future<List<T>> getFromDb(SelectorBuilder selector) async {
     final Stream<T> stream = await streamFromDb(selector);
     final List<T> output = new List<T>();
-    await for(T result in stream) {
+    await for (T result in stream) {
       output.add(result);
     }
     return output;
@@ -67,27 +65,28 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
     return streamToObject(outputStream);
   }
 
-
   Future<Stream<T>> streamToObject(Stream str) async {
-
     return str.asyncMap<T>((Map data) async {
-      if(data.containsKey("\$err"))
+      if (data.containsKey("\$err"))
         throw new Exception("Database error: $data['\$err']");
       return await createObject(data);
     });
   }
 
-
   @protected
   Future<PaginatedData<T>> getPaginatedFromDb(SelectorBuilder selector,
-      {int offset: 0, int limit: paginatedDataLimit, String sortField, bool sortDescending: false}) async {
+      {int offset: 0,
+      int limit: paginatedDataLimit,
+      String sortField,
+      bool sortDescending: false}) async {
     final PaginatedData<T> output = new PaginatedData<T>();
     output.totalCount = await genericCount(selector);
     output.limit = limit;
     output.startIndex = offset;
 
     if (selector == null) selector == where;
-    if (!StringTools.isNullOrWhitespace(sortField)) selector.sortBy(sortField, descending: sortDescending);
+    if (!StringTools.isNullOrWhitespace(sortField))
+      selector.sortBy(sortField, descending: sortDescending);
 
     selector.limit(limit).skip(offset);
 
@@ -106,8 +105,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
 
   SelectorBuilder _prepareTextSearch(String query,
       {SelectorBuilder selector, String sortBy}) {
-    SelectorBuilder searchSelector =
-        where.eq($text, {$search: query});
+    SelectorBuilder searchSelector = where.eq($text, {$search: query});
     if (selector != null) searchSelector = searchSelector.and(selector);
     if (!StringTools.isNullOrWhitespace(sortBy)) {
       searchSelector = searchSelector.sortBy(sortBy);

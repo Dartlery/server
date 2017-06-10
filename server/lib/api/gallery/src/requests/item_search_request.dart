@@ -6,4 +6,5 @@ class ItemSearchRequest {
   int page = 0;
   int perPage = defaultPerPage;
   DateTime cutoffDate;
+  bool inTrash = false;
 }

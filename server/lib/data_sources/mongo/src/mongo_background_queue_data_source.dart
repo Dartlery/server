@@ -10,7 +10,9 @@ import 'constants.dart';
 import 'package:option/option.dart';
 import 'a_mongo_data_source.dart';
 
-class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQueueItem> with ABackgroundQueueDataSource {
+class MongoBackgroundQueueDataSource
+    extends AMongoObjectDataSource<BackgroundQueueItem>
+    with ABackgroundQueueDataSource {
   static final Logger _log = new Logger('MongoBackgroundQueueDataSource');
   @override
   Logger get childLogger => _log;
@@ -21,15 +23,15 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
   static const String priorityField = "priority";
   static const int _defaultPriority = 50;
 
-  MongoBackgroundQueueDataSource(MongoDbConnectionPool pool): super(pool);
-
+  MongoBackgroundQueueDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getBackgroundQueueCollection();
 
   @override
-  Future<Null> addToQueue(String extensionId, dynamic data, {int priority:_defaultPriority}) async {
+  Future<Null> addToQueue(String extensionId, dynamic data,
+      {int priority: _defaultPriority}) async {
     final BackgroundQueueItem item = new BackgroundQueueItem();
     item.id = generateUuid();
     item.data = data;
@@ -49,13 +51,13 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
   }
 
   @override
-  Future<BackgroundQueueItem> createObject(Map<String,dynamic> data) async {
+  Future<BackgroundQueueItem> createObject(Map<String, dynamic> data) async {
     final BackgroundQueueItem output = new BackgroundQueueItem();
     output.id = data[idField];
     output.data = data[dataField];
     output.added = data[addedField];
     output.extensionId = data[extensionIdField];
-    output.priority = data[priorityField]??_defaultPriority;
+    output.priority = data[priorityField] ?? _defaultPriority;
     return output;
   }
 
@@ -66,7 +68,8 @@ class MongoBackgroundQueueDataSource extends AMongoObjectDataSource<BackgroundQu
 
   @override
   Future<Option<BackgroundQueueItem>> getNextItem() async {
-    return await super.getForOneFromDb(where.sortBy(priorityField, descending: false).sortBy(addedField, descending: false));
+    return await super.getForOneFromDb(where
+        .sortBy(priorityField, descending: false)
+        .sortBy(addedField, descending: false));
   }
-
 }

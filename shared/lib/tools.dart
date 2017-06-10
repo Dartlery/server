@@ -19,9 +19,23 @@ final RegExp hexColorRegex = new RegExp(hexColorRegexString);
 
 path.Context urlPath = new path.Context(style: path.Style.url);
 
-const List<String> reservedRegexChars = const <String>[r'\', '.', '^', r'$', '*', '+', '-', '?', '(', ')', '[', ']', '{', '}', '|'];
-
-
+const List<String> reservedRegexChars = const <String>[
+  r'\',
+  '.',
+  '^',
+  r'$',
+  '*',
+  '+',
+  '-',
+  '?',
+  '(',
+  ')',
+  '[',
+  ']',
+  '{',
+  '}',
+  '|'
+];
 
 String escapeAll(String input) {
   String output = input;

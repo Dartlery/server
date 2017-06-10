@@ -60,9 +60,10 @@ class TagModel extends ATypedModel<TagInfo> {
     return await _itemDataSource.replaceTags([dbTag.first], []);
   }
 
-  Future<PaginatedData<TagInfo>> getAllInfo({int page: 0,
-    int perPage: defaultPerPage, bool countAsc: null}) async {
-    return await _tagDataSource.getAllPaginated(page: page, perPage: perPage, countAsc: countAsc);
+  Future<PaginatedData<TagInfo>> getAllInfo(
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
+    return await _tagDataSource.getAllPaginated(
+        page: page, perPage: perPage, countAsc: countAsc);
   }
 
   Future<TagInfo> getInfo(String id, [String category]) async {
@@ -162,10 +163,10 @@ class TagModel extends ATypedModel<TagInfo> {
   }
 
   Future<PaginatedData<TagInfo>> search(String query,
-      {int page: 0,
-        int perPage: defaultPerPage, bool countAsc: null}) async {
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
     await validateReadPrivilegeRequirement();
-        return await _tagDataSource.searchPaginated(query, perPage: perPage, page: page, countAsc: countAsc);
+    return await _tagDataSource.searchPaginated(query,
+        perPage: perPage, page: page, countAsc: countAsc);
   }
 
   Future<int> setRedirect(TagInfo redirect) async {

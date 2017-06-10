@@ -32,24 +32,20 @@ Future<Null> main(List<String> args) async {
 
   try {
     final OptionsFile optionsFile = new OptionsFile('server.options');
-    connectionString = optionsFile.getString("connection_string",connectionString);
-    port = optionsFile.getInt("port",port);
-    ip = optionsFile.getString("bind",ip);
+    connectionString =
+        optionsFile.getString("connection_string", connectionString);
+    port = optionsFile.getInt("port", port);
+    ip = optionsFile.getString("bind", ip);
   } on FileSystemException catch (e) {
     _log.info("server.options not found, using all default settings", e);
   }
-
 
   final Server server = Server.createInstance(connectionString);
   server.start(ip, port);
 
   // Now we start the thread for the background service
   await Isolate.spawn(startBackgroundIsolate, connectionString);
-
-
-
 }
-
 
 void startBackgroundIsolate(String connectionString) {
   Logger.root.level = Level.INFO;

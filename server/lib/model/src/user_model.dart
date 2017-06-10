@@ -14,8 +14,7 @@ import 'a_model.dart';
 class UserModel extends AIdBasedModel<User> {
   static final Logger _log = new Logger('UserModel');
 
-
-  UserModel(AUserDataSource userDataSource): super(userDataSource);
+  UserModel(AUserDataSource userDataSource) : super(userDataSource);
 
   @override
   Logger get loggerImpl => _log;
@@ -27,12 +26,11 @@ class UserModel extends AIdBasedModel<User> {
   String get defaultReadPrivilegeRequirement => UserPrivilege.moderator;
 
   @override
-  Future<Null> validateFields(User user,
-      Map<String, String> fieldErrors,
+  Future<Null> validateFields(User user, Map<String, String> fieldErrors,
       {String existingId: null}) async {
     await super.validateFields(user, fieldErrors);
 
-    if(StringTools.isNullOrWhitespace(user.name)) {
+    if (StringTools.isNullOrWhitespace(user.name)) {
       fieldErrors["name"] = "Required";
     }
 
@@ -46,7 +44,6 @@ class UserModel extends AIdBasedModel<User> {
       if (!UserPrivilege.values.contains(user.type))
         fieldErrors["type"] = "Invalid";
     }
-
   }
 
   void _validatePassword(Map<String, String> fieldErrors, String password) {
@@ -67,8 +64,7 @@ class UserModel extends AIdBasedModel<User> {
         throw new Exception("Authenticated user not present in database"));
   }
 
-  Future<String> createUserWith(
-      String username, String password, String type,
+  Future<String> createUserWith(String username, String password, String type,
       {bool bypassAuthentication: false}) async {
     final User newUser = new User();
     newUser.id = username;
@@ -80,10 +76,9 @@ class UserModel extends AIdBasedModel<User> {
 
   @override
   Future<String> create(User user,
-      {List<String> privileges,
-      bool bypassAuthentication: false}) async {
-    final String output = await super.create(user,
-        bypassAuthentication: bypassAuthentication);
+      {List<String> privileges, bool bypassAuthentication: false}) async {
+    final String output =
+        await super.create(user, bypassAuthentication: bypassAuthentication);
 
     await _setPassword(output, user.password);
 
@@ -102,14 +97,13 @@ class UserModel extends AIdBasedModel<User> {
     return output;
   }
 
-
   @override
   Future<Null> validateUpdatePrivileges(String username) async {
     if (!userAuthenticated) {
       throw new UnauthorizedException();
     }
     // This should allow a user to update their own data
-    if(currentUserId!=username) {
+    if (currentUserId != username) {
       await super.validateUpdatePrivileges(username);
     }
   }
@@ -120,13 +114,14 @@ class UserModel extends AIdBasedModel<User> {
       throw new UnauthorizedException();
     }
 
-    if(currentUserId != username && !(await userHasPrivilege(UserPrivilege.admin)))
+    if (currentUserId != username &&
+        !(await userHasPrivilege(UserPrivilege.admin)))
       throw new ForbiddenException(
           "You do not have permission to change another user's password");
 
-    final String userPassword =
-        (await userDataSource.getPasswordHash(username)).getOrElse(() =>
-            throw new Exception("User $username does not have a current password"));
+    final String userPassword = (await userDataSource.getPasswordHash(username))
+        .getOrElse(() => throw new Exception(
+            "User $username does not have a current password"));
 
     await DataValidationException
         .performValidation((Map<String, String> fieldErrors) async {

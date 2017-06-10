@@ -3,5 +3,4 @@ abstract class ANestedException implements Exception {
   final StackTrace innerStackTrace;
 
   ANestedException(this.innerException, this.innerStackTrace);
-
 }

@@ -36,21 +36,20 @@ class PaginatorComponent implements OnDestroy {
     _subscription = _pageControl.paginationChanged.listen(onSubscriptionUpdate);
   }
 
-
-
   bool get isNotFirstPage => currentPage > 0;
 
   bool get isNotLastPage => currentPage < pageRoutes.length - 1;
 
   dynamic get nextPageRoute {
-    if(isNotLastPage) {
-      return pageRoutes[currentPage+1];
+    if (isNotLastPage) {
+      return pageRoutes[currentPage + 1];
     }
     return null;
   }
+
   dynamic get previousPageRoute {
-    if(isNotFirstPage) {
-      return pageRoutes[currentPage-1];
+    if (isNotFirstPage) {
+      return pageRoutes[currentPage - 1];
     }
     return null;
   }
@@ -66,21 +65,21 @@ class PaginatorComponent implements OnDestroy {
     pages.clear();
     pageRoutes.clear();
     currentPage = status.currentPage;
-    if(status.pageParams.length<=1)
-      return;
+    if (status.pageParams.length <= 1) return;
     pageRoutes.addAll(status.pageParams);
 
-    for(int i = 0;i<status.pageParams.length;i++) {
-      if(i!=0&&i!=status.pageParams.length-1&&(i<currentPage-pageRange||i>currentPage+pageRange)) {
+    for (int i = 0; i < status.pageParams.length; i++) {
+      if (i != 0 &&
+          i != status.pageParams.length - 1 &&
+          (i < currentPage - pageRange || i > currentPage + pageRange)) {
         continue;
       }
 
       final _PaginatorEntry entry = new _PaginatorEntry();
-      entry.page = i+1;
+      entry.page = i + 1;
       entry.route = status.pageParams[i];
       pages.add(entry);
     }
-
   }
 }
 

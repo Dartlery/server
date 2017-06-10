@@ -80,6 +80,7 @@ abstract class AApiErrorThing extends AErrorThing {
       errorMessage = detail.message;
     }
   }
+
   void _handleErrorDetails(List<ApiRequestErrorDetail> fieldErrors,
       [NgForm form = null]) {
     for (ApiRequestErrorDetail detail in fieldErrors) {

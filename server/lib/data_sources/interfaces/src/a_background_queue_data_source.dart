@@ -10,5 +10,4 @@ abstract class ABackgroundQueueDataSource extends ADataSource {
   Future<Null> addToQueue(String extensionId, String data, {int priority});
   Future<Null> deleteItem(String id);
   Future<Option<BackgroundQueueItem>> getNextItem();
-
 }

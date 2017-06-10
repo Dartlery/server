@@ -72,7 +72,7 @@ void main() {
   });
 
   group("Method tests", () {
-    Map<String,User> users;
+    Map<String, User> users;
     setUp(() async {
       users = await createTestUsers(api);
     });
@@ -83,7 +83,8 @@ void main() {
       validateIdResponse(response);
     });
     test("getByUuid()", () async {
-      final User testUser = await api.users.getById(users[UserPrivilege.admin].id);
+      final User testUser =
+          await api.users.getById(users[UserPrivilege.admin].id);
       expect(testUser, isNotNull);
     });
     test("getMe()", () async {
@@ -93,12 +94,10 @@ void main() {
       expect(currentUser.id == users[UserPrivilege.admin].id, isTrue);
     });
 
-
     test("update()", () async {
       final User user = users[UserPrivilege.admin];
       user.name = "New Name";
-      final IdResponse response =
-          await api.users.update(user.id, user);
+      final IdResponse response = await api.users.update(user.id, user);
       validateIdResponse(response);
     });
     test("changePassword()", () async {
@@ -113,7 +112,6 @@ void main() {
       expect(api.users.getById(users[UserPrivilege.normal].id),
           throwsNotFoundException);
     });
-
   });
 
   group("Security tests", () {
@@ -145,23 +143,26 @@ void main() {
     group("getByUuid()", () {
       test("Unauthenticated", () async {
         model.AModel.overrideCurrentUser(null);
-        expect(
-            api.users.getById(users[UserPrivilege.admin].id), throwsUnauthorizedException);
+        expect(api.users.getById(users[UserPrivilege.admin].id),
+            throwsUnauthorizedException);
       });
       test("As normal", () async {
         model.AModel.overrideCurrentUser(users[UserPrivilege.normal].id);
-        expect(api.users.getById(users[UserPrivilege.admin].id), throwsForbiddenException);
+        expect(api.users.getById(users[UserPrivilege.admin].id),
+            throwsForbiddenException);
       });
       test("As moderator", () async {
         model.AModel.overrideCurrentUser(users[UserPrivilege.moderator].id);
-        final User test = await api.users.getById(users[UserPrivilege.admin].id);
+        final User test =
+            await api.users.getById(users[UserPrivilege.admin].id);
         expect(test, isNotNull);
         expect(test.id == users[UserPrivilege.admin].id, isTrue);
         expect(test.name == users[UserPrivilege.admin].name, isTrue);
       });
       test("As admin", () async {
         model.AModel.overrideCurrentUser(users[UserPrivilege.admin].id);
-        final User test = await api.users.getById(users[UserPrivilege.admin].id);
+        final User test =
+            await api.users.getById(users[UserPrivilege.admin].id);
         expect(test, isNotNull);
         expect(test.id == users[UserPrivilege.admin].id, isTrue);
         expect(test.name == users[UserPrivilege.admin].name, isTrue);
@@ -171,8 +172,7 @@ void main() {
     group("getMe()", () {
       test("Unauthenticated", () async {
         model.AModel.overrideCurrentUser(null);
-        expect(
-            api.users.getMe(), throwsUnauthorizedException);
+        expect(api.users.getMe(), throwsUnauthorizedException);
       });
       test("As normal", () async {
         model.AModel.overrideCurrentUser(users[UserPrivilege.normal].id);
@@ -190,7 +190,7 @@ void main() {
         model.AModel.overrideCurrentUser(users[UserPrivilege.admin].id);
         final User user = await api.users.getMe();
         expect(user, isNotNull);
-        expect(user.id ==  users[UserPrivilege.admin].id, isTrue);
+        expect(user.id == users[UserPrivilege.admin].id, isTrue);
       });
     });
 
@@ -296,6 +296,5 @@ void main() {
         await api.users.delete(testUser.id);
       });
     });
-
   });
 }

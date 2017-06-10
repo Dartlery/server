@@ -21,7 +21,8 @@ class SetupModel extends AModel {
 
   final UserModel userModel;
 
-  SetupModel(this.userModel, AUserDataSource userDataSource): super(userDataSource);
+  SetupModel(this.userModel, AUserDataSource userDataSource)
+      : super(userDataSource);
 
   Future<SetupResponse> apply(SetupRequest request) async {
     await _checkIfSetupEnabled();
@@ -46,8 +47,8 @@ class SetupModel extends AModel {
 
       if (StringTools.isNotNullOrWhitespace(request.adminUser)) {
         try {
-          await userModel.createUserWith(request.adminUser,
-              request.adminPassword, UserPrivilege.admin,
+          await userModel.createUserWith(
+              request.adminUser, request.adminPassword, UserPrivilege.admin,
               bypassAuthentication: true);
         } on DataValidationException catch (e) {
           fieldErrors.addAll(e.fieldErrors);
@@ -83,8 +84,6 @@ class SetupModel extends AModel {
 
     return output;
   }
-
-
 
   Future<Null> _checkIfSetupEnabled() async {
     if (!await isSetupAvailable()) {

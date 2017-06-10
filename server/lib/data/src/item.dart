@@ -26,7 +26,7 @@ class Item extends AIdData {
   bool fullFileAvailable = false;
 
   @ApiProperty(ignore: true)
-  bool inTrash =false;
+  bool inTrash = false;
 
   Item();
 }

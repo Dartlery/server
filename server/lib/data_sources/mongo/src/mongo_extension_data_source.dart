@@ -10,7 +10,8 @@ import 'constants.dart';
 import 'package:option/option.dart';
 import 'a_mongo_data_source.dart';
 
-class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData> with AExtensionDataSource {
+class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
+    with AExtensionDataSource {
   static final Logger _log = new Logger('MongoExtensionDataSource');
   @override
   Logger get childLogger => _log;
@@ -21,7 +22,7 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData> wit
   static const String secondaryIdField = "secondaryId";
   static const String valueField = "value";
 
-  MongoExtensionDataSource(MongoDbConnectionPool pool): super(pool);
+  MongoExtensionDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
@@ -34,65 +35,98 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData> wit
 
   @override
   Future<Null> update(ExtensionData data) async {
-    final SelectorBuilder query = _generateQuery(data.extensionId, data.key, data.primaryId, data.secondaryId, true);
+    final SelectorBuilder query = _generateQuery(
+        data.extensionId, data.key, data.primaryId, data.secondaryId, true);
 
     await updateToDb(query, data);
   }
 
-  SelectorBuilder _generateQuery(String extensionId, String key, String primaryId, String secondaryId, bool setNulls) {
-    if(StringTools.isNullOrWhitespace(primaryId)&&StringTools.isNotNullOrWhitespace(secondaryId))
+  SelectorBuilder _generateQuery(String extensionId, String key,
+      String primaryId, String secondaryId, bool setNulls) {
+    if (StringTools.isNullOrWhitespace(primaryId) &&
+        StringTools.isNotNullOrWhitespace(secondaryId))
       throw new ArgumentError("primaryId required if specifying a secondaryId");
 
-    final SelectorBuilder query = where.eq(extensionIdField, extensionId).eq(keyField, key);
+    final SelectorBuilder query =
+        where.eq(extensionIdField, extensionId).eq(keyField, key);
 
-    if(StringTools.isNotNullOrWhitespace(primaryId))
+    if (StringTools.isNotNullOrWhitespace(primaryId))
       query.eq(primaryIdField, primaryId);
-    else if(setNulls)
-      query.eq(primaryIdField, null);
+    else if (setNulls) query.eq(primaryIdField, null);
 
-    if(StringTools.isNotNullOrWhitespace(secondaryId))
+    if (StringTools.isNotNullOrWhitespace(secondaryId))
       query.eq(secondaryIdField, secondaryId);
-    else if(setNulls)
-      query.eq(secondaryIdField, null);
+    else if (setNulls) query.eq(secondaryIdField, null);
 
     return query;
   }
 
   @override
-  Future<Null> delete(String extensionId, String key, {String primaryId, String secondaryId, bool useNullIds: false}) async {
-    await deleteFromDb(_generateQuery(extensionId, key, primaryId, secondaryId, useNullIds));
+  Future<Null> delete(String extensionId, String key,
+      {String primaryId, String secondaryId, bool useNullIds: false}) async {
+    await deleteFromDb(
+        _generateQuery(extensionId, key, primaryId, secondaryId, useNullIds));
   }
 
   @override
-  Future<Null> deleteBidirectional(String extensionId, String key, String bidirectionalId) async {
-    final SelectorBuilder query = where.eq(extensionIdField, extensionId).eq(keyField, key).and(where.eq(primaryIdField, bidirectionalId).or(where.eq(secondaryIdField, bidirectionalId)));
+  Future<Null> deleteBidirectional(
+      String extensionId, String key, String bidirectionalId) async {
+    final SelectorBuilder query = where
+        .eq(extensionIdField, extensionId)
+        .eq(keyField, key)
+        .and(where
+            .eq(primaryIdField, bidirectionalId)
+            .or(where.eq(secondaryIdField, bidirectionalId)));
     await deleteFromDb(query);
   }
 
   @override
-  Future<bool> hasData(String extensionId, String key, {String primaryId, String secondaryId, bool useNullIds: false})  async {
-    return await exists(_generateQuery(extensionId, key, primaryId, secondaryId, useNullIds));
-
+  Future<bool> hasData(String extensionId, String key,
+      {String primaryId, String secondaryId, bool useNullIds: false}) async {
+    return await exists(
+        _generateQuery(extensionId, key, primaryId, secondaryId, useNullIds));
   }
 
   @override
-  Future<PaginatedData<ExtensionData>> getBidrectional(String extensionId, String key, String bidirectionalId, {bool orderByValues: false, bool orderDescending: false, int page: 0, int perPage}) async {
-    final SelectorBuilder query = where.eq(extensionIdField, extensionId).eq(keyField, key).and(where.eq(primaryIdField, bidirectionalId).or(where.eq(secondaryIdField, bidirectionalId)));
-    if(orderByValues)
+  Future<PaginatedData<ExtensionData>> getBidrectional(
+      String extensionId, String key, String bidirectionalId,
+      {bool orderByValues: false,
+      bool orderDescending: false,
+      int page: 0,
+      int perPage}) async {
+    final SelectorBuilder query = where
+        .eq(extensionIdField, extensionId)
+        .eq(keyField, key)
+        .and(where
+            .eq(primaryIdField, bidirectionalId)
+            .or(where.eq(secondaryIdField, bidirectionalId)));
+    if (orderByValues)
       query.sortBy(valueField, descending: orderDescending);
     else
-      query.sortBy(primaryIdField, descending: orderDescending).sortBy(secondaryIdField, descending: orderDescending);
+      query
+          .sortBy(primaryIdField, descending: orderDescending)
+          .sortBy(secondaryIdField, descending: orderDescending);
 
     return await getPaginatedFromDb(query);
   }
 
   @override
-  Future<PaginatedData<ExtensionData>> get(String extensionId, String key, {String primaryId, String secondaryId, bool useNullIds: false, bool orderByValues: false, bool orderDescending: false, int page: 0, int perPage: defaultPerPage}) async {
-    final SelectorBuilder query = _generateQuery(extensionId, key, primaryId, secondaryId, useNullIds);
-    if(orderByValues)
+  Future<PaginatedData<ExtensionData>> get(String extensionId, String key,
+      {String primaryId,
+      String secondaryId,
+      bool useNullIds: false,
+      bool orderByValues: false,
+      bool orderDescending: false,
+      int page: 0,
+      int perPage: defaultPerPage}) async {
+    final SelectorBuilder query =
+        _generateQuery(extensionId, key, primaryId, secondaryId, useNullIds);
+    if (orderByValues)
       query.sortBy(valueField, descending: orderDescending);
     else
-      query.sortBy(primaryIdField, descending: orderDescending).sortBy(secondaryIdField, descending: orderDescending);
+      query
+          .sortBy(primaryIdField, descending: orderDescending)
+          .sortBy(secondaryIdField, descending: orderDescending);
 
     return await getPaginatedFromDb(query);
   }
@@ -107,14 +141,13 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData> wit
   }
 
   @override
-  Future<ExtensionData> createObject(Map<String,dynamic> data) async {
+  Future<ExtensionData> createObject(Map<String, dynamic> data) async {
     final ExtensionData output = new ExtensionData();
     output.extensionId = data[extensionIdField];
     output.key = data[keyField];
     output.primaryId = data[primaryIdField];
-    output.secondaryId= data[secondaryIdField];
+    output.secondaryId = data[secondaryIdField];
     output.value = data[valueField];
     return output;
   }
-
 }

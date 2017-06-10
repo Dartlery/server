@@ -9,10 +9,10 @@ class PageControlService {
   PaginationInfo currentPaginationInfo;
 
   final StreamController<PaginationInfo> _paginationController =
-  new StreamController<PaginationInfo>.broadcast();
+      new StreamController<PaginationInfo>.broadcast();
 
   final StreamController<MessageEventArgs> _messageController =
-  new StreamController<MessageEventArgs>.broadcast();
+      new StreamController<MessageEventArgs>.broadcast();
 
   final StreamController<String> _pageTitleController =
       new StreamController<String>.broadcast();

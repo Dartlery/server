@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "e9a7c31953357c9878926fd4ffa50c51e5702cf5",
+ "etag": "4944dedb5abf30b147ce7247404433e5e0032e4f",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -176,10 +176,16 @@
     "$ref": "Tag"
    }
   },
-  "PaginatedResponse": {
-   "id": "PaginatedResponse",
+  "PaginatedItemResponse": {
+   "id": "PaginatedItemResponse",
    "type": "object",
    "properties": {
+    "queryTags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    },
     "startIndex": {
      "type": "integer",
      "format": "int32"
@@ -238,6 +244,9 @@
     "cutoffDate": {
      "type": "string",
      "format": "date-time"
+    },
+    "inTrash": {
+     "type": "boolean"
     }
    }
   },
@@ -294,24 +303,6 @@
     }
    }
   },
-  "ReplaceTagsRequest": {
-   "id": "ReplaceTagsRequest",
-   "type": "object",
-   "properties": {
-    "originalTags": {
-     "type": "array",
-     "items": {
-      "$ref": "Tag"
-     }
-    },
-    "newTags": {
-     "type": "array",
-     "items": {
-      "$ref": "Tag"
-     }
-    }
-   }
-  },
   "CountResponse": {
    "id": "CountResponse",
    "type": "object",
@@ -322,11 +313,36 @@
     }
    }
   },
-  "ListOfTagInfo": {
-   "id": "ListOfTagInfo",
-   "type": "array",
-   "items": {
-    "$ref": "TagInfo"
+  "PaginatedTagResponse": {
+   "id": "PaginatedTagResponse",
+   "type": "object",
+   "properties": {
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "TagInfo"
+     }
+    }
    }
   },
   "TagInfo": {
@@ -345,6 +361,31 @@
     },
     "id": {
      "type": "string"
+    }
+   }
+  },
+  "ListOfTagInfo": {
+   "id": "ListOfTagInfo",
+   "type": "array",
+   "items": {
+    "$ref": "TagInfo"
+   }
+  },
+  "ReplaceTagsRequest": {
+   "id": "ReplaceTagsRequest",
+   "type": "object",
+   "properties": {
+    "originalTags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    },
+    "newTags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
     }
    }
   },
@@ -508,11 +549,17 @@
        "description": "Query parameter: 'cutoffDate'.",
        "required": false,
        "location": "query"
+      },
+      "inTrash": {
+       "type": "boolean",
+       "description": "Query parameter: 'inTrash'.",
+       "required": false,
+       "location": "query"
       }
      },
      "parameterOrder": [],
      "response": {
-      "$ref": "PaginatedResponse"
+      "$ref": "PaginatedItemResponse"
      }
     },
     "mergeItems": {
@@ -540,7 +587,7 @@
     },
     "searchVisible": {
      "id": "GalleryApi.items.searchVisible",
-     "path": "search/items",
+     "path": "search/items/",
      "httpMethod": "PUT",
      "parameters": {},
      "parameterOrder": [],
@@ -548,7 +595,7 @@
       "$ref": "ItemSearchRequest"
      },
      "response": {
-      "$ref": "PaginatedResponse"
+      "$ref": "PaginatedItemResponse"
      }
     },
     "update": {
@@ -729,120 +776,6 @@
   },
   "tags": {
    "methods": {
-    "replace": {
-     "id": "GalleryApi.tags.replace",
-     "path": "tags/",
-     "httpMethod": "PUT",
-     "parameters": {},
-     "parameterOrder": [],
-     "request": {
-      "$ref": "ReplaceTagsRequest"
-     },
-     "response": {
-      "$ref": "CountResponse"
-     }
-    },
-    "getAllTagInfo": {
-     "id": "GalleryApi.tags.getAllTagInfo",
-     "path": "tags/",
-     "httpMethod": "GET",
-     "parameters": {},
-     "parameterOrder": [],
-     "response": {
-      "$ref": "ListOfTagInfo"
-     }
-    },
-    "getTagInfo": {
-     "id": "GalleryApi.tags.getTagInfo",
-     "path": "tags/{id}/{category}/",
-     "httpMethod": "GET",
-     "parameters": {
-      "id": {
-       "type": "string",
-       "description": "Path parameter: 'id'.",
-       "required": true,
-       "location": "path"
-      },
-      "category": {
-       "type": "string",
-       "description": "Path parameter: 'category'.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "id",
-      "category"
-     ],
-     "response": {
-      "$ref": "TagInfo"
-     }
-    },
-    "getTagInfoWithoutCategory": {
-     "id": "GalleryApi.tags.getTagInfoWithoutCategory",
-     "path": "tags/{id}/",
-     "httpMethod": "GET",
-     "parameters": {
-      "id": {
-       "type": "string",
-       "description": "Path parameter: 'id'.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "id"
-     ],
-     "response": {
-      "$ref": "TagInfo"
-     }
-    },
-    "search": {
-     "id": "GalleryApi.tags.search",
-     "path": "search/tags/{query}",
-     "httpMethod": "GET",
-     "parameters": {
-      "query": {
-       "type": "string",
-       "description": "Path parameter: 'query'.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "query"
-     ],
-     "response": {
-      "$ref": "ListOfTagInfo"
-     }
-    },
-    "setRedirect": {
-     "id": "GalleryApi.tags.setRedirect",
-     "path": "tag_redirects/",
-     "httpMethod": "PUT",
-     "parameters": {},
-     "parameterOrder": [],
-     "request": {
-      "$ref": "TagInfo"
-     }
-    },
-    "getRedirects": {
-     "id": "GalleryApi.tags.getRedirects",
-     "path": "tag_redirects/",
-     "httpMethod": "GET",
-     "parameters": {},
-     "parameterOrder": [],
-     "response": {
-      "$ref": "ListOfTagInfo"
-     }
-    },
-    "resetTagInfo": {
-     "id": "GalleryApi.tags.resetTagInfo",
-     "path": "tag_info/",
-     "httpMethod": "DELETE",
-     "parameters": {},
-     "parameterOrder": []
-    },
     "clearRedirect": {
      "id": "GalleryApi.tags.clearRedirect",
      "path": "tag_redirects/{id}/{category}/",
@@ -925,6 +858,157 @@
      ],
      "response": {
       "$ref": "CountResponse"
+     }
+    },
+    "getAllTagInfo": {
+     "id": "GalleryApi.tags.getAllTagInfo",
+     "path": "tags/",
+     "httpMethod": "GET",
+     "parameters": {
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      },
+      "countAsc": {
+       "type": "boolean",
+       "description": "Query parameter: 'countAsc'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [],
+     "response": {
+      "$ref": "PaginatedTagResponse"
+     }
+    },
+    "getRedirects": {
+     "id": "GalleryApi.tags.getRedirects",
+     "path": "tag_redirects/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfTagInfo"
+     }
+    },
+    "getTagInfo": {
+     "id": "GalleryApi.tags.getTagInfo",
+     "path": "tags/{id}/{category}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "category": {
+       "type": "string",
+       "description": "Path parameter: 'category'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id",
+      "category"
+     ],
+     "response": {
+      "$ref": "TagInfo"
+     }
+    },
+    "getTagInfoWithoutCategory": {
+     "id": "GalleryApi.tags.getTagInfoWithoutCategory",
+     "path": "tags/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "TagInfo"
+     }
+    },
+    "replace": {
+     "id": "GalleryApi.tags.replace",
+     "path": "tags/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "ReplaceTagsRequest"
+     },
+     "response": {
+      "$ref": "CountResponse"
+     }
+    },
+    "resetTagInfo": {
+     "id": "GalleryApi.tags.resetTagInfo",
+     "path": "tag_info/",
+     "httpMethod": "DELETE",
+     "parameters": {},
+     "parameterOrder": []
+    },
+    "search": {
+     "id": "GalleryApi.tags.search",
+     "path": "search/tags/{query}",
+     "httpMethod": "GET",
+     "parameters": {
+      "query": {
+       "type": "string",
+       "description": "Path parameter: 'query'.",
+       "required": true,
+       "location": "path"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      },
+      "countAsc": {
+       "type": "boolean",
+       "description": "Query parameter: 'countAsc'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "query"
+     ],
+     "response": {
+      "$ref": "PaginatedTagResponse"
+     }
+    },
+    "setRedirect": {
+     "id": "GalleryApi.tags.setRedirect",
+     "path": "tag_redirects/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "TagInfo"
      }
     }
    },

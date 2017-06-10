@@ -18,26 +18,24 @@ const String testAdminPassword = "TESTPASSWORD";
 const String testItemName = "TESTITEM";
 
 final Matcher isUnauthorizedException =
-new RpcErrorMatcher<UnauthorizedException>();
+    new RpcErrorMatcher<UnauthorizedException>();
 
-final Matcher isForbiddenException =
-new RpcErrorMatcher<ForbiddenException>();
-
+final Matcher isForbiddenException = new RpcErrorMatcher<ForbiddenException>();
 
 final Matcher throwsDataValidationException =
-throwsA(new RpcErrorMatcher<DataValidationException>());
+    throwsA(new RpcErrorMatcher<DataValidationException>());
 final Matcher throwsInvalidInputException =
-throwsA(new RpcErrorMatcher<InvalidInputException>());
-final Matcher throwsForbiddenException =
-    throwsA(isForbiddenException);
+    throwsA(new RpcErrorMatcher<InvalidInputException>());
+final Matcher throwsForbiddenException = throwsA(isForbiddenException);
 final Matcher throwsNotFoundException =
     throwsA(new RpcErrorMatcher<NotFoundException>());
 final Matcher throwsUnauthorizedException = throwsA(isUnauthorizedException);
 
-final Matcher throwsNotImplementedException = throwsA(isNotImplementedException);
+final Matcher throwsNotImplementedException =
+    throwsA(isNotImplementedException);
 
 final Matcher isNotImplementedException =
-new RpcErrorMatcher<NotImplementedException>();
+    new RpcErrorMatcher<NotImplementedException>();
 //const _NotImplementedException();
 
 class _NotImplementedException extends TypeMatcher {
@@ -46,27 +44,31 @@ class _NotImplementedException extends TypeMatcher {
 }
 
 Future<Null> _nukeDatabase(String connectionString) async {
-  final MongoDbConnectionPool pool = new MongoDbConnectionPool(connectionString);
+  final MongoDbConnectionPool pool =
+      new MongoDbConnectionPool(connectionString);
   await pool.databaseWrapper((MongoDatabase db) => db.nukeDatabase());
 }
 
 Future<Server> setUpServer() async {
   final String serverUuid = generateUuid();
-  String connectionString = "mongodb://127.0.0.1:27017/dartlery_test_$serverUuid";
+  String connectionString =
+      "mongodb://127.0.0.1:27017/dartlery_test_$serverUuid";
 
   try {
     final OptionsFile optionsFile = new OptionsFile('test.options');
-    connectionString = optionsFile.getString("connection_string",connectionString);
+    connectionString =
+        optionsFile.getString("connection_string", connectionString);
   } on FileSystemException {}
 
   await _nukeDatabase(connectionString);
   disableSetup();
 
-  final Server server = Server.createInstance(connectionString, instanceUuid: serverUuid);
+  final Server server =
+      Server.createInstance(connectionString, instanceUuid: serverUuid);
 
   final String password = testAdminPassword;
   final String uuid = await server.userModel.createUserWith(
-      "AdminUser",  password, UserPrivilege.admin,
+      "AdminUser", password, UserPrivilege.admin,
       bypassAuthentication: true);
 
   final User adminUser =
@@ -104,13 +106,13 @@ Future<Map<String, User>> createTestUsers(GalleryApi api,
   return output;
 }
 
-Future<CreateItemRequest> createItemRequest({List<Tag> tags, String file: "test.jpg"}) async {
+Future<CreateItemRequest> createItemRequest(
+    {List<Tag> tags, String file: "test.jpg"}) async {
   final Item item = createItem(tags: tags);
   final CreateItemRequest request = new CreateItemRequest();
   final MediaMessage msg = new MediaMessage();
 
   msg.bytes = await getFileData("test\\$file");
-
 
   request.item = item;
   request.file = msg;
@@ -122,7 +124,7 @@ Future<CreateItemRequest> createItemRequest({List<Tag> tags, String file: "test.
 Item createItem({List<Tag> tags}) {
   final Item item = new Item();
   item.fileName = generateUuid();
-  if(tags==null) {
+  if (tags == null) {
     item.tags = <Tag>[];
     item.tags.add(new Tag.withValues(generateUuid()));
     item.tags.add(new Tag.withValues(generateUuid()));
@@ -178,8 +180,7 @@ class RpcErrorMatcher<T> extends Matcher {
     if (obj is RpcError) {
       for (RpcErrorDetail detail in obj.errors) {
         if (detail.locationType == "exceptionType" &&
-            detail.location == T.toString())
-          return true;
+            detail.location == T.toString()) return true;
       }
     }
     return false;

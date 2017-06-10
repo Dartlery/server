@@ -442,7 +442,9 @@ class ItemsResourceApi {
    *
    * [cutoffDate] - Query parameter: 'cutoffDate'.
    *
-   * Completes with a [PaginatedResponse].
+   * [inTrash] - Query parameter: 'inTrash'.
+   *
+   * Completes with a [PaginatedItemResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -450,7 +452,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<PaginatedResponse> getVisibleIds({core.int page, core.int perPage, core.String cutoffDate}) {
+  async.Future<PaginatedItemResponse> getVisibleIds({core.int page, core.int perPage, core.String cutoffDate, core.bool inTrash}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -467,6 +469,9 @@ class ItemsResourceApi {
     if (cutoffDate != null) {
       _queryParams["cutoffDate"] = [cutoffDate];
     }
+    if (inTrash != null) {
+      _queryParams["inTrash"] = ["${inTrash}"];
+    }
 
     _url = 'items/';
 
@@ -477,7 +482,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new PaginatedResponse.fromJson(data));
+    return _response.then((data) => new PaginatedItemResponse.fromJson(data));
   }
 
   /**
@@ -530,7 +535,7 @@ class ItemsResourceApi {
    *
    * Request parameters:
    *
-   * Completes with a [PaginatedResponse].
+   * Completes with a [PaginatedItemResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -538,7 +543,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<PaginatedResponse> searchVisible(ItemSearchRequest request) {
+  async.Future<PaginatedItemResponse> searchVisible(ItemSearchRequest request) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -550,7 +555,7 @@ class ItemsResourceApi {
       _body = convert.JSON.encode((request).toJson());
     }
 
-    _url = 'search/items';
+    _url = 'search/items/';
 
     var _response = _requester.request(_url,
                                        "PUT",
@@ -559,7 +564,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new PaginatedResponse.fromJson(data));
+    return _response.then((data) => new PaginatedItemResponse.fromJson(data));
   }
 
   /**
@@ -1088,7 +1093,13 @@ class TagsResourceApi {
   /**
    * Request parameters:
    *
-   * Completes with a [ListOfTagInfo].
+   * [page] - Query parameter: 'page'.
+   *
+   * [perPage] - Query parameter: 'perPage'.
+   *
+   * [countAsc] - Query parameter: 'countAsc'.
+   *
+   * Completes with a [PaginatedTagResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -1096,7 +1107,7 @@ class TagsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfTagInfo> getAllTagInfo() {
+  async.Future<PaginatedTagResponse> getAllTagInfo({core.int page, core.int perPage, core.bool countAsc}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1104,6 +1115,15 @@ class TagsResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
+    if (page != null) {
+      _queryParams["page"] = ["${page}"];
+    }
+    if (perPage != null) {
+      _queryParams["perPage"] = ["${perPage}"];
+    }
+    if (countAsc != null) {
+      _queryParams["countAsc"] = ["${countAsc}"];
+    }
 
     _url = 'tags/';
 
@@ -1114,7 +1134,7 @@ class TagsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfTagInfo.fromJson(data));
+    return _response.then((data) => new PaginatedTagResponse.fromJson(data));
   }
 
   /**
@@ -1302,7 +1322,13 @@ class TagsResourceApi {
    *
    * [query] - Path parameter: 'query'.
    *
-   * Completes with a [ListOfTagInfo].
+   * [page] - Query parameter: 'page'.
+   *
+   * [perPage] - Query parameter: 'perPage'.
+   *
+   * [countAsc] - Query parameter: 'countAsc'.
+   *
+   * Completes with a [PaginatedTagResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -1310,7 +1336,7 @@ class TagsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfTagInfo> search(core.String query) {
+  async.Future<PaginatedTagResponse> search(core.String query, {core.int page, core.int perPage, core.bool countAsc}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1320,6 +1346,15 @@ class TagsResourceApi {
 
     if (query == null) {
       throw new core.ArgumentError("Parameter query is required.");
+    }
+    if (page != null) {
+      _queryParams["page"] = ["${page}"];
+    }
+    if (perPage != null) {
+      _queryParams["perPage"] = ["${perPage}"];
+    }
+    if (countAsc != null) {
+      _queryParams["countAsc"] = ["${countAsc}"];
     }
 
     _url = 'search/tags/' + commons.Escaper.ecapeVariable('$query');
@@ -1331,7 +1366,7 @@ class TagsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfTagInfo.fromJson(data));
+    return _response.then((data) => new PaginatedTagResponse.fromJson(data));
   }
 
   /**
@@ -1887,6 +1922,7 @@ class Item {
 
 class ItemSearchRequest {
   core.DateTime cutoffDate;
+  core.bool inTrash;
   core.int page;
   core.int perPage;
   core.List<Tag> tags;
@@ -1896,6 +1932,9 @@ class ItemSearchRequest {
   ItemSearchRequest.fromJson(core.Map _json) {
     if (_json.containsKey("cutoffDate")) {
       cutoffDate = core.DateTime.parse(_json["cutoffDate"]);
+    }
+    if (_json.containsKey("inTrash")) {
+      inTrash = _json["inTrash"];
     }
     if (_json.containsKey("page")) {
       page = _json["page"];
@@ -1912,6 +1951,9 @@ class ItemSearchRequest {
     var _json = new core.Map();
     if (cutoffDate != null) {
       _json["cutoffDate"] = (cutoffDate).toIso8601String();
+    }
+    if (inTrash != null) {
+      _json["inTrash"] = inTrash;
     }
     if (page != null) {
       _json["page"] = page;
@@ -2128,19 +2170,81 @@ class PaginatedExtensionDataResponse {
   }
 }
 
-class PaginatedResponse {
+class PaginatedItemResponse {
   core.List<core.String> items;
+  core.int page;
+  core.int pageCount;
+  core.List<Tag> queryTags;
+  core.int startIndex;
+  core.int totalCount;
+  core.int totalPages;
+
+  PaginatedItemResponse();
+
+  PaginatedItemResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("items")) {
+      items = _json["items"];
+    }
+    if (_json.containsKey("page")) {
+      page = _json["page"];
+    }
+    if (_json.containsKey("pageCount")) {
+      pageCount = _json["pageCount"];
+    }
+    if (_json.containsKey("queryTags")) {
+      queryTags = _json["queryTags"].map((value) => new Tag.fromJson(value)).toList();
+    }
+    if (_json.containsKey("startIndex")) {
+      startIndex = _json["startIndex"];
+    }
+    if (_json.containsKey("totalCount")) {
+      totalCount = _json["totalCount"];
+    }
+    if (_json.containsKey("totalPages")) {
+      totalPages = _json["totalPages"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (items != null) {
+      _json["items"] = items;
+    }
+    if (page != null) {
+      _json["page"] = page;
+    }
+    if (pageCount != null) {
+      _json["pageCount"] = pageCount;
+    }
+    if (queryTags != null) {
+      _json["queryTags"] = queryTags.map((value) => (value).toJson()).toList();
+    }
+    if (startIndex != null) {
+      _json["startIndex"] = startIndex;
+    }
+    if (totalCount != null) {
+      _json["totalCount"] = totalCount;
+    }
+    if (totalPages != null) {
+      _json["totalPages"] = totalPages;
+    }
+    return _json;
+  }
+}
+
+class PaginatedTagResponse {
+  core.List<TagInfo> items;
   core.int page;
   core.int pageCount;
   core.int startIndex;
   core.int totalCount;
   core.int totalPages;
 
-  PaginatedResponse();
+  PaginatedTagResponse();
 
-  PaginatedResponse.fromJson(core.Map _json) {
+  PaginatedTagResponse.fromJson(core.Map _json) {
     if (_json.containsKey("items")) {
-      items = _json["items"];
+      items = _json["items"].map((value) => new TagInfo.fromJson(value)).toList();
     }
     if (_json.containsKey("page")) {
       page = _json["page"];
@@ -2162,7 +2266,7 @@ class PaginatedResponse {
   core.Map toJson() {
     var _json = new core.Map();
     if (items != null) {
-      _json["items"] = items;
+      _json["items"] = items.map((value) => (value).toJson()).toList();
     }
     if (page != null) {
       _json["page"] = page;

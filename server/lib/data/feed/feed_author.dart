@@ -1,4 +1,3 @@
-
 /// Object representing the author of a feed.
 class FeedAuthor {
   /// [name] (optional, string) is the author’s name.

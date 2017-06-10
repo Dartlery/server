@@ -31,7 +31,6 @@ import 'src/exceptions/setup_required_exception.dart';
 import 'tools.dart';
 import 'package:dartlery/services/background_service.dart';
 
-
 export 'src/exceptions/setup_disabled_exception.dart';
 export 'src/exceptions/setup_required_exception.dart';
 export 'src/settings.dart';
@@ -50,22 +49,18 @@ const String filesPath = "files";
 //}
 
 Future<Null> checkIfSetupRequired() async {
-  if (await isSetupAvailable())
-    throw new SetupRequiredException();
+  if (await isSetupAvailable()) throw new SetupRequiredException();
 }
 
 void disableSetup() {
   _setupDisabled = true;
 }
 
-
-
-final String fullFilePath =
-path.join(rootDirectory, hostedFilesFullPath);
+final String fullFilePath = path.join(rootDirectory, hostedFilesFullPath);
 final String thumbnailFilePath =
-path.join(rootDirectory, hostedFilesThumbnailsPath);
+    path.join(rootDirectory, hostedFilesThumbnailsPath);
 final String originalFilePath =
-path.join(rootDirectory, hostedFilesOriginalPath);
+    path.join(rootDirectory, hostedFilesOriginalPath);
 
 final Directory originalDir = new Directory(originalFilePath);
 final Directory fullFileDir = new Directory(fullFilePath);
@@ -98,7 +93,6 @@ Future<Map<String, dynamic>> loadJSONFile(String path) async {
 }
 
 class Server {
-
   final Logger _log = new Logger('Server');
   final GalleryApi galleryApi;
   final FeedApi feedApi;
@@ -110,7 +104,7 @@ class Server {
   ModuleInjector injector;
 
   final ApiServer _apiServer =
-  new ApiServer(apiPrefix: "$apiPrefix/", prettyPrint: true);
+      new ApiServer(apiPrefix: apiPrefix, prettyPrint: true);
 
   HttpServer _server;
 
@@ -135,19 +129,18 @@ class Server {
           contentTypeResolver: mediaMimeResolver);
       // TODO: Submit patch to the static handler project to allow overriding the mime resolver
 
-
       _apiServer.addApi(this.galleryApi);
       _apiServer.addApi(this.feedApi);
       _apiServer.enableDiscoveryApi();
 
       final JwtSessionHandler<Principal, SessionClaimSet> sessionHandler =
-      new JwtSessionHandler<Principal, SessionClaimSet>(
-          'dartlery', 'shhh secret', _getUser,
-          idleTimeout: new Duration(hours: 1),
-          totalSessionTimeout: new Duration(days: 7));
+          new JwtSessionHandler<Principal, SessionClaimSet>(
+              'dartlery', 'shhh secret', _getUser,
+              idleTimeout: new Duration(hours: 1),
+              totalSessionTimeout: new Duration(days: 7));
 
       final Middleware loginMiddleware =
-      authenticate(<Authenticator<Principal>>[
+          authenticate(<Authenticator<Principal>>[
         new UsernamePasswordAuthenticator<Principal>(_authenticateUser)
       ], sessionHandler: sessionHandler, allowHttp: true);
 
@@ -167,15 +160,15 @@ class Server {
           .addHandler(apiHandler);
 
       final Router<dynamic> root = router()
+        ..add('/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)
+        ..add("/$filesPath/", <String>['GET', 'OPTIONS'], staticImagesHandler,
+            exactMatch: false)
         ..add(
-            '/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)..add(
-            "/$filesPath/", <String>['GET', 'OPTIONS'], staticImagesHandler,
-            exactMatch: false)..add(
             '/$apiPrefix/',
             <String>['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
             apiPipeline,
-            exactMatch: false)..add(
-            '/discovery/', <String>['GET', 'HEAD', 'OPTIONS'], apiPipeline,
+            exactMatch: false)
+        ..add('/discovery/', <String>['GET', 'HEAD', 'OPTIONS'], apiPipeline,
             exactMatch: false);
 
       pathToBuild = join(rootDirectory, 'web/');
@@ -191,7 +184,7 @@ class Server {
 
       final Map<String, String> extraHeaders = <String, String>{
         'Access-Control-Allow-Headers':
-        'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+            'Origin, X-Requested-With, Content-Type, Accept, Authorization',
         'Access-Control-Allow-Methods': 'POST, GET, PUT, HEAD, DELETE, OPTIONS',
         'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Expose-Headers': 'Authorization',
@@ -212,7 +205,6 @@ class Server {
       serverRoot = "http://${_server.address.host}:${_server.port}/";
       serverApiRoot = "$serverRoot$galleryApiPath";
       _log.info('Serving at $serverRoot');
-
     } catch (e, s) {
       _log.severe("Error while starting server", e, s);
     } finally {
@@ -220,41 +212,33 @@ class Server {
     }
   }
 
-
-
   dynamic stop() async {
-
     if (_server == null) throw new Exception("Server has not been started");
     await _server.close();
     _server = null;
-
   }
 
-  Future<Option<Principal>> _authenticateUser(String userName,
-      String password) async {
+  Future<Option<Principal>> _authenticateUser(
+      String userName, String password) async {
     try {
       _log.fine("Start _authenticateUser($userName, password_obfuscated)");
       final Option<User> user =
-      await userDataSource.getById(userName.trim().toLowerCase());
+          await userDataSource.getById(userName.trim().toLowerCase());
 
       if (user.isEmpty) return new None<Principal>();
 
       final Option<String> hashOption =
-      await userDataSource.getPasswordHash(user
-          .get()
-          .id);
+          await userDataSource.getPasswordHash(user.get().id);
 
       if (hashOption.isEmpty)
         throw new Exception("User does not have a password set");
 
       if (userModel.verifyPassword(hashOption.get(), password))
-        return new Some<Principal>(new Principal(user
-            .get()
-            .id));
+        return new Some<Principal>(new Principal(user.get().id));
       else
         return new None<Principal>();
     } catch (e, st) {
-      _log.severe(e,st);
+      _log.severe(e, st);
       rethrow;
     } finally {
       _log.fine("End _authenticateUser()");
@@ -264,33 +248,26 @@ class Server {
   Future<Option<Principal>> _getUser(String uuid) async {
     final Option<User> user = await userDataSource.getById(uuid);
     if (user.isEmpty) return new None<Principal>();
-    return new Some<Principal>(new Principal(user
-        .get()
-        .id));
+    return new Some<Principal>(new Principal(user.get().id));
   }
 
   static Server createInstance(String connectionString, {String instanceUuid}) {
     final ModuleInjector parentInjector =
-    createModelModuleInjector(connectionString);
+        createModelModuleInjector(connectionString);
 
-    final ModuleInjector injector = new ModuleInjector(
-        <Module>[
-        GalleryApi.injectorModules,
-        FeedApi.injectorModules,
-        new Module()..bind(Server)
-        ],
-        parentInjector);
+    final ModuleInjector injector = new ModuleInjector(<Module>[
+      GalleryApi.injectorModules,
+      FeedApi.injectorModules,
+      new Module()..bind(Server)
+    ], parentInjector);
 
     final Server server = injector.get(Server);
     server.instanceUuid = instanceUuid ?? generateUuid();
     server.connectionString = connectionString;
     server.injector = injector;
 
-
-
     return server;
   }
 }
 
 enum SettingNames { itemNameFormat }
-

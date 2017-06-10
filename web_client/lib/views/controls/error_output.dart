@@ -12,11 +12,8 @@ import 'package:dartlery/api/api.dart';
     styles: const ['.error_output li { font-size:smaller; }'],
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[
-      materialDirectives
-    ],
-    template:
-    '''<span class="error_output" *ngIf="hasError">
+    directives: const <dynamic>[materialDirectives],
+    template: '''<span class="error_output" *ngIf="hasError">
         <glyph icon="error_outline"  tooltipTarget   #ref="tooltipTarget"></glyph>
       {{message}}
       <material-tooltip-card [for]="ref">
@@ -26,15 +23,12 @@ import 'package:dartlery/api/api.dart';
       </material-tooltip-card>
     </span>''')
 class ErrorOutputComponent {
-
   @Input()
   DetailedApiRequestError error;
 
-  bool get hasError => error!=null;
+  bool get hasError => error != null;
 
-  String get message => error?.message??'';
+  String get message => error?.message ?? '';
 
-  bool get hasDetails => (error?.errors?.length??0)>0;
-
-
+  bool get hasDetails => (error?.errors?.length ?? 0) > 0;
 }

@@ -15,7 +15,14 @@ import '../src/a_page.dart';
 
 @Component(
     selector: 'tags-page',
-    directives: const [materialDirectives, commonControls, FORM_DIRECTIVES, RedirectsTab, ReplaceTab, ROUTER_DIRECTIVES],
+    directives: const [
+      materialDirectives,
+      commonControls,
+      FORM_DIRECTIVES,
+      RedirectsTab,
+      ReplaceTab,
+      ROUTER_DIRECTIVES
+    ],
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css", "tags_page.css"],
     templateUrl: 'tags_page.html')
@@ -29,7 +36,7 @@ class TagsPage extends APage implements OnDestroy {
   StringSelectionOptions<String> categoryOptions =
       new StringSelectionOptions<String>([]);
   final SelectionModel<String> categorySelection =
-    new SelectionModel<String>.withList();
+      new SelectionModel<String>.withList();
 
   String tagQuery = "A";
 
@@ -48,9 +55,7 @@ class TagsPage extends APage implements OnDestroy {
     pageControl.setAvailablePageActions(<PageAction>[PageAction.refresh]);
     _pageActionSubscription =
         pageControl.pageActionRequested.listen(onPageActionRequested);
-
   }
-
 
   @override
   void ngOnDestroy() {
@@ -94,14 +99,13 @@ class TagsPage extends APage implements OnDestroy {
     reset();
   }
 
-  String get categoryButtonText =>
-      categorySelection.selectedValues.length > 0
-          ? categorySelection.selectedValues.first
-          : 'Category...';
+  String get categoryButtonText => categorySelection.selectedValues.length > 0
+      ? categorySelection.selectedValues.first
+      : 'Category...';
 
   Future<Null> onSubmit() async {
     await performApiCall(() async {
-      if(categorySelection.selectedValues.length>0)
+      if (categorySelection.selectedValues.length > 0)
         model.category = categorySelection.selectedValues.first;
       else
         model.category = "";
@@ -121,10 +125,9 @@ class TagsPage extends APage implements OnDestroy {
     });
   }
 
-
   Future<Null> deleteTag(TagWrapper tag) async {
     await performApiCall(() async {
-      if(tag.hasCategory) {
+      if (tag.hasCategory) {
         await _api.tags.delete(tag.id, tag.category);
       } else {
         await _api.tags.deleteWithoutCategory(tag.id);
@@ -140,15 +143,13 @@ class TagsPage extends APage implements OnDestroy {
       categoryOptions = new StringSelectionOptions<String>(categories);
 
       tags.clear();
-      List<api.TagInfo> data;
+      api.PaginatedTagResponse data;
       if (StringTools.isNullOrWhitespace(tagQuery)) {
         data = await _api.tags.getAllTagInfo();
       } else {
         data = await _api.tags.search(tagQuery);
       }
-      tags.addTagInfos(data);
-
-
+      tags.addTagInfos(data.items);
     });
   }
 
@@ -163,11 +164,10 @@ class TagsPage extends APage implements OnDestroy {
     model = new api.Tag();
     model.id = t.tag.id;
     model.category = t.tag.category;
-    if(StringTools.isNullOrWhitespace(t.tag.category)) {
+    if (StringTools.isNullOrWhitespace(t.tag.category)) {
       categorySelection.clear();
-    }else {
+    } else {
       categorySelection.select(t.tag.category);
     }
-
   }
 }

@@ -36,8 +36,7 @@ import '../src/a_page.dart';
 class DeduplicatePage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("DeduplicatePage");
 
-  static const double _animationSpeed =
-      0.01;
+  static const double _animationSpeed = 0.01;
   ExtensionData model;
   Item firstComparisonItem = new Item();
 
@@ -70,7 +69,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
       this._router, this._params, this._location)
       : super(_auth, _router, pageControl) {
     pageControl.setPageTitle("Deduplicate");
-    pageControl.setAvailablePageActions([PageAction.refresh, PageAction.compare]);
+    pageControl
+        .setAvailablePageActions([PageAction.refresh, PageAction.compare]);
   }
 
   String get comparisonHeight {
@@ -80,6 +80,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   String get comparisonSplitPosition {
     return "${comparisonSplitPositionInt}px";
   }
+
   int get comparisonSplitPositionInt {
     int x = (html.window.innerWidth * _comparisonSplitRatio).round();
     if (x < leftComparisonLimit) x = leftComparisonLimit;
@@ -99,8 +100,9 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   String get firstComparisonWidth => "${firstComparisonItem?.width??0}px";
 
   int get leftComparisonLimit {
-    return  0; //((html.window.innerWidth / 2) - (leftImage.offsetWidth / 2)).round();
+    return 0; //((html.window.innerWidth / 2) - (leftImage.offsetWidth / 2)).round();
   }
+
   @ViewChild("leftImage")
   html.ImageElement get leftImage => html.document.getElementById("leftImage");
 
@@ -122,9 +124,10 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     return ((html.window.innerWidth / 2) + (rightImage.offsetWidth / 2))
         .round();
   }
+
   @ViewChild("rightImage")
-  html.ImageElement get rightImage =>
-      html.document.getElementById("rightImage"); // TODO: Make this calculated against the amount of time between frames
+  html.ImageElement get rightImage => html.document.getElementById(
+      "rightImage"); // TODO: Make this calculated against the amount of time between frames
   int get secondComparisonPixelCount =>
       (secondComparisonItem?.height ?? 0) * (secondComparisonItem?.width ?? 0);
 
@@ -227,8 +230,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     refresh();
 
     new Timer(new Duration(seconds: 1), () {
-      _comparisonTimer = new Timer.periodic(
-          new Duration(milliseconds: 16), animationCallback);
+      _comparisonTimer =
+          new Timer.periodic(new Duration(milliseconds: 16), animationCallback);
     });
   }
 

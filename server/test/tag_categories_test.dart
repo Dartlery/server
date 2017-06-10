@@ -29,23 +29,28 @@ void main() {
   group("Tag Category validation", () {
     test("Null ID", () async {
       tagCategory.id = null;
-      expect(api.tagCategories.create(tagCategory), throwsDataValidationException);
+      expect(
+          api.tagCategories.create(tagCategory), throwsDataValidationException);
     });
     test("Blank ID", () async {
       tagCategory.id = "";
-      expect(api.tagCategories.create(tagCategory), throwsDataValidationException);
+      expect(
+          api.tagCategories.create(tagCategory), throwsDataValidationException);
     });
     test("Null color", () async {
       tagCategory.color = null;
-      expect(api.tagCategories.create(tagCategory), throwsDataValidationException);
+      expect(
+          api.tagCategories.create(tagCategory), throwsDataValidationException);
     });
     test("Blank color", () async {
       tagCategory.color = "";
-      expect(api.tagCategories.create(tagCategory), throwsDataValidationException);
+      expect(
+          api.tagCategories.create(tagCategory), throwsDataValidationException);
     });
     test("Invalid color", () async {
       tagCategory.color = "not a valid color";
-      expect(api.tagCategories.create(tagCategory), throwsDataValidationException);
+      expect(
+          api.tagCategories.create(tagCategory), throwsDataValidationException);
     });
   });
 
@@ -69,23 +74,18 @@ void main() {
       expect(data.length, 2);
     });
 
-
     test("update()", () async {
       IdResponse response = await api.tagCategories.create(tagCategory);
       final TagCategory item = await api.tagCategories.getById(response.id);
       item.color = "#111111";
-      response =
-          await api.tagCategories.update(item.id, item);
+      response = await api.tagCategories.update(item.id, item);
       validateIdResponse(response);
     });
 
     test("delete()", () async {
       final IdResponse response = await api.tagCategories.create(tagCategory);
       await api.tagCategories.delete(response.id);
-      expect(api.tagCategories.getById(response.id),
-          throwsNotFoundException);
+      expect(api.tagCategories.getById(response.id), throwsNotFoundException);
     });
-
-
   });
 }

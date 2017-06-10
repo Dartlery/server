@@ -25,18 +25,18 @@ class TagCategoriesResource extends AIdResource<TagCategory> {
 
   @override
   @ApiMethod(method: 'POST', path: '${tagCategoriesApiPath}/')
-  Future<IdResponse> create(TagCategory tagCategory) => createWithCatch(tagCategory);
+  Future<IdResponse> create(TagCategory tagCategory) =>
+      createWithCatch(tagCategory);
 
   @ApiMethod(method: 'GET', path: '${tagCategoriesApiPath}/')
   Future<List<String>> getAllIds() => catchExceptionsAwait(() async {
-    final List<TagCategory> data = await _tagCategoryModel.getAll();
-    final List<String> output = <String>[];
-    for(TagCategory tc in data) {
-      output.add(tc.id);
-    }
-    return output;
-  });
-
+        final List<TagCategory> data = await _tagCategoryModel.getAll();
+        final List<String> output = <String>[];
+        for (TagCategory tc in data) {
+          output.add(tc.id);
+        }
+        return output;
+      });
 
   @override
   @ApiMethod(method: 'DELETE', path: '${tagCategoriesApiPath}/{id}/')
@@ -54,6 +54,6 @@ class TagCategoriesResource extends AIdResource<TagCategory> {
   @ApiMethod(method: 'PUT', path: '${tagCategoriesApiPath}/{id}/')
   Future<IdResponse> update(String id, TagCategory tagCategory) async {
     throw new NotImplementedException();
-   // updateWithCatch(id, tagCategory);
+    // updateWithCatch(id, tagCategory);
   }
 }

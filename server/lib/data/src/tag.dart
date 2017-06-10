@@ -30,8 +30,7 @@ class Tag extends AIdData {
   @ApiProperty(ignore: true)
   bool get hasCategory => StringTools.isNotNullOrWhitespace(this.category);
 
-  set fullName(
-      String value) {}
+  set fullName(String value) {}
 
   bool equals(Tag other) {
     if (id?.toLowerCase() == other.id?.toLowerCase()) {

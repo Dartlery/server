@@ -25,34 +25,33 @@ class ItemFeedResource extends AResource {
 
   @ApiMethod(path: 'items/')
   Future<Feed> getVisibleItems(
-      {int page: 0, int perPage: defaultPerPage, String tags}) =>
+          {int page: 0, int perPage: defaultPerPage, String tags}) =>
       catchExceptionsAwait<Feed>(() async {
         String title = "Recent items";
         PaginatedData<Item> items;
-        if(StringTools.isNotNullOrWhitespace(tags)) {
+        if (StringTools.isNotNullOrWhitespace(tags)) {
           final TagList tagList = new TagList.fromJson(tags);
-          items = await _itemModel.searchVisible(tagList.toList(), page: page, perPage: perPage);
+          items = await _itemModel.searchVisible(tagList.toList(),
+              page: page, perPage: perPage);
           title = "Recent items $tagList";
         } else {
-          items = await _itemModel.getVisible(
-              page: page, perPage: perPage);
+          items = await _itemModel.getVisible(page: page, perPage: perPage);
         }
         return createItemFeed(items.data, title);
       });
 
   @ApiMethod(path: 'items/random/')
-  Future<Feed> getRandomItems(
-      {int perPage: defaultPerPage, String tags}) =>
+  Future<Feed> getRandomItems({int perPage: defaultPerPage, String tags}) =>
       catchExceptionsAwait<Feed>(() async {
         String title = "Random items";
         TagList tagList;
 
-        if(StringTools.isNotNullOrWhitespace(tags)) {
+        if (StringTools.isNotNullOrWhitespace(tags)) {
           tagList = new TagList.fromJson(tags);
           title = "$title $tagList";
         }
-        final List<Item> items = await _itemModel.getRandom(filterTags: tagList?.toList(),
-            perPage: perPage);
+        final List<Item> items = await _itemModel.getRandom(
+            filterTags: tagList?.toList(), perPage: perPage);
         return createItemFeed(items, title);
       });
 
@@ -73,23 +72,30 @@ class ItemFeedResource extends AResource {
     output.favicon = urlPath.join(requestRoot, "favicon.ico");
     output.feedUrl = context.requestUri.toString();
 
-    for(Item i in items) {
+    for (Item i in items) {
       final FeedItem fItem = new FeedItem(i.id);
       String imageUrl;
-      if(i.fullFileAvailable) {
-        imageUrl = urlPath.join(requestRoot,filesPath,fullFileFolderName, i.id.substring(0,fileHashPrefixLength), i.id);
+      if (i.fullFileAvailable) {
+        imageUrl = urlPath.join(requestRoot, filesPath, fullFileFolderName,
+            i.id.substring(0, fileHashPrefixLength), i.id);
       } else {
-        imageUrl = urlPath.join(requestRoot,filesPath,originalFileFolderName, i.id.substring(0,fileHashPrefixLength), i.id);
+        imageUrl = urlPath.join(requestRoot, filesPath, originalFileFolderName,
+            i.id.substring(0, fileHashPrefixLength), i.id);
       }
 
-      fItem.bannerImage = urlPath.join(requestRoot,filesPath,thumbnailFileFolderName, i.id.substring(0,fileHashPrefixLength), i.id);
+      fItem.bannerImage = urlPath.join(
+          requestRoot,
+          filesPath,
+          thumbnailFileFolderName,
+          i.id.substring(0, fileHashPrefixLength),
+          i.id);
       fItem.image = imageUrl;
       fItem.url = imageUrl;
       fItem.datePublished = i.uploaded;
-      if(i.tags.length>0) {
+      if (i.tags.length > 0) {
         fItem.tags = <String>[];
       }
-      for(Tag t in i.tags) {
+      for (Tag t in i.tags) {
         fItem.tags.add(t.toString());
       }
       output.items.add(fItem);
@@ -97,5 +103,4 @@ class ItemFeedResource extends AResource {
 
     return output;
   }
-
 }

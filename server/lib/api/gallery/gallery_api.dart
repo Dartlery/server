@@ -24,7 +24,9 @@ export 'src/requests/password_change_request.dart';
 export 'src/requests/replace_tags_requst.dart';
 
 @ApiClass(
-    version: galleryApiVersion, name: galleryApiName, description: 'Item REST API')
+    version: galleryApiVersion,
+    name: galleryApiName,
+    description: 'Item REST API')
 class GalleryApi {
   static const String importPath = "import";
   static const String itemsPath = "items";
@@ -48,7 +50,8 @@ class GalleryApi {
   @ApiResource()
   final ExtensionDataResource extensionData;
 
-  GalleryApi(this.items, this.users, this.setup, this.tagCategories, this.tags, this.extensionData);
+  GalleryApi(this.items, this.users, this.setup, this.tagCategories, this.tags,
+      this.extensionData);
 
   static final Module injectorModules = new Module()
     ..bind(ItemResource)

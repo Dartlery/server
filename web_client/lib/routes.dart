@@ -34,7 +34,6 @@ const Route itemsSearchRoute = const Route(
     name: 'ItemsSearch',
     component: ItemBrowseComponent);
 
-
 const Route itemViewRoute = const Route(
   path: '/item/:$idRouteParameter',
   name: 'Item',

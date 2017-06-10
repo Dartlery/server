@@ -13,16 +13,13 @@ import 'constants.dart';
 
 abstract class AMongoIdDataSource<T extends AIdData>
     extends AMongoObjectDataSource<T> with AIdBasedDataSource<T> {
-
-  AMongoIdDataSource(MongoDbConnectionPool pool): super(pool);
-
-  @override
-  Future<Null> deleteById(String id) =>
-      deleteFromDb(where.eq(idField, id));
+  AMongoIdDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
-  Future<bool> existsById(String id) =>
-      super.exists(where.eq(idField, id));
+  Future<Null> deleteById(String id) => deleteFromDb(where.eq(idField, id));
+
+  @override
+  Future<bool> existsById(String id) => super.exists(where.eq(idField, id));
 
   @override
   Future<IdDataList<T>> getAll({String sortField: null}) =>
@@ -55,12 +52,12 @@ abstract class AMongoIdDataSource<T extends AIdData>
   void updateMap(AIdData item, Map<String, dynamic> data) {
     staticUpdateMap(item, data);
   }
+
   static void staticUpdateMap(AIdData item, Map<String, dynamic> data) {
     data[idField] = item.id;
   }
 
-  static void setIdForData(
-      AIdData item, Map<String, dynamic> data) {
+  static void setIdForData(AIdData item, Map<String, dynamic> data) {
     item.id = data[idField];
   }
 
@@ -68,20 +65,22 @@ abstract class AMongoIdDataSource<T extends AIdData>
   Future<PaginatedIdData<T>> getPaginatedListFromDb(SelectorBuilder selector,
           {int offset: 0,
           int limit: paginatedDataLimit,
-          String sortField, bool sortDescending: false}) async =>
+          String sortField,
+          bool sortDescending: false}) async =>
       new PaginatedIdData<T>.copyPaginatedData(await getPaginatedFromDb(
           selector,
           offset: offset,
           limit: limit,
-          sortField: sortField, sortDescending: sortDescending));
+          sortField: sortField,
+          sortDescending: sortDescending));
 
   @override
   Future<PaginatedIdData<T>> genericSearchPaginated(String query,
           {SelectorBuilder selector,
           int offset: 0,
           int limit: paginatedDataLimit}) async =>
-      new PaginatedIdData<T>.copyPaginatedData(
-          await super.genericSearchPaginated(query, offset: offset, limit: limit));
+      new PaginatedIdData<T>.copyPaginatedData(await super
+          .genericSearchPaginated(query, offset: offset, limit: limit));
 
   @protected
   Future<IdDataList<T>> getListFromDb(dynamic selector) async =>

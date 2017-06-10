@@ -12,7 +12,7 @@ import 'package:dartlery_shared/global.dart';
 Server server;
 GalleryApi get api => server.galleryApi;
 
-Map<String,User> users;
+Map<String, User> users;
 void main() {
   CreateItemRequest request;
 
@@ -23,7 +23,6 @@ void main() {
 
     users = await createTestUsers(api);
 
-
     request = await createItemRequest();
   });
 
@@ -32,35 +31,31 @@ void main() {
     server = null;
   });
 
-  group("Item validation", () {
+  group("Item validation", () {});
 
-  });
-
-  group("Method tests", ()
-  {
-
+  group("Method tests", () {
     test("create()", () async {
       expect(api.items.create(request.item), throwsNotImplementedException);
     }, skip: "Not quite working?");
 
     test("createItem()", () async {
-      final IdResponse response  = await api.items.createItem(request);
+      final IdResponse response = await api.items.createItem(request);
       validateIdResponse(response);
     });
 
     test("getById()", () async {
-      final IdResponse response  = await api.items.createItem(request);
+      final IdResponse response = await api.items.createItem(request);
       final Item item = await api.items.getById(response.id);
       expect(item, isNotNull);
     });
 
     test("update()", () async {
-      final IdResponse response  = await api.items.createItem(request);
+      final IdResponse response = await api.items.createItem(request);
 
       Item item = await api.items.getById(response.id);
       expect(item.tags.length, 3);
 
-      final Tag newTag  = new Tag.withValues("TestTagName");
+      final Tag newTag = new Tag.withValues("TestTagName");
       item.tags = <Tag>[newTag];
 
       await api.items.update(response.id, item);
@@ -72,33 +67,33 @@ void main() {
     });
 
     test("searchVisible()", () async {
-      IdResponse response  = await api.items.createItem(request);
+      IdResponse response = await api.items.createItem(request);
 
       final Item item = await api.items.getById(response.id);
       expect(item.tags.length, 3);
 
       request = await createItemRequest(file: "test2.jpg");
-      response  = await api.items.createItem(request);
+      response = await api.items.createItem(request);
 
-      final ItemSearchRequest searchRequest = new  ItemSearchRequest();
+      final ItemSearchRequest searchRequest = new ItemSearchRequest();
       searchRequest.tags.add(item.tags.first);
 
-      PaginatedResponse<String> results = await api.items.searchVisible(searchRequest);
+      PaginatedResponse<String> results =
+          await api.items.searchVisible(searchRequest);
       expect(results.items.length, 1);
-      expect(results.items.first,item.id);
+      expect(results.items.first, item.id);
 
       searchRequest.tags.add(item.tags[2]);
 
       results = await api.items.searchVisible(searchRequest);
       expect(results.items.length, 1);
-      expect(results.items.first,item.id);
+      expect(results.items.first, item.id);
     });
 
     test("delete()", () async {
-      final IdResponse response  = await api.items.createItem(request);
+      final IdResponse response = await api.items.createItem(request);
       await api.items.delete(response.id);
-      expect(
-          api.items.getById(response.id), throwsNotFoundException);
+      expect(api.items.getById(response.id), throwsNotFoundException);
     });
   });
 }

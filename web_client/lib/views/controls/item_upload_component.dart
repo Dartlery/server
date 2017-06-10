@@ -120,7 +120,6 @@ class ItemUploadComponent extends AApiErrorThing {
       request.item.fileName = fileName;
       request.file = msg;
 
-
       await _api.items.createItem(request);
 
       visible = false;

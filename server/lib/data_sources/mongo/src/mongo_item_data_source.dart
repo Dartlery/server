@@ -38,9 +38,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   final MongoTagDataSource _tagDataSource;
 
-  MongoItemDataSource(MongoDbConnectionPool pool, this._tagDataSource) : super(pool);
-
-
+  MongoItemDataSource(MongoDbConnectionPool pool, this._tagDataSource)
+      : super(pool);
 
   @override
   Logger get childLogger => _log;
@@ -71,8 +70,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
       for (ObjectId id in data[tagsField]) {
         final Option<TagInfo> newTag = await _tagDataSource.getByInternalId(id);
-        if(newTag.isEmpty)
-          continue;
+        if (newTag.isEmpty) continue;
         output.tags.add(newTag.first);
       }
     }
@@ -138,7 +136,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     if (originalTags == null || originalTags.length == 0)
       throw new ArgumentError.notNull("originalTags");
 
-    final TagDiff diff = new TagDiff(originalTags,newTags);
+    final TagDiff diff = new TagDiff(originalTags, newTags);
 
     final int count = await genericCount(_createTagCriteria(originalTags));
 
@@ -148,7 +146,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     final SelectorBuilder tagSelector = _createTagCriteria(originalTags);
 
     if (tagsToAdd.length > 0) {
-      final ModifierBuilder modifier = modify.addToSet(tagsField, {$each: extractTagIds(tagsToAdd)});
+      final ModifierBuilder modifier =
+          modify.addToSet(tagsField, {$each: extractTagIds(tagsToAdd)});
       await genericUpdate(tagSelector, modifier, multiUpdate: true);
     }
 
@@ -177,7 +176,9 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       bool inTrash: false}) async {
     final List<Map> matchers = [
       {inTrashField: inTrash},
-      {tagsField: {$all: filterTags.map((Tag t) => t.internalId)}}
+      {
+        tagsField: {$all: filterTags.map((Tag t) => t.internalId)}
+      }
     ];
 
     return await collectionWrapper<List<Item>>((DbCollection col) async {
@@ -221,10 +222,13 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<Stream<Item>> streamAll({bool addedDesc: true, DateTime startDate, int limit: defaultPerPage}) async {
+  Future<Stream<Item>> streamAll(
+      {bool addedDesc: true,
+      DateTime startDate,
+      int limit: defaultPerPage}) async {
     final SelectorBuilder select = where;
     if (startDate != null) {
-      if(addedDesc) {
+      if (addedDesc) {
         select.lt(uploadedField, startDate);
       } else {
         select.gt(uploadedField, startDate);
@@ -265,7 +269,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     if (item.tags != null) {
       final List<dynamic> tagsList = new List<dynamic>();
       for (Tag tag in item.tags) {
-        if(tag.internalId==null) {
+        if (tag.internalId == null) {
           throw new Exception("Internal ID for tag not found");
         }
         tagsList.add(tag.internalId);
@@ -281,11 +285,11 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     await genericUpdate(where.eq(idField, id), modifier);
   }
 
-  List<dynamic> extractTagIds(List<Tag> tags) => new List<dynamic>.from(tags.map((Tag t)  {
-    if(t.internalId==null)
-      throw new Exception("Internal ID not found");
-    return t.internalId;
-  }));
+  List<dynamic> extractTagIds(List<Tag> tags) =>
+      new List<dynamic>.from(tags.map((Tag t) {
+        if (t.internalId == null) throw new Exception("Internal ID not found");
+        return t.internalId;
+      }));
 
   SelectorBuilder _createTagCriteria(List<Tag> tags) {
     final SelectorBuilder output = where;

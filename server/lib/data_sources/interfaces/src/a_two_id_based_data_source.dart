@@ -9,8 +9,8 @@ abstract class ATwoIdBasedDataSource<T extends AIdData> extends ADataSource {
   static final Logger _log = new Logger('ATwoIdBasedDataSource');
 
   Future<IdDataList<T>> getAll();
-  Future<PaginatedData<T>> getAllPaginated({int page: 0,
-    int perPage: defaultPerPage});
+  Future<PaginatedData<T>> getAllPaginated(
+      {int page: 0, int perPage: defaultPerPage});
   Future<Option<T>> getById(String id, String id2);
   Future<String> create(T t);
   Future<String> update(String id, String id2, T t);

@@ -19,7 +19,6 @@ class ItemReprocessExtension extends AExtension {
 
   static const String pluginIdStatic = "itemReprocess";
 
-
   final ItemModel _itemModel;
   final AItemDataSource _itemDataSource;
 
@@ -29,19 +28,16 @@ class ItemReprocessExtension extends AExtension {
 
   @override
   Future<Null> onBackgroundCycle(BackgroundQueueItem queueItem) async {
-
     try {
-      final Item item = await _itemModel.getById(queueItem.data, bypassAuthentication: true);
+      final Item item =
+          await _itemModel.getById(queueItem.data, bypassAuthentication: true);
       item.errors.clear();
       final File f = new File(getOriginalFilePathForHash(queueItem.data));
-      item.fileData =f.readAsBytesSync();
+      item.fileData = f.readAsBytesSync();
       await _itemModel.processItem(item);
       await _itemModel.update(item.id, item, bypassAuthentication: true);
     } catch (e, st) {
       _log.severe(e, st);
-    } finally {
-
-    }
+    } finally {}
   }
-
 }

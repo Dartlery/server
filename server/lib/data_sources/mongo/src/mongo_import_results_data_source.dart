@@ -10,7 +10,8 @@ import 'constants.dart';
 import 'package:option/option.dart';
 import 'a_mongo_data_source.dart';
 
-class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult> with AImportResultsDataSource {
+class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
+    with AImportResultsDataSource {
   static final Logger _log = new Logger('MongoImportResultsDataSource');
   @override
   Logger get childLogger => _log;
@@ -22,8 +23,7 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult> 
   static const String timestampField = "timestamp";
   static const String thumbnailCreatedField = "thumbnailCreated";
 
-
-  MongoImportResultsDataSource(MongoDbConnectionPool pool): super(pool);
+  MongoImportResultsDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
@@ -35,7 +35,8 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult> 
   }
 
   Future<PaginatedData<ImportResult>> get({int page: 0, int perPage}) async {
-    return await getPaginatedFromDb(where.sortBy(timestampField, descending: true));
+    return await getPaginatedFromDb(
+        where.sortBy(timestampField, descending: true));
   }
 
   @override
@@ -50,16 +51,15 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult> 
   }
 
   @override
-  Future<ImportResult> createObject(Map<String,dynamic> data) async {
+  Future<ImportResult> createObject(Map<String, dynamic> data) async {
     final ImportResult output = new ImportResult();
     output.id = data[idField];
     output.fileName = data[fileNameField];
     output.result = data[resultField];
-    output.error= data[errorField];
-    output.thumbnailCreated= data[thumbnailCreatedField];
-    output.source= data[sourceField];
-    output.timestamp= data[timestampField];
-   return output;
+    output.error = data[errorField];
+    output.thumbnailCreated = data[thumbnailCreatedField];
+    output.source = data[sourceField];
+    output.timestamp = data[timestampField];
+    return output;
   }
-
 }

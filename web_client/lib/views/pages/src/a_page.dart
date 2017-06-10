@@ -11,13 +11,14 @@ import 'dart:math';
 abstract class APage extends AApiErrorThing {
   final PageControlService pageControl;
 
-  APage(AuthenticationService auth, Router router, this.pageControl): super(router, auth);
+  APage(AuthenticationService auth, Router router, this.pageControl)
+      : super(router, auth);
 
   bool popupUnhandledErrors = true;
   @override
   set errorMessage(String message) {
     super.errorMessage = message;
-    if(popupUnhandledErrors&&StringTools.isNotNullOrWhitespace(message))
+    if (popupUnhandledErrors && StringTools.isNotNullOrWhitespace(message))
       pageControl.sendMessage("Error", message);
   }
 
@@ -32,34 +33,29 @@ abstract class APage extends AApiErrorThing {
   String getViewWidthString([int offset = 0]) {
     return "${html.window.innerWidth+offset}px";
   }
+
   String getViewHeightString([int offset = 0]) {
     // The top toolbar is currently permanent, so this height calculation automatically subtracts its height
     return "${html.window.innerHeight+offset-64}px";
   }
 
   String getFullFileUrl(Item item) {
-    if(item==null||StringTools.isNullOrWhitespace(item.id))
-      return "";
-    if(item.fullFileAvailable)
+    if (item == null || StringTools.isNullOrWhitespace(item.id)) return "";
+    if (item.fullFileAvailable)
       return getImageUrl(item.id, ItemFileType.full);
     else
       return getImageUrl(item.id, ItemFileType.original);
   }
 
   String getOriginalFileUrl(String value) {
-    if(StringTools.isNullOrWhitespace(value))
-      return "";
+    if (StringTools.isNullOrWhitespace(value)) return "";
     final String output = getImageUrl(value, ItemFileType.original);
     return output;
   }
 
   String getThumbnailFileUrl(String value) {
-    if(StringTools.isNullOrWhitespace(value))
-      return "";
+    if (StringTools.isNullOrWhitespace(value)) return "";
     final String output = getImageUrl(value, ItemFileType.thumbnail);
     return output;
   }
-
-
-
 }

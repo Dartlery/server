@@ -8,8 +8,6 @@ export 'feed_author.dart';
 export 'feed_hub.dart';
 export 'feed_item.dart';
 
-
-
 /// Class for generating output compliant with https://jsonfeed.org/version/1
 class Feed {
   /// [version] (required, string) is the URL of the version of the format the feed uses. This should appear at the very top, though we recognize that not all JSON generators allow for ordering.

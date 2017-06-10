@@ -9,5 +9,4 @@ abstract class AImportResultsDataSource extends ADataSource {
 
   Future<Null> record(ImportResult data);
   Future<PaginatedData<ImportResult>> get({int page: 0, int perPage});
-
 }

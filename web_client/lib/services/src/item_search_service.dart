@@ -17,19 +17,22 @@ class ItemSearchService {
   DateTime _dateStart;
 
   int _totalPages = 0;
-  PaginatedResponse _response;
+  PaginatedItemResponse _response;
 
-  final Map<int,List<String>> _results = new Map<int,List<String>>();
+  final Map<int, List<String>> _results = new Map<int, List<String>>();
 
-  Future<PaginatedResponse> performSearch({int page: 0}) async {
-    PaginatedResponse response;
-    if(_tags.isEmpty)
-      response = await _api.items.getVisibleIds( page: page);
+  Future<PaginatedItemResponse> performSearch({int page: 0}) async {
+    PaginatedItemResponse response;
+    if (_tags.isEmpty)
+      response = await _api.items.getVisibleIds(page: page);
     else {
       final ItemSearchRequest request = new ItemSearchRequest();
       request.tags = _tags.toListOfTags();
       request.page = page;
       response = await _api.items.searchVisible(request);
+      _tags.clear();
+      _tags.addTags(response.queryTags);
+
     }
     _response = response;
     _results[page] = response.items;
@@ -44,14 +47,14 @@ class ItemSearchService {
   }
 
   void clearTags() {
-    if(_tags.length>0) {
+    if (_tags.length > 0) {
       _tags.clear();
       clear();
     }
   }
 
   void setTags(TagList tags) {
-    if(!this._tags.compare(tags)) {
+    if (!this._tags.compare(tags)) {
       clear();
       this._tags.clear();
       this._tags.addTagList(tags);
@@ -59,16 +62,17 @@ class ItemSearchService {
   }
 
   Future<String> _getNextPageForItem(String item, int currentPage) async {
-    final PaginatedResponse response = await performSearch(page: currentPage+1);
-    if(response.items.isNotEmpty) {
-      if(response.items.contains(item)) {
+    final PaginatedItemResponse response =
+        await performSearch(page: currentPage + 1);
+    if (response.items.isNotEmpty) {
+      if (response.items.contains(item)) {
         final int i = response.items.indexOf(item);
-        if(i==response.items.length-1) {
-          if(currentPage<_totalPages) {
+        if (i == response.items.length - 1) {
+          if (currentPage < _totalPages) {
             return await _getNextPageForItem(item, currentPage + 1);
           }
         } else {
-          return response.items[i+1];
+          return response.items[i + 1];
         }
       } else {
         return response.items.first;
@@ -78,38 +82,37 @@ class ItemSearchService {
   }
 
   Future<String> getNextItem(String item) async {
-    for(int page in _results.keys) {
-      if(_results[page].contains(item)) {
+    for (int page in _results.keys) {
+      if (_results[page].contains(item)) {
         final List<String> pageResults = _results[page];
         int i = pageResults.indexOf(item);
-        if(i==pageResults.length-1) {
-          if(_results.containsKey(page+1)&&_results[page+1].isNotEmpty) {
-            return _results[page+1].first;
-          } else if(page+1<=_totalPages) {
+        if (i == pageResults.length - 1) {
+          if (_results.containsKey(page + 1) && _results[page + 1].isNotEmpty) {
+            return _results[page + 1].first;
+          } else if (page + 1 <= _totalPages) {
             return await _getNextPageForItem(item, page);
           }
         } else {
-          return pageResults[i+1];
+          return pageResults[i + 1];
         }
       }
     }
     return null;
   }
 
-
   Future<String> _getPreviousPageForItem(String item, int currentPage) async {
-    if(currentPage==0)
-      return null;
-    final PaginatedResponse response = await performSearch(page: currentPage-1);
-    if(response.items.isNotEmpty) {
-      if(response.items.contains(item)) {
+    if (currentPage == 0) return null;
+    final PaginatedItemResponse response =
+        await performSearch(page: currentPage - 1);
+    if (response.items.isNotEmpty) {
+      if (response.items.contains(item)) {
         final int i = response.items.indexOf(item);
-        if(i==0) {
-          if(currentPage>0) {
+        if (i == 0) {
+          if (currentPage > 0) {
             return await _getPreviousPageForItem(item, currentPage - 1);
           }
         } else {
-          return response.items[i-1];
+          return response.items[i - 1];
         }
       } else {
         return response.items.last;
@@ -117,19 +120,20 @@ class ItemSearchService {
     }
     return null;
   }
+
   Future<String> getPreviousItem(String item) async {
-    for(int page in _results.keys) {
-      if(_results[page].contains(item)) {
+    for (int page in _results.keys) {
+      if (_results[page].contains(item)) {
         final List<String> pageResults = _results[page];
         final int i = pageResults.indexOf(item);
-        if(i==0) {
-          if(_results.containsKey(page-1)) {
-            return _results[page-1].last;
-          } else if(page>0) {
+        if (i == 0) {
+          if (_results.containsKey(page - 1)) {
+            return _results[page - 1].last;
+          } else if (page > 0) {
             return await _getPreviousPageForItem(item, page);
           }
         } else {
-          return pageResults[i-1];
+          return pageResults[i - 1];
         }
       }
     }
@@ -139,10 +143,9 @@ class ItemSearchService {
   List<dynamic> getRouterArgsForCurrentSearch() {
     final List<dynamic> output = <dynamic>[];
     output.add(itemsSearchRoute.name);
-    final Map<String,String> args = <String,String>{};
+    final Map<String, String> args = <String, String>{};
     args[queryRouteParameter] = _tags.toQueryString();
     output.add(args);
     return output;
   }
-
 }

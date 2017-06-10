@@ -20,7 +20,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   static const String emailField = "email";
   static const String passwordField = "password";
 
-  MongoUserDataSource(MongoDbConnectionPool pool): super(pool);
+  MongoUserDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
   Future<User> createObject(Map data) async {

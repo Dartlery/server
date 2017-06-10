@@ -67,6 +67,7 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
       await refresh();
     });
   }
+
   Future<Null> createRedirect() async {
     if (startTag == null || endTag == null) return;
     await performApiCall(() async {
@@ -83,8 +84,7 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
     });
   }
 
-  String formatRedirectingTag(TagInfo t) =>
-      TagWrapper.formatTagInfo(t);
+  String formatRedirectingTag(TagInfo t) => TagWrapper.formatTagInfo(t);
 
   String formatTag(Tag t) => TagWrapper.formatTag(t);
 

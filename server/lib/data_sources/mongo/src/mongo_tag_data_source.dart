@@ -57,7 +57,14 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
       final SelectorBuilder select =
           where.eq(countField, 0).notExists(redirectField);
-      await tagCol.remove(select);
+
+      final Stream<ObjectId> tagPipe =
+          (await genericFindStream(select)).map((Map m) => m[internalIdField]);
+      await for (ObjectId id in tagPipe) {
+        if (!(await exists(where.eq(redirectField, id)))) {
+          await tagCol.remove(select);
+        }
+      }
     });
   }
 
@@ -98,12 +105,12 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   }
 
   @override
-  Future<PaginatedData<TagInfo>> getAllPaginated({int page: 0,
-    int perPage: defaultPerPage, bool countAsc: null}) async {
+  Future<PaginatedData<TagInfo>> getAllPaginated(
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
     final SelectorBuilder sb = where;
-    if(countAsc!=null)
-      sb.sortBy(countField, descending: !countAsc);
-    return await getPaginatedFromDb(sb, offset: getOffset(page, perPage), limit: perPage);
+    if (countAsc != null) sb.sortBy(countField, descending: !countAsc);
+    return await getPaginatedFromDb(sb,
+        offset: getOffset(page, perPage), limit: perPage);
   }
 
   @override
@@ -117,12 +124,11 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     return getForOneFromDb(select);
   }
 
-  @override
-  Future<List<TagInfo>> getByRedirect(String id, String category) async {
-    final SelectorBuilder select =
-        _createTagCriteria(id, category, fieldPrefix: redirectField);
-    return new List<TagInfo>.from(await getFromDb(select));
-  }
+//  Future<List<TagInfo>> getByRedirect(String id, String category) async {
+//    final SelectorBuilder select =
+//        _createTagCriteria(id, category, fieldPrefix: redirectField);
+//    return new List<TagInfo>.from(await getFromDb(select));
+//  }
 
   @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
@@ -174,12 +180,10 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     else
       sb = selector;
 
-    sb
-        .match(fullNameField, ".*${escapeAll(query)}.*",
+    sb.match(fullNameField, ".*${escapeAll(query)}.*",
         multiLine: false, caseInsensitive: true);
 
-    if(countAsc!=null)
-      sb.sortBy(countField, descending: !countAsc);
+    if (countAsc != null) sb.sortBy(countField, descending: !countAsc);
 
     sb.sortBy(sortBy ?? fullNameField).limit(limit ?? 25);
 
@@ -188,18 +192,17 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   @override
   Future<PaginatedData<TagInfo>> searchPaginated(String query,
-      {int page: 0,
-        int perPage: defaultPerPage, bool countAsc: true}) async {
-    final SelectorBuilder sb = where
-        .match(fullNameField, ".*${escapeAll(query)}.*",
-            multiLine: false, caseInsensitive: true);
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: true}) async {
+    final SelectorBuilder sb = where.match(
+        fullNameField, ".*${escapeAll(query)}.*",
+        multiLine: false, caseInsensitive: true);
 
-      if(countAsc!=null)
-        sb.sortBy(countField, descending: !countAsc);
+    if (countAsc != null) sb.sortBy(countField, descending: !countAsc);
 
-        sb.sortBy(fullNameField);
+    sb.sortBy(fullNameField);
 
-    return await getPaginatedFromDb(sb, limit: perPage, offset: getOffset(page, perPage));
+    return await getPaginatedFromDb(sb,
+        limit: perPage, offset: getOffset(page, perPage));
   }
 
   @override

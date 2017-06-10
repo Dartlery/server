@@ -25,9 +25,12 @@ const String fullFileFolderName = "full";
 const String thumbnailFileFolderName = "thumbnails";
 const String originalFileFolderName = "original";
 
-final String hostedFilesFullPath = path.join(hostedFilesPath,fullFileFolderName);
-final String hostedFilesThumbnailsPath = path.join(hostedFilesPath,thumbnailFileFolderName);
-final String hostedFilesOriginalPath = path.join(hostedFilesPath,originalFileFolderName);
+final String hostedFilesFullPath =
+    path.join(hostedFilesPath, fullFileFolderName);
+final String hostedFilesThumbnailsPath =
+    path.join(hostedFilesPath, thumbnailFileFolderName);
+final String hostedFilesOriginalPath =
+    path.join(hostedFilesPath, originalFileFolderName);
 const int httpStatusServerNeedsSetup = 555;
 
 const int paginatedDataLimit = 60;
@@ -41,7 +44,6 @@ const String dateFieldTypeId = "date";
 const String imageFieldTypeId = "image";
 const String hiddenFieldTypeId = "hidden";
 const String multiValueStringTypeID = "multiValueString";
-
 
 final Map<String, String> globalFieldTypes = <String, String>{
   numericFieldTypeId: 'Numeric',
@@ -71,8 +73,6 @@ final List<String> _reservedWords = <String>[
 
 bool isReservedWord(String input) =>
     _reservedWords.contains(input.trim().toLowerCase());
-
-
 
 //class Guid {
 //  List<int> data;

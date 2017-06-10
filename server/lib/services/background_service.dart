@@ -27,27 +27,25 @@ class BackgroundService {
   }
 
   Future<Null> _backgroundThread() async {
-    while(!_stop) {
-    try {
-      _log.info("Starting background service cycle");
-      Option<BackgroundQueueItem> nextItem = await _backgroundQueueDataSource.getNextItem();
+    while (!_stop) {
+      try {
+        _log.info("Starting background service cycle");
+        Option<BackgroundQueueItem> nextItem =
+            await _backgroundQueueDataSource.getNextItem();
 
-      while(nextItem.isNotEmpty) {
-        try {
-          await _pluginService.triggerBackgroundServiceCycle(nextItem.first);
-        } finally {
-          await _backgroundQueueDataSource.deleteItem(nextItem.first.id);
+        while (nextItem.isNotEmpty) {
+          try {
+            await _pluginService.triggerBackgroundServiceCycle(nextItem.first);
+          } finally {
+            await _backgroundQueueDataSource.deleteItem(nextItem.first.id);
+          }
+          nextItem = await _backgroundQueueDataSource.getNextItem();
         }
-        nextItem = await _backgroundQueueDataSource.getNextItem();
+      } catch (e, st) {
+        _log.severe(e, st);
+      } finally {
+        await wait(milliseconds: 60000);
       }
-    } catch(e,st) {
-      _log.severe(e, st);
-    } finally {
-      await wait(milliseconds: 60000);
     }
-    }
-
   }
-
-
 }

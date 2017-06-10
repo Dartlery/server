@@ -29,10 +29,10 @@ class ImportResource extends AResource {
   ImportResource(this._importModel);
 
   @ApiMethod(method: HttpMethod.post, path: '$_apiPath/')
-  Future<PaginatedImportResultsResponse> getResults({ int page: 0, int perPage: defaultPerPage}) =>
+  Future<PaginatedImportResultsResponse> getResults(
+          {int page: 0, int perPage: defaultPerPage}) =>
       catchExceptionsAwait<PaginatedImportResultsResponse>(() async {
-        return new PaginatedImportResultsResponse.fromPaginatedData(await _importModel.getResults(page:page, perPage:perPage));
+        return new PaginatedImportResultsResponse.fromPaginatedData(
+            await _importModel.getResults(page: page, perPage: perPage));
       });
-
-
 }

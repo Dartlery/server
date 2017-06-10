@@ -12,11 +12,8 @@ import 'package:dartlery/api/api.dart';
     styles: const [''],
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[
-      materialDirectives
-    ],
-    template:
-    '''<div>
+    directives: const <dynamic>[materialDirectives],
+    template: '''<div>
     <material-button *ngIf="!showConfirmation" icon (trigger)="showConfirmation=true"><glyph icon="{{icon}}"></glyph></material-button> 
     <material-button *ngIf="showConfirmation" icon (trigger)="showConfirmation=false"><glyph icon="cancel"></glyph></material-button>
     <br *ngIf="orientation=='vertical'"/> 
@@ -31,7 +28,8 @@ class ConfirmButtonComponent implements OnDestroy {
   @Input()
   String orientation = "vertical";
 
-  final StreamController<Null> _triggerStreamController = new StreamController<Null>.broadcast();
+  final StreamController<Null> _triggerStreamController =
+      new StreamController<Null>.broadcast();
 
   @Output()
   Stream<Null> get trigger => _triggerStreamController.stream;
@@ -45,5 +43,4 @@ class ConfirmButtonComponent implements OnDestroy {
   void ngOnDestroy() {
     _triggerStreamController.close();
   }
-
 }

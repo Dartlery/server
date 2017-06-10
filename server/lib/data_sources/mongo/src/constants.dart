@@ -16,7 +16,6 @@ const String $each = r"$each";
 
 const String tagsCollection = "tags";
 
-
 const String idField = "id";
 const String nameField = "name";
 const String internalIdField = "_id";

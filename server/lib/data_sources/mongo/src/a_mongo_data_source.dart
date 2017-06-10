@@ -13,23 +13,20 @@ abstract class AMongoDataSource {
   @protected
   Logger get childLogger;
 
-
   final MongoDbConnectionPool dbConnectionPool;
   AMongoDataSource(this.dbConnectionPool);
 
   int getOffset(int page, int perPage) => page * perPage;
 
   @protected
-  Future<T> databaseWrapper<T>(
-          Future<T> statement(MongoDatabase db),
-          {int retries: 5})  async {
-      return await dbConnectionPool.databaseWrapper<T>(statement, retries: retries);
+  Future<T> databaseWrapper<T>(Future<T> statement(MongoDatabase db),
+      {int retries: 5}) async {
+    return await dbConnectionPool.databaseWrapper<T>(statement,
+        retries: retries);
   }
 
-
   @protected
-  Future<T> collectionWrapper<T>(
-          Future<T> statement(DbCollection c)) =>
+  Future<T> collectionWrapper<T>(Future<T> statement(DbCollection c)) =>
       databaseWrapper((MongoDatabase con) async =>
           await statement(await getCollection(con)));
 

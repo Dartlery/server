@@ -1,5 +1,6 @@
 import 'package:rpc/rpc.dart';
 import 'a_data.dart';
+
 class ExtensionData extends AData {
   @ApiProperty(ignore: true)
   String extensionId;

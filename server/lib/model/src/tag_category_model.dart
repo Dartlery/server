@@ -14,11 +14,10 @@ import 'a_model.dart';
 class TagCategoryModel extends AIdBasedModel<TagCategory> {
   static final Logger _log = new Logger('TagCategoryModel');
 
-
-
   ATagCategoryDataSource _tagCategoryDataSource;
 
-  TagCategoryModel(this._tagCategoryDataSource, AUserDataSource userDataSource): super(userDataSource);
+  TagCategoryModel(this._tagCategoryDataSource, AUserDataSource userDataSource)
+      : super(userDataSource);
 
   @override
   Logger get loggerImpl => _log;
@@ -38,23 +37,19 @@ class TagCategoryModel extends AIdBasedModel<TagCategory> {
 //  }
 
   @override
-  Future<Null> validateFields(TagCategory tagCategory,
-      Map<String, String> fieldErrors,
+  Future<Null> validateFields(
+      TagCategory tagCategory, Map<String, String> fieldErrors,
       {String existingId: null}) async {
     await super.validateFields(tagCategory, fieldErrors);
 
-    if(StringTools.isNullOrWhitespace(tagCategory.color)) {
+    if (StringTools.isNullOrWhitespace(tagCategory.color)) {
       fieldErrors["color"] = "Required";
     }
 
-    if(StringTools.isNullOrWhitespace(tagCategory.color)) {
+    if (StringTools.isNullOrWhitespace(tagCategory.color)) {
       fieldErrors["color"] = "Required";
-    } else if(!hexColorRegex.hasMatch(tagCategory.color)) {
+    } else if (!hexColorRegex.hasMatch(tagCategory.color)) {
       fieldErrors["color"] = "Invalid";
     }
-
-
-
   }
-
 }

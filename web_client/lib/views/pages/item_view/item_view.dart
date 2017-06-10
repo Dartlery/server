@@ -36,7 +36,6 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   NgForm form;
   final ItemSearchService _searchService;
 
-
   Item model = new Item();
 
   bool get isImage {
@@ -46,7 +45,6 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   bool get isVideo {
     return MimeTypes.videoTypes.contains(model?.mime);
   }
-
 
   ApiService _api;
   Router _router;
@@ -58,14 +56,13 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
 
   StreamSubscription<PageAction> _pageActionSubscription;
 
-
-  ItemViewPage(PageControlService pageControl, this._api, this._auth, this._router, this._params, this._location, this._searchService)
+  ItemViewPage(PageControlService pageControl, this._api, this._auth,
+      this._router, this._params, this._location, this._searchService)
       : super(_auth, _router, pageControl) {
     pageControl.setPageTitle("Item View");
-    pageControl.setAvailablePageActions([PageAction.refresh, PageAction.delete]);
-
+    pageControl
+        .setAvailablePageActions([PageAction.refresh, PageAction.delete]);
   }
-
 
   @override
   Logger get loggerImpl => _log;
@@ -73,7 +70,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   @override
   void ngOnInit() {
     final String _id = _params.get(idRouteParameter);
-    if(StringTools.isNullOrWhitespace(_id))
+    if (StringTools.isNullOrWhitespace(_id))
       throw new Exception("Empty ID passed");
     itemId = _id;
     _pageActionSubscription =
@@ -81,12 +78,10 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
     refresh();
   }
 
-
   @override
   void ngOnDestroy() {
     _pageActionSubscription.cancel();
   }
-
 
   void onPageActionRequested(PageAction action) {
     switch (action) {
@@ -104,40 +99,42 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
 
   Future<Null> delete() async {
     await performApiCall(() async {
-        model = await _api.items.delete(itemId);
-        if(nextItemAvailable) {
-          await _router.navigate([itemViewRoute.name, {"id": nextItem}]);
-        } else if(previousItemAvailable) {
-          await _router.navigate([itemViewRoute.name, {"id": previousItem}]);
-        } else {
-          await _router.navigate([homeRoute.name]);
-        }
+      model = await _api.items.delete(itemId);
+      if (nextItemAvailable) {
+        await _router.navigate([
+          itemViewRoute.name,
+          {"id": nextItem}
+        ]);
+      } else if (previousItemAvailable) {
+        await _router.navigate([
+          itemViewRoute.name,
+          {"id": previousItem}
+        ]);
+      } else {
+        await _router.navigate([homeRoute.name]);
+      }
     });
   }
 
   Future<Null> refresh() async {
     await performApiCall(() async {
-        model = await _api.items.getById(itemId);
+      model = await _api.items.getById(itemId);
 
-
-        nextItem = await _searchService.getNextItem(model.id);
-        previousItem = await _searchService.getPreviousItem(model.id);
-
+      nextItem = await _searchService.getNextItem(model.id);
+      previousItem = await _searchService.getPreviousItem(model.id);
     });
   }
 
   Future<Null> onSubmit() async {
     await performApiCall(() async {
-        await refresh();
-    }, form:  form);
+      await refresh();
+    }, form: form);
   }
 
-  void clear() {
-  }
+  void clear() {}
 
   String nextItem;
-  bool get nextItemAvailable => nextItem!=null;
+  bool get nextItemAvailable => nextItem != null;
   String previousItem;
-  bool get previousItemAvailable => previousItem!=null;
-
+  bool get previousItemAvailable => previousItem != null;
 }

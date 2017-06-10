@@ -18,7 +18,6 @@ import 'package:logging/logging.dart';
 
 import '../src/a_page.dart';
 
-
 @Component(
     selector: 'item-browse',
     providers: const [materialProviders],
@@ -49,9 +48,8 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   final ItemSearchService _search;
 
-
-  ItemBrowseComponent(
-      this._api, this._routeParams, PageControlService pageControl, this._router, this._auth, this._search)
+  ItemBrowseComponent(this._api, this._routeParams,
+      PageControlService pageControl, this._router, this._auth, this._search)
       : super(_auth, _router, pageControl) {
     setActions();
   }
@@ -77,8 +75,6 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   void itemSelectChanged(bool checked, String id) {
     setActions();
   }
-
-
 
   @override
   void ngOnDestroy() {
@@ -148,24 +144,22 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     }
   }
 
-  Future<Null> openSelectedItemsInNewWindow() async{
+  Future<Null> openSelectedItemsInNewWindow() async {
     try {
       final Queue<IdWrapper> toOpen = new Queue<IdWrapper>.from(selectedItems);
 
-
-      Future<Null>openNextLink(dynamic event) async {
+      Future<Null> openNextLink(dynamic event) async {
         try {
-          if (toOpen.isEmpty)
-            return;
+          if (toOpen.isEmpty) return;
           final IdWrapper item = toOpen.removeFirst();
           //final AnchorElement a =document.getElementById("original_link_${item.id}");
           //if (a != null) {
-            final String link = getImageUrl(item.id, ItemFileType.full);
-            final WindowBase wb = window.open(link, item.id);
-            wb.addEventListener('load', openNextLink, true);
-            //a.click();
+          final String link = getImageUrl(item.id, ItemFileType.full);
+          final WindowBase wb = window.open(link, item.id);
+          wb.addEventListener('load', openNextLink, true);
+          //a.click();
           //}
-        } catch(e,st) {
+        } catch (e, st) {
           handleException(e, st);
         }
       }
@@ -198,7 +192,8 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
         _search.clearTags();
       }
 
-      final PaginatedResponse response = await _search.performSearch(page:page);
+      final PaginatedItemResponse response =
+          await _search.performSearch(page: page);
 
       selectedItems.clear();
       items.clear();

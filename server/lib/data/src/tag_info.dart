@@ -8,6 +8,8 @@ class TagInfo extends Tag {
 
   TagInfo();
 
-  TagInfo.copy(Tag other, [ this.redirect ]): super.withValues(other.id, other.category);
-  TagInfo.withValues(String id, [String category]): super.withValues(id, category);
+  TagInfo.copy(Tag other, [this.redirect])
+      : super.withValues(other.id, other.category);
+  TagInfo.withValues(String id, [String category])
+      : super.withValues(id, category);
 }

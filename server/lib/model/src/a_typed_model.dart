@@ -17,5 +17,4 @@ abstract class ATypedModel<T> extends AModel {
   @protected
   Future<Null> validateFields(T t, Map<String, String> output,
       {String existingId: null});
-
 }

@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 
 import '../requests/replace_tags_requst.dart';
-
+import '../responses/paginated_tag_response.dart';
 
 class TagResource extends AResource {
   static final Logger _log = new Logger('TagResource');
@@ -21,7 +21,6 @@ class TagResource extends AResource {
   Logger get childLogger => _log;
   @override
   String get resourcePath => tagApiPath;
-
 
   @ApiMethod(method: HttpMethod.delete, path: 'tag_redirects/{id}/{category}/')
   Future<Null> clearRedirect(String id, String category) async {
@@ -52,10 +51,11 @@ class TagResource extends AResource {
   }
 
   @ApiMethod(method: HttpMethod.get, path: '$tagApiPath/')
-  Future<PaginatedData<TagInfo>> getAllTagInfo({int page: 0,
-    int perPage: defaultPerPage, bool countAsc: null}) async {
-    return catchExceptionsAwait<PaginatedData<TagInfo>>(() async {
-      return _tagModel.getAllInfo(page: page, perPage: perPage, countAsc: countAsc);
+  Future<PaginatedTagResponse> getAllTagInfo(
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
+    return catchExceptionsAwait<PaginatedTagResponse>(() async {
+      return new PaginatedTagResponse.fromPaginatedData( await _tagModel.getAllInfo(
+          page: page, perPage: perPage, countAsc: countAsc));
     });
   }
 
@@ -73,7 +73,6 @@ class TagResource extends AResource {
     });
   }
 
-
   @ApiMethod(method: HttpMethod.get, path: '$tagApiPath/{id}/')
   Future<TagInfo> getTagInfoWithoutCategory(String id) async {
     return catchExceptionsAwait<TagInfo>(() async {
@@ -84,7 +83,8 @@ class TagResource extends AResource {
   @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/')
   Future<CountResponse> replace(ReplaceTagsRequest request) async {
     return catchExceptionsAwait<CountResponse>(() async {
-      return new CountResponse(await _tagModel.replace(request.originalTags, request.newTags));
+      return new CountResponse(
+          await _tagModel.replace(request.originalTags, request.newTags));
     });
   }
 
@@ -96,10 +96,11 @@ class TagResource extends AResource {
   }
 
   @ApiMethod(method: HttpMethod.get, path: '$searchApiPath/$tagApiPath/{query}')
-  Future<PaginatedData<TagInfo>> search(String query, {int page: 0,
-    int perPage: defaultPerPage, bool countAsc: null}) async {
-    return catchExceptionsAwait<PaginatedData<TagInfo>>(() async {
-      return await _tagModel.search(query, countAsc: countAsc, perPage: perPage, page: page);
+  Future<PaginatedTagResponse> search(String query,
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
+    return catchExceptionsAwait<PaginatedTagResponse>(() async {
+      return new PaginatedTagResponse.fromPaginatedData(await _tagModel.search(query,
+          countAsc: countAsc, perPage: perPage, page: page));
     });
   }
 
@@ -109,7 +110,6 @@ class TagResource extends AResource {
       await _tagModel.setRedirect(request);
     });
   }
-
 
 //  @ApiMethod(method: HttpMethod.put, path: '$tagApiPath/{tagId}/{tagCategory}/')
 //  Future<Null> update(String tagId, String tagCategory, Tag newTag) async {
