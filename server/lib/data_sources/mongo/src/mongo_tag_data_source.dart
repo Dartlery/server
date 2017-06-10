@@ -34,7 +34,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
         final DbCollection itemsCol = await con.getItemsCollection();
         final DbCollection tagCol = await con.getTagsCollection();
 
-      await tagCol.update(null, modify.set(countField, 0));
+      await tagCol.update({}, modify.set(countField, 0), multiUpdate: true);
 
       final Stream<Map> pipe = itemsCol.aggregateToStream([
         {$unwind: "\$tags"},
