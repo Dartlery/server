@@ -221,7 +221,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   @override
   void updateMap(TagInfo tag, Map data) {
     AMongoTwoIdDataSource.staticUpdateMap(tag, data);
-    if (StringTools.isNullOrWhitespace(tag.category))
+    if (isNullOrWhitespace(tag.category))
       data[categoryField] = null;
     else
       data[categoryField] = tag.category;
@@ -241,14 +241,14 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   SelectorBuilder _createTagCriteria(String id, String category,
       {String fieldPrefix = ""}) {
-    if (StringTools.isNotNullOrWhitespace(fieldPrefix))
+    if (isNotNullOrWhitespace(fieldPrefix))
       fieldPrefix = "$fieldPrefix.";
 
     final SelectorBuilder select = where.match(
         "$fieldPrefix$idField", "^${escapeAll(id)}\$",
         caseInsensitive: true);
 
-    if (StringTools.isNullOrWhitespace(category)) {
+    if (isNullOrWhitespace(category)) {
       select.eq("$fieldPrefix$categoryField", null);
     } else {
       select.match("$fieldPrefix$categoryField", "^${escapeAll(category)}\$",

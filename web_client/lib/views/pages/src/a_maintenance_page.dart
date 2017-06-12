@@ -41,7 +41,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
     this.model = createBlank();
   }
 
-  bool get isNewItem => StringTools.isNullOrWhitespace(selectedId);
+  bool get isNewItem => isNullOrWhitespace(selectedId);
 
   dynamic get itemApi;
 
@@ -59,7 +59,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   void cancelEdit() {
     reset();
     for (int i = 0; i < items.length; i++) {
-      if (StringTools.isNullOrWhitespace(items[i])) {
+      if (isNullOrWhitespace(items[i])) {
         items.removeAt(i);
         i--;
       }
@@ -149,7 +149,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   Future<Null> selectItem(String id) async {
     await performApiCall(() async {
       reset();
-      if (StringTools.isNotNullOrWhitespace(id))
+      if (isNotNullOrWhitespace(id))
         model = await itemApi.getById(id);
       selectedId = id;
       await selectItemInternal(id);

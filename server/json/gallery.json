@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "4944dedb5abf30b147ce7247404433e5e0032e4f",
+ "etag": "6c5deed1bcd38b9f30db50712514924f5e8931af",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -223,33 +223,6 @@
     }
    }
   },
-  "ItemSearchRequest": {
-   "id": "ItemSearchRequest",
-   "type": "object",
-   "properties": {
-    "tags": {
-     "type": "array",
-     "items": {
-      "$ref": "Tag"
-     }
-    },
-    "page": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "perPage": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "cutoffDate": {
-     "type": "string",
-     "format": "date-time"
-    },
-    "inTrash": {
-     "type": "boolean"
-    }
-   }
-  },
   "PasswordChangeRequest": {
    "id": "PasswordChangeRequest",
    "type": "object",
@@ -406,6 +379,94 @@
    "type": "array",
    "items": {
     "type": "string"
+   }
+  },
+  "ImportPathRequest": {
+   "id": "ImportPathRequest",
+   "type": "object",
+   "properties": {
+    "path": {
+     "type": "string"
+    },
+    "stopOnError": {
+     "type": "boolean"
+    },
+    "interpretShimmieNames": {
+     "type": "boolean"
+    }
+   }
+  },
+  "StringResponse": {
+   "id": "StringResponse",
+   "type": "object",
+   "properties": {
+    "data": {
+     "type": "string"
+    }
+   }
+  },
+  "PaginatedImportResultsResponse": {
+   "id": "PaginatedImportResultsResponse",
+   "type": "object",
+   "properties": {
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "ImportResult"
+     }
+    }
+   }
+  },
+  "ImportResult": {
+   "id": "ImportResult",
+   "type": "object",
+   "properties": {
+    "batchTimestamp": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "id": {
+     "type": "string"
+    },
+    "fileName": {
+     "type": "string"
+    },
+    "source": {
+     "type": "string"
+    },
+    "result": {
+     "type": "string"
+    },
+    "thumbnailCreated": {
+     "type": "boolean"
+    },
+    "error": {
+     "type": "string"
+    },
+    "timestamp": {
+     "type": "string",
+     "format": "date-time"
+    }
    }
   },
   "PaginatedExtensionDataResponse": {
@@ -587,13 +648,43 @@
     },
     "searchVisible": {
      "id": "GalleryApi.items.searchVisible",
-     "path": "search/items/",
-     "httpMethod": "PUT",
-     "parameters": {},
-     "parameterOrder": [],
-     "request": {
-      "$ref": "ItemSearchRequest"
+     "path": "search/items/{tags}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "tags": {
+       "type": "string",
+       "description": "Path parameter: 'tags'.",
+       "required": true,
+       "location": "path"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      },
+      "cutoffDate": {
+       "type": "string",
+       "description": "Query parameter: 'cutoffDate'.",
+       "required": false,
+       "location": "query"
+      },
+      "inTrash": {
+       "type": "boolean",
+       "description": "Query parameter: 'inTrash'.",
+       "required": false,
+       "location": "query"
+      }
      },
+     "parameterOrder": [
+      "tags"
+     ],
      "response": {
       "$ref": "PaginatedItemResponse"
      }
@@ -1095,6 +1186,61 @@
      "response": {
       "$ref": "IdResponse"
      }
+    }
+   },
+   "resources": {}
+  },
+  "import": {
+   "methods": {
+    "importFromPath": {
+     "id": "GalleryApi.import.importFromPath",
+     "path": "import/results/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "ImportPathRequest"
+     },
+     "response": {
+      "$ref": "StringResponse"
+     }
+    },
+    "getResults": {
+     "id": "GalleryApi.import.getResults",
+     "path": "import/results/",
+     "httpMethod": "GET",
+     "parameters": {
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [],
+     "response": {
+      "$ref": "PaginatedImportResultsResponse"
+     }
+    },
+    "clearResults": {
+     "id": "GalleryApi.import.clearResults",
+     "path": "import/results/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "everything": {
+       "type": "boolean",
+       "description": "Query parameter: 'everything'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": []
     }
    },
    "resources": {}

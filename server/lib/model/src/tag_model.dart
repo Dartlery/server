@@ -230,7 +230,7 @@ class TagModel extends ATypedModel<TagInfo> {
   @override
   Future<Null> validateFields(TagInfo tag, Map<String, String> fieldErrors,
       {String existingId: null}) async {
-    if (StringTools.isNullOrWhitespace(tag.id)) fieldErrors["id"] = "Required";
+    if (isNullOrWhitespace(tag.id)) fieldErrors["id"] = "Required";
 
     if (tag.redirect != null) {
       await validate(new TagInfo.copy(tag.redirect));

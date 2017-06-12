@@ -75,17 +75,17 @@ void main() {
       request = await createItemRequest(file: "test2.jpg");
       response = await api.items.createItem(request);
 
-      final ItemSearchRequest searchRequest = new ItemSearchRequest();
-      searchRequest.tags.add(item.tags.first);
+      final TagList searchTags = new TagList();
+      searchTags.add(item.tags.first);
 
       PaginatedResponse<String> results =
-          await api.items.searchVisible(searchRequest);
+          await api.items.searchVisible(searchTags.toJson());
       expect(results.items.length, 1);
       expect(results.items.first, item.id);
 
-      searchRequest.tags.add(item.tags[2]);
+      searchTags.add(item.tags[2]);
 
-      results = await api.items.searchVisible(searchRequest);
+      results = await api.items.searchVisible(searchTags.toJson());
       expect(results.items.length, 1);
       expect(results.items.first, item.id);
     });

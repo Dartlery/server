@@ -19,7 +19,7 @@ class TagWrapper {
   String get id => _tag?.id ?? _tagInfo.id;
   String get category => _tag?.category ?? _tagInfo?.category;
   int get count => _tagInfo?.count;
-  bool get hasCategory => StringTools.isNotNullOrWhitespace(category);
+  bool get hasCategory => isNotNullOrWhitespace(category);
   TagWrapper get redirect {
     if (_tagInfo == null || _tagInfo.redirect == null) {
       return null;
@@ -34,7 +34,7 @@ class TagWrapper {
   String toString() => format(id, category);
 
   static String format(String id, [String category]) {
-    if (StringTools.isNotNullOrWhitespace(category)) {
+    if (isNotNullOrWhitespace(category)) {
       return "$category$categoryDeliminator $id";
     } else {
       return id;
@@ -56,7 +56,7 @@ class TagWrapper {
         .encodeFull(category ?? "")
         .replaceAll(":", "%3A")
         .replaceAll(",", "%2C");
-    if (StringTools.isNotNullOrWhitespace(categoryString)) {
+    if (isNotNullOrWhitespace(categoryString)) {
       return "$categoryString$categoryDeliminator$tagString";
     } else {
       return tagString;

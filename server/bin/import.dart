@@ -43,9 +43,9 @@ Future<Null> main(List<String> args) async {
 
   switch (argResults["sourceType"]) {
     case "shimmie":
-      if (StringTools.isNullOrWhitespace(argResults["path"]))
+      if (isNullOrWhitespace(argResults["path"]))
         throw new Exception("path is required");
-      if (StringTools.isNotNullOrWhitespace(argResults["start"])) {
+      if (isNotNullOrWhitespace(argResults["start"])) {
         final int start = int.parse(argResults["start"]);
         await importModel.importFromShimmie(argResults["path"],
             stopOnError: stopOnError, startAt: start);
@@ -55,7 +55,7 @@ Future<Null> main(List<String> args) async {
       }
       break;
     case "path":
-      if (StringTools.isNullOrWhitespace(argResults["path"]))
+      if (isNullOrWhitespace(argResults["path"]))
         throw new Exception("Path is required");
       await importModel.importFromPath(argResults["path"],
           interpretShimmieNames: true, stopOnError: stopOnError);

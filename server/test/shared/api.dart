@@ -55,9 +55,9 @@ Future<Server> setUpServer() async {
       "mongodb://127.0.0.1:27017/dartlery_test_$serverUuid";
 
   try {
-    final OptionsFile optionsFile = new OptionsFile('test.options');
+    final OptionsFile optionsFile = new OptionsFile('test/test.options');
     connectionString =
-        optionsFile.getString("connection_string", connectionString);
+        optionsFile.getString("connection_string", connectionString) + "_$serverUuid";
   } on FileSystemException {}
 
   await _nukeDatabase(connectionString);

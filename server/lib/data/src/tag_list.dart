@@ -33,6 +33,21 @@ class TagList extends Iterable<Tag> {
       this.add(tag);
     }
   }
+  String toJson() {
+    final List<Map<String,String>> output = new List<Map<String,String>>();
+
+    for(Tag tag in this) {
+      final Map<String,String> tagMap = <String,String>{};
+      tagMap["id"] = tag.id;
+      if(tag.hasCategory) {
+        tagMap["category"] = tag.category;
+      }
+      output.add(tagMap);
+    }
+
+    final String outputJson = new JsonEncoder().convert(output);
+    return  outputJson;
+  }
 
   @override
   Iterator<Tag> get iterator => _list.iterator;

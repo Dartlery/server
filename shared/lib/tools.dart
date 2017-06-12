@@ -86,7 +86,7 @@ bool keyExistsAndHasValue(Map<dynamic, dynamic> map, String key) {
   if (map[key] == null) {
     return false;
   }
-  return !StringTools.isNullOrWhitespace(map[key]);
+  return !isNullOrWhitespace(map[key]);
 }
 
 /// Returns a [String] containing the validation error message for the specified input [String], or an empty [String] if the input is valid for use as a [RegExp].
@@ -94,7 +94,7 @@ String validateRegularExpression(String input) {
   try {
     final RegExp test = new RegExp(input);
     test.hasMatch("Fishmobabywhirlamagig");
-    return StringTools.empty;
+    return "";
   } on FormatException catch (e) {
     return e.message;
   }
@@ -110,27 +110,21 @@ bool isValidEmail(String email) {
   return _emailRegex.hasMatch(email);
 }
 
-/// Helper class containing tools for handling strings
-class StringTools {
-  /// An empty [String] constant, to possibly save the tiniest amount of memory.
-  static const String empty = "";
-
-  /// Checks if the [input] String is [null], only whitespace, or blank, returning a [true] if any of these conditions are met. Returns a [false] otherwise.
-  static bool isNullOrWhitespace(String input) {
-    if (input == null) {
-      return true;
-    }
-
-    if (input.trim() == empty) {
-      return true;
-    }
-
-    return false;
+/// Checks if the [input] String is [null], only whitespace, or blank, returning a [true] if any of these conditions are met. Returns a [false] otherwise.
+bool isNullOrWhitespace(String input) {
+  if (input == null) {
+    return true;
   }
 
-  static bool isNotNullOrWhitespace(String input) {
-    return !isNullOrWhitespace(input);
+  if (input.trim() == "") {
+    return true;
   }
+
+  return false;
+}
+
+bool isNotNullOrWhitespace(String input) {
+  return !isNullOrWhitespace(input);
 }
 
 Future<Null> wait({int milliseconds: 100}) {

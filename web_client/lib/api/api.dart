@@ -21,10 +21,12 @@ export 'package:api_client/gallery/v0_1.dart'
         TagsResourceApi,
         TagCategoriesResourceApi,
         PaginatedExtensionDataResponse,
+        ImportResult,
         ExtensionData,
         TagInfo,
         ReplaceTagsRequest,
         CountResponse,
-        ItemSearchRequest;
+        PaginatedImportResultsResponse,
+        ImportPathRequest;
 
 export 'src/api_http_client.dart';

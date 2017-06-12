@@ -26,10 +26,7 @@ class ItemSearchService {
     if (_tags.isEmpty)
       response = await _api.items.getVisibleIds(page: page);
     else {
-      final ItemSearchRequest request = new ItemSearchRequest();
-      request.tags = _tags.toListOfTags();
-      request.page = page;
-      response = await _api.items.searchVisible(request);
+      response = await _api.items.searchVisible(_tags.toJson(), page: page);
       _tags.clear();
       _tags.addTags(response.queryTags);
 

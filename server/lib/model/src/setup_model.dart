@@ -45,7 +45,7 @@ class SetupModel extends AModel {
 //        fieldErrors["databaseConnectionString"] = "Required";
 //      }
 
-      if (StringTools.isNotNullOrWhitespace(request.adminUser)) {
+      if (isNotNullOrWhitespace(request.adminUser)) {
         try {
           await userModel.createUserWith(
               request.adminUser, request.adminPassword, UserPrivilege.admin,

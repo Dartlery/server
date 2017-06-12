@@ -16,7 +16,7 @@ class ApiHttpClient extends BrowserClient {
   Future<StreamedResponse> send(BaseRequest request) async {
     final String authKey =
         (await _settings.getCachedAuthKey()).getOrDefault("");
-    if (!StringTools.isNullOrWhitespace(authKey))
+    if (!isNullOrWhitespace(authKey))
       request.headers.putIfAbsent(HttpHeaders.AUTHORIZATION, () => authKey);
 
     request.headers.remove(HttpHeaders.USER_AGENT);
@@ -26,7 +26,7 @@ class ApiHttpClient extends BrowserClient {
 
     // Check for changed auth header
     final String auth = response.headers[HttpHeaders.AUTHORIZATION];
-    if (!StringTools.isNullOrWhitespace(auth)) {
+    if (!isNullOrWhitespace(auth)) {
       if (auth != authKey) {
         await _settings.cacheAuthKey(auth);
       }

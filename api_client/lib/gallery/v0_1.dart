@@ -21,6 +21,7 @@ class GalleryApi {
   final commons.ApiRequester _requester;
 
   ExtensionDataResourceApi get extensionData => new ExtensionDataResourceApi(_requester);
+  ImportResourceApi get import => new ImportResourceApi(_requester);
   ItemsResourceApi get items => new ItemsResourceApi(_requester);
   SetupResourceApi get setup => new SetupResourceApi(_requester);
   TagCategoriesResourceApi get tagCategories => new TagCategoriesResourceApi(_requester);
@@ -279,6 +280,131 @@ class ExtensionDataResourceApi {
 }
 
 
+class ImportResourceApi {
+  final commons.ApiRequester _requester;
+
+  ImportResourceApi(commons.ApiRequester client) : 
+      _requester = client;
+
+  /**
+   * Request parameters:
+   *
+   * [everything] - Query parameter: 'everything'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future clearResults({core.bool everything}) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (everything != null) {
+      _queryParams["everything"] = ["${everything}"];
+    }
+
+    _downloadOptions = null;
+
+    _url = 'import/results/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [page] - Query parameter: 'page'.
+   *
+   * [perPage] - Query parameter: 'perPage'.
+   *
+   * Completes with a [PaginatedImportResultsResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<PaginatedImportResultsResponse> getResults({core.int page, core.int perPage}) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (page != null) {
+      _queryParams["page"] = ["${page}"];
+    }
+    if (perPage != null) {
+      _queryParams["perPage"] = ["${perPage}"];
+    }
+
+    _url = 'import/results/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new PaginatedImportResultsResponse.fromJson(data));
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * Completes with a [StringResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<StringResponse> importFromPath(ImportPathRequest request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _url = 'import/results/';
+
+    var _response = _requester.request(_url,
+                                       "POST",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new StringResponse.fromJson(data));
+  }
+
+}
+
+
 class ItemsResourceApi {
   final commons.ApiRequester _requester;
 
@@ -531,9 +657,17 @@ class ItemsResourceApi {
   }
 
   /**
-   * [request] - The metadata request object.
-   *
    * Request parameters:
+   *
+   * [tags] - Path parameter: 'tags'.
+   *
+   * [page] - Query parameter: 'page'.
+   *
+   * [perPage] - Query parameter: 'perPage'.
+   *
+   * [cutoffDate] - Query parameter: 'cutoffDate'.
+   *
+   * [inTrash] - Query parameter: 'inTrash'.
    *
    * Completes with a [PaginatedItemResponse].
    *
@@ -543,7 +677,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<PaginatedItemResponse> searchVisible(ItemSearchRequest request) {
+  async.Future<PaginatedItemResponse> searchVisible(core.String tags, {core.int page, core.int perPage, core.String cutoffDate, core.bool inTrash}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -551,14 +685,26 @@ class ItemsResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-    if (request != null) {
-      _body = convert.JSON.encode((request).toJson());
+    if (tags == null) {
+      throw new core.ArgumentError("Parameter tags is required.");
+    }
+    if (page != null) {
+      _queryParams["page"] = ["${page}"];
+    }
+    if (perPage != null) {
+      _queryParams["perPage"] = ["${perPage}"];
+    }
+    if (cutoffDate != null) {
+      _queryParams["cutoffDate"] = [cutoffDate];
+    }
+    if (inTrash != null) {
+      _queryParams["inTrash"] = ["${inTrash}"];
     }
 
-    _url = 'search/items/';
+    _url = 'search/items/' + commons.Escaper.ecapeVariable('$tags') + '/';
 
     var _response = _requester.request(_url,
-                                       "PUT",
+                                       "GET",
                                        body: _body,
                                        queryParams: _queryParams,
                                        uploadOptions: _uploadOptions,
@@ -1774,6 +1920,109 @@ class IdResponse {
   }
 }
 
+class ImportPathRequest {
+  core.bool interpretShimmieNames;
+  core.String path;
+  core.bool stopOnError;
+
+  ImportPathRequest();
+
+  ImportPathRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("interpretShimmieNames")) {
+      interpretShimmieNames = _json["interpretShimmieNames"];
+    }
+    if (_json.containsKey("path")) {
+      path = _json["path"];
+    }
+    if (_json.containsKey("stopOnError")) {
+      stopOnError = _json["stopOnError"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (interpretShimmieNames != null) {
+      _json["interpretShimmieNames"] = interpretShimmieNames;
+    }
+    if (path != null) {
+      _json["path"] = path;
+    }
+    if (stopOnError != null) {
+      _json["stopOnError"] = stopOnError;
+    }
+    return _json;
+  }
+}
+
+class ImportResult {
+  core.DateTime batchTimestamp;
+  core.String error;
+  core.String fileName;
+  core.String id;
+  core.String result;
+  core.String source;
+  core.bool thumbnailCreated;
+  core.DateTime timestamp;
+
+  ImportResult();
+
+  ImportResult.fromJson(core.Map _json) {
+    if (_json.containsKey("batchTimestamp")) {
+      batchTimestamp = core.DateTime.parse(_json["batchTimestamp"]);
+    }
+    if (_json.containsKey("error")) {
+      error = _json["error"];
+    }
+    if (_json.containsKey("fileName")) {
+      fileName = _json["fileName"];
+    }
+    if (_json.containsKey("id")) {
+      id = _json["id"];
+    }
+    if (_json.containsKey("result")) {
+      result = _json["result"];
+    }
+    if (_json.containsKey("source")) {
+      source = _json["source"];
+    }
+    if (_json.containsKey("thumbnailCreated")) {
+      thumbnailCreated = _json["thumbnailCreated"];
+    }
+    if (_json.containsKey("timestamp")) {
+      timestamp = core.DateTime.parse(_json["timestamp"]);
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (batchTimestamp != null) {
+      _json["batchTimestamp"] = (batchTimestamp).toIso8601String();
+    }
+    if (error != null) {
+      _json["error"] = error;
+    }
+    if (fileName != null) {
+      _json["fileName"] = fileName;
+    }
+    if (id != null) {
+      _json["id"] = id;
+    }
+    if (result != null) {
+      _json["result"] = result;
+    }
+    if (source != null) {
+      _json["source"] = source;
+    }
+    if (thumbnailCreated != null) {
+      _json["thumbnailCreated"] = thumbnailCreated;
+    }
+    if (timestamp != null) {
+      _json["timestamp"] = (timestamp).toIso8601String();
+    }
+    return _json;
+  }
+}
+
 class Item {
   core.bool audio;
   core.String downloadName;
@@ -1915,54 +2164,6 @@ class Item {
     }
     if (width != null) {
       _json["width"] = width;
-    }
-    return _json;
-  }
-}
-
-class ItemSearchRequest {
-  core.DateTime cutoffDate;
-  core.bool inTrash;
-  core.int page;
-  core.int perPage;
-  core.List<Tag> tags;
-
-  ItemSearchRequest();
-
-  ItemSearchRequest.fromJson(core.Map _json) {
-    if (_json.containsKey("cutoffDate")) {
-      cutoffDate = core.DateTime.parse(_json["cutoffDate"]);
-    }
-    if (_json.containsKey("inTrash")) {
-      inTrash = _json["inTrash"];
-    }
-    if (_json.containsKey("page")) {
-      page = _json["page"];
-    }
-    if (_json.containsKey("perPage")) {
-      perPage = _json["perPage"];
-    }
-    if (_json.containsKey("tags")) {
-      tags = _json["tags"].map((value) => new Tag.fromJson(value)).toList();
-    }
-  }
-
-  core.Map toJson() {
-    var _json = new core.Map();
-    if (cutoffDate != null) {
-      _json["cutoffDate"] = (cutoffDate).toIso8601String();
-    }
-    if (inTrash != null) {
-      _json["inTrash"] = inTrash;
-    }
-    if (page != null) {
-      _json["page"] = page;
-    }
-    if (perPage != null) {
-      _json["perPage"] = perPage;
-    }
-    if (tags != null) {
-      _json["tags"] = tags.map((value) => (value).toJson()).toList();
     }
     return _json;
   }
@@ -2128,6 +2329,61 @@ class PaginatedExtensionDataResponse {
   PaginatedExtensionDataResponse.fromJson(core.Map _json) {
     if (_json.containsKey("items")) {
       items = _json["items"].map((value) => new ExtensionData.fromJson(value)).toList();
+    }
+    if (_json.containsKey("page")) {
+      page = _json["page"];
+    }
+    if (_json.containsKey("pageCount")) {
+      pageCount = _json["pageCount"];
+    }
+    if (_json.containsKey("startIndex")) {
+      startIndex = _json["startIndex"];
+    }
+    if (_json.containsKey("totalCount")) {
+      totalCount = _json["totalCount"];
+    }
+    if (_json.containsKey("totalPages")) {
+      totalPages = _json["totalPages"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (items != null) {
+      _json["items"] = items.map((value) => (value).toJson()).toList();
+    }
+    if (page != null) {
+      _json["page"] = page;
+    }
+    if (pageCount != null) {
+      _json["pageCount"] = pageCount;
+    }
+    if (startIndex != null) {
+      _json["startIndex"] = startIndex;
+    }
+    if (totalCount != null) {
+      _json["totalCount"] = totalCount;
+    }
+    if (totalPages != null) {
+      _json["totalPages"] = totalPages;
+    }
+    return _json;
+  }
+}
+
+class PaginatedImportResultsResponse {
+  core.List<ImportResult> items;
+  core.int page;
+  core.int pageCount;
+  core.int startIndex;
+  core.int totalCount;
+  core.int totalPages;
+
+  PaginatedImportResultsResponse();
+
+  PaginatedImportResultsResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("items")) {
+      items = _json["items"].map((value) => new ImportResult.fromJson(value)).toList();
     }
     if (_json.containsKey("page")) {
       page = _json["page"];
@@ -2383,6 +2639,26 @@ class SetupResponse {
     var _json = new core.Map();
     if (adminUser != null) {
       _json["adminUser"] = adminUser;
+    }
+    return _json;
+  }
+}
+
+class StringResponse {
+  core.String data;
+
+  StringResponse();
+
+  StringResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("data")) {
+      data = _json["data"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (data != null) {
+      _json["data"] = data;
     }
     return _json;
   }

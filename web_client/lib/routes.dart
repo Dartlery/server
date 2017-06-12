@@ -40,6 +40,12 @@ const Route itemViewRoute = const Route(
   component: ItemViewPage,
 );
 
+const Route importRoute = const Route(
+  path: '/import/',
+  name: 'Import',
+  component: ImportPage,
+);
+
 const String pageRouteParameter = "page";
 
 const String queryRouteParameter = "query";
@@ -54,7 +60,8 @@ const List<Route> routes = const <Route>[
   setupRoute,
   usersRoute,
   deduplicateRoute,
-  tagsRoute
+  tagsRoute,
+  importRoute
 ];
 
 const Route setupRoute = const Route(

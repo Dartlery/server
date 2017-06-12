@@ -24,30 +24,30 @@ void main() {
     group("StringTools", () {
       group(".isNullOrWhitespace()", () {
         test("null", () {
-          expect(StringTools.isNullOrWhitespace(null), isTrue);
+          expect(isNullOrWhitespace(null), isTrue);
         });
         test("empty", () {
-          expect(StringTools.isNullOrWhitespace(""), isTrue);
+          expect(isNullOrWhitespace(""), isTrue);
         });
         test("whitespace", () {
-          expect(StringTools.isNullOrWhitespace("   "), isTrue);
+          expect(isNullOrWhitespace("   "), isTrue);
         });
         test("whitespace with letter", () {
-          expect(StringTools.isNullOrWhitespace("  t "), isFalse);
+          expect(isNullOrWhitespace("  t "), isFalse);
         });
       });
       group(".isNotNullOrWhitespace()", () {
         test("null", () {
-          expect(StringTools.isNotNullOrWhitespace(null), isFalse);
+          expect(isNotNullOrWhitespace(null), isFalse);
         });
         test("empty", () {
-          expect(StringTools.isNotNullOrWhitespace(""), isFalse);
+          expect(isNotNullOrWhitespace(""), isFalse);
         });
         test("whitespace", () {
-          expect(StringTools.isNotNullOrWhitespace("   "), isFalse);
+          expect(isNotNullOrWhitespace("   "), isFalse);
         });
         test("whitespace with letter", () {
-          expect(StringTools.isNotNullOrWhitespace("  t "), isTrue);
+          expect(isNotNullOrWhitespace("  t "), isTrue);
         });
       });
     });

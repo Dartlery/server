@@ -6,8 +6,6 @@ export 'src/exceptions/validation_exception.dart';
 export 'src/exceptions/not_implemented_exception.dart';
 export 'src/exceptions/unauthorized_exception.dart';
 export 'src/exceptions/duplicate_item_exception.dart';
-export 'src/item_action.dart';
-export 'src/item_status.dart';
 export 'src/user_privilege.dart';
 export 'src/mime_types.dart';
 import 'package:path/path.dart' as path;
@@ -59,6 +57,7 @@ abstract class HttpMethod {
   static const String get = "GET";
   static const String delete = "DELETE";
   static const String put = "PUT";
+  static const String patch = "PATCH";
 }
 
 final List<String> _reservedWords = <String>[

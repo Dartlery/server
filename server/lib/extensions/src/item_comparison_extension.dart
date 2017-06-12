@@ -38,12 +38,17 @@ class ItemComparisonExtension extends AExtension {
     try {
       String itemId;
       DateTime startPoint;
-      if (item.data.contains(":")) {
-        final int i = item.data.indexOf(":");
-        itemId = item.data.substring(0, i);
-        startPoint = DateTime.parse(item.data.substring(i + 1));
-      } else {
-        itemId = item.data;
+      if(item.data is String) {
+        if (item.data.contains(":")) {
+          final int i = item.data.indexOf(":");
+          itemId = item.data.substring(0, i);
+          startPoint = DateTime.parse(item.data.substring(i + 1));
+        } else {
+          itemId = item.data;
+        }
+      } else if(item.data is Map) {
+        itemId = item.data["itemId"];
+        startPoint = item.data["lastProcessed"];
       }
 
       final Option<Item> sourceItem = await _itemDataSource.getById(itemId);
@@ -87,8 +92,11 @@ class ItemComparisonExtension extends AExtension {
       }
       if (lastProcessedDate != null) {
         _log.info("Re-enqueing with new start point of $lastProcessedDate");
+        final Map<String, dynamic> data = <String,dynamic>{};
+        data["itemId"] = itemId;
+        data["lastProcessed"] = lastProcessedDate;
         await _backgroundQueueDataSource.addToQueue(
-            this.extensionId, "$itemId:$lastProcessedDate",
+            this.extensionId, data,
             priority: item.priority + 1);
       }
     } catch (e, st) {

@@ -70,7 +70,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   @override
   void ngOnInit() {
     final String _id = _params.get(idRouteParameter);
-    if (StringTools.isNullOrWhitespace(_id))
+    if (isNullOrWhitespace(_id))
       throw new Exception("Empty ID passed");
     itemId = _id;
     _pageActionSubscription =

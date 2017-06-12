@@ -52,7 +52,7 @@ abstract class AResource {
       exception = e;
       stackTrace = st;
       final String redirect = generateRedirect(e.newId);
-      if (StringTools.isNullOrWhitespace(redirect))
+      if (isNullOrWhitespace(redirect))
         output = new ApplicationError(
             "Redirect information found, but could not generate new path");
       else {

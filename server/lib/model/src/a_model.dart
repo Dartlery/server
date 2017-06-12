@@ -14,7 +14,7 @@ abstract class AModel {
   /// Manually sets the current logged-in (or not logged-in) user.
   @visibleForTesting
   static void overrideCurrentUser(String uuid) {
-    if (StringTools.isNullOrWhitespace(uuid)) {
+    if (isNullOrWhitespace(uuid)) {
       _authenticationOverride = new None<Principal>();
     } else {
       _authenticationOverride = new Some<Principal>(new Principal(uuid));

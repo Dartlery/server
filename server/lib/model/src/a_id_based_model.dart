@@ -23,11 +23,11 @@ abstract class AIdBasedModel<T extends AIdData> extends ATypedModel<T> {
   @override
   Future<Null> validateFields(T t, Map<String, String> output,
       {String existingId: null}) async {
-    if (StringTools.isNullOrWhitespace(t.id)) {
+    if (isNullOrWhitespace(t.id)) {
       output["id"] = "Required";
     }
 
-    if (StringTools.isNotNullOrWhitespace(existingId) || existingId != t.id) {
+    if (isNotNullOrWhitespace(existingId) || existingId != t.id) {
       final bool result = await this.dataSource.existsById(existingId);
       if (result) {
         output["id"] = "Already in use";

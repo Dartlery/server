@@ -154,6 +154,62 @@ checkIdResponse(api.IdResponse o) {
   buildCounterIdResponse--;
 }
 
+core.int buildCounterImportPathRequest = 0;
+buildImportPathRequest() {
+  var o = new api.ImportPathRequest();
+  buildCounterImportPathRequest++;
+  if (buildCounterImportPathRequest < 3) {
+    o.interpretShimmieNames = true;
+    o.path = "foo";
+    o.stopOnError = true;
+  }
+  buildCounterImportPathRequest--;
+  return o;
+}
+
+checkImportPathRequest(api.ImportPathRequest o) {
+  buildCounterImportPathRequest++;
+  if (buildCounterImportPathRequest < 3) {
+    unittest.expect(o.interpretShimmieNames, unittest.isTrue);
+    unittest.expect(o.path, unittest.equals('foo'));
+    unittest.expect(o.stopOnError, unittest.isTrue);
+  }
+  buildCounterImportPathRequest--;
+}
+
+core.int buildCounterImportResult = 0;
+buildImportResult() {
+  var o = new api.ImportResult();
+  buildCounterImportResult++;
+  if (buildCounterImportResult < 3) {
+    o.batchTimestamp = core.DateTime.parse("2002-02-27T14:01:02");
+    o.error = "foo";
+    o.fileName = "foo";
+    o.id = "foo";
+    o.result = "foo";
+    o.source = "foo";
+    o.thumbnailCreated = true;
+    o.timestamp = core.DateTime.parse("2002-02-27T14:01:02");
+  }
+  buildCounterImportResult--;
+  return o;
+}
+
+checkImportResult(api.ImportResult o) {
+  buildCounterImportResult++;
+  if (buildCounterImportResult < 3) {
+    unittest.expect(o.batchTimestamp, unittest.equals(core.DateTime.parse("2002-02-27T14:01:02")));
+    unittest.expect(o.error, unittest.equals('foo'));
+    unittest.expect(o.fileName, unittest.equals('foo'));
+    unittest.expect(o.id, unittest.equals('foo'));
+    unittest.expect(o.result, unittest.equals('foo'));
+    unittest.expect(o.source, unittest.equals('foo'));
+    unittest.expect(o.thumbnailCreated, unittest.isTrue);
+    unittest.expect(o.timestamp, unittest.equals(core.DateTime.parse("2002-02-27T14:01:02")));
+  }
+  buildCounterImportResult--;
+}
+
 buildUnnamed0() {
   var o = new core.List<core.String>();
   o.add("foo");
@@ -261,46 +317,6 @@ checkItem(api.Item o) {
   buildCounterItem--;
 }
 
-buildUnnamed4() {
-  var o = new core.List<api.Tag>();
-  o.add(buildTag());
-  o.add(buildTag());
-  return o;
-}
-
-checkUnnamed4(core.List<api.Tag> o) {
-  unittest.expect(o, unittest.hasLength(2));
-  checkTag(o[0]);
-  checkTag(o[1]);
-}
-
-core.int buildCounterItemSearchRequest = 0;
-buildItemSearchRequest() {
-  var o = new api.ItemSearchRequest();
-  buildCounterItemSearchRequest++;
-  if (buildCounterItemSearchRequest < 3) {
-    o.cutoffDate = core.DateTime.parse("2002-02-27T14:01:02");
-    o.inTrash = true;
-    o.page = 42;
-    o.perPage = 42;
-    o.tags = buildUnnamed4();
-  }
-  buildCounterItemSearchRequest--;
-  return o;
-}
-
-checkItemSearchRequest(api.ItemSearchRequest o) {
-  buildCounterItemSearchRequest++;
-  if (buildCounterItemSearchRequest < 3) {
-    unittest.expect(o.cutoffDate, unittest.equals(core.DateTime.parse("2002-02-27T14:01:02")));
-    unittest.expect(o.inTrash, unittest.isTrue);
-    unittest.expect(o.page, unittest.equals(42));
-    unittest.expect(o.perPage, unittest.equals(42));
-    checkUnnamed4(o.tags);
-  }
-  buildCounterItemSearchRequest--;
-}
-
 buildListOfString() {
   var o = new api.ListOfString();
   o.add("foo");
@@ -340,27 +356,27 @@ checkListOfTagInfo(api.ListOfTagInfo o) {
   checkTagInfo(o[1]);
 }
 
-buildUnnamed5() {
+buildUnnamed4() {
   var o = new core.List<core.int>();
   o.add(42);
   o.add(42);
   return o;
 }
 
-checkUnnamed5(core.List<core.int> o) {
+checkUnnamed4(core.List<core.int> o) {
   unittest.expect(o, unittest.hasLength(2));
   unittest.expect(o[0], unittest.equals(42));
   unittest.expect(o[1], unittest.equals(42));
 }
 
-buildUnnamed6() {
+buildUnnamed5() {
   var o = new core.Map<core.String, core.String>();
   o["x"] = "foo";
   o["y"] = "foo";
   return o;
 }
 
-checkUnnamed6(core.Map<core.String, core.String> o) {
+checkUnnamed5(core.Map<core.String, core.String> o) {
   unittest.expect(o, unittest.hasLength(2));
   unittest.expect(o["x"], unittest.equals('foo'));
   unittest.expect(o["y"], unittest.equals('foo'));
@@ -371,13 +387,13 @@ buildMediaMessage() {
   var o = new api.MediaMessage();
   buildCounterMediaMessage++;
   if (buildCounterMediaMessage < 3) {
-    o.bytes = buildUnnamed5();
+    o.bytes = buildUnnamed4();
     o.cacheControl = "foo";
     o.contentEncoding = "foo";
     o.contentLanguage = "foo";
     o.contentType = "foo";
     o.md5Hash = "foo";
-    o.metadata = buildUnnamed6();
+    o.metadata = buildUnnamed5();
     o.updated = core.DateTime.parse("2002-02-27T14:01:02");
   }
   buildCounterMediaMessage--;
@@ -387,26 +403,26 @@ buildMediaMessage() {
 checkMediaMessage(api.MediaMessage o) {
   buildCounterMediaMessage++;
   if (buildCounterMediaMessage < 3) {
-    checkUnnamed5(o.bytes);
+    checkUnnamed4(o.bytes);
     unittest.expect(o.cacheControl, unittest.equals('foo'));
     unittest.expect(o.contentEncoding, unittest.equals('foo'));
     unittest.expect(o.contentLanguage, unittest.equals('foo'));
     unittest.expect(o.contentType, unittest.equals('foo'));
     unittest.expect(o.md5Hash, unittest.equals('foo'));
-    checkUnnamed6(o.metadata);
+    checkUnnamed5(o.metadata);
     unittest.expect(o.updated, unittest.equals(core.DateTime.parse("2002-02-27T14:01:02")));
   }
   buildCounterMediaMessage--;
 }
 
-buildUnnamed7() {
+buildUnnamed6() {
   var o = new core.List<api.ExtensionData>();
   o.add(buildExtensionData());
   o.add(buildExtensionData());
   return o;
 }
 
-checkUnnamed7(core.List<api.ExtensionData> o) {
+checkUnnamed6(core.List<api.ExtensionData> o) {
   unittest.expect(o, unittest.hasLength(2));
   checkExtensionData(o[0]);
   checkExtensionData(o[1]);
@@ -417,7 +433,7 @@ buildPaginatedExtensionDataResponse() {
   var o = new api.PaginatedExtensionDataResponse();
   buildCounterPaginatedExtensionDataResponse++;
   if (buildCounterPaginatedExtensionDataResponse < 3) {
-    o.items = buildUnnamed7();
+    o.items = buildUnnamed6();
     o.page = 42;
     o.pageCount = 42;
     o.startIndex = 42;
@@ -431,7 +447,7 @@ buildPaginatedExtensionDataResponse() {
 checkPaginatedExtensionDataResponse(api.PaginatedExtensionDataResponse o) {
   buildCounterPaginatedExtensionDataResponse++;
   if (buildCounterPaginatedExtensionDataResponse < 3) {
-    checkUnnamed7(o.items);
+    checkUnnamed6(o.items);
     unittest.expect(o.page, unittest.equals(42));
     unittest.expect(o.pageCount, unittest.equals(42));
     unittest.expect(o.startIndex, unittest.equals(42));
@@ -439,6 +455,48 @@ checkPaginatedExtensionDataResponse(api.PaginatedExtensionDataResponse o) {
     unittest.expect(o.totalPages, unittest.equals(42));
   }
   buildCounterPaginatedExtensionDataResponse--;
+}
+
+buildUnnamed7() {
+  var o = new core.List<api.ImportResult>();
+  o.add(buildImportResult());
+  o.add(buildImportResult());
+  return o;
+}
+
+checkUnnamed7(core.List<api.ImportResult> o) {
+  unittest.expect(o, unittest.hasLength(2));
+  checkImportResult(o[0]);
+  checkImportResult(o[1]);
+}
+
+core.int buildCounterPaginatedImportResultsResponse = 0;
+buildPaginatedImportResultsResponse() {
+  var o = new api.PaginatedImportResultsResponse();
+  buildCounterPaginatedImportResultsResponse++;
+  if (buildCounterPaginatedImportResultsResponse < 3) {
+    o.items = buildUnnamed7();
+    o.page = 42;
+    o.pageCount = 42;
+    o.startIndex = 42;
+    o.totalCount = 42;
+    o.totalPages = 42;
+  }
+  buildCounterPaginatedImportResultsResponse--;
+  return o;
+}
+
+checkPaginatedImportResultsResponse(api.PaginatedImportResultsResponse o) {
+  buildCounterPaginatedImportResultsResponse++;
+  if (buildCounterPaginatedImportResultsResponse < 3) {
+    checkUnnamed7(o.items);
+    unittest.expect(o.page, unittest.equals(42));
+    unittest.expect(o.pageCount, unittest.equals(42));
+    unittest.expect(o.startIndex, unittest.equals(42));
+    unittest.expect(o.totalCount, unittest.equals(42));
+    unittest.expect(o.totalPages, unittest.equals(42));
+  }
+  buildCounterPaginatedImportResultsResponse--;
 }
 
 buildUnnamed8() {
@@ -648,6 +706,25 @@ checkSetupResponse(api.SetupResponse o) {
   buildCounterSetupResponse--;
 }
 
+core.int buildCounterStringResponse = 0;
+buildStringResponse() {
+  var o = new api.StringResponse();
+  buildCounterStringResponse++;
+  if (buildCounterStringResponse < 3) {
+    o.data = "foo";
+  }
+  buildCounterStringResponse--;
+  return o;
+}
+
+checkStringResponse(api.StringResponse o) {
+  buildCounterStringResponse++;
+  if (buildCounterStringResponse < 3) {
+    unittest.expect(o.data, unittest.equals('foo'));
+  }
+  buildCounterStringResponse--;
+}
+
 core.int buildCounterTag = 0;
 buildTag() {
   var o = new api.Tag();
@@ -787,20 +864,29 @@ main() {
   });
 
 
+  unittest.group("obj-schema-ImportPathRequest", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildImportPathRequest();
+      var od = new api.ImportPathRequest.fromJson(o.toJson());
+      checkImportPathRequest(od);
+    });
+  });
+
+
+  unittest.group("obj-schema-ImportResult", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildImportResult();
+      var od = new api.ImportResult.fromJson(o.toJson());
+      checkImportResult(od);
+    });
+  });
+
+
   unittest.group("obj-schema-Item", () {
     unittest.test("to-json--from-json", () {
       var o = buildItem();
       var od = new api.Item.fromJson(o.toJson());
       checkItem(od);
-    });
-  });
-
-
-  unittest.group("obj-schema-ItemSearchRequest", () {
-    unittest.test("to-json--from-json", () {
-      var o = buildItemSearchRequest();
-      var od = new api.ItemSearchRequest.fromJson(o.toJson());
-      checkItemSearchRequest(od);
     });
   });
 
@@ -846,6 +932,15 @@ main() {
       var o = buildPaginatedExtensionDataResponse();
       var od = new api.PaginatedExtensionDataResponse.fromJson(o.toJson());
       checkPaginatedExtensionDataResponse(od);
+    });
+  });
+
+
+  unittest.group("obj-schema-PaginatedImportResultsResponse", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildPaginatedImportResultsResponse();
+      var od = new api.PaginatedImportResultsResponse.fromJson(o.toJson());
+      checkPaginatedImportResultsResponse(od);
     });
   });
 
@@ -900,6 +995,15 @@ main() {
       var o = buildSetupResponse();
       var od = new api.SetupResponse.fromJson(o.toJson());
       checkSetupResponse(od);
+    });
+  });
+
+
+  unittest.group("obj-schema-StringResponse", () {
+    unittest.test("to-json--from-json", () {
+      var o = buildStringResponse();
+      var od = new api.StringResponse.fromJson(o.toJson());
+      checkStringResponse(od);
     });
   });
 
@@ -1244,6 +1348,153 @@ main() {
   });
 
 
+  unittest.group("resource-ImportResourceApi", () {
+    unittest.test("method--clearResults", () {
+
+      var mock = new HttpServerMock();
+      api.ImportResourceApi res = new api.GalleryApi(mock).import;
+      var arg_everything = true;
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 15), unittest.equals("import/results/"));
+        pathOffset += 15;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+        unittest.expect(queryMap["everything"].first, unittest.equals("$arg_everything"));
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = "";
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.clearResults(everything: arg_everything).then(unittest.expectAsync((_) {}));
+    });
+
+    unittest.test("method--getResults", () {
+
+      var mock = new HttpServerMock();
+      api.ImportResourceApi res = new api.GalleryApi(mock).import;
+      var arg_page = 42;
+      var arg_perPage = 42;
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 15), unittest.equals("import/results/"));
+        pathOffset += 15;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+        unittest.expect(core.int.parse(queryMap["page"].first), unittest.equals(arg_page));
+        unittest.expect(core.int.parse(queryMap["perPage"].first), unittest.equals(arg_perPage));
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = convert.JSON.encode(buildPaginatedImportResultsResponse());
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.getResults(page: arg_page, perPage: arg_perPage).then(unittest.expectAsync(((api.PaginatedImportResultsResponse response) {
+        checkPaginatedImportResultsResponse(response);
+      })));
+    });
+
+    unittest.test("method--importFromPath", () {
+
+      var mock = new HttpServerMock();
+      api.ImportResourceApi res = new api.GalleryApi(mock).import;
+      var arg_request = buildImportPathRequest();
+      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+        var obj = new api.ImportPathRequest.fromJson(json);
+        checkImportPathRequest(obj);
+
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 15), unittest.equals("import/results/"));
+        pathOffset += 15;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = convert.JSON.encode(buildStringResponse());
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.importFromPath(arg_request).then(unittest.expectAsync(((api.StringResponse response) {
+        checkStringResponse(response);
+      })));
+    });
+
+  });
+
+
   unittest.group("resource-ItemsResourceApi", () {
     unittest.test("method--createItem", () {
 
@@ -1565,11 +1816,12 @@ main() {
 
       var mock = new HttpServerMock();
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
-      var arg_request = buildItemSearchRequest();
+      var arg_tags = "foo";
+      var arg_page = 42;
+      var arg_perPage = 42;
+      var arg_cutoffDate = "foo";
+      var arg_inTrash = true;
       mock.register(unittest.expectAsync((http.BaseRequest req, json) {
-        var obj = new api.ItemSearchRequest.fromJson(json);
-        checkItemSearchRequest(obj);
-
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1580,6 +1832,13 @@ main() {
         pathOffset += 17;
         unittest.expect(path.substring(pathOffset, pathOffset + 13), unittest.equals("search/items/"));
         pathOffset += 13;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_tags"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
 
         var query = (req.url).query;
         var queryOffset = 0;
@@ -1597,6 +1856,10 @@ main() {
             addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
           }
         }
+        unittest.expect(core.int.parse(queryMap["page"].first), unittest.equals(arg_page));
+        unittest.expect(core.int.parse(queryMap["perPage"].first), unittest.equals(arg_perPage));
+        unittest.expect(queryMap["cutoffDate"].first, unittest.equals(arg_cutoffDate));
+        unittest.expect(queryMap["inTrash"].first, unittest.equals("$arg_inTrash"));
 
 
         var h = {
@@ -1605,7 +1868,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedItemResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.searchVisible(arg_request).then(unittest.expectAsync(((api.PaginatedItemResponse response) {
+      res.searchVisible(arg_tags, page: arg_page, perPage: arg_perPage, cutoffDate: arg_cutoffDate, inTrash: arg_inTrash).then(unittest.expectAsync(((api.PaginatedItemResponse response) {
         checkPaginatedItemResponse(response);
       })));
     });

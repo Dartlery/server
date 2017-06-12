@@ -112,7 +112,7 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
   Future<Null> fetchAvailableTags() async {
     await performApiCall(() async {
       availableTags.clear();
-      if (StringTools.isNullOrWhitespace(tagQuery)) return;
+      if (isNullOrWhitespace(tagQuery)) return;
       final PaginatedTagResponse tags = await _api.tags.search(tagQuery);
       for (TagInfo t in tags.items) {
         availableTags.add(new TagWrapper.fromTagInfo(t));
@@ -132,17 +132,17 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
   void searchKeyup(KeyboardEvent e) {
     switch (e.keyCode) {
       case KeyCode.ENTER:
-        if (!existingTags && StringTools.isNotNullOrWhitespace(tagQuery)) {
+        if (!existingTags && isNotNullOrWhitespace(tagQuery)) {
           final Tag tag = new Tag();
           if (tagQuery.contains(categoryDeliminator)) {
             tag.id = tagQuery
                 .substring(tagQuery.indexOf(categoryDeliminator) + 1)
                 .trim();
-            if (StringTools.isNullOrWhitespace(tag.id)) return;
+            if (isNullOrWhitespace(tag.id)) return;
             tag.category = tagQuery
                 .substring(0, tagQuery.indexOf(categoryDeliminator))
                 .trim();
-            if (StringTools.isNullOrWhitespace(tag.category)) return;
+            if (isNullOrWhitespace(tag.category)) return;
           } else {
             tag.id = tagQuery.trim();
           }

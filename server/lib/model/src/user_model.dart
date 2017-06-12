@@ -30,15 +30,15 @@ class UserModel extends AIdBasedModel<User> {
       {String existingId: null}) async {
     await super.validateFields(user, fieldErrors);
 
-    if (StringTools.isNullOrWhitespace(user.name)) {
+    if (isNullOrWhitespace(user.name)) {
       fieldErrors["name"] = "Required";
     }
 
-    if (StringTools.isNullOrWhitespace(existingId) ||
-        !StringTools.isNullOrWhitespace(user.password)) {
+    if (isNullOrWhitespace(existingId) ||
+        !isNullOrWhitespace(user.password)) {
       _validatePassword(fieldErrors, user.password);
     }
-    if (StringTools.isNullOrWhitespace(user.type)) {
+    if (isNullOrWhitespace(user.type)) {
       fieldErrors["type"] = "Required";
     } else {
       if (!UserPrivilege.values.contains(user.type))
@@ -47,7 +47,7 @@ class UserModel extends AIdBasedModel<User> {
   }
 
   void _validatePassword(Map<String, String> fieldErrors, String password) {
-    if (StringTools.isNullOrWhitespace(password)) {
+    if (isNullOrWhitespace(password)) {
       fieldErrors["password"] = "Required";
     } else if (password.length < 8) {
       //TODO: Additional restrictions? Keep them sane.
@@ -91,7 +91,7 @@ class UserModel extends AIdBasedModel<User> {
     final String output = await super
         .update(username, user, bypassAuthentication: bypassAuthentication);
 
-    if (!StringTools.isNullOrWhitespace(user.password))
+    if (!isNullOrWhitespace(user.password))
       await _setPassword(output, user.password);
 
     return output;
@@ -125,7 +125,7 @@ class UserModel extends AIdBasedModel<User> {
 
     await DataValidationException
         .performValidation((Map<String, String> fieldErrors) async {
-      if (StringTools.isNullOrWhitespace(currentPassword)) {
+      if (isNullOrWhitespace(currentPassword)) {
         fieldErrors["currentPassword"] = "Required";
       } else if (!verifyPassword(userPassword, currentPassword)) {
         fieldErrors["currentPassword"] = "Incorrect";

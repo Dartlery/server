@@ -53,7 +53,7 @@ class LoginFormComponent extends AErrorThing {
 
   LoginFormComponent(this._auth, this._router);
 
-  bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
+  bool get hasErrorMessage => isNotNullOrWhitespace(errorMessage);
 
   @override
   Logger get loggerImpl => _log;

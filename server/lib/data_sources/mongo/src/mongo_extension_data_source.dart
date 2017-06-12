@@ -43,18 +43,18 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
 
   SelectorBuilder _generateQuery(String extensionId, String key,
       String primaryId, String secondaryId, bool setNulls) {
-    if (StringTools.isNullOrWhitespace(primaryId) &&
-        StringTools.isNotNullOrWhitespace(secondaryId))
+    if (isNullOrWhitespace(primaryId) &&
+        isNotNullOrWhitespace(secondaryId))
       throw new ArgumentError("primaryId required if specifying a secondaryId");
 
     final SelectorBuilder query =
         where.eq(extensionIdField, extensionId).eq(keyField, key);
 
-    if (StringTools.isNotNullOrWhitespace(primaryId))
+    if (isNotNullOrWhitespace(primaryId))
       query.eq(primaryIdField, primaryId);
     else if (setNulls) query.eq(primaryIdField, null);
 
-    if (StringTools.isNotNullOrWhitespace(secondaryId))
+    if (isNotNullOrWhitespace(secondaryId))
       query.eq(secondaryIdField, secondaryId);
     else if (setNulls) query.eq(secondaryIdField, null);
 

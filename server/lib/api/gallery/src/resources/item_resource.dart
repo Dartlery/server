@@ -67,7 +67,7 @@ class ItemResource extends AIdResource<Item> {
           {int page: 0, int perPage: defaultPerPage, String cutoffDate, bool inTrash: false}) =>
       catchExceptionsAwait(() async {
         DateTime dt;
-        if (StringTools.isNotNullOrWhitespace(cutoffDate))
+        if (isNotNullOrWhitespace(cutoffDate))
           dt = DateTime.parse(cutoffDate);
 
         return new PaginatedItemResponse.convertPaginatedData(
@@ -85,16 +85,23 @@ class ItemResource extends AIdResource<Item> {
       catchExceptionsAwait(
           () => itemModel.merge(targetItemId, sourceItemId.id));
 
-  @ApiMethod(method: HttpMethod.put, path: '$searchApiPath/$_apiPath/')
-  Future<PaginatedItemResponse> searchVisible(ItemSearchRequest request) =>
-      catchExceptionsAwait(() async =>
-          new PaginatedItemResponse.convertPaginatedData(
-              await itemModel.searchVisible(request.tags,
-                  page: request.page,
-                  perPage: request.perPage,
-                  cutoffDate: request.cutoffDate,
-              inTrash: request.inTrash),
-              (Item item) => item.id)..queryTags=request.tags); // Tags should have ben updated
+  @ApiMethod(method: HttpMethod.get, path: '$searchApiPath/$_apiPath/{tags}/')
+  Future<PaginatedItemResponse> searchVisible(String tags, {int page: 0, int perPage: defaultPerPage, String cutoffDate, bool inTrash: false}) =>
+      catchExceptionsAwait(() async  {
+          final List<Tag> queryTags  = new TagList.fromJson(tags).toList();
+          DateTime cutoffDateParsed;
+          if(isNotNullOrWhitespace(cutoffDate)) {
+            cutoffDateParsed = DateTime.parse(cutoffDate);
+          }
+
+          return new PaginatedItemResponse.convertPaginatedData(
+              await itemModel.searchVisible(queryTags,
+                  page: page,
+                  perPage: perPage,
+                  cutoffDate: cutoffDateParsed,
+              inTrash: inTrash),
+              (Item item) => item.id)..queryTags=queryTags;
+      });
 
   @override
   @ApiMethod(method: HttpMethod.put, path: '$_apiPath/{id}/')

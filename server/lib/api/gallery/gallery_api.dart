@@ -13,6 +13,8 @@ import 'src/resources/extension_data_resource.dart';
 export 'src/resources/item_resource.dart';
 export 'src/resources/setup_resource.dart';
 export 'src/resources/user_resource.dart';
+import 'src/resources/import_resource.dart';
+export 'src/resources/import_resource.dart';
 import 'package:dartlery/model/model.dart';
 
 //export 'src/requests/bulk_item_action_request.dart';
@@ -48,16 +50,20 @@ class GalleryApi {
   final TagCategoriesResource tagCategories;
 
   @ApiResource()
+  final ImportResource import;
+
+  @ApiResource()
   final ExtensionDataResource extensionData;
 
   GalleryApi(this.items, this.users, this.setup, this.tagCategories, this.tags,
-      this.extensionData);
+      this.extensionData, this.import);
 
   static final Module injectorModules = new Module()
     ..bind(ItemResource)
     ..bind(UserResource)
     ..bind(SetupResource)
     ..bind(TagResource)
+    ..bind(ImportResource)
     ..bind(TagCategoriesResource)
     ..bind(ExtensionDataResource)
     ..bind(GalleryApi);

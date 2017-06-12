@@ -42,11 +42,11 @@ class TagCategoryModel extends AIdBasedModel<TagCategory> {
       {String existingId: null}) async {
     await super.validateFields(tagCategory, fieldErrors);
 
-    if (StringTools.isNullOrWhitespace(tagCategory.color)) {
+    if (isNullOrWhitespace(tagCategory.color)) {
       fieldErrors["color"] = "Required";
     }
 
-    if (StringTools.isNullOrWhitespace(tagCategory.color)) {
+    if (isNullOrWhitespace(tagCategory.color)) {
       fieldErrors["color"] = "Required";
     } else if (!hexColorRegex.hasMatch(tagCategory.color)) {
       fieldErrors["color"] = "Invalid";

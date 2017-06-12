@@ -144,7 +144,7 @@ class TagsPage extends APage implements OnDestroy {
 
       tags.clear();
       api.PaginatedTagResponse data;
-      if (StringTools.isNullOrWhitespace(tagQuery)) {
+      if (isNullOrWhitespace(tagQuery)) {
         data = await _api.tags.getAllTagInfo();
       } else {
         data = await _api.tags.search(tagQuery);
@@ -164,7 +164,7 @@ class TagsPage extends APage implements OnDestroy {
     model = new api.Tag();
     model.id = t.tag.id;
     model.category = t.tag.category;
-    if (StringTools.isNullOrWhitespace(t.tag.category)) {
+    if (isNullOrWhitespace(t.tag.category)) {
       categorySelection.clear();
     } else {
       categorySelection.select(t.tag.category);

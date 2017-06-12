@@ -11,6 +11,7 @@ import 'mongo_extension_data_source.dart';
 import 'mongo_item_data_source.dart';
 import 'mongo_tag_data_source.dart';
 import 'mongo_background_queue_data_source.dart';
+import 'mongo_import_results_data_source.dart';
 
 class MongoDatabase {
   static final Logger _log = new Logger('_MongoDatabase');
@@ -91,6 +92,18 @@ class MongoDatabase {
   }
 
   Future<DbCollection> getImportResultsCollection() async {
+    await db.createIndex(_importResultsCollection,
+        keys: {
+          MongoImportResultsDataSource.timestampField: -1
+        },
+        name: "ImportResultsTimestamp",
+        unique: false);
+    await db.createIndex(_importResultsCollection,
+        keys: {
+          MongoImportResultsDataSource.resultField: 1
+        },
+        name: "ImportResultsResult",
+        unique: false);
     return db.collection(_importResultsCollection);
   }
 

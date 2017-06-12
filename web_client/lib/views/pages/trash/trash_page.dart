@@ -121,12 +121,6 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       case PageAction.delete:
         this.deleteSelected();
         break;
-      case PageAction.openInNew:
-        this.openSelectedItemsInNewWindow();
-        break;
-      case PageAction.tag:
-        this.openSelectedItemsInNewWindow();
-        break;
 
       default:
         throw new Exception(
@@ -184,7 +178,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
         query = _routeParams.get(queryRouteParameter);
       }
 
-      if (StringTools.isNotNullOrWhitespace(query)) {
+      if (isNotNullOrWhitespace(query)) {
         final TagList tagList = new TagList.fromQueryString(query);
         _search.setTags(tagList);
         routeName = itemsSearchPageRoute.name;
@@ -193,7 +187,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       }
 
       final PaginatedItemResponse response =
-          await _search.performSearch(page: page);
+          await _api.items.getVisibleIds(page: page, inTrash: true);
 
       selectedItems.clear();
       items.clear();
@@ -203,7 +197,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       final PaginationInfo info = new PaginationInfo();
       for (int i = 0; i < response.totalPages; i++) {
         final Map<String, String> params = <String, String>{};
-        if (StringTools.isNotNullOrWhitespace(query)) {
+        if (isNotNullOrWhitespace(query)) {
           params[queryRouteParameter] = query;
         }
         params[pageRouteParameter] = (i + 1).toString();

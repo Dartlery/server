@@ -29,7 +29,7 @@ class ItemFeedResource extends AResource {
       catchExceptionsAwait<Feed>(() async {
         String title = "Recent items";
         PaginatedData<Item> items;
-        if (StringTools.isNotNullOrWhitespace(tags)) {
+        if (isNotNullOrWhitespace(tags)) {
           final TagList tagList = new TagList.fromJson(tags);
           items = await _itemModel.searchVisible(tagList.toList(),
               page: page, perPage: perPage);
@@ -46,7 +46,7 @@ class ItemFeedResource extends AResource {
         String title = "Random items";
         TagList tagList;
 
-        if (StringTools.isNotNullOrWhitespace(tags)) {
+        if (isNotNullOrWhitespace(tags)) {
           tagList = new TagList.fromJson(tags);
           title = "$title $tagList";
         }

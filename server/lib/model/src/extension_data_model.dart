@@ -96,13 +96,13 @@ class ExtensionDataModel extends ATypedModel<ExtensionData> {
   @override
   Future<Null> validateFields(ExtensionData data, Map<String, String> output,
       {String existingId: null}) async {
-    if (StringTools.isNullOrWhitespace(data.extensionId))
+    if (isNullOrWhitespace(data.extensionId))
       output["extensionId"] = "Required";
 
-    if (StringTools.isNullOrWhitespace(data.key)) output["key"] = "Required";
+    if (isNullOrWhitespace(data.key)) output["key"] = "Required";
 
-    if (StringTools.isNullOrWhitespace(data.primaryId) &&
-        StringTools.isNotNullOrWhitespace(data.secondaryId))
+    if (isNullOrWhitespace(data.primaryId) &&
+        isNotNullOrWhitespace(data.secondaryId))
       output["primaryId"] = "Required";
   }
 }

@@ -98,7 +98,7 @@ class MainApp implements OnInit, OnDestroy {
   User get currentUser => _auth.user.getOrDefault(null);
 
   String get pageTitle {
-    if (StringTools.isNotNullOrWhitespace(_pageTitleOverride)) {
+    if (isNotNullOrWhitespace(_pageTitleOverride)) {
       return _pageTitleOverride;
     } else {
       return appName;

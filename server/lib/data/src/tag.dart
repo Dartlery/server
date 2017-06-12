@@ -20,7 +20,7 @@ class Tag extends AIdData {
   String get fullName => formatTag(id, category);
 
   static String formatTag(String id, [String category]) {
-    if (StringTools.isNotNullOrWhitespace(category)) {
+    if (isNotNullOrWhitespace(category)) {
       return "$category$categoryDeliminator $id";
     } else {
       return id;
@@ -28,15 +28,15 @@ class Tag extends AIdData {
   }
 
   @ApiProperty(ignore: true)
-  bool get hasCategory => StringTools.isNotNullOrWhitespace(this.category);
+  bool get hasCategory => isNotNullOrWhitespace(this.category);
 
   set fullName(String value) {}
 
   bool equals(Tag other) {
     if (id?.toLowerCase() == other.id?.toLowerCase()) {
       if (category?.toLowerCase() == other.category?.toLowerCase() ||
-          (StringTools.isNullOrWhitespace(this.category) &&
-              StringTools.isNullOrWhitespace(other.category))) return true;
+          (isNullOrWhitespace(this.category) &&
+              isNullOrWhitespace(other.category))) return true;
     }
 
     return false;

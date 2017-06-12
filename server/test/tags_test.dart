@@ -175,9 +175,8 @@ void main() {
     });
 
     test("Search redirect", () async {
-      final ItemSearchRequest request = new ItemSearchRequest();
-      request.tags = [initialTag];
-      final PaginatedItemResponse response = await api.items.searchVisible(request);
+      final TagList searchTags = new TagList.from([initialTag]);
+      final PaginatedItemResponse response = await api.items.searchVisible(searchTags.toJson());
       expect(response, isNotNull);
       expect(response.totalCount, 1);
       expect(response.queryTags, isNotNull);

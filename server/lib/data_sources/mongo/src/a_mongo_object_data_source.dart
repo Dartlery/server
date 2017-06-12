@@ -85,7 +85,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
     output.startIndex = offset;
 
     if (selector == null) selector == where;
-    if (!StringTools.isNullOrWhitespace(sortField))
+    if (!isNullOrWhitespace(sortField))
       selector.sortBy(sortField, descending: sortDescending);
 
     selector.limit(limit).skip(offset);
@@ -107,7 +107,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
       {SelectorBuilder selector, String sortBy}) {
     SelectorBuilder searchSelector = where.eq($text, {$search: query});
     if (selector != null) searchSelector = searchSelector.and(selector);
-    if (!StringTools.isNullOrWhitespace(sortBy)) {
+    if (!isNullOrWhitespace(sortBy)) {
       searchSelector = searchSelector.sortBy(sortBy);
     } else {
       searchSelector =

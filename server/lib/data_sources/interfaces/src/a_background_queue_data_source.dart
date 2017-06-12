@@ -7,7 +7,7 @@ import 'package:option/option.dart';
 abstract class ABackgroundQueueDataSource extends ADataSource {
   static final Logger _log = new Logger('ABackgroundQueueDataSource');
 
-  Future<Null> addToQueue(String extensionId, String data, {int priority});
+  Future<Null> addToQueue(String extensionId, dynamic data, {int priority});
   Future<Null> deleteItem(String id);
   Future<Option<BackgroundQueueItem>> getNextItem();
 }

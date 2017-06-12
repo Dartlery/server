@@ -46,7 +46,7 @@ class AuthenticationService {
       throw new Exception("Response did not include Authorization header");
 
     final String auth = request.responseHeaders[HttpHeaders.AUTHORIZATION];
-    if (StringTools.isNullOrWhitespace(auth))
+    if (isNullOrWhitespace(auth))
       throw new Exception("Auth request did not return a key");
 
     await _settings.cacheAuthKey(auth);

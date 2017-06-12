@@ -44,7 +44,7 @@ Future<Null> main(List<String> args) async {
 
   final String type = argResults["mimeType"];
 
-  if (StringTools.isNullOrWhitespace(type)) {
+  if (isNullOrWhitespace(type)) {
     throw new Exception("mimeType is required");
   }
 

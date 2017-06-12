@@ -18,7 +18,7 @@ abstract class APage extends AApiErrorThing {
   @override
   set errorMessage(String message) {
     super.errorMessage = message;
-    if (popupUnhandledErrors && StringTools.isNotNullOrWhitespace(message))
+    if (popupUnhandledErrors && isNotNullOrWhitespace(message))
       pageControl.sendMessage("Error", message);
   }
 
@@ -40,7 +40,7 @@ abstract class APage extends AApiErrorThing {
   }
 
   String getFullFileUrl(Item item) {
-    if (item == null || StringTools.isNullOrWhitespace(item.id)) return "";
+    if (item == null || isNullOrWhitespace(item.id)) return "";
     if (item.fullFileAvailable)
       return getImageUrl(item.id, ItemFileType.full);
     else
@@ -48,13 +48,13 @@ abstract class APage extends AApiErrorThing {
   }
 
   String getOriginalFileUrl(String value) {
-    if (StringTools.isNullOrWhitespace(value)) return "";
+    if (isNullOrWhitespace(value)) return "";
     final String output = getImageUrl(value, ItemFileType.original);
     return output;
   }
 
   String getThumbnailFileUrl(String value) {
-    if (StringTools.isNullOrWhitespace(value)) return "";
+    if (isNullOrWhitespace(value)) return "";
     final String output = getImageUrl(value, ItemFileType.thumbnail);
     return output;
   }

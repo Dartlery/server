@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery/api/api.dart';
@@ -50,6 +51,22 @@ class TagList extends Iterable<TagWrapper> {
     for (Tag t in tags) {
       this.add(new TagWrapper.fromTag(t));
     }
+  }
+
+  String toJson() {
+    final List<Map<String,String>> output = new List<Map<String,String>>();
+
+    for(TagWrapper tag in this) {
+      final Map<String,String> tagMap = <String,String>{};
+      tagMap["id"] = tag.id;
+      if(tag.hasCategory) {
+        tagMap["category"] = tag.category;
+      }
+      output.add(tagMap);
+    }
+
+    final String outputJson = new JsonEncoder().convert(output);
+    return  outputJson;
   }
 
   @override

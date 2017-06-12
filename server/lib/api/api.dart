@@ -14,6 +14,9 @@ export 'gallery/src/requests/update_item_request.dart';
 export 'gallery/src/responses/paginated_item_response.dart';
 export 'src/responses/count_response.dart';
 export 'feeds/feed_api.dart';
+export 'src/responses/string_response.dart';
+export 'src/responses/data_response.dart';
+export 'src/requests/string_request.dart';
 
 const String setupApiPath = "setup";
 const String searchApiPath = "search";

@@ -9,8 +9,7 @@ abstract class ASettingsDataSource extends ADataSource {
 
   ASettingsDataSource();
 
-  Future<Map<String, String>> getAll();
-  Future<String> get(Settings setting);
+  Future<Settings> get(String name);
 
   Future<Null> write(Settings setting, String value);
 }

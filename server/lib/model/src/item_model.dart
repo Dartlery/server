@@ -446,20 +446,20 @@ class ItemModel extends AIdBasedModel<Item> {
     //TODO: add dynamic field validation
     await super.validateFields(item, fieldErrors);
 
-    if (StringTools.isNullOrWhitespace(existingId)) {
+    if (isNullOrWhitespace(existingId)) {
       if (item.fileData == null || item.fileData.length == 0) {
         fieldErrors["file"] = "Required";
       }
     }
 
-    if (StringTools.isNullOrWhitespace(item.fileName)) {
+    if (isNullOrWhitespace(item.fileName)) {
       fieldErrors["fileName"] = "Required";
     }
 
     if (item.tags != null) {
       // TODO: Get the error feedback to be able to handle positional feedback
       for (Tag tag in item.tags) {
-        if (StringTools.isNullOrWhitespace(tag.id)) {
+        if (isNullOrWhitespace(tag.id)) {
           fieldErrors["id"] = "Tag name required";
         }
       }
@@ -501,7 +501,7 @@ class ItemModel extends AIdBasedModel<Item> {
     _log.fine("Getting MIME type");
     final String mime = mediaMimeResolver.getMimeType(data);
 
-    if (StringTools.isNullOrWhitespace(mime)) {
+    if (isNullOrWhitespace(mime)) {
       throw new InvalidInputException("Mime type of file is unknown");
     }
 
@@ -612,7 +612,7 @@ class ItemModel extends AIdBasedModel<Item> {
     _log.fine("Generating file hash...");
     item.id = generateHash(data);
 
-    if (StringTools.isNullOrWhitespace(item.id))
+    if (isNullOrWhitespace(item.id))
       throw new Exception("No hash generated for file data");
 
     _log.fine("File hash: ${item.id}");

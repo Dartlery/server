@@ -12,9 +12,9 @@ class BackgroundService {
 
   bool _stop = false;
   final ABackgroundQueueDataSource _backgroundQueueDataSource;
-  final ExtensionService _pluginService;
+  final ExtensionService _extensionService;
 
-  BackgroundService(this._backgroundQueueDataSource, this._pluginService);
+  BackgroundService(this._backgroundQueueDataSource, this._extensionService);
 
   void start() {
     _log.info("Starting background service");
@@ -35,7 +35,7 @@ class BackgroundService {
 
         while (nextItem.isNotEmpty) {
           try {
-            await _pluginService.triggerBackgroundServiceCycle(nextItem.first);
+            await _extensionService.triggerBackgroundServiceCycle(nextItem.first);
           } finally {
             await _backgroundQueueDataSource.deleteItem(nextItem.first.id);
           }

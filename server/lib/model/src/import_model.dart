@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
+import 'package:dartlery/extensions/extensions.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/tools.dart';
 import 'package:dartlery_shared/global.dart';
@@ -11,43 +12,77 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqljocky/sqljocky.dart';
 
+import 'a_model.dart';
 import 'item_model.dart';
 import 'tag_category_model.dart';
 
-class ImportModel {
+class ImportModel extends AModel {
   static final Logger _log = new Logger('ImportModel');
 
   final ItemModel itemModel;
   final TagCategoryModel tagCategoryModel;
   final AImportResultsDataSource _importResultsDataSource;
+  final ABackgroundQueueDataSource _backgroundQueueDataSource;
 
   final RegExp shimmieFileRegexp = new RegExp(r"^\d+ \- (.+)$");
 
   final RegExp tagSplitterRegExp = new RegExp(r'[\""].+?[\""]|[^ ]+');
 
   ImportModel(
-      this.itemModel, this.tagCategoryModel, this._importResultsDataSource);
+      this.itemModel,
+      this.tagCategoryModel,
+      this._importResultsDataSource,
+      this._backgroundQueueDataSource,
+      AUserDataSource userDataSource)
+      : super(userDataSource);
 
-  List<String> breakDownTagString(String input) {
-    final List<String> output = <String>[];
-    for (Match m in tagSplitterRegExp.allMatches(input)) {
-      if (StringTools.isNullOrWhitespace(m.group(0))) continue;
-      output.add(m.group(0));
+  @override
+  Logger get loggerImpl => _log;
+
+  Future<Null> clearResults([bool everything = false]) async {
+    await validateDeletePrivileges();
+    await _importResultsDataSource.clear(everything);
+  }
+
+  Future<DateTime> enqueueImportFromPath(String path,
+      {bool interpretShimmieNames: false, bool stopOnError: false}) async {
+    await validateUpdatePrivilegeRequirement();
+
+    if(isNullOrWhitespace(path)) {
+      throw new ArgumentError.notNull("path");
     }
-    return output;
+    final Directory dir = new Directory(path);
+    if(!dir.existsSync()) {
+      throw new ArgumentError("path not found");
+    }
+
+    final DateTime batchTimestamp = new DateTime.now();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data["path"] = path;
+    data["interpretShimmieNames"] = interpretShimmieNames;
+    data["stopOnError"] = stopOnError;
+    data["batchTimestamp"] = batchTimestamp;
+    await _backgroundQueueDataSource
+        .addToQueue(ImportPathExtension.pluginIdStatic, data, priority: 10);
+    return batchTimestamp;
   }
 
   Future<PaginatedData<ImportResult>> getResults(
       {int page: 0, int perPage: defaultPerPage}) async {
+    await validateGetPrivileges();
     return await _importResultsDataSource.get(page: page, perPage: perPage);
   }
 
   Future<Null> importFromPath(String path,
-      {bool interpretShimmieNames: false, bool stopOnError: false}) async {
+      {bool interpretShimmieNames: false,
+      bool stopOnError: false,
+      DateTime overrideBatchTimestamp}) async {
     final TagList tagList = new TagList();
+    final DateTime batchTimestamp =
+        overrideBatchTimestamp ?? new DateTime.now();
 
-    await _importFromFolderRecursive(
-        new Directory(path), tagList, interpretShimmieNames, stopOnError);
+    await _importFromFolderRecursive(batchTimestamp, new Directory(path),
+        tagList, interpretShimmieNames, stopOnError);
   }
 
   Future<Null> importFromShimmie(String imagePath,
@@ -57,6 +92,8 @@ class ImportModel {
         user: "dartlery",
         password: "dartlery",
         db: "shimmie_rand");
+
+    final DateTime batchTimestamp = new DateTime.now();
 
     final int batchSize = 100;
     int lastId = startAt;
@@ -69,9 +106,10 @@ class ImportModel {
       for (Row row in rows) {
         lastId = row.id;
         final ImportResult result = new ImportResult();
+        result.batchTimestamp = batchTimestamp;
         result.source = "shimmie";
+        result.fileName = "${row.id} - ${row.filename}";
         try {
-          result.fileName = "${row.id} - ${row.filename}";
           final Item newItem = new Item();
           newItem.fileName = row.filename;
           newItem.source = row.source;
@@ -142,7 +180,7 @@ class ImportModel {
             rethrow;
           }
         } finally {
-          await recordResult(result);
+          await _recordResult(result);
         }
       }
       final Results results = await pool.query(
@@ -151,20 +189,13 @@ class ImportModel {
     }
   }
 
-  Future<Null> recordResult(ImportResult result) async {
-    result.timestamp = new DateTime.now();
-    if (StringTools.isNullOrWhitespace(result.id))
-      throw new FormatException("ID is missing");
-    if (StringTools.isNullOrWhitespace(result.source))
-      throw new FormatException("Source is missing");
-    if (StringTools.isNullOrWhitespace(result.result))
-      throw new FormatException("Result is missing");
-
-    if (StringTools.isNotNullOrWhitespace(result.id)) {
-      final File f = new File(getThumbnailFilePathForHash(result.id));
-      result.thumbnailCreated = f.existsSync();
+  List<String> _breakDownTagString(String input) {
+    final List<String> output = <String>[];
+    for (Match m in tagSplitterRegExp.allMatches(input)) {
+      if (isNullOrWhitespace(m.group(0))) continue;
+      output.add(m.group(0));
     }
-    await _importResultsDataSource.record(result);
+    return output;
   }
 
   Future<Null> _createItem(Item newItem, ImportResult result) async {
@@ -189,22 +220,27 @@ class ImportModel {
     }
   }
 
-  Future<Null> _importFromFolderRecursive(Directory currentDirectory,
-      TagList parentTags, bool interpretShimmieNames, bool stopOnError) async {
+  Future<Null> _importFromFolderRecursive(
+      DateTime batchTimestamp,
+      Directory currentDirectory,
+      TagList parentTags,
+      bool interpretShimmieNames,
+      bool stopOnError) async {
     for (FileSystemEntity entity in currentDirectory.listSync()) {
       if (entity is Directory) {
         final TagList newTagList = new TagList.from(parentTags);
         final String dirName = path.basename(entity.path);
-        for (String tagString in breakDownTagString(dirName)) {
+        for (String tagString in _breakDownTagString(dirName)) {
           newTagList.add(new Tag.withValues(tagString));
         }
-        await _importFromFolderRecursive(
-            entity, newTagList, interpretShimmieNames, stopOnError);
+        await _importFromFolderRecursive(batchTimestamp, entity, newTagList,
+            interpretShimmieNames, stopOnError);
       } else if (entity is File) {
         final ImportResult result = new ImportResult();
         result.source = "folder";
+        result.batchTimestamp = batchTimestamp;
         try {
-          result.fileName = path.basename(entity.path);
+          result.fileName = entity.path;
           _log.info("Attempting to import ${entity.path}");
           final Item newItem = new Item();
           newItem.tags = parentTags.toList();
@@ -213,12 +249,12 @@ class ImportModel {
                   .hasMatch(path.basenameWithoutExtension(entity.path))) {
             final Match m = shimmieFileRegexp
                 .firstMatch(path.basenameWithoutExtension(entity.path));
-            for (String tag in breakDownTagString(m.group(1))) {
+            for (String tag in _breakDownTagString(m.group(1))) {
               newItem.tags.add(new Tag.withValues(tag));
             }
           }
           newItem.fileData = await getFileData(entity.path);
-          newItem.fileName = result.fileName;
+          newItem.fileName = path.basename(entity.path);
           newItem.extension = path.extension(entity.path).substring(1);
           await _createItem(newItem, result);
           _log.info("Imported file ${entity.path}");
@@ -230,9 +266,26 @@ class ImportModel {
             rethrow;
           }
         } finally {
-          await recordResult(result);
+          await _recordResult(result);
         }
       }
     }
+  }
+
+  Future<Null> _recordResult(ImportResult result) async {
+    result.timestamp = new DateTime.now();
+    //if (isNullOrWhitespace(result.id)) throw new ArgumentError("ID is missing");
+    if (isNullOrWhitespace(result.source))
+      throw new ArgumentError("Source is missing");
+    if (isNullOrWhitespace(result.result))
+      throw new ArgumentError("Result is missing");
+    if (result.batchTimestamp == null)
+      throw new ArgumentError.notNull("batchTimestamp");
+
+    if (isNotNullOrWhitespace(result.id)) {
+      final File f = new File(getThumbnailFilePathForHash(result.id));
+      result.thumbnailCreated = f.existsSync();
+    }
+    await _importResultsDataSource.record(result);
   }
 }

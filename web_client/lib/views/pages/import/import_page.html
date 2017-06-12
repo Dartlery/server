@@ -1,0 +1,21 @@
+<form>
+<material-input [(ngModel)]="request.path" label="Path"  ngControl="path" floatingLabel required></material-input>
+
+<material-checkbox [(ngModel)]="request.stopOnError" label="Stop on error"  ngControl="stopOnError"></material-checkbox>
+<material-checkbox [(ngModel)]="request.interpretShimmieNames" label="Interpret Shimmie names"  ngControl="interpretShimmieNames"></material-checkbox>
+    <material-button raised (trigger)="beginImport()">Begin Import</material-button>
+    Note: Import process happens asynchronously and may take up to a minute to starts. Refresh this page and see below to get import status.
+</form>
+
+<material-button (trigger)="clearSuccessResults()" raised>Clear Success</material-button>
+<material-button (trigger)="clearAllResults()" raised>Clear All</material-button>
+
+<table>
+    <tr *ngFor="let r of results">
+        <td>{{r.batchTimestamp}}</td>
+        <td>{{r.timestamp}}</td>
+        <td>{{r.fileName}}</td>
+        <td>{{r.result}}</td>
+        <td>{{r.error}}</td>
+    </tr>
+</table>
