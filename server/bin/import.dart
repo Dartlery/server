@@ -19,6 +19,10 @@ Future<Null> main(List<String> args) async {
   parser.addOption("path", abbr: 'p');
   parser.addOption("start");
   parser.addOption("stopOnError", defaultsTo: "true");
+  parser.addOption("sourceDbHost");
+  parser.addOption("sourceDb");
+  parser.addOption("sourceDbUser");
+  parser.addOption("sourceDbPassword");
   final ArgResults argResults = parser.parse(args);
 
   // Currently only supports importing from shimmie. Yay!
@@ -45,12 +49,21 @@ Future<Null> main(List<String> args) async {
     case "shimmie":
       if (isNullOrWhitespace(argResults["path"]))
         throw new Exception("path is required");
+      if (isNullOrWhitespace(argResults["sourceDbHost"]))
+        throw new Exception("sourceDbHost is required");
+      if (isNullOrWhitespace(argResults["sourceDb"]))
+        throw new Exception("sourceDb is required");
+      if (isNullOrWhitespace(argResults["sourceDbUser"]))
+        throw new Exception("sourceDbUser is required");
+      if (isNullOrWhitespace(argResults["sourceDbPassword"]))
+        throw new Exception("sourceDbPassword is required");
+
       if (isNotNullOrWhitespace(argResults["start"])) {
         final int start = int.parse(argResults["start"]);
-        await importModel.importFromShimmie(argResults["path"],
+        await importModel.importFromShimmie(argResults["path"],argResults["sourceDbHost"],argResults["sourceDbUser"],argResults["sourceDbPassword"],argResults["sourceDb"],
             stopOnError: stopOnError, startAt: start);
       } else {
-        await importModel.importFromShimmie(argResults["path"],
+        await importModel.importFromShimmie(argResults["path"],argResults["sourceDbHost"],argResults["sourceDbUser"],argResults["sourceDbPassword"],argResults["sourceDb"],
             stopOnError: stopOnError);
       }
       break;

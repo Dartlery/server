@@ -85,13 +85,13 @@ class ImportModel extends AModel {
         tagList, interpretShimmieNames, stopOnError);
   }
 
-  Future<Null> importFromShimmie(String imagePath,
-      {int startAt: -1, bool stopOnError: false}) async {
+  Future<Null> importFromShimmie(String imagePath, String mysqlHost, String mysqlUser, String mysqlPassword, String mysqlDb,
+      {int startAt: -1, bool stopOnError: false, bool interpretTagCategories: true}) async {
     final ConnectionPool pool = new ConnectionPool(
-        host: "192.168.1.10",
-        user: "dartlery",
-        password: "dartlery",
-        db: "shimmie_rand");
+        host: mysqlHost,
+        user: mysqlUser,
+        password: mysqlPassword,
+        db: mysqlDb);
 
     final DateTime batchTimestamp = new DateTime.now();
 
@@ -138,7 +138,13 @@ class ImportModel extends AModel {
 
           for (Row tagRow in tagRows) {
             final Tag tag = new Tag();
-            tag.id = tagRow.tag;
+            final String tagText = tagRow.tag;
+            if(interpretTagCategories&&tagText.contains(":")) {
+              tag.category = tagText.substring(0,tagText.indexOf(":"));
+              tag.id = tagText.substring(tagText.indexOf(":")+1);
+            } else {
+              tag.id =tagText;
+            }
             newItem.tags.add(tag);
           }
 
@@ -150,22 +156,10 @@ class ImportModel extends AModel {
           final List<Row> poolsRows = await poolsResult.toList();
           _log.info("Found pools: ${poolsRows.length}");
 
-          TagCategory poolTagCategory;
-          try {
-            poolTagCategory = await tagCategoryModel.getById("Pool",
-                bypassAuthentication: true);
-          } on NotFoundException catch (e, st) {
-            poolTagCategory = new TagCategory();
-            poolTagCategory.id = "Pool";
-            poolTagCategory.color = "#000000";
-            await tagCategoryModel.create(poolTagCategory,
-                bypassAuthentication: true);
-          }
-
           for (Row poolRow in poolsRows) {
             final Tag tag = new Tag();
             tag.id = poolRow.title;
-            tag.category = poolTagCategory.id;
+            tag.category = "Pool";
             newItem.tags.add(tag);
           }
           _log.info(newItem.tags);
