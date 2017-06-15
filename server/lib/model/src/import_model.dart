@@ -142,6 +142,8 @@ class ImportModel extends AModel {
             if(interpretTagCategories&&tagText.contains(":")) {
               tag.category = tagText.substring(0,tagText.indexOf(":"));
               tag.id = tagText.substring(tagText.indexOf(":")+1);
+              if(isNullOrWhitespace(tag.id))
+                continue;
             } else {
               tag.id =tagText;
             }
