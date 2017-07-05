@@ -20,6 +20,9 @@ div.item-menu a {
     text-decoration: none;
 }
 
+div.footer_buttons {
+    clear: both;
+}
 
 
 @media(max-width:400pt) {

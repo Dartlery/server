@@ -48,6 +48,9 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   final ItemSearchService _search;
 
+  String get currentRssLink => _search.getCurrentFeedUrl();
+  String get currentRandomRssLink => _search.getCurrentRandomFeedUrl();
+
   ItemBrowseComponent(this._api, this._routeParams,
       PageControlService pageControl, this._router, this._auth, this._search)
       : super(_auth, _router, pageControl) {

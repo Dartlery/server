@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'tools.dart';
 export 'src/exceptions/forbidden_exception.dart';
 export 'src/exceptions/invalid_input_exception.dart';
@@ -43,6 +44,10 @@ const String imageFieldTypeId = "image";
 const String hiddenFieldTypeId = "hidden";
 const String multiValueStringTypeID = "multiValueString";
 
+const String apiPrefix = 'api';
+const String feedApiName = "feeds";
+const String feedApiVersion = "1";
+
 final Map<String, String> globalFieldTypes = <String, String>{
   numericFieldTypeId: 'Numeric',
   stringFieldTypeId: 'String',
@@ -73,6 +78,45 @@ final List<String> _reservedWords = <String>[
 bool isReservedWord(String input) =>
     _reservedWords.contains(input.trim().toLowerCase());
 
+List<T> createTagListFromJson<T>(String json, T createTag(String id, String category)) {
+  final List<T> output = <T>[];
+  final JsonDecoder decode = new JsonDecoder();
+  final dynamic data = decode.convert(json);
+  if (!(data is List)) {
+    throw new ArgumentError.value(json, "json", "JSON list expected");
+  }
+  final List tagData = data;
+  for (dynamic subData in tagData) {
+    if (!(subData is Map)) {
+      throw new ArgumentError.value(
+          json, "json", "Non-map entry in list encountered");
+    }
+    final Map tagSubData = subData;
+    String id = tagSubData["id"];
+    String category;
+    if (tagSubData.containsKey("category")) {
+      category = tagSubData["category"];
+    }
+    output.add(createTag(id, category));
+  }
+  return  output;
+}
+
+String tagListToJson(Iterable<dynamic> tagList) {
+  final List<Map<String, String>> output = new List<Map<String, String>>();
+
+  for (dynamic tag in tagList) {
+    final Map<String, String> tagMap = <String, String>{};
+    tagMap["id"] = tag.id;
+    if (tag.hasCategory) {
+      tagMap["category"] = tag.category;
+    }
+    output.add(tagMap);
+  }
+
+  final String outputJson = new JsonEncoder().convert(output);
+  return outputJson;
+}
 //class Guid {
 //  List<int> data;
 //

@@ -42,7 +42,6 @@ final String setupLockFilePath = "$rootDirectory/setup.lock";
 
 bool _setupDisabled = false;
 
-const String apiPrefix = 'api';
 const String filesPath = "files";
 //String getImagesRootUrl() {
 //  return rpc.context.baseUrl + "/images/";

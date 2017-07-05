@@ -1,4 +1,5 @@
 <auth-status (authedChanged)="onAuthChanged($event)"></auth-status>
+
 <div *ngIf="noItemsFound&&!processing" class="no-items">No Items Found</div>
 <div *ngFor="let i of items" class="item">
     <a [routerLink]="['Item', {id: i.id}]" id="link_{{i.id}}">
@@ -11,4 +12,8 @@
             <a href="{{getOriginalFileUrl(i.id)}}" target="_blank" id="original_link_{{i.id}}"><glyph icon="open_in_new"></glyph></a>
         </span>
     </div>
+</div>
+<div class="footer_buttons">
+<a href="{{currentRssLink}}" target="_blank" ><material-button><glyph icon="ic_rss_feed"></glyph>Latest</material-button></a>
+<a href="{{currentRandomRssLink}}" target="_blank" ><material-button><glyph icon="ic_rss_feed"></glyph>Random</material-button></a>
 </div>

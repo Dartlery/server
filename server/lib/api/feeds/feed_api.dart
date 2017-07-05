@@ -5,15 +5,15 @@ import 'src/resources/item_feed_resource.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartlery_shared/tools.dart';
 import '../api_tools.dart';
+import 'package:dartlery_shared/global.dart';
 export 'src/resources/item_feed_resource.dart';
 
+
 @ApiClass(
-    version: FeedApi.apiVersion,
-    name: FeedApi.apiName,
+    version: feedApiVersion,
+    name: feedApiName,
     description: 'Feeds API')
 class FeedApi {
-  static const String apiName = "feeds";
-  static const String apiVersion = "1";
 
   @ApiResource()
   final ItemFeedResource items;
@@ -25,5 +25,5 @@ class FeedApi {
     ..bind(FeedApi);
 
   static String get rootPath =>
-      urlPath.join(requestRoot, apiPrefix, apiVersion, apiName);
+      urlPath.join(requestRoot, apiPrefix, feedApiVersion, feedApiName);
 }

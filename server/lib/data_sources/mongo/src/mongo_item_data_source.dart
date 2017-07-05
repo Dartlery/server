@@ -175,11 +175,13 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       int perPage: defaultPerPage,
       bool inTrash: false}) async {
     final List<Map> matchers = [
-      {inTrashField: inTrash},
-      {
-        tagsField: {$all: filterTags.map((Tag t) => t.internalId)}
-      }
+      {inTrashField: inTrash}
     ];
+
+    if(filterTags!=null) {
+      final List tagIds = new List.from(filterTags.map((Tag t) => t.internalId));
+      matchers.add({tagsField: {$all: tagIds}});
+    }
 
     return await collectionWrapper<List<Item>>((DbCollection col) async {
       final List pipeline = [

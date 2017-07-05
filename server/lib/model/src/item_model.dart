@@ -376,6 +376,8 @@ class ItemModel extends AIdBasedModel<Item> {
       {List<Tag> filterTags, int perPage: defaultPerPage}) async {
     await validateSearchPrivileges();
 
+    filterTags = await _tagModel.handleTags(filterTags);
+
     return itemDataSource.getVisibleRandom(this.currentUserId,
         perPage: perPage, filterTags: filterTags);
   }

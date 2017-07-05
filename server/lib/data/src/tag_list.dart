@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dartlery/data/data.dart';
+import 'package:dartlery_shared/global.dart';
 
 class TagList extends Iterable<Tag> {
   final List<Tag> _list = <Tag>[];
@@ -13,41 +14,9 @@ class TagList extends Iterable<Tag> {
   }
 
   TagList.fromJson(String json) {
-    final JsonDecoder decode = new JsonDecoder();
-    final dynamic data = decode.convert(json);
-    if (!(data is List)) {
-      throw new ArgumentError.value(json, "json", "JSON list expected");
-    }
-    final List tagData = data;
-    for (dynamic subData in tagData) {
-      if (!(subData is Map)) {
-        throw new ArgumentError.value(
-            json, "json", "Non-map entry in list encountered");
-      }
-      final Map tagSubData = subData;
-      final Tag tag = new Tag();
-      tag.id = tagSubData["id"];
-      if (tagSubData.containsKey("category")) {
-        tag.category = tagSubData["category"];
-      }
-      this.add(tag);
-    }
+    this.addAll(createTagListFromJson(json, (String name, String category) => new Tag.withValues(name,category)));
   }
-  String toJson() {
-    final List<Map<String,String>> output = new List<Map<String,String>>();
-
-    for(Tag tag in this) {
-      final Map<String,String> tagMap = <String,String>{};
-      tagMap["id"] = tag.id;
-      if(tag.hasCategory) {
-        tagMap["category"] = tag.category;
-      }
-      output.add(tagMap);
-    }
-
-    final String outputJson = new JsonEncoder().convert(output);
-    return  outputJson;
-  }
+  String toJson() => tagListToJson(this);
 
   @override
   Iterator<Tag> get iterator => _list.iterator;

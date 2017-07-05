@@ -222,7 +222,8 @@ class ImportModel extends AModel {
       bool interpretShimmieNames,
       bool stopOnError,
       bool mergeExisting) async {
-    for (FileSystemEntity entity in currentDirectory.listSync()) {
+    await for (FileSystemEntity entity in currentDirectory.list()) {
+
       if (entity is Directory) {
         final TagList newTagList = new TagList.from(parentTags);
         final String dirName = path.basename(entity.path);
