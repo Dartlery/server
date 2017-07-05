@@ -172,7 +172,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   @override
   Future<List<Item>> getVisibleRandom(String userUuid,
       {List<Tag> filterTags,
-      int perPage: defaultPerPage,
+      int perPage: defaultPerRandomPage,
       bool inTrash: false}) async {
     final List<Map> matchers = [
       {inTrashField: inTrash}

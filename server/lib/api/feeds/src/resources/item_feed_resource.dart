@@ -41,7 +41,7 @@ class ItemFeedResource extends AResource {
       });
 
   @ApiMethod(path: 'items/random/')
-  Future<Feed> getRandomItems({int perPage: defaultPerPage, String tags}) =>
+  Future<Feed> getRandomItems({int perPage: defaultPerRandomPage, String tags}) =>
       catchExceptionsAwait<Feed>(() async {
         String title = "Random items";
         TagList tagList;

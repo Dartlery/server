@@ -17,6 +17,7 @@ const String galleryApiName = "gallery";
 const String galleryApiPath = "api/$galleryApiName/$galleryApiVersion/";
 
 const int defaultPerPage = 60;
+const int defaultPerRandomPage = 1;
 
 const String hostedFilesPath = "files";
 
