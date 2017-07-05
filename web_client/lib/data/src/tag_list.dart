@@ -16,7 +16,11 @@ class TagList extends Iterable<TagWrapper> {
     }
   }
 
-  void addTags(List<Tag> tags) {
+  TagList.fromTags(Iterable<Tag> input) {
+    addTags(input);
+  }
+
+  void addTags(Iterable<Tag> tags) {
     for (Tag t in tags) {
       this.add(new TagWrapper.fromTag(t));
     }
@@ -90,7 +94,9 @@ class TagList extends Iterable<TagWrapper> {
   String toQueryString() => convertToQueryString(this.toListOfTags());
 
   List<Tag> toListOfTags() =>
-      new List<Tag>.from(_list.map((TagWrapper t) => t.tag));
+      new List<Tag>.from(_list.map((TagWrapper t) =>
+      t.tag
+      ));
 
   bool compare(TagList otherList) {
     for (TagWrapper tag in otherList) {
@@ -99,5 +105,11 @@ class TagList extends Iterable<TagWrapper> {
     if (length != otherList.length) return false;
 
     return true;
+  }
+
+  ListOfTag toListOfTag() {
+    ListOfTag output = new ListOfTag();
+    output.addAll(this.toListOfTags());
+    return output;
   }
 }

@@ -21,7 +21,7 @@ import '../src/a_api_error_thing.dart';
     directives: const <dynamic>[materialDirectives, ROUTER_DIRECTIVES],
     template: '''
     <div style="width: 100%;white-space: nowrap;">
-    <material-chips style="float: left;">
+    <material-chips *ngIf="showSelectedTags" style="float: left;">
       <material-chip *ngFor="let t of selectedTagsInternal" (remove)="deselectTag(t)"><a [routerLink]="['ItemsSearch', {'query':t.toQueryString()}]" >{{t}}</a></material-chip>
     </material-chips>
     <span *ngIf="inputVisible" >
@@ -58,6 +58,9 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
 
   @Input()
   bool tagListVisible = true;
+
+  @Input()
+  bool showSelectedTags = true;
 
   ApiService _api;
 

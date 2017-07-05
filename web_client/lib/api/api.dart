@@ -19,6 +19,7 @@ export 'package:api_client/gallery/v0_1.dart'
         Tag,
         TagCategory,
         TagsResourceApi,
+        ListOfTag,
         TagCategoriesResourceApi,
         PaginatedExtensionDataResponse,
         ImportResult,

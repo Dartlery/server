@@ -23,6 +23,7 @@ abstract class APage extends AApiErrorThing {
   }
 
   String formatTag(Tag t) => TagWrapper.formatTag(t);
+  String tagToQueryString(Tag t) => TagWrapper.createQueryStringForTag(t);
 
   void cancelEvent(html.Event e) {
     e.stopPropagation();

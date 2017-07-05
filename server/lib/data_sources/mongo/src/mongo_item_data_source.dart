@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
-import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -173,7 +173,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   Future<List<Item>> getVisibleRandom(String userUuid,
       {List<Tag> filterTags,
       int perPage: defaultPerRandomPage,
-      bool inTrash: false}) async {
+      bool inTrash: false, bool imagesOnly: false}) async {
     final List<Map> matchers = [
       {inTrashField: inTrash}
     ];
@@ -181,6 +181,10 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     if(filterTags!=null) {
       final List tagIds = new List.from(filterTags.map((Tag t) => t.internalId));
       matchers.add({tagsField: {$all: tagIds}});
+    }
+    if(imagesOnly) {
+      matchers.add({videoField: false});
+      matchers.add({mimeField: {$in: MimeTypes.imageTypes}});
     }
 
     return await collectionWrapper<List<Item>>((DbCollection col) async {

@@ -1,7 +1,8 @@
 <auth-status (authedChanged)="onAuthChanged($event)"></auth-status>
 
 <div *ngIf="noItemsFound&&!processing" class="no-items">No Items Found</div>
-<div *ngFor="let i of items" class="item">
+<div class="itemThumbnails">
+<div *ngFor="let i of items" class="item" (drop)="droppedOnItem($event, i.id)" (dragover)="allowDrop($event)">
     <a [routerLink]="['Item', {id: i.id}]" id="link_{{i.id}}">
         <img src="{{getThumbnailFileUrl(i.id)}}" />
     </a>
@@ -12,6 +13,17 @@
             <a href="{{getOriginalFileUrl(i.id)}}" target="_blank" id="original_link_{{i.id}}"><glyph icon="open_in_new"></glyph></a>
         </span>
     </div>
+</div>
+</div>
+<div class="sidebar">
+Label pallet
+
+    <tag-entry style="width: 100%" [(selectedTags)]="palletTags" [showSelectedTags]="false"></tag-entry>
+
+    <material-chips>
+        <material-chip *ngFor="let t of palletTags" (remove)="palletTags.remove(t)" (dragstart)="palletTagDragStart($event,t)" draggable="true" data-tag="{{tagToQueryString(t)}}">{{formatTag(t)}}</material-chip>
+    </material-chips>
+
 </div>
 <div class="footer_buttons">
 <a href="{{currentRssLink}}" target="_blank" ><material-button><glyph icon="ic_rss_feed"></glyph>Latest</material-button></a>

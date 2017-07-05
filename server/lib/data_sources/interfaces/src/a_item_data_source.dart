@@ -11,7 +11,7 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
   Future<IdDataList<Item>> getVisible(String userUuid, {bool inTrash: false});
 
   Future<List<Item>> getVisibleRandom(String userUuid,
-      {List<Tag> filterTags, int perPage: defaultPerRandomPage, bool inTrash: false});
+      {List<Tag> filterTags, int perPage: defaultPerRandomPage, bool inTrash: false, bool imagesOnly: false});
 
   Future<IdDataList<Item>> searchVisible(String userUuid, String query,
       {bool inTrash: false});

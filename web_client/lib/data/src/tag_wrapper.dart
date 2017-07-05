@@ -12,7 +12,7 @@ class TagWrapper {
     }
     final Tag output = new Tag();
     output.id = this.id;
-    output.category == this.category;
+    output.category = this.category;
     return output;
   }
 

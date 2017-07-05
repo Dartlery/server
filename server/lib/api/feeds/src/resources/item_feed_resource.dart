@@ -41,7 +41,7 @@ class ItemFeedResource extends AResource {
       });
 
   @ApiMethod(path: 'items/random/')
-  Future<Feed> getRandomItems({int perPage: defaultPerRandomPage, String tags}) =>
+  Future<Feed> getRandomItems({int perPage: defaultPerRandomPage, String tags, bool imagesOnly: false}) =>
       catchExceptionsAwait<Feed>(() async {
         String title = "Random items";
         TagList tagList;
@@ -51,7 +51,7 @@ class ItemFeedResource extends AResource {
           title = "$title $tagList";
         }
         final List<Item> items = await _itemModel.getRandom(
-            filterTags: tagList?.toList(), perPage: perPage);
+            filterTags: tagList?.toList(), perPage: perPage, imagesOnly: imagesOnly);
         return createItemFeed(items, title);
       });
 

@@ -15,7 +15,7 @@ import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
-
+import '../../controls/tag_entry_component.dart';
 import '../src/a_page.dart';
 
 @Component(
@@ -25,6 +25,7 @@ import '../src/a_page.dart';
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
+      TagEntryComponent
     ],
     styleUrls: const ["../../shared.css", "item_browse.css"],
     templateUrl: 'item_browse.html')
@@ -45,6 +46,8 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   StreamSubscription<PageAction> _pageActionSubscription;
   StreamSubscription<bool> _authChangedSubscription;
   StreamSubscription<KeyboardEvent> _keyboardSubscription;
+
+  List<Tag> palletTags = <Tag>[];
 
   final ItemSearchService _search;
 
@@ -75,6 +78,31 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     await refresh();
   }
 
+  Tag _draggingTag;
+
+  void palletTagDragStart(dynamic event, Tag t) {
+    _draggingTag = t;
+    final String query = tagToQueryString(t);
+    event.dataTransfer.setData("text",query);
+  }
+
+  void droppedOnItem(MouseEvent event, String id) async {
+    String query = event.dataTransfer.getData("text");
+    final TagList tagList = new TagList.fromQueryString(query);
+    TagWrapper tag = tagList.first;
+    event.preventDefault();
+
+    await performApiCall(() async {
+      final TagList tags = new TagList.fromTags(await _api.items.getTagsByItemId(id));
+      tags.add(tag);
+      await _api.items.updateTagsForItemId(tags.toListOfTag(), id);
+    });
+
+  }
+
+  void allowDrop(Event ev) {
+    ev.preventDefault();
+  }
   void itemSelectChanged(bool checked, String id) {
     setActions();
   }

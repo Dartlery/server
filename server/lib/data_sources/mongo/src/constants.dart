@@ -12,6 +12,7 @@ const String $and = r"$and";
 const String $regex = r"$regex";
 const String $options = r"$options";
 const String $all = r"$all";
+const String $in = r"$in";
 const String $each = r"$each";
 
 const String tagsCollection = "tags";
