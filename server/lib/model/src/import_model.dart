@@ -120,16 +120,7 @@ class ImportModel extends AModel {
           _log.info(
               "Importing file #${row.id} (${row.hash}) (${row.ext}) (${row.filename})");
 
-          final File f = new File(
-              path.join(imagePath, filename.substring(0, 2), filename));
-          RandomAccessFile raf;
-          try {
-            raf = await f.open();
-            final int length = await raf.length();
-            newItem.fileData = await raf.read(length);
-          } finally {
-            if (raf != null) await raf.close();
-          }
+          newItem.filePath = path.join(imagePath, filename.substring(0, 2), filename);
 
           final Query tagsQuery = await pool.prepare(
               "SELECT t.* FROM image_tags it INNER JOIN tags t ON t.id = it.tag_id WHERE image_id = ?");
@@ -258,7 +249,8 @@ class ImportModel extends AModel {
               newItem.tags.add(new Tag.withValues(tag));
             }
           }
-          newItem.fileData = await getFileData(entity.path);
+          newItem.filePath = entity.path;
+          //newItem.fileData = await getFileData(entity.path);
           newItem.fileName = path.basename(entity.path);
           newItem.extension = path.extension(entity.path).substring(1);
           await _createItem(newItem, result, mergeExisting);

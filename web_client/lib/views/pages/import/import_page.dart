@@ -21,6 +21,7 @@ import '../src/a_page.dart';
       ErrorOutputComponent
     ],
     styleUrls: const <String>["../../shared.css"],
+    styles: const <String>["table.importResults { user-select: text; } "],
     templateUrl: "import_page.html")
 class ImportPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ImportPage");

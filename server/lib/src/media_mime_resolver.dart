@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:dartlery_shared/global.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
 import "package:hex/hex.dart";
+import 'package:dartlery/tools.dart';
 
 class MediaMimeResolver extends MimeTypeResolver {
   static final Logger _log = new Logger('MediaMimeResolver');
@@ -294,6 +296,11 @@ class MediaMimeResolver extends MimeTypeResolver {
 
     addMagicNumber(<int>[0x00, 0x00, 0x01, 0xB0], MimeTypes.mpeg,
         mask: <int>[0xFF, 0xFF, 0xFF, 0xF0]);
+  }
+
+  Future<String> getMimeTypeForFile(String path) async {
+    final List<int> lookupBytes = await getFileData(path, maxLength:  magicNumbersMaxLength);
+    return getMimeType(lookupBytes);
   }
 
   String getMimeType(List<int> data) {

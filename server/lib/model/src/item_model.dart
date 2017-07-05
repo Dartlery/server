@@ -447,7 +447,7 @@ class ItemModel extends AIdBasedModel<Item> {
     await super.validateFields(item, fieldErrors);
 
     if (isNullOrWhitespace(existingId)) {
-      if (item.fileData == null || item.fileData.length == 0) {
+      if ((item.fileData == null || item.fileData.length == 0)&&isNullOrWhitespace(item.filePath)) {
         fieldErrors["file"] = "Required";
       }
     }
@@ -496,10 +496,8 @@ class ItemModel extends AIdBasedModel<Item> {
   Future<List<FileSystemEntity>> processItem(Item item) async {
     final List<FileSystemEntity> filesWritten = <FileSystemEntity>[];
 
-    final List<int> data = item.fileData;
-
     _log.fine("Getting MIME type");
-    final String mime = mediaMimeResolver.getMimeType(data);
+    final String mime = await item.calculateMimeType();
 
     if (isNullOrWhitespace(mime)) {
       throw new InvalidInputException("Mime type of file is unknown");
@@ -511,7 +509,7 @@ class ItemModel extends AIdBasedModel<Item> {
 
     final String originalFile = getOriginalFilePathForHash(item.id);
 
-    filesWritten.add(await _writeBytes(originalFile, item.fileData));
+    filesWritten.add(await item.writeFileData(originalFile));
 
     Image originalImage;
     if (MimeTypes.imageTypes.contains(mime)) {
@@ -520,7 +518,7 @@ class ItemModel extends AIdBasedModel<Item> {
         _log.fine("Is animatable image MIME type");
         try {
           _log.fine("Decoding animation");
-          final Animation anim = decodeAnimation(data);
+          final Animation anim = decodeAnimation(await item.getFileDataSafely());
           _log.fine("Animation decoded");
           if (anim.length > 1) {
             _log.fine("Has more than one frame, marking as video");
@@ -535,11 +533,11 @@ class ItemModel extends AIdBasedModel<Item> {
         } catch (e, st) {
           // Not an animation
           _log.fine("Not an animation!", e, st);
-          originalImage = decodeImage(item.fileData);
+          originalImage = decodeImage(await item.getFileDataSafely());
         }
       } else {
         _log.fine("Decoding image");
-        originalImage = decodeImage(item.fileData);
+        originalImage = decodeImage(await item.getFileDataSafely());
         _log.fine("image decoded");
       }
       if (mime == MimeTypes.jpeg || mime == MimeTypes.tiff) {
@@ -606,11 +604,15 @@ class ItemModel extends AIdBasedModel<Item> {
 
   Future<Null> _handleFileUpload(Item item) async {
     _log.fine("_handleFileUpload start");
-    item.length = item.fileData.length;
 
-    final List<int> data = item.fileData;
+    if(item.fileData==null) {
+      if(isNullOrWhitespace(item.filePath))
+        throw new Exception(("No file data or file path specified"));
+    }
+
+
     _log.fine("Generating file hash...");
-    item.id = generateHash(data);
+    item.id = await item.calculateHash();
 
     if (isNullOrWhitespace(item.id))
       throw new Exception("No hash generated for file data");
@@ -620,6 +622,8 @@ class ItemModel extends AIdBasedModel<Item> {
     _log.fine("Checking if item already exists");
     if (await itemDataSource.existsById(item.id))
       throw new DuplicateItemException("Item ${item.id} already imported");
+
+    item.length = await item.getDataLength();
 
     final List<FileSystemEntity> filesWritten = <FileSystemEntity>[];
 
@@ -654,6 +658,8 @@ class ItemModel extends AIdBasedModel<Item> {
     }
     return encodeJpg(thumbnail, quality: 90);
   }
+
+
 
   Future<File> _writeBytes(String path, List<int> bytes,
       {bool deleteExisting: false}) async {
