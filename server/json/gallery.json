@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "6c5deed1bcd38b9f30db50712514924f5e8931af",
+ "etag": "b247d5b1e4768a042764c677dfa3f2def432067d",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -392,6 +392,9 @@
      "type": "boolean"
     },
     "interpretShimmieNames": {
+     "type": "boolean"
+    },
+    "mergeExisting": {
      "type": "boolean"
     }
    }

@@ -45,7 +45,7 @@ class ImportModel extends AModel {
   }
 
   Future<DateTime> enqueueImportFromPath(String path,
-      {bool interpretShimmieNames: false, bool stopOnError: false}) async {
+      {bool interpretShimmieNames: false, bool stopOnError: false, bool mergeExisting: false}) async {
     await validateUpdatePrivilegeRequirement();
 
     if(isNullOrWhitespace(path)) {
@@ -62,6 +62,7 @@ class ImportModel extends AModel {
     data["interpretShimmieNames"] = interpretShimmieNames;
     data["stopOnError"] = stopOnError;
     data["batchTimestamp"] = batchTimestamp;
+    data["mergeExisting"] = mergeExisting;
     await _backgroundQueueDataSource
         .addToQueue(ImportPathExtension.pluginIdStatic, data, priority: 10);
     return batchTimestamp;
@@ -76,17 +77,18 @@ class ImportModel extends AModel {
   Future<Null> importFromPath(String path,
       {bool interpretShimmieNames: false,
       bool stopOnError: false,
-      DateTime overrideBatchTimestamp}) async {
+      DateTime overrideBatchTimestamp,
+      mergeExisting: false}) async {
     final TagList tagList = new TagList();
     final DateTime batchTimestamp =
         overrideBatchTimestamp ?? new DateTime.now();
 
     await _importFromFolderRecursive(batchTimestamp, new Directory(path),
-        tagList, interpretShimmieNames, stopOnError);
+        tagList, interpretShimmieNames, stopOnError, mergeExisting);
   }
 
   Future<Null> importFromShimmie(String imagePath, String mysqlHost, String mysqlUser, String mysqlPassword, String mysqlDb,
-      {int startAt: -1, bool stopOnError: false, bool interpretTagCategories: true}) async {
+      {int startAt: -1, bool stopOnError: false, bool interpretTagCategories: true, bool mergeExisting: true}) async {
     final ConnectionPool pool = new ConnectionPool(
         host: mysqlHost,
         user: mysqlUser,
@@ -166,7 +168,7 @@ class ImportModel extends AModel {
           }
           _log.info(newItem.tags);
 
-          await _createItem(newItem, result);
+          await _createItem(newItem, result, mergeExisting);
         } catch (e, st) {
           _log.severe(e, st);
           result.result = "error";
@@ -194,22 +196,28 @@ class ImportModel extends AModel {
     return output;
   }
 
-  Future<Null> _createItem(Item newItem, ImportResult result) async {
+  Future<Null> _createItem(Item newItem, ImportResult result, bool mergeExisting) async {
     try {
       await itemModel.create(newItem, bypassAuthentication: true);
       result.id = newItem.id;
       _log.info("Imported new file ${result.id}");
       result.result = "added";
     } on DuplicateItemException catch (e, st) {
-      _log.info("Item already exists, merging");
-      final TagList newTags = new TagList.from(newItem.tags);
-      final Item existingItem = await itemModel.getById(newItem.id);
-      result.id = existingItem.id;
-      final TagList existingTags = new TagList.from(existingItem.tags);
-      existingTags.addAll(newTags);
-      await itemModel.updateTags(existingItem.id, existingTags.toList(),
-          bypassAuthentication: true);
-      result.result = "merged";
+      if(mergeExisting) {
+        _log.info("Item already exists, merging");
+        final TagList newTags = new TagList.from(newItem.tags);
+        final Item existingItem = await itemModel.getById(newItem.id);
+        result.id = existingItem.id;
+        final TagList existingTags = new TagList.from(existingItem.tags);
+        existingTags.addAll(newTags);
+        await itemModel.updateTags(existingItem.id, existingTags.toList(),
+            bypassAuthentication: true);
+        result.result = "merged";
+      } else {
+        _log.info("Item already exists, skipping");
+        result.id = newItem.id;
+        result.result = "skipped";
+      }
     } catch (e, st) {
       result.id = newItem.id;
       rethrow;
@@ -221,7 +229,8 @@ class ImportModel extends AModel {
       Directory currentDirectory,
       TagList parentTags,
       bool interpretShimmieNames,
-      bool stopOnError) async {
+      bool stopOnError,
+      bool mergeExisting) async {
     for (FileSystemEntity entity in currentDirectory.listSync()) {
       if (entity is Directory) {
         final TagList newTagList = new TagList.from(parentTags);
@@ -230,7 +239,7 @@ class ImportModel extends AModel {
           newTagList.add(new Tag.withValues(tagString));
         }
         await _importFromFolderRecursive(batchTimestamp, entity, newTagList,
-            interpretShimmieNames, stopOnError);
+            interpretShimmieNames, stopOnError, mergeExisting);
       } else if (entity is File) {
         final ImportResult result = new ImportResult();
         result.source = "folder";
@@ -252,7 +261,7 @@ class ImportModel extends AModel {
           newItem.fileData = await getFileData(entity.path);
           newItem.fileName = path.basename(entity.path);
           newItem.extension = path.extension(entity.path).substring(1);
-          await _createItem(newItem, result);
+          await _createItem(newItem, result, mergeExisting);
           _log.info("Imported file ${entity.path}");
         } catch (e, st) {
           _log.severe(e, st);

@@ -35,7 +35,8 @@ class ImportResource extends AResource {
         return new StringResponse((await _importModel.enqueueImportFromPath(
                 request.path,
                 interpretShimmieNames: request.interpretShimmieNames,
-                stopOnError: request.stopOnError))
+                stopOnError: request.stopOnError,
+                mergeExisting: request.mergeExisting))
             .toString());
       });
 

@@ -23,7 +23,8 @@ class ImportPathExtension extends AExtension {
       await _importModel.importFromPath(data["path"],
           stopOnError: data["stopOnError"],
           interpretShimmieNames: data["interpretShimmieNames"],
-          overrideBatchTimestamp: data["batchTimestamp"]);
+          overrideBatchTimestamp: data["batchTimestamp"],
+          mergeExisting: data["mergeExisting"]);
     } catch (e, st) {
       _log.severe(e, st);
     } finally {}

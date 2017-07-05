@@ -7,7 +7,7 @@ import "dart:convert" as convert;
 
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart' as http_testing;
-import 'package:unittest/unittest.dart' as unittest;
+import 'package:test/test.dart' as unittest;
 
 import 'package:api_client/gallery/v0_1.dart' as api;
 
@@ -46,7 +46,7 @@ class HttpServerMock extends http.BaseClient {
 }
 
 http.StreamedResponse stringResponse(
-    core.int status, core.Map headers, core.String body) {
+    core.int status, core.Map<core.String, core.String> headers, core.String body) {
   var stream = new async.Stream.fromIterable([convert.UTF8.encode(body)]);
   return new http.StreamedResponse(stream, status, headers: headers);
 }
@@ -160,6 +160,7 @@ buildImportPathRequest() {
   buildCounterImportPathRequest++;
   if (buildCounterImportPathRequest < 3) {
     o.interpretShimmieNames = true;
+    o.mergeExisting = true;
     o.path = "foo";
     o.stopOnError = true;
   }
@@ -171,6 +172,7 @@ checkImportPathRequest(api.ImportPathRequest o) {
   buildCounterImportPathRequest++;
   if (buildCounterImportPathRequest < 3) {
     unittest.expect(o.interpretShimmieNames, unittest.isTrue);
+    unittest.expect(o.mergeExisting, unittest.isTrue);
     unittest.expect(o.path, unittest.equals('foo'));
     unittest.expect(o.stopOnError, unittest.isTrue);
   }
@@ -1053,7 +1055,7 @@ main() {
       var arg_key = "foo";
       var arg_primaryId = "foo";
       var arg_secondaryId = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1117,7 +1119,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.delete(arg_extensionId, arg_key, arg_primaryId, arg_secondaryId).then(unittest.expectAsync((_) {}));
+      res.delete(arg_extensionId, arg_key, arg_primaryId, arg_secondaryId).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--get", () {
@@ -1130,7 +1132,7 @@ main() {
       var arg_orderDescending = true;
       var arg_page = 42;
       var arg_perPage = 42;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1184,7 +1186,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedExtensionDataResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.get(arg_extensionId, arg_key, orderByValues: arg_orderByValues, orderDescending: arg_orderDescending, page: arg_page, perPage: arg_perPage).then(unittest.expectAsync(((api.PaginatedExtensionDataResponse response) {
+      res.get(arg_extensionId, arg_key, orderByValues: arg_orderByValues, orderDescending: arg_orderDescending, page: arg_page, perPage: arg_perPage).then(unittest.expectAsync1(((api.PaginatedExtensionDataResponse response) {
         checkPaginatedExtensionDataResponse(response);
       })));
     });
@@ -1197,7 +1199,7 @@ main() {
       var arg_key = "foo";
       var arg_primaryId = "foo";
       var arg_secondaryId = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1261,7 +1263,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedExtensionDataResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getByPrimaryAndSecondaryId(arg_extensionId, arg_key, arg_primaryId, arg_secondaryId).then(unittest.expectAsync(((api.PaginatedExtensionDataResponse response) {
+      res.getByPrimaryAndSecondaryId(arg_extensionId, arg_key, arg_primaryId, arg_secondaryId).then(unittest.expectAsync1(((api.PaginatedExtensionDataResponse response) {
         checkPaginatedExtensionDataResponse(response);
       })));
     });
@@ -1278,7 +1280,7 @@ main() {
       var arg_orderDescending = true;
       var arg_page = 42;
       var arg_perPage = 42;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1340,7 +1342,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedExtensionDataResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getByPrimaryId(arg_extensionId, arg_key, arg_primaryId, bidirectional: arg_bidirectional, orderByValues: arg_orderByValues, orderDescending: arg_orderDescending, page: arg_page, perPage: arg_perPage).then(unittest.expectAsync(((api.PaginatedExtensionDataResponse response) {
+      res.getByPrimaryId(arg_extensionId, arg_key, arg_primaryId, bidirectional: arg_bidirectional, orderByValues: arg_orderByValues, orderDescending: arg_orderDescending, page: arg_page, perPage: arg_perPage).then(unittest.expectAsync1(((api.PaginatedExtensionDataResponse response) {
         checkPaginatedExtensionDataResponse(response);
       })));
     });
@@ -1354,7 +1356,7 @@ main() {
       var mock = new HttpServerMock();
       api.ImportResourceApi res = new api.GalleryApi(mock).import;
       var arg_everything = true;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1391,7 +1393,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.clearResults(everything: arg_everything).then(unittest.expectAsync((_) {}));
+      res.clearResults(everything: arg_everything).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--getResults", () {
@@ -1400,7 +1402,7 @@ main() {
       api.ImportResourceApi res = new api.GalleryApi(mock).import;
       var arg_page = 42;
       var arg_perPage = 42;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1438,7 +1440,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedImportResultsResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getResults(page: arg_page, perPage: arg_perPage).then(unittest.expectAsync(((api.PaginatedImportResultsResponse response) {
+      res.getResults(page: arg_page, perPage: arg_perPage).then(unittest.expectAsync1(((api.PaginatedImportResultsResponse response) {
         checkPaginatedImportResultsResponse(response);
       })));
     });
@@ -1448,7 +1450,7 @@ main() {
       var mock = new HttpServerMock();
       api.ImportResourceApi res = new api.GalleryApi(mock).import;
       var arg_request = buildImportPathRequest();
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.ImportPathRequest.fromJson(json);
         checkImportPathRequest(obj);
 
@@ -1487,7 +1489,7 @@ main() {
         var resp = convert.JSON.encode(buildStringResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.importFromPath(arg_request).then(unittest.expectAsync(((api.StringResponse response) {
+      res.importFromPath(arg_request).then(unittest.expectAsync1(((api.StringResponse response) {
         checkStringResponse(response);
       })));
     });
@@ -1501,7 +1503,7 @@ main() {
       var mock = new HttpServerMock();
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
       var arg_request = buildCreateItemRequest();
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.CreateItemRequest.fromJson(json);
         checkCreateItemRequest(obj);
 
@@ -1540,7 +1542,7 @@ main() {
         var resp = convert.JSON.encode(buildIdResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.createItem(arg_request).then(unittest.expectAsync(((api.IdResponse response) {
+      res.createItem(arg_request).then(unittest.expectAsync1(((api.IdResponse response) {
         checkIdResponse(response);
       })));
     });
@@ -1550,7 +1552,7 @@ main() {
       var mock = new HttpServerMock();
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1593,7 +1595,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.delete(arg_id).then(unittest.expectAsync((_) {}));
+      res.delete(arg_id).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--getById", () {
@@ -1601,7 +1603,7 @@ main() {
       var mock = new HttpServerMock();
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1644,7 +1646,7 @@ main() {
         var resp = convert.JSON.encode(buildItem());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getById(arg_id).then(unittest.expectAsync(((api.Item response) {
+      res.getById(arg_id).then(unittest.expectAsync1(((api.Item response) {
         checkItem(response);
       })));
     });
@@ -1654,7 +1656,7 @@ main() {
       var mock = new HttpServerMock();
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1697,7 +1699,7 @@ main() {
         var resp = convert.JSON.encode(buildListOfTag());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getTagsByItemId(arg_id).then(unittest.expectAsync(((api.ListOfTag response) {
+      res.getTagsByItemId(arg_id).then(unittest.expectAsync1(((api.ListOfTag response) {
         checkListOfTag(response);
       })));
     });
@@ -1710,7 +1712,7 @@ main() {
       var arg_perPage = 42;
       var arg_cutoffDate = "foo";
       var arg_inTrash = true;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1750,7 +1752,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedItemResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getVisibleIds(page: arg_page, perPage: arg_perPage, cutoffDate: arg_cutoffDate, inTrash: arg_inTrash).then(unittest.expectAsync(((api.PaginatedItemResponse response) {
+      res.getVisibleIds(page: arg_page, perPage: arg_perPage, cutoffDate: arg_cutoffDate, inTrash: arg_inTrash).then(unittest.expectAsync1(((api.PaginatedItemResponse response) {
         checkPaginatedItemResponse(response);
       })));
     });
@@ -1761,7 +1763,7 @@ main() {
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
       var arg_request = buildIdRequest();
       var arg_targetItemId = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.IdRequest.fromJson(json);
         checkIdRequest(obj);
 
@@ -1807,7 +1809,7 @@ main() {
         var resp = convert.JSON.encode(buildItem());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.mergeItems(arg_request, arg_targetItemId).then(unittest.expectAsync(((api.Item response) {
+      res.mergeItems(arg_request, arg_targetItemId).then(unittest.expectAsync1(((api.Item response) {
         checkItem(response);
       })));
     });
@@ -1821,7 +1823,7 @@ main() {
       var arg_perPage = 42;
       var arg_cutoffDate = "foo";
       var arg_inTrash = true;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -1868,7 +1870,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedItemResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.searchVisible(arg_tags, page: arg_page, perPage: arg_perPage, cutoffDate: arg_cutoffDate, inTrash: arg_inTrash).then(unittest.expectAsync(((api.PaginatedItemResponse response) {
+      res.searchVisible(arg_tags, page: arg_page, perPage: arg_perPage, cutoffDate: arg_cutoffDate, inTrash: arg_inTrash).then(unittest.expectAsync1(((api.PaginatedItemResponse response) {
         checkPaginatedItemResponse(response);
       })));
     });
@@ -1879,7 +1881,7 @@ main() {
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
       var arg_request = buildItem();
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.Item.fromJson(json);
         checkItem(obj);
 
@@ -1925,7 +1927,7 @@ main() {
         var resp = convert.JSON.encode(buildIdResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.update(arg_request, arg_id).then(unittest.expectAsync(((api.IdResponse response) {
+      res.update(arg_request, arg_id).then(unittest.expectAsync1(((api.IdResponse response) {
         checkIdResponse(response);
       })));
     });
@@ -1936,7 +1938,7 @@ main() {
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
       var arg_request = buildListOfTag();
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.ListOfTag.fromJson(json);
         checkListOfTag(obj);
 
@@ -1982,7 +1984,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.updateTagsForItemId(arg_request, arg_id).then(unittest.expectAsync((_) {}));
+      res.updateTagsForItemId(arg_request, arg_id).then(unittest.expectAsync1((_) {}));
     });
 
   });
@@ -1994,7 +1996,7 @@ main() {
       var mock = new HttpServerMock();
       api.SetupResourceApi res = new api.GalleryApi(mock).setup;
       var arg_request = buildSetupRequest();
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.SetupRequest.fromJson(json);
         checkSetupRequest(obj);
 
@@ -2033,7 +2035,7 @@ main() {
         var resp = convert.JSON.encode(buildSetupResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.apply(arg_request).then(unittest.expectAsync(((api.SetupResponse response) {
+      res.apply(arg_request).then(unittest.expectAsync1(((api.SetupResponse response) {
         checkSetupResponse(response);
       })));
     });
@@ -2042,7 +2044,7 @@ main() {
 
       var mock = new HttpServerMock();
       api.SetupResourceApi res = new api.GalleryApi(mock).setup;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2078,7 +2080,7 @@ main() {
         var resp = convert.JSON.encode(buildSetupResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.get().then(unittest.expectAsync(((api.SetupResponse response) {
+      res.get().then(unittest.expectAsync1(((api.SetupResponse response) {
         checkSetupResponse(response);
       })));
     });
@@ -2092,7 +2094,7 @@ main() {
       var mock = new HttpServerMock();
       api.TagCategoriesResourceApi res = new api.GalleryApi(mock).tagCategories;
       var arg_request = buildTagCategory();
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.TagCategory.fromJson(json);
         checkTagCategory(obj);
 
@@ -2131,7 +2133,7 @@ main() {
         var resp = convert.JSON.encode(buildIdResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.create(arg_request).then(unittest.expectAsync(((api.IdResponse response) {
+      res.create(arg_request).then(unittest.expectAsync1(((api.IdResponse response) {
         checkIdResponse(response);
       })));
     });
@@ -2141,7 +2143,7 @@ main() {
       var mock = new HttpServerMock();
       api.TagCategoriesResourceApi res = new api.GalleryApi(mock).tagCategories;
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2184,14 +2186,14 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.delete(arg_id).then(unittest.expectAsync((_) {}));
+      res.delete(arg_id).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--getAllIds", () {
 
       var mock = new HttpServerMock();
       api.TagCategoriesResourceApi res = new api.GalleryApi(mock).tagCategories;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2227,7 +2229,7 @@ main() {
         var resp = convert.JSON.encode(buildListOfString());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getAllIds().then(unittest.expectAsync(((api.ListOfString response) {
+      res.getAllIds().then(unittest.expectAsync1(((api.ListOfString response) {
         checkListOfString(response);
       })));
     });
@@ -2237,7 +2239,7 @@ main() {
       var mock = new HttpServerMock();
       api.TagCategoriesResourceApi res = new api.GalleryApi(mock).tagCategories;
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2280,7 +2282,7 @@ main() {
         var resp = convert.JSON.encode(buildTagCategory());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getById(arg_id).then(unittest.expectAsync(((api.TagCategory response) {
+      res.getById(arg_id).then(unittest.expectAsync1(((api.TagCategory response) {
         checkTagCategory(response);
       })));
     });
@@ -2291,7 +2293,7 @@ main() {
       api.TagCategoriesResourceApi res = new api.GalleryApi(mock).tagCategories;
       var arg_request = buildTagCategory();
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.TagCategory.fromJson(json);
         checkTagCategory(obj);
 
@@ -2337,7 +2339,7 @@ main() {
         var resp = convert.JSON.encode(buildIdResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.update(arg_request, arg_id).then(unittest.expectAsync(((api.IdResponse response) {
+      res.update(arg_request, arg_id).then(unittest.expectAsync1(((api.IdResponse response) {
         checkIdResponse(response);
       })));
     });
@@ -2352,7 +2354,7 @@ main() {
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
       var arg_id = "foo";
       var arg_category = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2402,7 +2404,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.clearRedirect(arg_id, arg_category).then(unittest.expectAsync((_) {}));
+      res.clearRedirect(arg_id, arg_category).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--clearRedirectWithoutCategory", () {
@@ -2410,7 +2412,7 @@ main() {
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2453,7 +2455,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.clearRedirectWithoutCategory(arg_id).then(unittest.expectAsync((_) {}));
+      res.clearRedirectWithoutCategory(arg_id).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--delete", () {
@@ -2462,7 +2464,7 @@ main() {
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
       var arg_id = "foo";
       var arg_category = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2512,7 +2514,7 @@ main() {
         var resp = convert.JSON.encode(buildCountResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.delete(arg_id, arg_category).then(unittest.expectAsync(((api.CountResponse response) {
+      res.delete(arg_id, arg_category).then(unittest.expectAsync1(((api.CountResponse response) {
         checkCountResponse(response);
       })));
     });
@@ -2522,7 +2524,7 @@ main() {
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2565,7 +2567,7 @@ main() {
         var resp = convert.JSON.encode(buildCountResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.deleteWithoutCategory(arg_id).then(unittest.expectAsync(((api.CountResponse response) {
+      res.deleteWithoutCategory(arg_id).then(unittest.expectAsync1(((api.CountResponse response) {
         checkCountResponse(response);
       })));
     });
@@ -2577,7 +2579,7 @@ main() {
       var arg_page = 42;
       var arg_perPage = 42;
       var arg_countAsc = true;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2616,7 +2618,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedTagResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getAllTagInfo(page: arg_page, perPage: arg_perPage, countAsc: arg_countAsc).then(unittest.expectAsync(((api.PaginatedTagResponse response) {
+      res.getAllTagInfo(page: arg_page, perPage: arg_perPage, countAsc: arg_countAsc).then(unittest.expectAsync1(((api.PaginatedTagResponse response) {
         checkPaginatedTagResponse(response);
       })));
     });
@@ -2625,7 +2627,7 @@ main() {
 
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2661,7 +2663,7 @@ main() {
         var resp = convert.JSON.encode(buildListOfTagInfo());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getRedirects().then(unittest.expectAsync(((api.ListOfTagInfo response) {
+      res.getRedirects().then(unittest.expectAsync1(((api.ListOfTagInfo response) {
         checkListOfTagInfo(response);
       })));
     });
@@ -2672,7 +2674,7 @@ main() {
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
       var arg_id = "foo";
       var arg_category = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2722,7 +2724,7 @@ main() {
         var resp = convert.JSON.encode(buildTagInfo());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getTagInfo(arg_id, arg_category).then(unittest.expectAsync(((api.TagInfo response) {
+      res.getTagInfo(arg_id, arg_category).then(unittest.expectAsync1(((api.TagInfo response) {
         checkTagInfo(response);
       })));
     });
@@ -2732,7 +2734,7 @@ main() {
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
       var arg_id = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2775,7 +2777,7 @@ main() {
         var resp = convert.JSON.encode(buildTagInfo());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getTagInfoWithoutCategory(arg_id).then(unittest.expectAsync(((api.TagInfo response) {
+      res.getTagInfoWithoutCategory(arg_id).then(unittest.expectAsync1(((api.TagInfo response) {
         checkTagInfo(response);
       })));
     });
@@ -2785,7 +2787,7 @@ main() {
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
       var arg_request = buildReplaceTagsRequest();
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.ReplaceTagsRequest.fromJson(json);
         checkReplaceTagsRequest(obj);
 
@@ -2824,7 +2826,7 @@ main() {
         var resp = convert.JSON.encode(buildCountResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.replace(arg_request).then(unittest.expectAsync(((api.CountResponse response) {
+      res.replace(arg_request).then(unittest.expectAsync1(((api.CountResponse response) {
         checkCountResponse(response);
       })));
     });
@@ -2833,7 +2835,7 @@ main() {
 
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2869,7 +2871,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.resetTagInfo().then(unittest.expectAsync((_) {}));
+      res.resetTagInfo().then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--search", () {
@@ -2880,7 +2882,7 @@ main() {
       var arg_page = 42;
       var arg_perPage = 42;
       var arg_countAsc = true;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -2922,7 +2924,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedTagResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.search(arg_query, page: arg_page, perPage: arg_perPage, countAsc: arg_countAsc).then(unittest.expectAsync(((api.PaginatedTagResponse response) {
+      res.search(arg_query, page: arg_page, perPage: arg_perPage, countAsc: arg_countAsc).then(unittest.expectAsync1(((api.PaginatedTagResponse response) {
         checkPaginatedTagResponse(response);
       })));
     });
@@ -2932,7 +2934,7 @@ main() {
       var mock = new HttpServerMock();
       api.TagsResourceApi res = new api.GalleryApi(mock).tags;
       var arg_request = buildTagInfo();
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.TagInfo.fromJson(json);
         checkTagInfo(obj);
 
@@ -2971,7 +2973,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.setRedirect(arg_request).then(unittest.expectAsync((_) {}));
+      res.setRedirect(arg_request).then(unittest.expectAsync1((_) {}));
     });
 
   });
@@ -2984,7 +2986,7 @@ main() {
       api.UsersResourceApi res = new api.GalleryApi(mock).users;
       var arg_request = buildPasswordChangeRequest();
       var arg_uuid = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.PasswordChangeRequest.fromJson(json);
         checkPasswordChangeRequest(obj);
 
@@ -3030,7 +3032,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.changePassword(arg_request, arg_uuid).then(unittest.expectAsync((_) {}));
+      res.changePassword(arg_request, arg_uuid).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--create", () {
@@ -3038,7 +3040,7 @@ main() {
       var mock = new HttpServerMock();
       api.UsersResourceApi res = new api.GalleryApi(mock).users;
       var arg_request = buildUser();
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.User.fromJson(json);
         checkUser(obj);
 
@@ -3077,7 +3079,7 @@ main() {
         var resp = convert.JSON.encode(buildIdResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.create(arg_request).then(unittest.expectAsync(((api.IdResponse response) {
+      res.create(arg_request).then(unittest.expectAsync1(((api.IdResponse response) {
         checkIdResponse(response);
       })));
     });
@@ -3087,7 +3089,7 @@ main() {
       var mock = new HttpServerMock();
       api.UsersResourceApi res = new api.GalleryApi(mock).users;
       var arg_uuid = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -3130,7 +3132,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.delete(arg_uuid).then(unittest.expectAsync((_) {}));
+      res.delete(arg_uuid).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--getById", () {
@@ -3138,7 +3140,7 @@ main() {
       var mock = new HttpServerMock();
       api.UsersResourceApi res = new api.GalleryApi(mock).users;
       var arg_uuid = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -3181,7 +3183,7 @@ main() {
         var resp = convert.JSON.encode(buildUser());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getById(arg_uuid).then(unittest.expectAsync(((api.User response) {
+      res.getById(arg_uuid).then(unittest.expectAsync1(((api.User response) {
         checkUser(response);
       })));
     });
@@ -3190,7 +3192,7 @@ main() {
 
       var mock = new HttpServerMock();
       api.UsersResourceApi res = new api.GalleryApi(mock).users;
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
         var index;
@@ -3226,7 +3228,7 @@ main() {
         var resp = convert.JSON.encode(buildUser());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.getMe().then(unittest.expectAsync(((api.User response) {
+      res.getMe().then(unittest.expectAsync1(((api.User response) {
         checkUser(response);
       })));
     });
@@ -3237,7 +3239,7 @@ main() {
       api.UsersResourceApi res = new api.GalleryApi(mock).users;
       var arg_request = buildUser();
       var arg_uuid = "foo";
-      mock.register(unittest.expectAsync((http.BaseRequest req, json) {
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var obj = new api.User.fromJson(json);
         checkUser(obj);
 
@@ -3283,7 +3285,7 @@ main() {
         var resp = convert.JSON.encode(buildIdResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.update(arg_request, arg_uuid).then(unittest.expectAsync(((api.IdResponse response) {
+      res.update(arg_request, arg_uuid).then(unittest.expectAsync1(((api.IdResponse response) {
         checkIdResponse(response);
       })));
     });
