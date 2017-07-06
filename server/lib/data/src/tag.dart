@@ -17,6 +17,15 @@ class Tag extends AIdData {
 
   Tag.withValues(String name, [this.category]) : super.withValues(name);
 
+  static Tag parse(String tagString) {
+    if(tagString.contains(";")) {
+      final List<String> parts = tagString.split(categoryDeliminator);
+      return new Tag.withValues(parts.sublist(1).join(categoryDeliminator).trim(),parts[0].trim());
+    } else {
+     return new Tag.withValues(tagString);
+    }
+  }
+
   String get fullName => formatTag(id, category);
 
   static String formatTag(String id, [String category]) {

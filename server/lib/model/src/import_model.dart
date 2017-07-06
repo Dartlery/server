@@ -26,7 +26,7 @@ class ImportModel extends AModel {
 
   final RegExp shimmieFileRegexp = new RegExp(r"^\d+ \- (.+)$");
 
-  final RegExp tagSplitterRegExp = new RegExp(r'[\""].+?[\""]|[^ ]+');
+  final RegExp tagSplitterRegExp = new RegExp("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
 
   ImportModel(
       this.itemModel,
@@ -181,8 +181,14 @@ class ImportModel extends AModel {
   List<String> _breakDownTagString(String input) {
     final List<String> output = <String>[];
     for (Match m in tagSplitterRegExp.allMatches(input)) {
-      if (isNullOrWhitespace(m.group(0))) continue;
-      output.add(m.group(0));
+      if (isNotNullOrWhitespace(m.group(1))) {
+        output.add(m.group(1));
+      } else if (isNotNullOrWhitespace(m.group(2))){
+        output.add(m.group(2));
+      } else {
+        output.add(m.group(0));
+      }
+
     }
     return output;
   }
@@ -221,17 +227,29 @@ class ImportModel extends AModel {
       TagList parentTags,
       bool interpretShimmieNames,
       bool stopOnError,
-      bool mergeExisting) async {
+      bool mergeExisting,
+      {String autoCategory}) async {
     await for (FileSystemEntity entity in currentDirectory.list()) {
 
       if (entity is Directory) {
         final TagList newTagList = new TagList.from(parentTags);
         final String dirName = path.basename(entity.path);
+
+        String newAutoCategory;
         for (String tagString in _breakDownTagString(dirName)) {
-          newTagList.add(new Tag.withValues(tagString));
+          final Tag newTag = Tag.parse(tagString);
+          if(isNullOrWhitespace(newTag.id)) {
+            newAutoCategory = newTag.category;
+            continue;
+          }
+          if(isNotNullOrWhitespace(autoCategory)&&isNullOrWhitespace(newTag.category)) {
+            newTag.category = autoCategory;
+          }
+          newTagList.add(newTag);
         }
+
         await _importFromFolderRecursive(batchTimestamp, entity, newTagList,
-            interpretShimmieNames, stopOnError, mergeExisting);
+            interpretShimmieNames, stopOnError, mergeExisting, autoCategory:  newAutoCategory);
       } else if (entity is File) {
         final ImportResult result = new ImportResult();
         result.source = "folder";
