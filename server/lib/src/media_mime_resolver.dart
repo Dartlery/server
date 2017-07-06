@@ -9,6 +9,9 @@ class MediaMimeResolver extends MimeTypeResolver {
   static final Logger _log = new Logger('MediaMimeResolver');
 
   MediaMimeResolver() : super() {
+    //384250530001000000000000000300000708000004b00008
+    addMagicNumber(<int>[0x38, 0x42, 0x50, 0x53], MimeTypes.psd);
+
     //addMagicNumber(<int>[0x1A, 0x45, 0xDF, 0xA3, 0x93, 0x42, 0x82, 0x88,
     //              0x6D, 0x61, 0x74, 0x72, 0x6F, 0x73, 0x6B, 0x61], MimeTypes.mkv);
 

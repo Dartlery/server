@@ -86,7 +86,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     event.dataTransfer.setData("text",query);
   }
 
-  void droppedOnItem(MouseEvent event, String id) async {
+  Future droppedOnItem(MouseEvent event, String id) async {
     String query = event.dataTransfer.getData("text");
     final TagList tagList = new TagList.fromQueryString(query);
     TagWrapper tag = tagList.first;

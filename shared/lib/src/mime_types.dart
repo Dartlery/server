@@ -58,6 +58,12 @@ class MimeTypes {
     openExr
   ];
 
+  static const List<String> losslessTypes = const <String>[
+    png,
+    tiff,
+    psd
+  ];
+
   static const List<String> webFriendlyTypes = const <String>[
     jpeg,
     gif,
