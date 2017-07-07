@@ -18,6 +18,7 @@ class Item extends AIdData {
   List<int> fileData;
   String fileName;
   String downloadName;
+  @ApiProperty(format:  "uint64")
   int length;
   int height;
   int width;
