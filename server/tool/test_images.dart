@@ -49,7 +49,6 @@ Future<Null> main(List<String> args) async {
       }
     } catch (e,st) {
       _log.severe(e,st);
-      break;
     }
   }
 }
