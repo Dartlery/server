@@ -8,6 +8,7 @@ import 'package:image/image.dart';
 
 Future<Null> main(List<String> args) async {
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
+  Logger.root.onRecord.listen(new server_logging.SyncFileLoggingHandler("~/image_test.log"));
   final Logger _log = new Logger("test_images.main()");
 
   final Directory dir = new Directory("files/original");
