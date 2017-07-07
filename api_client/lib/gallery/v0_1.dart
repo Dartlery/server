@@ -2041,7 +2041,7 @@ class Item {
   core.bool fullFileAvailable;
   core.int height;
   core.String id;
-  core.int length;
+  core.String length;
   core.Map<core.String, core.String> metadata;
   core.String mime;
   core.String source;

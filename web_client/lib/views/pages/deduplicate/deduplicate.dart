@@ -54,6 +54,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   RouteParams _params;
   StreamSubscription<PageAction> _pageActionSubscription;
   String filterItemId;
+
   final NumberFormat f = new NumberFormat.decimalPattern();
 
   bool animatedComparison = true;
@@ -106,12 +107,15 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   @ViewChild("leftImage")
   html.ImageElement get leftImage => html.document.getElementById("leftImage");
 
+  int get firstLength => int.parse(firstComparisonItem?.length ?? "0");
+  int get secondLength=> int.parse(secondComparisonItem?.length ?? "0");
+
   int get lengthWinner {
-    if ((firstComparisonItem?.length ?? 0) >
-        (secondComparisonItem?.length ?? 0)) {
+    if (firstLength >
+        secondLength) {
       return 0;
-    } else if ((firstComparisonItem?.length ?? 0) <
-        (secondComparisonItem?.length ?? 0)) {
+    } else if (firstLength <
+        secondLength) {
       return 1;
     }
     return -1;

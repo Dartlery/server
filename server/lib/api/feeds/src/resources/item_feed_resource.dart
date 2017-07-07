@@ -89,6 +89,7 @@ class ItemFeedResource extends AResource {
           thumbnailFileFolderName,
           i.id.substring(0, fileHashPrefixLength),
           i.id);
+      fItem.title = i.downloadName;
       fItem.image = imageUrl;
       fItem.url = imageUrl;
       fItem.datePublished = i.uploaded;

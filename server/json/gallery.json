@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "b247d5b1e4768a042764c677dfa3f2def432067d",
+ "etag": "8d6fc6a6702bd7ef9ead6c901762ffdb0bed3f57",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -47,8 +47,8 @@
      "type": "string"
     },
     "length": {
-     "type": "integer",
-     "format": "int32"
+     "type": "string",
+     "format": "uint64"
     },
     "height": {
      "type": "integer",

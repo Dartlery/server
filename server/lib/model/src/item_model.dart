@@ -45,6 +45,12 @@ class ItemModel extends AIdBasedModel<Item> {
 
   DateFormat downloadNameDateFormat = new DateFormat('yMdHms');
 
+  Future<Null> adjustAll(Iterable<Item> items) async {
+    for(Item i in items) {
+      await performAdjustments(i);
+    }
+  }
+
   @override
   Future<Null> performAdjustments(Item t) async {
     final StringBuffer downloadName = new StringBuffer();
@@ -55,6 +61,7 @@ class ItemModel extends AIdBasedModel<Item> {
     downloadName.write(t.uploaded.minute.toString().padLeft(2, '0'));
     downloadName.write(t.uploaded.second.toString().padLeft(2, '0'));
     downloadName.write(t.uploaded.millisecond.toString().padLeft(3, '0'));
+
     downloadName.write(" - ");
     downloadName.write(t.tags.join(" ").replaceAll(":", ","));
 
@@ -320,8 +327,12 @@ class ItemModel extends AIdBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetAllPrivileges();
-    return await dataSource.getVisiblePaginated(this.currentUserId,
+    final PaginatedData<Item> output =await dataSource.getVisiblePaginated(this.currentUserId,
         page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: inTrash);
+
+    await adjustAll(output.data);
+
+    return output;
   }
 
   Future<PaginatedIdData<Item>> getInTrash(
@@ -333,8 +344,13 @@ class ItemModel extends AIdBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetPrivileges();
-    return await dataSource.getVisiblePaginated(this.currentUserId,
+
+
+    final PaginatedData<Item> output =await dataSource.getVisiblePaginated(this.currentUserId,
         page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: true);
+    await adjustAll(output.data);
+
+    return output;
   }
 
 
@@ -369,7 +385,9 @@ class ItemModel extends AIdBasedModel<Item> {
       await tagDataSource.incrementTagCount(diff.both, -1);
     }
 
-    return (await itemDataSource.getById(targetItemId)).first;
+    final Item output =(await itemDataSource.getById(targetItemId)).first;
+    await performAdjustments(output);
+    return output;
   }
 
   Future<List<Item>> getRandom(
@@ -380,8 +398,11 @@ class ItemModel extends AIdBasedModel<Item> {
       filterTags = await _tagModel.handleTags(filterTags);
     }
 
-    return itemDataSource.getVisibleRandom(this.currentUserId,
+    final List<Item> output =await  itemDataSource.getVisibleRandom(this.currentUserId,
         perPage: perPage, filterTags: filterTags, imagesOnly: imagesOnly);
+
+    await adjustAll(output);
+    return output;
   }
 
   Future<PaginatedIdData<Item>> searchVisible(List<Tag> tags,
@@ -396,8 +417,12 @@ class ItemModel extends AIdBasedModel<Item> {
 
     await _tagModel.handleTags(tags);
 
-    return await dataSource.searchVisiblePaginated(this.currentUserId, tags,
+
+    final PaginatedData<Item> output =await dataSource.searchVisiblePaginated(this.currentUserId, tags,
         page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: inTrash);
+    await adjustAll(output.data);
+
+    return output;
   }
 
   @override

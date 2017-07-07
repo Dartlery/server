@@ -39,13 +39,13 @@
             </span>
                 <br/>
                 <span *ngIf="lengthWinner==0" class="win">
-                {{f.format(firstComparisonItem?.length??0)}} bytes
+                {{f.format(firstLength)}} bytes
             </span>
                 <span *ngIf="lengthWinner==-1" class="tie">
-                {{f.format(firstComparisonItem?.length??0)}} bytes
+                {{f.format(firstLength)}} bytes
             </span>
                 <span *ngIf="lengthWinner==1" class="lose">
-                {{f.format(firstComparisonItem?.length??0)}} bytes
+                {{f.format(firstLength)}} bytes
             </span>
                 <br/>
             </td>
@@ -71,13 +71,13 @@
             </span>
                 <br/>
                 <span *ngIf="lengthWinner==1" class="win">
-                {{f.format(secondComparisonItem?.length??0)}} bytes
+                {{f.format(secondLength)}} bytes
             </span>
                 <span *ngIf="lengthWinner==-1" class="tie">
-                {{f.format(secondComparisonItem?.length??0)}} bytes
+                {{f.format(secondLength)}} bytes
             </span>
                 <span *ngIf="lengthWinner==0" class="lose">
-                {{f.format(secondComparisonItem?.length??0)}} bytescd
+                {{f.format(secondLength)}} bytes
             </span>
             </td>
             <td style="width: 40px;">
@@ -88,9 +88,11 @@
     </div>
 
     <div style="position: absolute;left:0;top:0;">
+        <b>{{firstComparisonItem.mime}}<br/></b>
         <b *ngFor="let t of firstComparisonItem.tags">{{formatTag(t)}}<br/></b>
     </div>
     <div style="position: absolute;right:0;top:0;text-align:right;">
+        <b>{{secondComparisonItem.mime}}<br/></b>
         <b *ngFor="let t of secondComparisonItem.tags">{{formatTag(t)}}<br/></b>
     </div>
 </div>

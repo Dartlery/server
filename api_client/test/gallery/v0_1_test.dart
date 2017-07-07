@@ -279,7 +279,7 @@ buildItem() {
     o.fullFileAvailable = true;
     o.height = 42;
     o.id = "foo";
-    o.length = 42;
+    o.length = "foo";
     o.metadata = buildUnnamed2();
     o.mime = "foo";
     o.source = "foo";
@@ -306,7 +306,7 @@ checkItem(api.Item o) {
     unittest.expect(o.fullFileAvailable, unittest.isTrue);
     unittest.expect(o.height, unittest.equals(42));
     unittest.expect(o.id, unittest.equals('foo'));
-    unittest.expect(o.length, unittest.equals(42));
+    unittest.expect(o.length, unittest.equals('foo'));
     checkUnnamed2(o.metadata);
     unittest.expect(o.mime, unittest.equals('foo'));
     unittest.expect(o.source, unittest.equals('foo'));
