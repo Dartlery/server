@@ -302,7 +302,8 @@ class MediaMimeResolver extends MimeTypeResolver {
   }
 
   Future<String> getMimeTypeForFile(String path) async {
-    final List<int> lookupBytes = await getFileData(path, maxLength:  magicNumbersMaxLength);
+    final List<int> lookupBytes =
+        await getFileData(path, maxLength: magicNumbersMaxLength);
     return getMimeType(lookupBytes);
   }
 

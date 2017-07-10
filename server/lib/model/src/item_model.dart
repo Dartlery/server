@@ -11,7 +11,7 @@ import 'package:dartlery/tools.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:exif/exif.dart';
-import 'package:image/image.dart';
+import 'package:image/image.dart' as image;
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:path/path.dart' as path;
@@ -495,7 +495,7 @@ class ItemModel extends AIdBasedModel<Item> {
     }
   }
 
-  Future<File> _createAndSaveThumbnail(Image image, String hash) async {
+  Future<File> _createAndSaveThumbnail(image.Image image, String hash) async {
     _log.fine("_createAndSaveThumbnail start");
     final List<int> thumbnailData = await _resizeImage(image);
 
@@ -540,20 +540,20 @@ class ItemModel extends AIdBasedModel<Item> {
 
     filesWritten.add(await item.writeFileData(originalFile));
 
-    Image originalImage;
+    image.Image originalImage;
     if (MimeTypes.imageTypes.contains(mime)) {
       _log.fine("Is image MIME type");
       if (MimeTypes.animatableImageTypes.contains(mime)) {
         _log.fine("Is animatable image MIME type");
         try {
           _log.fine("Decoding animation");
-          final Animation anim = decodeAnimation(await item.getFileDataSafely());
+          final image.Animation anim = image.decodeAnimation(await item.getFileDataSafely());
           _log.fine("Animation decoded");
           if (anim.length > 1) {
             _log.fine("Has more than one frame, marking as video");
             item.video = true;
             item.duration = 0;
-            for (Image i in anim) {
+            for (image.Image i in anim) {
               item.duration += i.duration;
             }
             _log.fine("Duration: ${item.duration}");
@@ -562,11 +562,11 @@ class ItemModel extends AIdBasedModel<Item> {
         } catch (e, st) {
           // Not an animation
           _log.fine("Not an animation!", e, st);
-          originalImage = decodeImage(await item.getFileDataSafely());
+          originalImage = await decodeImage(item);
         }
       } else {
         _log.fine("Decoding image");
-        originalImage = decodeImage(await item.getFileDataSafely());
+        originalImage = await decodeImage(item);
         _log.fine("image decoded");
       }
       if (mime == MimeTypes.jpeg || mime == MimeTypes.tiff) {
@@ -587,7 +587,7 @@ class ItemModel extends AIdBasedModel<Item> {
       try {
         _log.fine("Is video mime type");
         item.video = true;
-        originalImage = decodePng(await generateFfmpegThumbnail(originalFile));
+        originalImage = image.decodePng(await generateFfmpegThumbnail(originalFile));
         await getFfprobeData(item, originalFile);
       } catch (e, st) {
         if (mime == MimeTypes.swf) {
@@ -613,7 +613,7 @@ class ItemModel extends AIdBasedModel<Item> {
         _log.fine(
             "Non-web-friendly MIME type, generating full-size image for display");
         filesWritten.add(await _writeBytes(getFullFilePathForHash(item.id),
-            encodeJpg(originalImage, quality: 90),
+            image.encodeJpg(originalImage, quality: 90),
             deleteExisting: true));
         _log.fine("Full-size image generated");
         item.fullFileAvailable = true;
@@ -629,6 +629,20 @@ class ItemModel extends AIdBasedModel<Item> {
     }
 
     return filesWritten;
+  }
+
+  Future<image.Image> decodeImage(Item item) async {
+    // Some images fool the image library's method for identifying image types,
+    // so we manually help it out with the two formats know to have issues.
+    final List<int> fileData = await item.getFileDataSafely();
+    switch(item.mime) {
+      case MimeTypes.png:
+        return image.decodePng(fileData);
+      case MimeTypes.gif:
+        return image.decodeGif(fileData);
+      default:
+        return image.decodeImage(fileData);
+    }
   }
 
   Future<Null> _handleFileUpload(Item item) async {
@@ -676,16 +690,16 @@ class ItemModel extends AIdBasedModel<Item> {
     }
   }
 
-  Future<List<int>> _resizeImage(Image image, {int maxDimension: 300}) async {
-    Image thumbnail;
-    if (image.width < image.height) {
-      thumbnail = copyResize(image, maxDimension, -1, AVERAGE);
+  Future<List<int>> _resizeImage(image.Image img, {int maxDimension: 300}) async {
+    image.Image thumbnail;
+    if (img.width < img.height) {
+      thumbnail = image.copyResize(img, maxDimension, -1, image.AVERAGE);
     } else {
-      final double newWidth = image.width * (maxDimension / image.height);
+      final double newWidth = img.width * (maxDimension / img.height);
 
-      thumbnail = copyResize(image, newWidth.floor(), maxDimension, AVERAGE);
+      thumbnail = image.copyResize(img, newWidth.floor(), maxDimension, image.AVERAGE);
     }
-    return encodeJpg(thumbnail, quality: 90);
+    return image.encodeJpg(thumbnail, quality: 90);
   }
 
 
