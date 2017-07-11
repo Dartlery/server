@@ -21,6 +21,7 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
   static const String primaryIdField = "primaryId";
   static const String secondaryIdField = "secondaryId";
   static const String valueField = "value";
+  static const String inTrashField = "inTrash";
 
   MongoExtensionDataSource(MongoDbConnectionPool pool) : super(pool);
 

@@ -1,17 +1,18 @@
 <div *ngIf="model!=null">
 
     <div class="itemContainer" style="left:0;">
-        <img src="{{getFullFileUrl(firstComparisonItem)}}" id="leftImage" />
+        <img src="{{getFullFileUrl(firstComparisonItem)}}" id="leftImage"/>
     </div>
     <div [style.left]="comparisonSplitPosition"
          style="position:absolute;right:0;top:0;overflow: hidden;height:100%">
         <div class="itemContainer" style="right:0;">
-            <img src="{{getFullFileUrl(secondComparisonItem)}}" id="rightImage" />
+            <img src="{{getFullFileUrl(secondComparisonItem)}}" id="rightImage"/>
         </div>
     </div>
     <div class="splitter" [style.left]="comparisonSplitPosition"></div>
     <div style="position:absolute;top:50%;height:24px;width: 24px;background-color: black;border-radius: 50%;color:white;margin-left:-12px;margin-top:-12px;cursor:ew-resize;"
-         [style.left]="comparisonSplitPosition" draggable="true" (drag)="comparisonDrag($event)" (dragend)="cancelEvent($event)">
+         [style.left]="comparisonSplitPosition" draggable="true" (drag)="comparisonDrag($event)"
+         (dragend)="cancelEvent($event)">
         <glyph icon="compare_arrows"></glyph>
     </div>
 
@@ -19,80 +20,83 @@
     <material-spinner *ngIf="processing"></material-spinner>
 
 
-
     <div style="width: 100%; text-align: center; position: fixed; bottom: 0; left:0 ; right:0;">
-    <table style="margin: 0 auto;">
-        <tr>
-            <td style="width: 40px;">
-                <confirm-button icon="delete_forever" (trigger)="deleteClicked(true)"></confirm-button>
-            </td>
-            <td>
-                {{firstComparisonItem.height}}x{{firstComparisonItem.width}}<br/>
-                <span *ngIf="sizeWinner==0" class="win">
+        <table style="margin: 0 auto;">
+            <tr>
+                <td style="width: 40px;">
+                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(true)"></confirm-button>
+                </td>
+                <td>
+                    {{firstComparisonItem.height}}x{{firstComparisonItem.width}}<br/>
+                    <span *ngIf="sizeWinner==0" class="win">
                 {{f.format(firstComparisonPixelCount)}} pixels
             </span>
-                <span *ngIf="sizeWinner==-1" class="tie">
+                    <span *ngIf="sizeWinner==-1" class="tie">
                 {{f.format(firstComparisonPixelCount)}} pixels
             </span>
-                <span *ngIf="sizeWinner==1" class="lose">
+                    <span *ngIf="sizeWinner==1" class="lose">
                 {{f.format(firstComparisonPixelCount)}} pixels
             </span>
-                <br/>
-                <span *ngIf="lengthWinner==0" class="win">
+                    <br/>
+                    <span *ngIf="lengthWinner==0" class="win">
                 {{f.format(firstLength)}} bytes
             </span>
-                <span *ngIf="lengthWinner==-1" class="tie">
+                    <span *ngIf="lengthWinner==-1" class="tie">
                 {{f.format(firstLength)}} bytes
             </span>
-                <span *ngIf="lengthWinner==1" class="lose">
+                    <span *ngIf="lengthWinner==1" class="lose">
                 {{f.format(firstLength)}} bytes
             </span>
-                <br/>
-            </td>
-            <td style="width: 40px;">
-                <confirm-button icon="chevron_left" (trigger)="mergeClicked(true)"></confirm-button>
-            </td><td  style="width: 100px;text-align: center;">
-                {{model.value}}%
-            <confirm-button icon="remove_circle" orientation="horizontal" (trigger)="clearSimilarity()"></confirm-button>
-        </td>
-            <td style="width: 40px;">
-                <confirm-button icon="chevron_right" (trigger)="mergeClicked(false)"></confirm-button>
-            </td>
-            <td>
-                {{secondComparisonItem.height}}x{{secondComparisonItem.width}}<br/>
-                <span *ngIf="sizeWinner==1" class="win">
+                    <br/>
+                </td>
+                <td style="width: 40px;">
+                    <confirm-button icon="chevron_left" (trigger)="mergeClicked(true)"></confirm-button>
+                </td>
+                <td style="width: 100px;text-align: center;">
+                    {{model.value}}%
+                    <confirm-button icon="remove_circle" orientation="horizontal"
+                                    (trigger)="clearSimilarity()"></confirm-button>
+                </td>
+                <td style="width: 40px;">
+                    <confirm-button icon="chevron_right" (trigger)="mergeClicked(false)"></confirm-button>
+                </td>
+                <td>
+                    {{secondComparisonItem.height}}x{{secondComparisonItem.width}}<br/>
+                    <span *ngIf="sizeWinner==1" class="win">
                 {{f.format(secondComparisonPixelCount)}} pixels
             </span>
-                <span *ngIf="sizeWinner==-1" class="tie">
+                    <span *ngIf="sizeWinner==-1" class="tie">
                 {{f.format(secondComparisonPixelCount)}} pixels
             </span>
-                <span *ngIf="sizeWinner==0" class="lose">
+                    <span *ngIf="sizeWinner==0" class="lose">
                 {{f.format(secondComparisonPixelCount)}} pixels
             </span>
-                <br/>
-                <span *ngIf="lengthWinner==1" class="win">
+                    <br/>
+                    <span *ngIf="lengthWinner==1" class="win">
                 {{f.format(secondLength)}} bytes
             </span>
-                <span *ngIf="lengthWinner==-1" class="tie">
+                    <span *ngIf="lengthWinner==-1" class="tie">
                 {{f.format(secondLength)}} bytes
             </span>
-                <span *ngIf="lengthWinner==0" class="lose">
+                    <span *ngIf="lengthWinner==0" class="lose">
                 {{f.format(secondLength)}} bytes
             </span>
-            </td>
-            <td style="width: 40px;">
-                <confirm-button icon="delete_forever" (trigger)="deleteClicked(false)"></confirm-button>
-            </td>
-        </tr>
-    </table>
+                </td>
+                <td style="width: 40px;">
+                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(false)"></confirm-button>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div style="position: absolute;left:0;top:0;">
         <b>{{firstComparisonItem.mime}}<br/></b>
         <b *ngFor="let t of firstComparisonItem.tags">{{formatTag(t)}}<br/></b>
+        <a [routerLink]="['Item', {id: firstComparisonItem.id}]" id="link_{{firstComparisonItem.id}}" target="_new">Link</a>
     </div>
     <div style="position: absolute;right:0;top:0;text-align:right;">
         <b>{{secondComparisonItem.mime}}<br/></b>
         <b *ngFor="let t of secondComparisonItem.tags">{{formatTag(t)}}<br/></b>
+        <a [routerLink]="['Item', {id: secondComparisonItem.id}]" id="link_{{secondComparisonItem.id}}" target="_new">Link</a>
     </div>
 </div>

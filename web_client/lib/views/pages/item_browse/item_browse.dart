@@ -52,6 +52,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   final ItemSearchService _search;
 
   String get currentRssLink => _search.getCurrentFeedUrl();
+
   String get currentRandomRssLink => _search.getCurrentRandomFeedUrl();
 
   ItemBrowseComponent(this._api, this._routeParams,
@@ -83,26 +84,23 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   void palletTagDragStart(dynamic event, Tag t) {
     _draggingTag = t;
     final String query = tagToQueryString(t);
-    event.dataTransfer.setData("text",query);
+    event.dataTransfer.setData("text", query);
   }
 
-  Future droppedOnItem(MouseEvent event, String id) async {
-    String query = event.dataTransfer.getData("text");
+  Future<Null> droppedOnItem(MouseEvent event, String id) async {
+    final String query = event.dataTransfer.getData("text");
     final TagList tagList = new TagList.fromQueryString(query);
-    TagWrapper tag = tagList.first;
+    final TagWrapper tag = tagList.first;
     event.preventDefault();
 
-    await performApiCall(() async {
-      final TagList tags = new TagList.fromTags(await _api.items.getTagsByItemId(id));
-      tags.add(tag);
-      await _api.items.updateTagsForItemId(tags.toListOfTag(), id);
-    });
-
+    await applyTagWrappersToItem(id, [tag]);
   }
+
 
   void allowDrop(Event ev) {
     ev.preventDefault();
   }
+
   void itemSelectChanged(bool checked, String id) {
     setActions();
   }
@@ -208,7 +206,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       String routeName = itemsPageRoute.name;
       if (_routeParams.params.containsKey(pageRouteParameter)) {
         page = int.parse(_routeParams.get(pageRouteParameter) ?? '1',
-                onError: (_) => 1) -
+            onError: (_) => 1) -
             1;
       }
       if (_routeParams.params.containsKey(queryRouteParameter)) {
@@ -224,7 +222,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       }
 
       final PaginatedItemResponse response =
-          await _search.performSearch(page: page);
+      await _search.performSearch(page: page);
 
       selectedItems.clear();
       items.clear();
@@ -260,4 +258,23 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 //    }
     pageControl.setAvailablePageActions(actions);
   }
+
+  Future<Null> tagSelected() async {
+    for (IdWrapper id in selectedItems) {
+      await applyTagsToItem(id.id, palletTags);
+    }
+  }
+
+  Future<Null> applyTagWrappersToItem(String id, List<TagWrapper> tags) =>
+      applyTagsToItem(id, tags.map((tw) => tw.tag));
+
+  Future<Null> applyTagsToItem(String id, List<Tag> tags) async {
+    await performApiCall(() async {
+      final TagList newTags = new TagList.fromTags(
+          await _api.items.getTagsByItemId(id));
+      newTags.addTags(tags);
+      await _api.items.updateTagsForItemId(newTags.toListOfTag(), id);
+    });
+  }
+
 }

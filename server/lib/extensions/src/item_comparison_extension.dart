@@ -104,8 +104,7 @@ class ItemComparisonExtension extends AExtension {
     }
   }
 
-  @override
-  Future<Null> onDeletingItem(String itemId) async {
+  Future<Null> _deleteExtensionData(String itemId) async {
     try {
       await _extensionDataModel.delete(extensionId, perceptualHashKeyName,
           primaryId: itemId);
@@ -116,8 +115,7 @@ class ItemComparisonExtension extends AExtension {
     }
   }
 
-  @override
-  Future<Null> onCreatingItem(Item item) async {
+  Future<Null> _enqueueBackgroundComparison(Item item) async {
     try {
       if (MimeTypes.imageTypes.contains(item.mime)) {
         await _backgroundQueueDataSource.addToQueue(this.extensionId, item.id,
@@ -127,6 +125,24 @@ class ItemComparisonExtension extends AExtension {
       _log.severe("Error queueing image comparison for ${e.item.id}", e, st);
     }
   }
+
+  @override
+  Future<Null> onTrashingItem(String itemId) => _deleteExtensionData(itemId);
+
+  @override
+  Future<Null> onDeletingItem(String itemId) => _deleteExtensionData(itemId);
+
+  @override
+  Future<Null> onCreatingItem(Item item) => _enqueueBackgroundComparison(item);
+
+  @override
+  Future<Null> onRestoringItem(String itemId) async {
+    final Option<Item> item = await _itemDataSource.getById(itemId);
+    if(item.isEmpty)
+      throw new NotFoundException("Item not found: $itemId");
+    await _enqueueBackgroundComparison(item.first);
+  }
+
 
   Future<bool> _checkForComparisonResult(String itemId1, String itemId2) async {
     try {

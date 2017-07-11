@@ -1,27 +1,40 @@
 import 'dart:async';
+
+import 'package:dartlery/tools.dart';
 import 'package:dartlery_shared/global.dart';
+import "package:hex/hex.dart";
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
-import "package:hex/hex.dart";
-import 'package:dartlery/tools.dart';
 
 class MediaMimeResolver extends MimeTypeResolver {
   static final Logger _log = new Logger('MediaMimeResolver');
 
   MediaMimeResolver() : super() {
     //384250530001000000000000000300000708000004b00008
-    addMagicNumber(<int>[0x38, 0x42, 0x50, 0x53], MimeTypes.psd);
+    addMagicNumber(const <int>[0x38, 0x42, 0x50, 0x53], MimeTypes.psd);
 
     //addMagicNumber(<int>[0x1A, 0x45, 0xDF, 0xA3, 0x93, 0x42, 0x82, 0x88,
     //              0x6D, 0x61, 0x74, 0x72, 0x6F, 0x73, 0x6B, 0x61], MimeTypes.mkv);
 
-    addMagicNumber(<int>[0x1A, 0x45, 0xDF, 0xA3], MimeTypes.mkv);
+    addMagicNumber(const <int>[0x1A, 0x45, 0xDF, 0xA3], MimeTypes.mkv);
 
     // M4V files, which are really just mp4 files
     addMagicNumber(
-        <int>[0x00, 0x00, 0x00, 0x20, 0x66, 0x74, 0x79, 0x70, 0x4D, 0x34, 0x56],
+        const <int>[
+          0x00,
+          0x00,
+          0x00,
+          0x20,
+          0x66,
+          0x74,
+          0x79,
+          0x70,
+          0x4D,
+          0x34,
+          0x56
+        ],
         MimeTypes.mp4,
-        mask: <int>[
+        mask: const <int>[
           0x00,
           0x00,
           0x00,
@@ -36,9 +49,21 @@ class MediaMimeResolver extends MimeTypeResolver {
         ]);
 
     addMagicNumber(
-        <int>[0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x6D, 0x70, 0x34],
+        const <int>[
+          0x00,
+          0x00,
+          0x00,
+          0x18,
+          0x66,
+          0x74,
+          0x79,
+          0x70,
+          0x6D,
+          0x70,
+          0x34
+        ],
         MimeTypes.mp4,
-        mask: <int>[
+        mask: const <int>[
           0x00,
           0x00,
           0x00,
@@ -53,7 +78,7 @@ class MediaMimeResolver extends MimeTypeResolver {
         ]);
 
     addMagicNumber(
-        <int>[
+        const <int>[
           0x00,
           0x00,
           0x00,
@@ -68,7 +93,7 @@ class MediaMimeResolver extends MimeTypeResolver {
           0x6D
         ],
         MimeTypes.mp4,
-        mask: <int>[
+        mask: const <int>[
           0x00,
           0x00,
           0x00,
@@ -84,7 +109,7 @@ class MediaMimeResolver extends MimeTypeResolver {
         ]);
 
     addMagicNumber(
-        <int>[
+        const <int>[
           0x00,
           0x00,
           0x00,
@@ -99,7 +124,7 @@ class MediaMimeResolver extends MimeTypeResolver {
           0x56
         ],
         MimeTypes.mp4,
-        mask: <int>[
+        mask: const <int>[
           0x00,
           0x00,
           0x00,
@@ -116,7 +141,7 @@ class MediaMimeResolver extends MimeTypeResolver {
 
     // XAVC files
     addMagicNumber(
-        <int>[
+        const <int>[
           0x00,
           0x00,
           0x00,
@@ -131,7 +156,7 @@ class MediaMimeResolver extends MimeTypeResolver {
           0x43
         ],
         MimeTypes.mp4,
-        mask: <int>[
+        mask: const <int>[
           0x00,
           0x00,
           0x00,
@@ -147,7 +172,7 @@ class MediaMimeResolver extends MimeTypeResolver {
         ]);
 
     addMagicNumber(
-        <int>[
+        const <int>[
           0x00,
           0x00,
           0x00,
@@ -162,7 +187,7 @@ class MediaMimeResolver extends MimeTypeResolver {
           0x35
         ],
         MimeTypes.mp4,
-        mask: <int>[
+        mask: const <int>[
           0x00,
           0x00,
           0x00,
@@ -177,7 +202,7 @@ class MediaMimeResolver extends MimeTypeResolver {
           0xFF
         ]);
 
-    addMagicNumber(<int>[
+    addMagicNumber(const <int>[
       0x00,
       0x00,
       0x00,
@@ -205,7 +230,7 @@ class MediaMimeResolver extends MimeTypeResolver {
     ], MimeTypes.mp4);
 
     addMagicNumber(
-        <int>[
+        const <int>[
           0x00,
           0x00,
           0x00,
@@ -220,7 +245,7 @@ class MediaMimeResolver extends MimeTypeResolver {
           0x20
         ],
         MimeTypes.quicktime,
-        mask: <int>[
+        mask: const <int>[
           0x00,
           0x00,
           0x00,
@@ -235,12 +260,12 @@ class MediaMimeResolver extends MimeTypeResolver {
           0xFF
         ]);
 
-    addMagicNumber(<int>[0x43, 0x57, 0x53], MimeTypes.swf);
-    addMagicNumber(<int>[0x46, 0x57, 0x53], MimeTypes.swf);
-    addMagicNumber(<int>[0x46, 0x4C, 0x56, 0x01], MimeTypes.flv);
+    addMagicNumber(const <int>[0x43, 0x57, 0x53], MimeTypes.swf);
+    addMagicNumber(const <int>[0x46, 0x57, 0x53], MimeTypes.swf);
+    addMagicNumber(const <int>[0x46, 0x4C, 0x56, 0x01], MimeTypes.flv);
 
     addMagicNumber(
-        <int>[
+        const <int>[
           0x52,
           0x49,
           0x46,
@@ -259,7 +284,7 @@ class MediaMimeResolver extends MimeTypeResolver {
           0x54
         ],
         MimeTypes.avi,
-        mask: <int>[
+        mask: const <int>[
           0xFF,
           0xFF,
           0xFF,
@@ -278,7 +303,7 @@ class MediaMimeResolver extends MimeTypeResolver {
           0xFF
         ]);
 
-    addMagicNumber(<int>[
+    addMagicNumber(const <int>[
       0x30,
       0x26,
       0xB2,
@@ -297,14 +322,8 @@ class MediaMimeResolver extends MimeTypeResolver {
       0x6C
     ], MimeTypes.asf);
 
-    addMagicNumber(<int>[0x00, 0x00, 0x01, 0xB0], MimeTypes.mpeg,
-        mask: <int>[0xFF, 0xFF, 0xFF, 0xF0]);
-  }
-
-  Future<String> getMimeTypeForFile(String path) async {
-    final List<int> lookupBytes =
-        await getFileData(path, maxLength: magicNumbersMaxLength);
-    return getMimeType(lookupBytes);
+    addMagicNumber(const <int>[0x00, 0x00, 0x01, 0xB0], MimeTypes.mpeg,
+        mask: const <int>[0xFF, 0xFF, 0xFF, 0xF0]);
   }
 
   String getMimeType(List<int> data) {
@@ -318,5 +337,11 @@ class MediaMimeResolver extends MimeTypeResolver {
     _log.info("Header bytes: ${HEX.encode(lookupBytes)}");
 
     return lookup("", headerBytes: lookupBytes);
+  }
+
+  Future<String> getMimeTypeForFile(String path) async {
+    final List<int> lookupBytes =
+        await getFileData(path, maxLength: magicNumbersMaxLength);
+    return getMimeType(lookupBytes);
   }
 }

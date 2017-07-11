@@ -122,11 +122,14 @@ class ItemModel extends AIdBasedModel<Item> {
 
   Future<Null> moveToTrash(String id) async {
     await validateDeletePrivileges(id);
+    await _extensionServices.sendTrashingItem(id);
     await itemDataSource.setTrashStatus(id, true);
   }
 
   @override
   Future<String> delete(String id) async {
+    await validateDeletePrivileges(id);
+
     await _extensionServices.sendDeletingItem(id);
 
     Option<Item> existingItem = await itemDataSource.getById(id);
@@ -379,6 +382,7 @@ class ItemModel extends AIdBasedModel<Item> {
       await delete(sourceItemId);
     }
 
+    // TODO: Verify this handles the tag counts correctly, doesn't look right.
     final TagDiff diff =
         new TagDiff(targetItem.first.tags, sourceItem.first.tags);
     if (diff.both.isNotEmpty) {
@@ -640,6 +644,8 @@ class ItemModel extends AIdBasedModel<Item> {
         return image.decodePng(fileData);
       case MimeTypes.gif:
         return image.decodeGif(fileData);
+      case MimeTypes.tiff:
+        return image.decodeTiff(fileData);
       default:
         return image.decodeImage(fileData);
     }
