@@ -1552,6 +1552,7 @@ main() {
       var mock = new HttpServerMock();
       api.ItemsResourceApi res = new api.GalleryApi(mock).items;
       var arg_id = "foo";
+      var arg_permanent = true;
       mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
@@ -1587,6 +1588,7 @@ main() {
             addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
           }
         }
+        unittest.expect(queryMap["permanent"].first, unittest.equals("$arg_permanent"));
 
 
         var h = {
@@ -1595,7 +1597,7 @@ main() {
         var resp = "";
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.delete(arg_id).then(unittest.expectAsync1((_) {}));
+      res.delete(arg_id, permanent: arg_permanent).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--getById", () {
@@ -1812,6 +1814,57 @@ main() {
       res.mergeItems(arg_request, arg_targetItemId).then(unittest.expectAsync1(((api.Item response) {
         checkItem(response);
       })));
+    });
+
+    unittest.test("method--restore", () {
+
+      var mock = new HttpServerMock();
+      api.ItemsResourceApi res = new api.GalleryApi(mock).items;
+      var arg_id = "foo";
+      mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
+        var path = (req.url).path;
+        var pathOffset = 0;
+        var index;
+        var subPart;
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+        unittest.expect(path.substring(pathOffset, pathOffset + 17), unittest.equals("api/gallery/v0.1/"));
+        pathOffset += 17;
+        unittest.expect(path.substring(pathOffset, pathOffset + 6), unittest.equals("trash/"));
+        pathOffset += 6;
+        index = path.indexOf("/", pathOffset);
+        unittest.expect(index >= 0, unittest.isTrue);
+        subPart = core.Uri.decodeQueryComponent(path.substring(pathOffset, index));
+        pathOffset = index;
+        unittest.expect(subPart, unittest.equals("$arg_id"));
+        unittest.expect(path.substring(pathOffset, pathOffset + 1), unittest.equals("/"));
+        pathOffset += 1;
+
+        var query = (req.url).query;
+        var queryOffset = 0;
+        var queryMap = {};
+        addQueryParam(n, v) => queryMap.putIfAbsent(n, () => []).add(v);
+        parseBool(n) {
+          if (n == "true") return true;
+          if (n == "false") return false;
+          if (n == null) return null;
+          throw new core.ArgumentError("Invalid boolean: $n");
+        }
+        if (query.length > 0) {
+          for (var part in query.split("&")) {
+            var keyvalue = part.split("=");
+            addQueryParam(core.Uri.decodeQueryComponent(keyvalue[0]), core.Uri.decodeQueryComponent(keyvalue[1]));
+          }
+        }
+
+
+        var h = {
+          "content-type" : "application/json; charset=utf-8",
+        };
+        var resp = "";
+        return new async.Future.value(stringResponse(200, h, resp));
+      }), true);
+      res.restore(arg_id).then(unittest.expectAsync1((_) {}));
     });
 
     unittest.test("method--searchVisible", () {

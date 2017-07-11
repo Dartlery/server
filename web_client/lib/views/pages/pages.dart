@@ -6,6 +6,7 @@ import 'item_view/item_view.dart';
 import 'deduplicate/deduplicate.dart';
 import 'tags/tags_page.dart';
 import 'import/import_page.dart';
+import 'trash/trash_page.dart';
 
 export 'tag_categories_page/tag_categories_page.dart';
 export 'item_browse/item_browse.dart';
@@ -15,6 +16,7 @@ export 'item_view/item_view.dart';
 export 'deduplicate/deduplicate.dart';
 export 'tags/tags_page.dart';
 export 'import/import_page.dart';
+export 'trash/trash_page.dart';
 
 const List<Type> pageDirectives = const <Type>[
   TagCategoriesPage,
@@ -24,5 +26,6 @@ const List<Type> pageDirectives = const <Type>[
   ItemViewPage,
   DeduplicatePage,
   TagsPage,
-  ImportPage
+  ImportPage,
+  TrashPage
 ];

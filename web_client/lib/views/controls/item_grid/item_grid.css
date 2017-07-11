@@ -20,7 +20,9 @@ div.item-menu a {
     text-decoration: none;
 }
 
-
+div.itemThumbnails {
+    width:80%;
+}
 
 @media(max-width:400pt) {
     div.item {

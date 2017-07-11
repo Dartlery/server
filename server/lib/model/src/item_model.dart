@@ -126,6 +126,13 @@ class ItemModel extends AIdBasedModel<Item> {
     await itemDataSource.setTrashStatus(id, true);
   }
 
+  Future<Null> restoreFromTrash(String id) async {
+    await validateUpdatePrivileges(id);
+    await _extensionServices.sendRestoringItem(id);
+    await itemDataSource.setTrashStatus(id, false);
+  }
+
+
   @override
   Future<String> delete(String id) async {
     await validateDeletePrivileges(id);

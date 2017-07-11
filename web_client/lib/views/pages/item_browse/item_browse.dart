@@ -17,6 +17,7 @@ import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
 import '../../controls/tag_entry_component.dart';
 import '../src/a_page.dart';
+import 'package:dartlery/views/controls/item_grid/item_grid.dart';
 
 @Component(
     selector: 'item-browse',
@@ -25,9 +26,10 @@ import '../src/a_page.dart';
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
-      TagEntryComponent
+      TagEntryComponent,
+      ItemGrid
     ],
-    styleUrls: const ["../../shared.css", "item_browse.css"],
+    styleUrls: const ["../../shared.css",'item_browse.css'],
     templateUrl: 'item_browse.html')
 class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemBrowseComponent");
@@ -36,7 +38,9 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   bool userLoggedIn;
   final ApiService _api;
   final RouteParams _routeParams;
+
   final Router _router;
+  final RouteData _routeData;
   final AuthenticationService _auth;
   final List<IdWrapper> items = <IdWrapper>[];
   String _currentQuery = "";
@@ -45,7 +49,6 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   StreamSubscription<PageAction> _pageActionSubscription;
   StreamSubscription<bool> _authChangedSubscription;
-  StreamSubscription<KeyboardEvent> _keyboardSubscription;
 
   List<Tag> palletTags = <Tag>[];
 
@@ -56,7 +59,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   String get currentRandomRssLink => _search.getCurrentRandomFeedUrl();
 
   ItemBrowseComponent(this._api, this._routeParams,
-      PageControlService pageControl, this._router, this._auth, this._search)
+      PageControlService pageControl, this._router, this._auth, this._search, this._routeData)
       : super(_auth, _router, pageControl) {
     setActions();
   }
@@ -79,6 +82,10 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     await refresh();
   }
 
+  bool get viewingTrash {
+    return _routeData?.data["trash"]??false;
+  }
+
   Tag _draggingTag;
 
   void palletTagDragStart(dynamic event, Tag t) {
@@ -87,21 +94,15 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     event.dataTransfer.setData("text", query);
   }
 
-  Future<Null> droppedOnItem(MouseEvent event, String id) async {
-    final String query = event.dataTransfer.getData("text");
+  Future<Null> droppedOnItem(ItemGridDropEventArgs e) async {
+    final String query = e.mouseEvent.dataTransfer.getData("text");
     final TagList tagList = new TagList.fromQueryString(query);
     final TagWrapper tag = tagList.first;
-    event.preventDefault();
 
-    await applyTagWrappersToItem(id, [tag]);
+    await applyTagWrappersToItem(e.id, [tag]);
   }
 
-
-  void allowDrop(Event ev) {
-    ev.preventDefault();
-  }
-
-  void itemSelectChanged(bool checked, String id) {
+  void itemSelectChanged() {
     setActions();
   }
 
@@ -110,7 +111,6 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     _searchSubscription.cancel();
     _pageActionSubscription.cancel();
     _authChangedSubscription.cancel();
-    _keyboardSubscription.cancel();
     pageControl.reset();
   }
 
@@ -121,7 +121,6 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
         _auth.authStatusChanged.listen(onAuthStatusChange);
     _pageActionSubscription =
         pageControl.pageActionRequested.listen(onPageActionRequested);
-    _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
     refresh();
   }
 
@@ -132,14 +131,6 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   Future<Null> onAuthStatusChange(bool value) async {
     await this.refresh();
-  }
-
-  void onKeyboardEvent(KeyboardEvent e) {
-    if (e.keyCode == KeyCode.A && e.ctrlKey) {
-      for (IdWrapper item in items) {
-        item.selected = true;
-      }
-    }
   }
 
   void onPageActionRequested(PageAction action) {
@@ -222,7 +213,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       }
 
       final PaginatedItemResponse response =
-      await _search.performSearch(page: page);
+      await _search.performSearch(page: page, inTrash: viewingTrash);
 
       selectedItems.clear();
       items.clear();

@@ -17,6 +17,12 @@ const Route homeRoute = const Route(
     component: ItemBrowseComponent,
     useAsDefault: true);
 
+const Route trashRoute = const Route(
+    path: '/trash',
+    name: "Trash",
+    component: TrashPage,
+    data: const <String,dynamic>{"trash":true});
+
 const String idRouteParameter = "id";
 
 const Route itemsPageRoute = const Route(
@@ -61,7 +67,8 @@ const List<Route> routes = const <Route>[
   usersRoute,
   deduplicateRoute,
   tagsRoute,
-  importRoute
+  importRoute,
+  trashRoute
 ];
 
 const Route setupRoute = const Route(

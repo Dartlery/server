@@ -48,7 +48,19 @@ class ItemResource extends AIdResource<Item> {
 
   @override
   @ApiMethod(method: HttpMethod.delete, path: '$_apiPath/{id}/')
-  Future<VoidMessage> delete(String id) => deleteWithCatch(id);
+  Future<VoidMessage> delete(String id, {bool permanent: false})=>      catchExceptionsAwait(() async {
+      if(permanent)
+        await itemModel.delete(id);
+      else
+        await itemModel.moveToTrash(id);
+      return new VoidMessage();
+  });
+
+  @ApiMethod(method: HttpMethod.delete, path: 'trash/{id}/')
+  Future<VoidMessage> restore(String id)=>      catchExceptionsAwait(() async {
+    await itemModel.restoreFromTrash(id);
+    return new VoidMessage();
+  });
 
   @override
   @ApiMethod(path: '$_apiPath/{id}/')

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "8d6fc6a6702bd7ef9ead6c901762ffdb0bed3f57",
+ "etag": "4047328c32891c9c62dccfddd1a69e934bb224f3",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -540,6 +540,28 @@
     "delete": {
      "id": "GalleryApi.items.delete",
      "path": "items/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "permanent": {
+       "type": "boolean",
+       "description": "Query parameter: 'permanent'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "restore": {
+     "id": "GalleryApi.items.restore",
+     "path": "trash/{id}/",
      "httpMethod": "DELETE",
      "parameters": {
       "id": {

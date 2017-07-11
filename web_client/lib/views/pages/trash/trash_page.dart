@@ -15,19 +15,29 @@ import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
-
+import '../../controls/tag_entry_component.dart';
 import '../src/a_page.dart';
+import 'package:dartlery/views/controls/item_grid/item_grid.dart';
 
 @Component(
-    selector: 'trash-page',
+    selector: 'item-browse',
     providers: const [materialProviders],
     directives: const [
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
+      TagEntryComponent,
+      ItemGrid
     ],
-    styleUrls: const ["../../shared.css", "trash_page.css"],
-    templateUrl: 'trash_page.html')
+    styleUrls: const ["../../shared.css"],
+    template: '''
+    <auth-status (authedChanged)="onAuthChanged(\$event)"></auth-status>
+
+    <div *ngIf="noItemsFound&&!processing" class="no-items">No Items Found</div>
+    <item-grid [items]="items" (selectedItemsChanged)="itemSelectChanged()"></item-grid>
+
+    <div class="sidebar">
+    ''')
 class TrashPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("TrashPage");
   bool curatorAuth = false;
@@ -35,7 +45,9 @@ class TrashPage extends APage implements OnInit, OnDestroy {
   bool userLoggedIn;
   final ApiService _api;
   final RouteParams _routeParams;
+
   final Router _router;
+  final RouteData _routeData;
   final AuthenticationService _auth;
   final List<IdWrapper> items = <IdWrapper>[];
   String _currentQuery = "";
@@ -44,14 +56,16 @@ class TrashPage extends APage implements OnInit, OnDestroy {
 
   StreamSubscription<PageAction> _pageActionSubscription;
   StreamSubscription<bool> _authChangedSubscription;
-  StreamSubscription<KeyboardEvent> _keyboardSubscription;
+
+  List<Tag> palletTags = <Tag>[];
 
   final ItemSearchService _search;
 
-  TrashPage(this._api, this._routeParams, PageControlService pageControl,
-      this._router, this._auth, this._search)
+  TrashPage(this._api, this._routeParams,
+      PageControlService pageControl, this._router, this._auth, this._search, this._routeData)
       : super(_auth, _router, pageControl) {
     setActions();
+    pageControl.setPageTitle("Trash");
   }
 
   @override
@@ -66,13 +80,23 @@ class TrashPage extends APage implements OnInit, OnDestroy {
     if (selectedItems.isEmpty) return;
     for (IdWrapper item in selectedItems) {
       await performApiCall(() async {
-        await _api.items.delete(item.id);
+        await _api.items.delete(item.id, permanent: true);
       });
     }
     await refresh();
   }
 
-  void itemSelectChanged(bool checked, String id) {
+  Future<Null> restoreSelected() async {
+    if (selectedItems.isEmpty) return;
+    for (IdWrapper item in selectedItems) {
+      await performApiCall(() async {
+        await _api.items.restore(item.id);
+      });
+    }
+    await refresh();
+  }
+
+  void itemSelectChanged() {
     setActions();
   }
 
@@ -81,7 +105,6 @@ class TrashPage extends APage implements OnInit, OnDestroy {
     _searchSubscription.cancel();
     _pageActionSubscription.cancel();
     _authChangedSubscription.cancel();
-    _keyboardSubscription.cancel();
     pageControl.reset();
   }
 
@@ -92,7 +115,6 @@ class TrashPage extends APage implements OnInit, OnDestroy {
         _auth.authStatusChanged.listen(onAuthStatusChange);
     _pageActionSubscription =
         pageControl.pageActionRequested.listen(onPageActionRequested);
-    _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
     refresh();
   }
 
@@ -105,14 +127,6 @@ class TrashPage extends APage implements OnInit, OnDestroy {
     await this.refresh();
   }
 
-  void onKeyboardEvent(KeyboardEvent e) {
-    if (e.keyCode == KeyCode.A && e.ctrlKey) {
-      for (IdWrapper item in items) {
-        item.selected = true;
-      }
-    }
-  }
-
   void onPageActionRequested(PageAction action) {
     switch (action) {
       case PageAction.refresh:
@@ -121,7 +135,15 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       case PageAction.delete:
         this.deleteSelected();
         break;
-
+      case PageAction.openInNew:
+        this.openSelectedItemsInNewWindow();
+        break;
+      case PageAction.tag:
+        this.openSelectedItemsInNewWindow();
+        break;
+      case PageAction.restore:
+        this.restoreSelected();
+      break;
       default:
         throw new Exception(
             action.toString() + " not implemented for this page");
@@ -171,7 +193,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       String routeName = itemsPageRoute.name;
       if (_routeParams.params.containsKey(pageRouteParameter)) {
         page = int.parse(_routeParams.get(pageRouteParameter) ?? '1',
-                onError: (_) => 1) -
+            onError: (_) => 1) -
             1;
       }
       if (_routeParams.params.containsKey(queryRouteParameter)) {
@@ -187,7 +209,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       }
 
       final PaginatedItemResponse response =
-          await _api.items.getVisibleIds(page: page, inTrash: true);
+      await _search.performSearch(page: page, inTrash: true);
 
       selectedItems.clear();
       items.clear();
@@ -209,18 +231,18 @@ class TrashPage extends APage implements OnInit, OnDestroy {
   }
 
   void setActions() {
-    final List<PageAction> actions = <PageAction>[
-      PageAction.refresh,
-      //PageActions.Search
-    ];
+    final List<PageAction> actions = <PageAction>[];
     if (selectedItems.isNotEmpty) {
       actions.add(PageAction.delete);
+      actions.add(PageAction.restore);
       // Can't open multiple windows, so this doesn't work right now
       //actions.add(PageActions.OpenInNew);
     }
+    actions.add(PageAction.refresh);
 //    if (_auth.hasPrivilege(UserPrivilege.normal)) {
 //      actions.add(PageActions.Add);
 //    }
     pageControl.setAvailablePageActions(actions);
   }
+
 }

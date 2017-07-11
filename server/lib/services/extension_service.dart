@@ -15,10 +15,11 @@ class ExtensionService {
       _extensions.values,
       (AExtension extension) => extension.onDeletingItem(itemId));
   Future<Null> sendTrashingItem(String itemId) => Future.forEach(
-  _extensions.values,
-  (AExtension extension) => extension.onTrashingItem(itemId));
-
-
+      _extensions.values,
+          (AExtension extension) => extension.onTrashingItem(itemId));
+  Future<Null> sendRestoringItem(String itemId) => Future.forEach(
+      _extensions.values,
+          (AExtension extension) => extension.onRestoringItem(itemId));
 
   Future<Null> triggerBackgroundServiceCycle(BackgroundQueueItem item) async {
     if (!_extensions.containsKey(item.extensionId)) return;

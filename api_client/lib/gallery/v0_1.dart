@@ -453,13 +453,15 @@ class ItemsResourceApi {
    *
    * [id] - Path parameter: 'id'.
    *
+   * [permanent] - Query parameter: 'permanent'.
+   *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
    *
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future delete(core.String id) {
+  async.Future delete(core.String id, {core.bool permanent}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -469,6 +471,9 @@ class ItemsResourceApi {
 
     if (id == null) {
       throw new core.ArgumentError("Parameter id is required.");
+    }
+    if (permanent != null) {
+      _queryParams["permanent"] = ["${permanent}"];
     }
 
     _downloadOptions = null;
@@ -654,6 +659,43 @@ class ItemsResourceApi {
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
     return _response.then((data) => new Item.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future restore(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'trash/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
   }
 
   /**

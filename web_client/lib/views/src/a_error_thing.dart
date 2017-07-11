@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:dartlery_shared/tools.dart';
+import 'a_view.dart';
 
 abstract class AErrorThing {
   Logger get loggerImpl;

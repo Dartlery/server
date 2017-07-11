@@ -23,12 +23,12 @@ class ItemSearchService {
 
   final Map<int, List<String>> _results = new Map<int, List<String>>();
 
-  Future<PaginatedItemResponse> performSearch({int page: 0}) async {
+  Future<PaginatedItemResponse> performSearch({int page: 0, bool inTrash: false}) async {
     PaginatedItemResponse response;
     if (_tags.isEmpty)
-      response = await _api.items.getVisibleIds(page: page);
+      response = await _api.items.getVisibleIds(page: page, inTrash: inTrash);
     else {
-      response = await _api.items.searchVisible(_tags.toJson(), page: page);
+      response = await _api.items.searchVisible(_tags.toJson(), page: page, inTrash: inTrash);
       _tags.clear();
       _tags.addTags(response.queryTags);
 

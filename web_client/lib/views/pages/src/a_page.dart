@@ -7,8 +7,9 @@ import 'package:dartlery/data/data.dart';
 import '../../src/a_api_error_thing.dart';
 import 'package:dartlery/api/api.dart';
 import 'dart:math';
+import '../../src/a_view.dart';
 
-abstract class APage extends AApiErrorThing {
+abstract class APage extends AApiErrorThing with AView {
   final PageControlService pageControl;
 
   APage(AuthenticationService auth, Router router, this.pageControl)
@@ -22,8 +23,6 @@ abstract class APage extends AApiErrorThing {
       pageControl.sendMessage("Error", message);
   }
 
-  String formatTag(Tag t) => TagWrapper.formatTag(t);
-  String tagToQueryString(Tag t) => TagWrapper.createQueryStringForTag(t);
 
   void cancelEvent(html.Event e) {
     e.stopPropagation();
@@ -40,23 +39,4 @@ abstract class APage extends AApiErrorThing {
     return "${html.window.innerHeight+offset-64}px";
   }
 
-  String getFullFileUrl(Item item) {
-    if (item == null || isNullOrWhitespace(item.id)) return "";
-    if (item.fullFileAvailable)
-      return getImageUrl(item.id, ItemFileType.full);
-    else
-      return getImageUrl(item.id, ItemFileType.original);
-  }
-
-  String getOriginalFileUrl(String value) {
-    if (isNullOrWhitespace(value)) return "";
-    final String output = getImageUrl(value, ItemFileType.original);
-    return output;
-  }
-
-  String getThumbnailFileUrl(String value) {
-    if (isNullOrWhitespace(value)) return "";
-    final String output = getImageUrl(value, ItemFileType.thumbnail);
-    return output;
-  }
 }
