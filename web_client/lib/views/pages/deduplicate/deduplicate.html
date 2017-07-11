@@ -1,7 +1,10 @@
 <div *ngIf="model!=null">
 
+    <div [style.width]="comparisonSplitPosition"
+         style="position:absolute;left:0;top:0;overflow: hidden;height:100%">
     <div class="itemContainer" style="left:0;">
         <img src="{{firstImageUrl}}" id="leftImage"/>
+    </div>
     </div>
     <div [style.left]="comparisonSplitPosition"
          style="position:absolute;right:0;top:0;overflow: hidden;height:100%">

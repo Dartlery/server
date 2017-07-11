@@ -1,6 +1,6 @@
 .itemDisplay {
     background-color: black;
-    object-fit: scale-down;
+    object-fit: contain;
     width:100%;
     height: calc(100vh - 64px)
 }
