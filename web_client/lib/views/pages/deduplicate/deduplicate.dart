@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
@@ -20,6 +21,7 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 
 import '../src/a_page.dart';
+import 'package:dartlery_shared/tools.dart';
 
 @Component(
     selector: 'deduplicate-page',
@@ -74,8 +76,10 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
         .setAvailablePageActions([PageAction.refresh, PageAction.compare]);
   }
 
+  int get comparisonHeightInt =>html.window.innerHeight-175;
+
   String get comparisonHeight {
-    return "${html.window.innerHeight-175}px";
+    return "${comparisonHeightInt}px";
   }
 
   String get comparisonSplitPosition {
@@ -91,8 +95,10 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     return x;
   }
 
+  int get comparisonWidthInt => html.window.innerWidth;
+
   String get comparisonWidth {
-    return "${html.window.innerWidth}px";
+    return "${comparisonWidthInt}px";
   }
 
   int get firstComparisonPixelCount =>
@@ -101,7 +107,15 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   String get firstComparisonWidth => "${firstComparisonItem?.width??0}px";
 
   int get leftComparisonLimit {
-    return 0; //((html.window.innerWidth / 2) - (leftImage.offsetWidth / 2)).round();
+    if(firstComparisonItem?.width==null)
+      return 0;
+    final Point p = fitWithin(new Point(firstComparisonItem.width,firstComparisonItem.height), new Point(comparisonWidthInt,comparisonHeightInt));
+    final double halfWidth = (comparisonWidthInt / 2);
+    final double halfImage = (p.x/ 2);
+    final int output =(halfWidth - halfImage).round()-16;
+    if(output<0)
+      return 0;
+    return output;
   }
 
   @ViewChild("leftImage")
@@ -125,8 +139,15 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   Logger get loggerImpl => _log;
 
   int get rightComparisonLimit {
-    return ((html.window.innerWidth / 2) + (rightImage.offsetWidth / 2))
-        .round();
+    if(secondComparisonItem?.width==null)
+      return 0;
+    final Point p = fitWithin(new Point(secondComparisonItem.width,secondComparisonItem.height), new Point(comparisonWidthInt,comparisonHeightInt));
+    final double halfWidth = (comparisonWidthInt / 2);
+    final double halfImage = (p.x/ 2);
+    final int output =(halfWidth + halfImage).round()+16;
+    if(output>comparisonWidthInt)
+      return comparisonWidthInt;
+    return output;
   }
 
   @ViewChild("rightImage")

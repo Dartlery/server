@@ -1,5 +1,6 @@
 library tools;
 
+import 'dart:math';
 import 'dart:async';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
@@ -133,4 +134,23 @@ Future<Null> wait({int milliseconds: 100}) {
     completer.complete();
   });
   return completer.future;
+}
+
+Point fitWithin(Point inner, Point outer) {
+  final double outerRatio = outer.x/outer.y;
+  final double innerRatio = inner.x/ inner.y;
+
+  if(outerRatio<innerRatio) {
+    final num  x = outer.x;
+    final num  y = inner.y * (outer.x/inner.x);
+    return new Point(x,y);
+  } else if(outerRatio>innerRatio) {
+    final num  y = outer.y;
+    final num  x = inner.x * (outer.y/inner.y);
+    return new Point(x,y);
+  } else {
+    return new Point(outer.x, outer.y);
+  }
+
+
 }
