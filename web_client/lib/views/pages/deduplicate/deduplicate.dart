@@ -175,6 +175,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     model = null;
     firstComparisonItem = new Item();
     secondComparisonItem = new Item();
+    firstImageUrl = "";
+    secondImageUrl = "";
   }
 
   Future<Null> clearSimilarity() async {
