@@ -253,6 +253,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     }
   }
 
+  String firstImageUrl, secondImageUrl;
+
   Future<Null> refresh() async {
     await performApiCall(() async {
       clear();
@@ -264,6 +266,16 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
 
         firstComparisonItem = await _api.items.getById(model.primaryId);
         secondComparisonItem = await _api.items.getById(model.secondaryId);
+
+        firstImageUrl =  getThumbnailFileUrl(firstComparisonItem.id);
+        secondImageUrl = getThumbnailFileUrl(secondComparisonItem.id);
+
+        final html.ImageElement firstImg = new html.ImageElement(src: getFullFileUrl(firstComparisonItem));
+        final html.ImageElement secondImg = new html.ImageElement(src: getFullFileUrl(secondComparisonItem));
+
+        firstImageUrl = firstImg.src;
+        secondImageUrl = secondImg.src;
+
       }
     });
   }

@@ -1,18 +1,12 @@
 <div *ngIf="model!=null">
 
     <div class="itemContainer" style="left:0;">
-        <img src="{{getThumbnailFileUrl(firstComparisonItem.id)}}" id="leftImageThumbnail"/>
-    </div>
-    <div class="itemContainer" style="left:0;">
-        <img src="{{getFullFileUrl(firstComparisonItem)}}" id="leftImage"/>
+        <img src="{{firstImageUrl}}" id="leftImage"/>
     </div>
     <div [style.left]="comparisonSplitPosition"
          style="position:absolute;right:0;top:0;overflow: hidden;height:100%">
         <div class="itemContainer" style="right:0;">
-            <img src="{{getThumbnailFileUrl(secondComparisonItem.id)}}" id="rightImageThumbnail"/>
-        </div>
-        <div class="itemContainer" style="right:0;">
-            <img src="{{getFullFileUrl(secondComparisonItem)}}" id="rightImage"/>
+            <img src="{{secondImageUrl}}" id="rightImage"/>
         </div>
     </div>
     <div class="splitter" [style.left]="comparisonSplitPosition"></div>
