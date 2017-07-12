@@ -3,13 +3,13 @@
     <div [style.width]="comparisonSplitPosition"
          style="position:absolute;left:0;top:0;overflow: hidden;height:100%">
     <div class="itemContainer" style="left:0;">
-        <img src="{{firstImageUrl}}" id="leftImage"/>
+        <img src="{{getFullFileUrl(firstComparisonItem)}}" id="leftImage"/>
     </div>
     </div>
     <div [style.left]="comparisonSplitPosition"
          style="position:absolute;right:0;top:0;overflow: hidden;height:100%">
         <div class="itemContainer" style="right:0;">
-            <img src="{{secondImageUrl}}" id="rightImage"/>
+            <img src="{{getFullFileUrl(secondComparisonItem)}}" id="rightImage"/>
         </div>
     </div>
     <div class="splitter" [style.left]="comparisonSplitPosition"></div>
@@ -27,7 +27,7 @@
         <table style="margin: 0 auto;">
             <tr>
                 <td style="width: 40px;">
-                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(true)"></confirm-button>
+                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(true)" materialTooltip="Delete left item"></confirm-button>
                 </td>
                 <td>
                     {{firstComparisonItem.height}}x{{firstComparisonItem.width}}<br/>
@@ -53,15 +53,15 @@
                     <br/>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="chevron_left" (trigger)="mergeClicked(true)"></confirm-button>
+                    <confirm-button icon="chevron_left" (trigger)="mergeClicked(true)" materialTooltip="Merge right item into left item"></confirm-button>
                 </td>
                 <td style="width: 100px;text-align: center;">
                     {{model.value}}%
                     <confirm-button icon="remove_circle" orientation="horizontal"
-                                    (trigger)="clearSimilarity()"></confirm-button>
+                                    (trigger)="clearSimilarity()" materialTooltip="Leave items unchanged and remove duplicate indicator"></confirm-button>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="chevron_right" (trigger)="mergeClicked(false)"></confirm-button>
+                    <confirm-button icon="chevron_right" (trigger)="mergeClicked(false)" materialTooltip="Merge left item into right item"></confirm-button>
                 </td>
                 <td>
                     {{secondComparisonItem.height}}x{{secondComparisonItem.width}}<br/>
@@ -86,7 +86,7 @@
             </span>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(false)"></confirm-button>
+                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(false)" materialTooltip="Delete right item"></confirm-button>
                 </td>
             </tr>
         </table>
