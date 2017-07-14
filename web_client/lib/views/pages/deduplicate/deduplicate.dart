@@ -191,7 +191,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
         model = response.items.first;
 
 
-        response = await _api.extensionData.getByPrimaryId("itemComparison", "similarItems", model.primaryId, bidirectional: true, orderByValues: true, orderDescending: true)
+        response = await _api.extensionData.getByPrimaryId("itemComparison", "similarItems", model.primaryId, bidirectional: true, orderByValues: true, orderDescending: true);
         otherComparisons = response.items;
 
 
