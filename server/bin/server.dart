@@ -1,3 +1,5 @@
+import 'package:dartlery_shared/tools.dart';
+import 'dart:io';
 import 'dart:async';
 import 'package:dartlery/services/background_service.dart';
 import 'dart:isolate';
@@ -19,7 +21,9 @@ Future<Null> main(List<String> args) async {
   final ArgParser parser = new ArgParser()
     ..addOption('port', abbr: 'p', defaultsTo: '8080')
     ..addOption('ip', abbr: 'i', defaultsTo: '0.0.0.0')
-    ..addOption('mongo', abbr: 'm', defaultsTo: 'mongodb://localhost:27017/dartlery');
+    ..addOption('mongo', abbr: 'm', defaultsTo: '');
+
+
 
   final ArgResults result = parser.parse(args);
 
@@ -28,9 +32,18 @@ Future<Null> main(List<String> args) async {
     exit(1);
   });
 
-  final String connectionString = result['mongo'];
+  String connectionString = result['mongo'];
+  if(isNullOrWhitespace(connectionString)) {
+    connectionString =  Platform.environment["DARTLERY_MONGO"];
+  }
+
+  if(isNullOrWhitespace(connectionString)) {
+    connectionString =  "mongodb://localhost:27017/dartlery";
+  }
+
+
   final String ip = result['ip'];
-  
+
   final Server server = Server.createInstance(connectionString);
   server.start(ip, port);
 
