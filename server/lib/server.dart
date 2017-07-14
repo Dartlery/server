@@ -38,11 +38,11 @@ export 'src/settings.dart';
 final String rootDirectory = Directory.current.path;
 String serverRoot, serverApiRoot;
 
-final String setupLockFilePath = "$rootDirectory/setup.lock";
+final String setupLockFilePath = path.join(rootDirectory, dataPath, "setup.lock");
 
 bool _setupDisabled = false;
 
-const String filesPath = "files";
+const String dataPath = "data";
 //String getImagesRootUrl() {
 //  return rpc.context.baseUrl + "/images/";
 //}
@@ -122,7 +122,7 @@ class Server {
       pathToBuild = join(rootDirectory, hostedFilesPath);
 
       final Handler staticImagesHandler = createStaticHandler(pathToBuild,
-          listDirectories: true,
+          listDirectories: false,
           serveFilesOutsidePath: false,
           useHeaderBytesForContentType: true,
           contentTypeResolver: mediaMimeResolver);
@@ -160,7 +160,7 @@ class Server {
 
       final Router<dynamic> root = router()
         ..add('/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)
-        ..add("/$filesPath/", <String>['GET', 'OPTIONS'], staticImagesHandler,
+        ..add("/$dataPath/", <String>['GET', 'OPTIONS'], staticImagesHandler,
             exactMatch: false)
         ..add(
             '/$apiPrefix/',

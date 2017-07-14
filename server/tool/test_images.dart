@@ -11,7 +11,7 @@ Future<Null> main(List<String> args) async {
   Logger.root.onRecord.listen(new server_logging.SyncFileLoggingHandler("image_test.log"));
   final Logger _log = new Logger("test_images.main()");
 
-  final Directory dir = new Directory("files/original");
+  final Directory dir = new Directory("data/original");
 
   await for(FileSystemEntity entity in dir.list(recursive: true)) {
     try {

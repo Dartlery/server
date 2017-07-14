@@ -15,12 +15,12 @@ import 'package:path/path.dart' as path;
 const String appName = "Dartlery";
 const String galleryApiVersion = "v0.1";
 const String galleryApiName = "gallery";
-const String galleryApiPath = "api/$galleryApiName/$galleryApiVersion/";
+const String galleryApiPath = "$apiPrefix/$galleryApiName/$galleryApiVersion/";
 
 const int defaultPerPage = 60;
 const int defaultPerRandomPage = 1;
 
-const String hostedFilesPath = "files";
+const String hostedFilesPath = "data";
 
 const String fullFileFolderName = "full";
 const String thumbnailFileFolderName = "thumbnails";

@@ -5,7 +5,6 @@ import 'package:dartlery/services/background_service.dart';
 import 'dart:isolate';
 import 'package:di/di.dart';
 import 'package:args/args.dart';
-import 'dart:io';
 import 'package:dartlery/server.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart'
@@ -16,7 +15,7 @@ Future<Null> main(List<String> args) async {
   // Add a simple log handler to log information to a server side file.
   Logger.root.level = Level.FINEST;
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
-  final Logger _log = new Logger("server.main()");
+  //final Logger _log = new Logger("server.main()");
 
   final ArgParser parser = new ArgParser()
     ..addOption('port', abbr: 'p', defaultsTo: '8080')
