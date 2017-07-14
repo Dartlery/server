@@ -9,6 +9,7 @@ export 'src/exceptions/unauthorized_exception.dart';
 export 'src/exceptions/duplicate_item_exception.dart';
 export 'src/user_privilege.dart';
 export 'src/mime_types.dart';
+export 'src/diff.dart';
 import 'package:path/path.dart' as path;
 
 const String appName = "Dartlery";

@@ -1,92 +1,57 @@
 <div *ngIf="model!=null">
 
-    <div [style.width]="comparisonSplitPosition"
-         style="position:absolute;left:0;top:0;overflow: hidden;height:100%">
-    <div class="itemContainer" style="left:0;">
-        <img src="{{getFullFileUrl(firstComparisonItem)}}" id="leftImage"/>
-    </div>
-    </div>
-    <div [style.left]="comparisonSplitPosition"
-         style="position:absolute;right:0;top:0;overflow: hidden;height:100%">
-        <div class="itemContainer" style="right:0;">
-            <img src="{{getFullFileUrl(secondComparisonItem)}}" id="rightImage"/>
-        </div>
-    </div>
-    <div class="splitter" [style.left]="comparisonSplitPosition"></div>
-    <div style="position:absolute;top:50%;height:24px;width: 24px;background-color: black;border-radius: 50%;color:white;margin-left:-12px;margin-top:-12px;cursor:ew-resize;"
-         [style.left]="comparisonSplitPosition" draggable="true" (drag)="comparisonDrag($event)"
-         (dragend)="cancelEvent($event)">
-        <glyph icon="compare_arrows"></glyph>
-    </div>
-
+    <image-compare class="imageCompare"
+            [leftImage]="getFullFileUrl(firstComparisonItem)"
+                   [rightImage]="getFullFileUrl(secondComparisonItem)"
+                    [animate]="animatedComparison"></image-compare>
 
     <material-spinner *ngIf="processing"></material-spinner>
-
 
     <div style="width: 100%; text-align: center; position: fixed; bottom: 0; left:0 ; right:0;">
         <table style="margin: 0 auto;">
             <tr>
                 <td style="width: 40px;">
-                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(true)" materialTooltip="Delete left item"></confirm-button>
+                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(true)"
+                                    materialTooltip="Delete left item"></confirm-button>
                 </td>
                 <td>
                     {{firstComparisonItem.height}}x{{firstComparisonItem.width}}<br/>
-                    <span *ngIf="sizeWinner==0" class="win">
-                {{f.format(firstComparisonPixelCount)}} pixels
-            </span>
-                    <span *ngIf="sizeWinner==-1" class="tie">
-                {{f.format(firstComparisonPixelCount)}} pixels
-            </span>
-                    <span *ngIf="sizeWinner==1" class="lose">
+                    <span [ngClass]="{'win': sizeWinner==0, 'lose': sizeWinner==1}">
                 {{f.format(firstComparisonPixelCount)}} pixels
             </span>
                     <br/>
-                    <span *ngIf="lengthWinner==0" class="win">
-                {{f.format(firstLength)}} bytes
-            </span>
-                    <span *ngIf="lengthWinner==-1" class="tie">
-                {{f.format(firstLength)}} bytes
-            </span>
-                    <span *ngIf="lengthWinner==1" class="lose">
+                    <span [ngClass]="{'win': lengthWinner==0, 'lose': lengthWinner==1}">
                 {{f.format(firstLength)}} bytes
             </span>
                     <br/>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="chevron_left" (trigger)="mergeClicked(true)" materialTooltip="Merge right item into left item"></confirm-button>
+                    <confirm-button icon="chevron_left" (trigger)="mergeClicked(true)"
+                                    materialTooltip="Merge right item into left item"></confirm-button>
                 </td>
                 <td style="width: 100px;text-align: center;">
                     {{model.value}}%
                     <confirm-button icon="remove_circle" orientation="horizontal"
-                                    (trigger)="clearSimilarity()" materialTooltip="Leave items unchanged and remove duplicate indicator"></confirm-button>
+                                    (trigger)="clearSimilarity()"
+                                    materialTooltip="Leave items unchanged and remove duplicate indicator"></confirm-button>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="chevron_right" (trigger)="mergeClicked(false)" materialTooltip="Merge left item into right item"></confirm-button>
+                    <confirm-button icon="chevron_right" (trigger)="mergeClicked(false)"
+                                    materialTooltip="Merge left item into right item"></confirm-button>
                 </td>
                 <td>
                     {{secondComparisonItem.height}}x{{secondComparisonItem.width}}<br/>
-                    <span *ngIf="sizeWinner==1" class="win">
-                {{f.format(secondComparisonPixelCount)}} pixels
-            </span>
-                    <span *ngIf="sizeWinner==-1" class="tie">
-                {{f.format(secondComparisonPixelCount)}} pixels
-            </span>
-                    <span *ngIf="sizeWinner==0" class="lose">
+                    <span [ngClass]="{'win': sizeWinner==1, 'lose': sizeWinner==0}">
                 {{f.format(secondComparisonPixelCount)}} pixels
             </span>
                     <br/>
-                    <span *ngIf="lengthWinner==1" class="win">
-                {{f.format(secondLength)}} bytes
-            </span>
-                    <span *ngIf="lengthWinner==-1" class="tie">
-                {{f.format(secondLength)}} bytes
-            </span>
-                    <span *ngIf="lengthWinner==0" class="lose">
+                    <span [ngClass]="{'win': lengthWinner==1, 'lose': lengthWinner==0}">
                 {{f.format(secondLength)}} bytes
             </span>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(false)" materialTooltip="Delete right item"></confirm-button>
+                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(false)"
+                                    materialTooltip="Delete right item"></confirm-button>
                 </td>
             </tr>
         </table>
@@ -95,7 +60,8 @@
     <div style="position: absolute;left:0;top:0;">
         <b>{{firstComparisonItem.mime}}<br/></b>
         <b *ngFor="let t of firstComparisonItem.tags">{{formatTag(t)}}<br/></b>
-        <a [routerLink]="['Item', {id: firstComparisonItem.id}]" id="link_{{firstComparisonItem.id}}" target="_new">Link</a>
+        <a [routerLink]="['Item', {id: firstComparisonItem.id}]" id="link_{{firstComparisonItem.id}}"
+           target="_new">Link</a>
     </div>
     <div style="position: absolute;right:0;top:0;text-align:right;">
         <b>{{secondComparisonItem.mime}}<br/></b>

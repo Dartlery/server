@@ -24,11 +24,6 @@ abstract class APage extends AApiErrorThing with AView {
   }
 
 
-  void cancelEvent(html.Event e) {
-    e.stopPropagation();
-    e.preventDefault();
-    e.stopImmediatePropagation();
-  }
 
   String getViewWidthString([int offset = 0]) {
     return "${html.window.innerWidth+offset}px";

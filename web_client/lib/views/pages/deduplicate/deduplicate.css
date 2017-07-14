@@ -1,35 +1,20 @@
 span.win { color:green;}
 span.lose { color:red; }
-span.tie {color:orange; }
+span.tie {  }
 
 table td {
     white-space: nowrap;
 }
 
-.itemContainer {
-    text-align: center;
-    position: absolute;
-    top: 0;
-    width:100vw;
-    height: calc(100vh - 64px - 64px);
-}
-
-.splitter {
-    position: absolute;
-    top: 0;
-    width: 1px;
-    background-color: black;
-    height: calc(100vh - 64px - 64px);
-}
 
 @media (max-width: 600px) {
-    .itemContainer, .splitter {
+    .imageCompare {
         height: calc(100vh - 56px - 64px);
     }
 }
 
-.itemContainer img {
-    object-fit: contain;
-    width:100%;
-    height:100%;
+
+.imageCompare {
+    height: calc(100vh - 64px - 64px);
+    width: 100%;
 }
