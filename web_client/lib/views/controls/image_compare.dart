@@ -161,7 +161,7 @@ class ImageCompareComponent extends AView implements OnInit, OnDestroy {
         new Point(comparisonWidthInt, comparisonHeightInt));
     final double halfWidth = (comparisonWidthInt / 2);
     final double halfImage = (p.x / 2);
-    final int output = (halfWidth - halfImage).round() - 16;
+    final int output = (halfWidth - halfImage).round();
     if (output < 0) return 0;
     return output;
   }
@@ -173,7 +173,7 @@ class ImageCompareComponent extends AView implements OnInit, OnDestroy {
         new Point(comparisonWidthInt, comparisonHeightInt));
     final double halfWidth = (comparisonWidthInt / 2);
     final double halfImage = (p.x / 2);
-    final int output = (halfWidth + halfImage).round() + 16;
+    final int output = (halfWidth + halfImage).round();
     if (output > comparisonWidthInt) return comparisonWidthInt;
     return output;
   }
@@ -238,7 +238,7 @@ class ImageCompareComponent extends AView implements OnInit, OnDestroy {
     _rightLoaded = rightImageElement.nativeElement.onLoad.listen((html.Event e) {
       _rightLoading = false;
       rightWidth = rightImageElement.nativeElement.naturalWidth;
-      rightHeight = rightImageElement.nativeElement.naturalWidth;
+      rightHeight = rightImageElement.nativeElement.naturalHeight;
     });
 
     new Timer(new Duration(seconds: 1), () {

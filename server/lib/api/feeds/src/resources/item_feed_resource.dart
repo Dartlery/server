@@ -76,16 +76,16 @@ class ItemFeedResource extends AResource {
       final FeedItem fItem = new FeedItem(i.id);
       String imageUrl;
       if (i.fullFileAvailable) {
-        imageUrl = urlPath.join(requestRoot, filesPath, fullFileFolderName,
+        imageUrl = urlPath.join(requestRoot, dataPath, fullFileFolderName,
             i.id.substring(0, fileHashPrefixLength), i.id);
       } else {
-        imageUrl = urlPath.join(requestRoot, filesPath, originalFileFolderName,
+        imageUrl = urlPath.join(requestRoot, dataPath, originalFileFolderName,
             i.id.substring(0, fileHashPrefixLength), i.id);
       }
 
       fItem.bannerImage = urlPath.join(
           requestRoot,
-          filesPath,
+          dataPath,
           thumbnailFileFolderName,
           i.id.substring(0, fileHashPrefixLength),
           i.id);

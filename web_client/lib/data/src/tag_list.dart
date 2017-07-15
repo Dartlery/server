@@ -69,6 +69,11 @@ class TagList extends Iterable<TagWrapper> {
     _list.add(tag);
   }
 
+  void addAll(Iterable<TagWrapper> tags) {
+    for(TagWrapper t in tags)
+      add(t);
+  }
+
   void remove(TagWrapper tag) {
     final int i = indexOf(tag);
     if (i == -1) return;
@@ -84,6 +89,8 @@ class TagList extends Iterable<TagWrapper> {
     }
     return -1;
   }
+
+  bool containsTag(Tag t) => indexOf(new TagWrapper.fromTag(t))!=-1;
 
   static String convertToQueryString(List<Tag> tags) {
     return tags.map((Tag t) {

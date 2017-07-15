@@ -1,5 +1,7 @@
 <div *ngIf="model!=null">
 
+
+
     <image-compare class="imageCompare"
             [leftImage]="getFullFileUrl(firstComparisonItem)"
                    [rightImage]="getFullFileUrl(secondComparisonItem)"
@@ -7,11 +9,11 @@
 
     <material-spinner *ngIf="processing"></material-spinner>
 
-    <div style="width: 100%; text-align: center; position: fixed; bottom: 0; left:0 ; right:0;">
+    <div class="mergeControls">
         <table style="margin: 0 auto;">
             <tr>
                 <td style="width: 40px;">
-                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(true)"
+                    <confirm-button icon="delete_forever" (trigger)="deleteItem(firstComparisonItem.id)"
                                     materialTooltip="Delete left item"></confirm-button>
                 </td>
                 <td>
@@ -26,17 +28,17 @@
                     <br/>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="chevron_left" (trigger)="mergeClicked(true)"
+                    <confirm-button icon="chevron_left" (trigger)="mergeItems(secondComparisonItem.id, firstComparisonItem.id)"
                                     materialTooltip="Merge right item into left item"></confirm-button>
                 </td>
                 <td style="width: 100px;text-align: center;">
                     {{model.value}}%
                     <confirm-button icon="remove_circle" orientation="horizontal"
-                                    (trigger)="clearSimilarity()"
+                                    (trigger)="clearSimilarity(model)"
                                     materialTooltip="Leave items unchanged and remove duplicate indicator"></confirm-button>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="chevron_right" (trigger)="mergeClicked(false)"
+                    <confirm-button icon="chevron_right" (trigger)="mergeItems(firstComparisonItem.id, secondComparisonItem.id)"
                                     materialTooltip="Merge left item into right item"></confirm-button>
                 </td>
                 <td>
@@ -50,22 +52,48 @@
             </span>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="delete_forever" (trigger)="deleteClicked(false)"
+                    <confirm-button icon="delete_forever" (trigger)="deleteItem(secondaryComparisonItem.id)"
                                     materialTooltip="Delete right item"></confirm-button>
                 </td>
             </tr>
         </table>
     </div>
 
-    <div style="position: absolute;left:0;top:0;">
+    <div class="similarItems">
+        <div *ngFor="let ed of otherComparisons" (mouseover)="selectComparison(ed)" [ngClass]="{'selectedItem': secondComparisonItem.id==getOtherImageId(ed)}">
+            <table>
+                <tr>
+                    <td>
+                        <confirm-button icon="delete_forever" (trigger)="deleteItem(getOtherImageId(ed))"
+                                        materialTooltip="Delete right item"></confirm-button>
+                    </td>
+                    <td>
+                        <img src="{{getThumbnailFileUrl(getOtherImageId(ed))}}" /><br/>
+                        {{ed.value}}
+
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="bulkActions">
+        <confirm-button icon="remove_circle" orientation="horizontal"
+                        (trigger)="clearAll()"
+                        materialTooltip="Leave items unchanged and remove duplicate indicators"></confirm-button>
+
+    </div>
+
+    <div class="leftTags" >
         <b>{{firstComparisonItem.mime}}<br/></b>
-        <b *ngFor="let t of firstComparisonItem.tags">{{formatTag(t)}}<br/></b>
+        <b *ngFor="let t of firstComparisonItem.tags" [ngClass]="{'win': differentTags.containsTag(t)}">{{formatTag(t)}}<br/></b>
         <a [routerLink]="['Item', {id: firstComparisonItem.id}]" id="link_{{firstComparisonItem.id}}"
            target="_new">Link</a>
     </div>
-    <div style="position: absolute;right:0;top:0;text-align:right;">
+    <div class="rightTags">
         <b>{{secondComparisonItem.mime}}<br/></b>
-        <b *ngFor="let t of secondComparisonItem.tags">{{formatTag(t)}}<br/></b>
+        <b *ngFor="let t of secondComparisonItem.tags" [ngClass]="{'win': differentTags.containsTag(t)}">{{formatTag(t)}}<br/></b>
         <a [routerLink]="['Item', {id: secondComparisonItem.id}]" id="link_{{secondComparisonItem.id}}" target="_new">Link</a>
     </div>
 </div>

@@ -10,7 +10,7 @@ export 'src/paginated_data.dart';
 export 'src/paginated_id_data.dart';
 export 'src/id_list.dart';
 export 'src/item.dart';
-export 'src/settings.dart';
+export 'src/global_settings.dart';
 export 'src/user.dart';
 export 'src/tag.dart';
 export 'src/tag_category.dart';

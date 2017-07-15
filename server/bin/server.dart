@@ -13,7 +13,7 @@ import 'package:dartlery/model/model.dart';
 
 Future<Null> main(List<String> args) async {
   // Add a simple log handler to log information to a server side file.
-  Logger.root.level = Level.FINEST;
+  Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
   //final Logger _log = new Logger("server.main()");
 

@@ -72,4 +72,7 @@ class TagWrapper {
     }
     return false;
   }
+
+  @override
+  bool operator ==(TagWrapper other) => equals(other);
 }

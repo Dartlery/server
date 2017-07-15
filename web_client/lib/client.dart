@@ -73,7 +73,7 @@ String getServerRoot() {
   // server than the dartalog server component. This is usually on a 5-digit port,
   // which theoretically wouldn't be used ina  real deployment.
   // TODO: Figure out a cleaner way of handling this
-  if (window.location.port.length >= 5) return "http://localhost:3278/";
+  if (window.location.port.length >= 5) return "http://localhost:8080/";
 
   return output.toString();
 }
