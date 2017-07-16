@@ -15,16 +15,31 @@ Future<Null> main(List<String> args) async {
   // Add a simple log handler to log information to a server side file.
   Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
-  //final Logger _log = new Logger("server.main()");
+  final Logger _log = new Logger("server.main()");
 
   final ArgParser parser = new ArgParser()
     ..addOption('port', abbr: 'p', defaultsTo: '8080')
     ..addOption('ip', abbr: 'i', defaultsTo: '0.0.0.0')
-    ..addOption('mongo', abbr: 'm', defaultsTo: '');
-
+    ..addOption('mongo', abbr: 'm', defaultsTo: '')
+    ..addOption('log', abbr: 'l');
 
 
   final ArgResults result = parser.parse(args);
+
+  String logLevelString = result["log"];
+  if(isNullOrWhitespace(logLevelString)) {
+    logLevelString =  Platform.environment["DARTLERY_LOG"];
+  }
+  if(isNotNullOrWhitespace(logLevelString)) {
+    for (Level l in Level.LEVELS) {
+      if(logLevelString.toLowerCase()==l.name.toLowerCase()) {
+        Logger.root.level = l;
+        _log.info("Log level set to ${l.name}");
+        break;
+      }
+    }
+  }
+
 
   final int port = int.parse(result['port'], onError: (String val) {
     stdout.writeln('Could not parse port value "$val" into a number.');
