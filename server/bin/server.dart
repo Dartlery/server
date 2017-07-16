@@ -34,7 +34,7 @@ Future<Null> main(List<String> args) async {
     for (Level l in Level.LEVELS) {
       if(logLevelString.toLowerCase()==l.name.toLowerCase()) {
         Logger.root.level = l;
-        _log.info("Log level set to ${l.name}");
+        _log.config("Log level set to ${l.name}");
         break;
       }
     }
@@ -42,7 +42,7 @@ Future<Null> main(List<String> args) async {
 
 
   final int port = int.parse(result['port'], onError: (String val) {
-    stdout.writeln('Could not parse port value "$val" into a number.');
+    _log.severe('Could not parse port value "$val" into a number.');
     exit(1);
   });
 
