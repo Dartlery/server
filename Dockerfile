@@ -10,6 +10,9 @@ VOLUME /app/data
 
 EXPOSE 8080
 
+ENV DARTLERY_MONGO mongodb://127.0.0.1/dartlery
+ENV DARTLERY_LOG INFO
+
 CMD []
 ENTRYPOINT ["/usr/bin/dart", "server.snapshot"]
 
