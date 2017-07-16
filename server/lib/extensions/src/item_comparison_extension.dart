@@ -57,9 +57,9 @@ class ItemComparisonExtension extends AExtension {
 
       if (!MimeTypes.imageTypes.contains(sourceItem.first.mime)) return;
 
-      if (startPoint == null) startPoint = sourceItem.first.uploaded;
+      //if (startPoint == null) startPoint = sourceItem.first.uploaded;
 
-      _log.info("Checking for item $itemId starting with $startPoint");
+      _log.fine("Checking for item $itemId starting with $startPoint");
 
       final ImageHash sourceHash = await _getPerceptualHash(itemId);
 
@@ -91,7 +91,7 @@ class ItemComparisonExtension extends AExtension {
         }
       }
       if (lastProcessedDate != null) {
-        _log.info("Re-enqueing with new start point of $lastProcessedDate");
+        _log.fine("Re-enqueing with new start point of $lastProcessedDate");
         final Map<String, dynamic> data = <String,dynamic>{};
         data["itemId"] = itemId;
         data["lastProcessed"] = lastProcessedDate;
@@ -179,7 +179,7 @@ class ItemComparisonExtension extends AExtension {
         new ImageHash.forImage(decodeImage(f.readAsBytesSync()), size: 16);
 
     final String perceptualHash = imageHash.toString();
-    _log.info("Perceptual hash: $perceptualHash");
+    _log.fine("Perceptual hash: $perceptualHash");
 
     final ExtensionData newData = new ExtensionData();
     newData.extensionId = extensionId;
