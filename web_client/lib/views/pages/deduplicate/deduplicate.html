@@ -86,12 +86,14 @@
     </div>
 
     <div class="leftTags" >
+        <b>{{firstComparisonItem.fileName}}<br/></b>
         <b>{{firstComparisonItem.mime}}<br/></b>
         <b *ngFor="let t of firstComparisonItem.tags" [ngClass]="{'win': differentTags.containsTag(t)}">{{formatTag(t)}}<br/></b>
         <a [routerLink]="['Item', {id: firstComparisonItem.id}]" id="link_{{firstComparisonItem.id}}"
            target="_new">Link</a>
     </div>
     <div class="rightTags">
+        <b>{{secondComparisonItem.fileName}}<br/></b>
         <b>{{secondComparisonItem.mime}}<br/></b>
         <b *ngFor="let t of secondComparisonItem.tags" [ngClass]="{'win': differentTags.containsTag(t)}">{{formatTag(t)}}<br/></b>
         <a [routerLink]="['Item', {id: secondComparisonItem.id}]" id="link_{{secondComparisonItem.id}}" target="_new">Link</a>
