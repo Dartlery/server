@@ -67,7 +67,6 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
 
   bool animatedComparison = true;
 
-
   DeduplicatePage(PageControlService pageControl, this._api, this._auth,
       this._router, this._params, this._location)
       : super(_auth, _router, pageControl) {
@@ -76,11 +75,9 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
         .setAvailablePageActions([PageAction.refresh, PageAction.compare]);
   }
 
-
   String getOtherImageId(ExtensionData data) {
-    if(primaryComparison==null)
-      return "";
-    if(data.primaryId==primaryComparison.primaryId) {
+    if (primaryComparison == null) return "";
+    if (data.primaryId == primaryComparison.primaryId) {
       return data.secondaryId;
     } else {
       return data.primaryId;
@@ -88,30 +85,25 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   }
 
   int get firstLength => int.parse(firstComparisonItem?.length ?? "0");
-  int get secondLength=> int.parse(secondComparisonItem?.length ?? "0");
+  int get secondLength => int.parse(secondComparisonItem?.length ?? "0");
 
   int get lengthWinner {
-    if (firstLength >
-        secondLength) {
+    if (firstLength > secondLength) {
       return 0;
-    } else if (firstLength <
-        secondLength) {
+    } else if (firstLength < secondLength) {
       return 1;
     }
     return -1;
-
   }
 
   @override
   Logger get loggerImpl => _log;
-
 
   int get firstComparisonPixelCount =>
       (firstComparisonItem?.height ?? 0) * (firstComparisonItem?.width ?? 0);
 
   int get secondComparisonPixelCount =>
       (secondComparisonItem?.height ?? 0) * (secondComparisonItem?.width ?? 0);
-
 
   int get sizeWinner {
     if (firstComparisonPixelCount > secondComparisonPixelCount) {
@@ -121,8 +113,6 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     }
     return -1;
   }
-
-
 
   void clear() {
     primaryComparison = null;
@@ -143,7 +133,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
 
   Future<Null> clearAll() async {
     await performApiCall(() async {
-      for(ExtensionData data in otherComparisons) {
+      for (ExtensionData data in otherComparisons) {
         await _api.extensionData.delete(
             "itemComparison", "similarItems", data.primaryId, data.secondaryId);
       }
@@ -151,27 +141,24 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     });
   }
 
-
   Future<Null> deleteItem(String id) async {
     await performApiCall(() async {
-        await _api.items.delete(id);
+      await _api.items.delete(id);
 
-        if(id==primaryComparison.primaryId)
-          primaryComparison==null;
+      if (id == primaryComparison.primaryId) primaryComparison == null;
 
       await refresh();
     });
   }
 
-  Future<Null> mergeItems(String sourceId, String targetId, {bool refresh: true}) async {
+  Future<Null> mergeItems(String sourceId, String targetId,
+      {bool refresh: true}) async {
     await performApiCall(() async {
       final IdRequest request = new IdRequest();
-        request.id = sourceId;
-        await _api.items.mergeItems(request, targetId);
-        if(sourceId==primaryComparison.primaryId)
-          primaryComparison==null;
-        if(refresh)
-          await this.refresh();
+      request.id = sourceId;
+      await _api.items.mergeItems(request, targetId);
+      if (sourceId == primaryComparison.primaryId) primaryComparison == null;
+      if (refresh) await this.refresh();
     });
   }
 
@@ -206,13 +193,15 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   Future<Null> selectComparison(ExtensionData ed) async {
     model = ed;
 
-    if(primaryComparison!=null) {
+    if (primaryComparison != null) {
       secondComparisonItem = await _api.items.getById(getOtherImageId(ed));
     } else {
       firstComparisonItem = await _api.items.getById(model.primaryId);
       secondComparisonItem = await _api.items.getById(model.secondaryId);
     }
-    final Diff<TagWrapper> tagDiff= new Diff<TagWrapper>(firstComparisonItem.tags.map((Tag t) => new TagWrapper.fromTag(t)), secondComparisonItem.tags.map((Tag t) => new TagWrapper.fromTag(t)));
+    final Diff<TagWrapper> tagDiff = new Diff<TagWrapper>(
+        firstComparisonItem.tags.map((Tag t) => new TagWrapper.fromTag(t)),
+        secondComparisonItem.tags.map((Tag t) => new TagWrapper.fromTag(t)));
     differentTags.clear();
     differentTags.addAll(tagDiff.different);
   }
@@ -224,7 +213,10 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
         if (primaryComparison != null) {
           response = await _api.extensionData.getByPrimaryId(
               "itemComparison", "similarItems", primaryComparison.primaryId,
-              bidirectional: true, orderByValues: true, orderDescending: true);
+              bidirectional: true,
+              orderByValues: true,
+              orderDescending: true,
+              perPage: 100);
           clear();
           if (response.items.isNotEmpty) {
             await selectComparison(response.items.first);
@@ -233,32 +225,31 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
             return;
           }
         }
-      } on DetailedApiRequestError catch (e,st) {
-        if(e.status!=404)
-          throw e;
+      } on DetailedApiRequestError catch (e, st) {
+        if (e.status != 404) throw e;
       }
 
       try {
-      clear();
-      response = await _api.extensionData
-          .get("itemComparison", "similarItems",
-              orderByValues: true, orderDescending: true, perPage: 1);
-      if (response.items.isNotEmpty)
-      {
-        await selectComparison(response.items.first);
-        primaryComparison = model;
-        response = await _api.extensionData.getByPrimaryId("itemComparison", "similarItems", model.primaryId, bidirectional: true, orderByValues: true, orderDescending: true);
-        otherComparisons = response.items;
+        clear();
+        response = await _api.extensionData.get(
+            "itemComparison", "similarItems",
+            orderDescending: true, perPage: 1);
+        if (response.items.isNotEmpty) {
+          await selectComparison(response.items.first);
+          primaryComparison = model;
+          response = await _api.extensionData.getByPrimaryId(
+              "itemComparison", "similarItems", model.primaryId,
+              bidirectional: true,
+              orderByValues: true,
+              orderDescending: true,
+              perPage: 100);
+          otherComparisons = response.items;
+        }
+      } on DetailedApiRequestError catch (e, st) {
+        if (e.status != 404) throw e;
       }
-      } on DetailedApiRequestError catch (e,st) {
-        if(e.status!=404)
-          throw e;
-      }
-
-
     });
   }
 
   TagList differentTags = new TagList();
-
 }
