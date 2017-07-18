@@ -41,7 +41,7 @@ import 'package:dartlery/data/data.dart';
 class DeduplicatePage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("DeduplicatePage");
 
-  ExtensionData primaryComparison;
+  String currentItemId;
 
   ExtensionData model;
   Item firstComparisonItem = new Item();
@@ -76,8 +76,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   }
 
   String getOtherImageId(ExtensionData data) {
-    if (primaryComparison == null) return "";
-    if (data.primaryId == primaryComparison.primaryId) {
+    if (isNullOrWhitespace(currentItemId)) return "";
+    if (data.primaryId == currentItemId) {
       return data.secondaryId;
     } else {
       return data.primaryId;
@@ -115,7 +115,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   }
 
   void clear() {
-    primaryComparison = null;
+    currentItemId = "";
     model = null;
     firstComparisonItem = new Item();
     secondComparisonItem = new Item();
@@ -145,7 +145,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       await _api.items.delete(id);
 
-      if (id == primaryComparison.primaryId) primaryComparison == null;
+      if (id == currentItemId) currentItemId == "";
 
       await refresh();
     });
@@ -157,7 +157,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
       final IdRequest request = new IdRequest();
       request.id = sourceId;
       await _api.items.mergeItems(request, targetId);
-      if (sourceId == primaryComparison.primaryId) primaryComparison == null;
+      if (sourceId == currentItemId) currentItemId== "";
       if (refresh) await this.refresh();
     });
   }
@@ -193,7 +193,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   Future<Null> selectComparison(ExtensionData ed) async {
     model = ed;
 
-    if (primaryComparison != null) {
+    if (isNotNullOrWhitespace(currentItemId)) {
+      firstComparisonItem = await _api.items.getById(currentItemId);
       secondComparisonItem = await _api.items.getById(getOtherImageId(ed));
     } else {
       firstComparisonItem = await _api.items.getById(model.primaryId);
@@ -210,18 +211,19 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     PaginatedExtensionDataResponse response;
     await performApiCall(() async {
       try {
-        if (primaryComparison != null) {
+        if (isNotNullOrWhitespace(currentItemId)) {
+          String currentItemId = this.currentItemId;
           response = await _api.extensionData.getByPrimaryId(
-              "itemComparison", "similarItems", primaryComparison.primaryId,
+              "itemComparison", "similarItems", currentItemId,
               bidirectional: true,
               orderByValues: true,
               orderDescending: true,
               perPage: 100);
           clear();
           if (response.items.isNotEmpty) {
-            await selectComparison(response.items.first);
-            primaryComparison = model;
+            this.currentItemId = currentItemId;
             otherComparisons = response.items;
+            await selectComparison(response.items.first);
             return;
           }
         }
@@ -235,15 +237,15 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
             "itemComparison", "similarItems",
             orderDescending: true, perPage: 1);
         if (response.items.isNotEmpty) {
-          await selectComparison(response.items.first);
-          primaryComparison = model;
+          currentItemId = response.items.first.primaryId;
           response = await _api.extensionData.getByPrimaryId(
-              "itemComparison", "similarItems", model.primaryId,
+              "itemComparison", "similarItems", currentItemId,
               bidirectional: true,
               orderByValues: true,
               orderDescending: true,
               perPage: 100);
           otherComparisons = response.items;
+          await selectComparison(response.items.first);
         }
       } on DetailedApiRequestError catch (e, st) {
         if (e.status != 404) throw e;
