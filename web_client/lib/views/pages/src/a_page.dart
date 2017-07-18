@@ -1,0 +1,37 @@
+import 'dart:html' as html;
+import 'package:dartlery/client.dart';
+import 'package:dartlery/services/services.dart';
+import 'package:dartlery_shared/tools.dart';
+import 'package:angular2/router.dart';
+import 'package:dartlery/data/data.dart';
+import '../../src/a_api_error_thing.dart';
+import 'package:dartlery/api/api.dart';
+import 'dart:math';
+import '../../src/a_view.dart';
+
+abstract class APage extends AApiErrorThing with AView {
+  final PageControlService pageControl;
+
+  APage(AuthenticationService auth, Router router, this.pageControl)
+      : super(router, auth);
+
+  bool popupUnhandledErrors = true;
+  @override
+  set errorMessage(String message) {
+    super.errorMessage = message;
+    if (popupUnhandledErrors && isNotNullOrWhitespace(message))
+      pageControl.sendMessage("Error", message);
+  }
+
+
+
+  String getViewWidthString([int offset = 0]) {
+    return "${html.window.innerWidth+offset}px";
+  }
+
+  String getViewHeightString([int offset = 0]) {
+    // The top toolbar is currently permanent, so this height calculation automatically subtracts its height
+    return "${html.window.innerHeight+offset-64}px";
+  }
+
+}

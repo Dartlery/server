@@ -1,0 +1,11 @@
+.itemDisplay {
+    background-color: black;
+    object-fit: contain;
+    width:100%;
+    height: calc(100vh - 64px)
+}
+@media (max-width: 600px) {
+    .itemDisplay {
+        height: calc(100vh - 56px)
+    }
+}

@@ -1,0 +1,9 @@
+.git
+
+.packages
+.pub/
+
+build/
+pubspec.lock
+doc/api/
+

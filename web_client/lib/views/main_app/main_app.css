@@ -1,0 +1,14 @@
+#menu {
+    padding-top: 0.5em;
+}
+
+.content {
+    position:absolute;
+    top:64px;
+    bottom:0;
+    left:0;
+    right:0;
+    overflow-y: auto;
+    overflow-x:hidden;
+    z-index:0;
+}

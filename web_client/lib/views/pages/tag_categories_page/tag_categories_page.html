@@ -1,0 +1,28 @@
+<auth-status (authorizedChanged)="authorizationChanged($event)" require="admin" [showMessage]="true"></auth-status>
+
+<div *ngIf="userAuthorized">
+    <div *ngIf="noItemsFound&&!processing" class="no-items">No Tag Categories Found</div>
+    <material-expansionpanel-set *ngIf="!noItemsFound">
+        <material-expansionpanel name="{{i}}" *ngFor="let i of items" (save)="onSubmit()"
+                                 [expanded]="i==''"
+                                 [saveDisabled]="!editForm.valid" (open)="selectItem(i)" (close)="cancelEdit()" (cancel)="cancelEdit()">
+            <div style="column-width: 200pt;">
+                <form (ngSubmit)="onSubmit()" #editForm="ngForm">
+                    <material-input [(ngModel)]="model.id" ngControl="id" floatingLabel required
+                                    autoFocus
+                                    label="ID"></material-input>
+                    <br/>
+                    <label>Color:<input type="color" [(ngModel)]="model.color" ngControl="color" /></label>
+                    <br/>
+
+
+                    <span *ngIf="hasErrorMessage" class="error_output">
+                    <glyph icon="error_outline"></glyph>
+                    {{errorMessage}}
+                </span>
+                    <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+                </form>
+            </div>
+        </material-expansionpanel>
+    </material-expansionpanel-set>
+</div>

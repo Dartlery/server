@@ -1,0 +1,1469 @@
+{
+ "kind": "discovery#restDescription",
+ "etag": "4047328c32891c9c62dccfddd1a69e934bb224f3",
+ "discoveryVersion": "v1",
+ "id": "gallery:v0.1",
+ "name": "gallery",
+ "version": "v0.1",
+ "revision": "0",
+ "description": "Item REST API",
+ "protocol": "rest",
+ "baseUrl": "http://localhost:3278/api/gallery/v0.1/",
+ "basePath": "/api/gallery/v0.1/",
+ "rootUrl": "http://localhost:3278/",
+ "servicePath": "api/gallery/v0.1/",
+ "parameters": {},
+ "schemas": {
+  "CreateItemRequest": {
+   "id": "CreateItemRequest",
+   "type": "object",
+   "properties": {
+    "item": {
+     "$ref": "Item"
+    },
+    "file": {
+     "$ref": "MediaMessage"
+    }
+   }
+  },
+  "Item": {
+   "id": "Item",
+   "type": "object",
+   "properties": {
+    "extension": {
+     "type": "string"
+    },
+    "fileData": {
+     "type": "array",
+     "items": {
+      "type": "integer",
+      "format": "int32"
+     }
+    },
+    "fileName": {
+     "type": "string"
+    },
+    "downloadName": {
+     "type": "string"
+    },
+    "length": {
+     "type": "string",
+     "format": "uint64"
+    },
+    "height": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "width": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "duration": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "video": {
+     "type": "boolean"
+    },
+    "audio": {
+     "type": "boolean"
+    },
+    "metadata": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "mime": {
+     "type": "string"
+    },
+    "source": {
+     "type": "string"
+    },
+    "tags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    },
+    "uploaded": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "uploader": {
+     "type": "string"
+    },
+    "errors": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "fullFileAvailable": {
+     "type": "boolean"
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "Tag": {
+   "id": "Tag",
+   "type": "object",
+   "properties": {
+    "category": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "MediaMessage": {
+   "id": "MediaMessage",
+   "type": "object",
+   "properties": {
+    "bytes": {
+     "type": "array",
+     "items": {
+      "type": "integer",
+      "format": "int32"
+     }
+    },
+    "updated": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "contentType": {
+     "type": "string"
+    },
+    "cacheControl": {
+     "type": "string"
+    },
+    "contentEncoding": {
+     "type": "string"
+    },
+    "contentLanguage": {
+     "type": "string"
+    },
+    "md5Hash": {
+     "type": "string"
+    },
+    "metadata": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "IdResponse": {
+   "id": "IdResponse",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "location": {
+     "type": "string"
+    }
+   }
+  },
+  "ListOfTag": {
+   "id": "ListOfTag",
+   "type": "array",
+   "items": {
+    "$ref": "Tag"
+   }
+  },
+  "PaginatedItemResponse": {
+   "id": "PaginatedItemResponse",
+   "type": "object",
+   "properties": {
+    "queryTags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    },
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "IdRequest": {
+   "id": "IdRequest",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "PasswordChangeRequest": {
+   "id": "PasswordChangeRequest",
+   "type": "object",
+   "properties": {
+    "currentPassword": {
+     "type": "string",
+     "required": true
+    },
+    "newPassword": {
+     "type": "string",
+     "required": true
+    }
+   }
+  },
+  "User": {
+   "id": "User",
+   "type": "object",
+   "properties": {
+    "password": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "type": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "SetupRequest": {
+   "id": "SetupRequest",
+   "type": "object",
+   "properties": {
+    "adminUser": {
+     "type": "string"
+    },
+    "adminPassword": {
+     "type": "string"
+    }
+   }
+  },
+  "SetupResponse": {
+   "id": "SetupResponse",
+   "type": "object",
+   "properties": {
+    "adminUser": {
+     "type": "boolean"
+    }
+   }
+  },
+  "CountResponse": {
+   "id": "CountResponse",
+   "type": "object",
+   "properties": {
+    "count": {
+     "type": "integer",
+     "format": "int32"
+    }
+   }
+  },
+  "PaginatedTagResponse": {
+   "id": "PaginatedTagResponse",
+   "type": "object",
+   "properties": {
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "TagInfo"
+     }
+    }
+   }
+  },
+  "TagInfo": {
+   "id": "TagInfo",
+   "type": "object",
+   "properties": {
+    "count": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "redirect": {
+     "$ref": "Tag"
+    },
+    "category": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "ListOfTagInfo": {
+   "id": "ListOfTagInfo",
+   "type": "array",
+   "items": {
+    "$ref": "TagInfo"
+   }
+  },
+  "ReplaceTagsRequest": {
+   "id": "ReplaceTagsRequest",
+   "type": "object",
+   "properties": {
+    "originalTags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    },
+    "newTags": {
+     "type": "array",
+     "items": {
+      "$ref": "Tag"
+     }
+    }
+   }
+  },
+  "TagCategory": {
+   "id": "TagCategory",
+   "type": "object",
+   "properties": {
+    "color": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    }
+   }
+  },
+  "ListOfString": {
+   "id": "ListOfString",
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "ImportPathRequest": {
+   "id": "ImportPathRequest",
+   "type": "object",
+   "properties": {
+    "path": {
+     "type": "string"
+    },
+    "stopOnError": {
+     "type": "boolean"
+    },
+    "interpretShimmieNames": {
+     "type": "boolean"
+    },
+    "mergeExisting": {
+     "type": "boolean"
+    }
+   }
+  },
+  "StringResponse": {
+   "id": "StringResponse",
+   "type": "object",
+   "properties": {
+    "data": {
+     "type": "string"
+    }
+   }
+  },
+  "PaginatedImportResultsResponse": {
+   "id": "PaginatedImportResultsResponse",
+   "type": "object",
+   "properties": {
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "ImportResult"
+     }
+    }
+   }
+  },
+  "ImportResult": {
+   "id": "ImportResult",
+   "type": "object",
+   "properties": {
+    "batchTimestamp": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "id": {
+     "type": "string"
+    },
+    "fileName": {
+     "type": "string"
+    },
+    "source": {
+     "type": "string"
+    },
+    "result": {
+     "type": "string"
+    },
+    "thumbnailCreated": {
+     "type": "boolean"
+    },
+    "error": {
+     "type": "string"
+    },
+    "timestamp": {
+     "type": "string",
+     "format": "date-time"
+    }
+   }
+  },
+  "PaginatedExtensionDataResponse": {
+   "id": "PaginatedExtensionDataResponse",
+   "type": "object",
+   "properties": {
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "ExtensionData"
+     }
+    }
+   }
+  },
+  "ExtensionData": {
+   "id": "ExtensionData",
+   "type": "object",
+   "properties": {
+    "primaryId": {
+     "type": "string"
+    },
+    "secondaryId": {
+     "type": "string"
+    },
+    "value": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ "methods": {},
+ "resources": {
+  "items": {
+   "methods": {
+    "createItem": {
+     "id": "GalleryApi.items.createItem",
+     "path": "items/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "CreateItemRequest"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "delete": {
+     "id": "GalleryApi.items.delete",
+     "path": "items/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "permanent": {
+       "type": "boolean",
+       "description": "Query parameter: 'permanent'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "restore": {
+     "id": "GalleryApi.items.restore",
+     "path": "trash/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "getById": {
+     "id": "GalleryApi.items.getById",
+     "path": "items/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "Item"
+     }
+    },
+    "getTagsByItemId": {
+     "id": "GalleryApi.items.getTagsByItemId",
+     "path": "items/{id}/tags/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "ListOfTag"
+     }
+    },
+    "getVisibleIds": {
+     "id": "GalleryApi.items.getVisibleIds",
+     "path": "items/",
+     "httpMethod": "GET",
+     "parameters": {
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      },
+      "cutoffDate": {
+       "type": "string",
+       "description": "Query parameter: 'cutoffDate'.",
+       "required": false,
+       "location": "query"
+      },
+      "inTrash": {
+       "type": "boolean",
+       "description": "Query parameter: 'inTrash'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [],
+     "response": {
+      "$ref": "PaginatedItemResponse"
+     }
+    },
+    "mergeItems": {
+     "id": "GalleryApi.items.mergeItems",
+     "path": "items/{targetItemId}/merge/",
+     "httpMethod": "PUT",
+     "description": "Merges the data from [sourceItemId] into the item specified by [id], and then deletes the item associated with [sourceItemId]",
+     "parameters": {
+      "targetItemId": {
+       "type": "string",
+       "description": "Path parameter: 'targetItemId'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "targetItemId"
+     ],
+     "request": {
+      "$ref": "IdRequest"
+     },
+     "response": {
+      "$ref": "Item"
+     }
+    },
+    "searchVisible": {
+     "id": "GalleryApi.items.searchVisible",
+     "path": "search/items/{tags}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "tags": {
+       "type": "string",
+       "description": "Path parameter: 'tags'.",
+       "required": true,
+       "location": "path"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      },
+      "cutoffDate": {
+       "type": "string",
+       "description": "Query parameter: 'cutoffDate'.",
+       "required": false,
+       "location": "query"
+      },
+      "inTrash": {
+       "type": "boolean",
+       "description": "Query parameter: 'inTrash'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "tags"
+     ],
+     "response": {
+      "$ref": "PaginatedItemResponse"
+     }
+    },
+    "update": {
+     "id": "GalleryApi.items.update",
+     "path": "items/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "Item"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "updateTagsForItemId": {
+     "id": "GalleryApi.items.updateTagsForItemId",
+     "path": "items/{id}/tags/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "ListOfTag"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "users": {
+   "methods": {
+    "changePassword": {
+     "id": "GalleryApi.users.changePassword",
+     "path": "users/{uuid}/password/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "request": {
+      "$ref": "PasswordChangeRequest"
+     }
+    },
+    "create": {
+     "id": "GalleryApi.users.create",
+     "path": "users/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "User"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "delete": {
+     "id": "GalleryApi.users.delete",
+     "path": "users/{uuid}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ]
+    },
+    "getById": {
+     "id": "GalleryApi.users.getById",
+     "path": "users/{uuid}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "response": {
+      "$ref": "User"
+     }
+    },
+    "getMe": {
+     "id": "GalleryApi.users.getMe",
+     "path": "current_user/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "User"
+     }
+    },
+    "update": {
+     "id": "GalleryApi.users.update",
+     "path": "users/{uuid}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "request": {
+      "$ref": "User"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "setup": {
+   "methods": {
+    "apply": {
+     "id": "GalleryApi.setup.apply",
+     "path": "setup/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "SetupRequest"
+     },
+     "response": {
+      "$ref": "SetupResponse"
+     }
+    },
+    "get": {
+     "id": "GalleryApi.setup.get",
+     "path": "setup/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "SetupResponse"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "tags": {
+   "methods": {
+    "clearRedirect": {
+     "id": "GalleryApi.tags.clearRedirect",
+     "path": "tag_redirects/{id}/{category}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "category": {
+       "type": "string",
+       "description": "Path parameter: 'category'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id",
+      "category"
+     ]
+    },
+    "clearRedirectWithoutCategory": {
+     "id": "GalleryApi.tags.clearRedirectWithoutCategory",
+     "path": "tag_redirects/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "delete": {
+     "id": "GalleryApi.tags.delete",
+     "path": "tag/{id}/{category}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "category": {
+       "type": "string",
+       "description": "Path parameter: 'category'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id",
+      "category"
+     ],
+     "response": {
+      "$ref": "CountResponse"
+     }
+    },
+    "deleteWithoutCategory": {
+     "id": "GalleryApi.tags.deleteWithoutCategory",
+     "path": "tag/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "CountResponse"
+     }
+    },
+    "getAllTagInfo": {
+     "id": "GalleryApi.tags.getAllTagInfo",
+     "path": "tags/",
+     "httpMethod": "GET",
+     "parameters": {
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      },
+      "countAsc": {
+       "type": "boolean",
+       "description": "Query parameter: 'countAsc'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [],
+     "response": {
+      "$ref": "PaginatedTagResponse"
+     }
+    },
+    "getRedirects": {
+     "id": "GalleryApi.tags.getRedirects",
+     "path": "tag_redirects/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfTagInfo"
+     }
+    },
+    "getTagInfo": {
+     "id": "GalleryApi.tags.getTagInfo",
+     "path": "tags/{id}/{category}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "category": {
+       "type": "string",
+       "description": "Path parameter: 'category'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id",
+      "category"
+     ],
+     "response": {
+      "$ref": "TagInfo"
+     }
+    },
+    "getTagInfoWithoutCategory": {
+     "id": "GalleryApi.tags.getTagInfoWithoutCategory",
+     "path": "tags/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "TagInfo"
+     }
+    },
+    "replace": {
+     "id": "GalleryApi.tags.replace",
+     "path": "tags/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "ReplaceTagsRequest"
+     },
+     "response": {
+      "$ref": "CountResponse"
+     }
+    },
+    "resetTagInfo": {
+     "id": "GalleryApi.tags.resetTagInfo",
+     "path": "tag_info/",
+     "httpMethod": "DELETE",
+     "parameters": {},
+     "parameterOrder": []
+    },
+    "search": {
+     "id": "GalleryApi.tags.search",
+     "path": "search/tags/{query}",
+     "httpMethod": "GET",
+     "parameters": {
+      "query": {
+       "type": "string",
+       "description": "Path parameter: 'query'.",
+       "required": true,
+       "location": "path"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      },
+      "countAsc": {
+       "type": "boolean",
+       "description": "Query parameter: 'countAsc'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "query"
+     ],
+     "response": {
+      "$ref": "PaginatedTagResponse"
+     }
+    },
+    "setRedirect": {
+     "id": "GalleryApi.tags.setRedirect",
+     "path": "tag_redirects/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "TagInfo"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "tagCategories": {
+   "methods": {
+    "create": {
+     "id": "GalleryApi.tagCategories.create",
+     "path": "tag_categories/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "TagCategory"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "getAllIds": {
+     "id": "GalleryApi.tagCategories.getAllIds",
+     "path": "tag_categories/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfString"
+     }
+    },
+    "delete": {
+     "id": "GalleryApi.tagCategories.delete",
+     "path": "tag_categories/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "getById": {
+     "id": "GalleryApi.tagCategories.getById",
+     "path": "tag_categories/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "TagCategory"
+     }
+    },
+    "update": {
+     "id": "GalleryApi.tagCategories.update",
+     "path": "tag_categories/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "TagCategory"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "import": {
+   "methods": {
+    "importFromPath": {
+     "id": "GalleryApi.import.importFromPath",
+     "path": "import/results/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "ImportPathRequest"
+     },
+     "response": {
+      "$ref": "StringResponse"
+     }
+    },
+    "getResults": {
+     "id": "GalleryApi.import.getResults",
+     "path": "import/results/",
+     "httpMethod": "GET",
+     "parameters": {
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [],
+     "response": {
+      "$ref": "PaginatedImportResultsResponse"
+     }
+    },
+    "clearResults": {
+     "id": "GalleryApi.import.clearResults",
+     "path": "import/results/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "everything": {
+       "type": "boolean",
+       "description": "Query parameter: 'everything'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": []
+    }
+   },
+   "resources": {}
+  },
+  "extensionData": {
+   "methods": {
+    "get": {
+     "id": "GalleryApi.extensionData.get",
+     "path": "extension_data/{extensionId}/{key}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "extensionId": {
+       "type": "string",
+       "description": "Path parameter: 'extensionId'.",
+       "required": true,
+       "location": "path"
+      },
+      "key": {
+       "type": "string",
+       "description": "Path parameter: 'key'.",
+       "required": true,
+       "location": "path"
+      },
+      "orderByValues": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderByValues'.",
+       "required": false,
+       "location": "query"
+      },
+      "orderDescending": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderDescending'.",
+       "required": false,
+       "location": "query"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "extensionId",
+      "key"
+     ],
+     "response": {
+      "$ref": "PaginatedExtensionDataResponse"
+     }
+    },
+    "getByPrimaryAndSecondaryId": {
+     "id": "GalleryApi.extensionData.getByPrimaryAndSecondaryId",
+     "path": "extension_data/{extensionId}/{key}/{primaryId}/{secondaryId}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "extensionId": {
+       "type": "string",
+       "description": "Path parameter: 'extensionId'.",
+       "required": true,
+       "location": "path"
+      },
+      "key": {
+       "type": "string",
+       "description": "Path parameter: 'key'.",
+       "required": true,
+       "location": "path"
+      },
+      "primaryId": {
+       "type": "string",
+       "description": "Path parameter: 'primaryId'.",
+       "required": true,
+       "location": "path"
+      },
+      "secondaryId": {
+       "type": "string",
+       "description": "Path parameter: 'secondaryId'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "extensionId",
+      "key",
+      "primaryId",
+      "secondaryId"
+     ],
+     "response": {
+      "$ref": "PaginatedExtensionDataResponse"
+     }
+    },
+    "delete": {
+     "id": "GalleryApi.extensionData.delete",
+     "path": "extension_data/{extensionId}/{key}/{primaryId}/{secondaryId}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "extensionId": {
+       "type": "string",
+       "description": "Path parameter: 'extensionId'.",
+       "required": true,
+       "location": "path"
+      },
+      "key": {
+       "type": "string",
+       "description": "Path parameter: 'key'.",
+       "required": true,
+       "location": "path"
+      },
+      "primaryId": {
+       "type": "string",
+       "description": "Path parameter: 'primaryId'.",
+       "required": true,
+       "location": "path"
+      },
+      "secondaryId": {
+       "type": "string",
+       "description": "Path parameter: 'secondaryId'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "extensionId",
+      "key",
+      "primaryId",
+      "secondaryId"
+     ]
+    },
+    "getByPrimaryId": {
+     "id": "GalleryApi.extensionData.getByPrimaryId",
+     "path": "extension_data/{extensionId}/{key}/{primaryId}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "extensionId": {
+       "type": "string",
+       "description": "Path parameter: 'extensionId'.",
+       "required": true,
+       "location": "path"
+      },
+      "key": {
+       "type": "string",
+       "description": "Path parameter: 'key'.",
+       "required": true,
+       "location": "path"
+      },
+      "primaryId": {
+       "type": "string",
+       "description": "Path parameter: 'primaryId'.",
+       "required": true,
+       "location": "path"
+      },
+      "bidirectional": {
+       "type": "boolean",
+       "description": "Query parameter: 'bidirectional'.",
+       "required": false,
+       "location": "query"
+      },
+      "orderByValues": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderByValues'.",
+       "required": false,
+       "location": "query"
+      },
+      "orderDescending": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderDescending'.",
+       "required": false,
+       "location": "query"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "extensionId",
+      "key",
+      "primaryId"
+     ],
+     "response": {
+      "$ref": "PaginatedExtensionDataResponse"
+     }
+    }
+   },
+   "resources": {}
+  }
+ }
+}

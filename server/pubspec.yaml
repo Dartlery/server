@@ -1,0 +1,47 @@
+name: dartlery
+version: 0.1.0
+description: Media collection management application
+author: Matthew Barbour <sanmadjack@gmail.com>
+homepage: https://github.com/dartlery
+
+environment:
+  sdk: '>=1.23.0 <2.0.0'
+
+dependencies:
+  dartlery_shared:
+    path: ../shared
+  args: ^0.13.7
+  connection_pool: ^0.1.2
+  crypt: ^1.0.2
+  http_server: ^0.9.6
+  image: ^1.1.27
+  di: ^3.0.0
+  logging_handlers: ^0.8.0
+  meta: ^1.0.5
+  mongo_dart: ^0.2.10
+  option: ^1.2.0
+  options_file: ^0.11.0
+  rpc: ^0.5.7
+  shelf: ^0.6.5
+  shelf_auth: ^0.7.3
+  shelf_exception_handler: ^0.1.0
+  shelf_route: ^0.14.3
+  shelf_rpc: ^0.0.3
+  shelf_static: ^0.2.5
+#  version: any
+  sqljocky:
+    git: https://github.com/mnordine/sqljocky.git
+  mime: ^0.9.3
+  hex: ^0.1.1
+  exif: ^0.1.1
+  image_hash:
+    git: https://github.com/dartlery/image_hash.git
+dev_dependencies:
+  test: any
+dependency_overrides:
+  image:
+    git: https://github.com/brendan-duncan/image.git
+#  image_hash:
+#    path: ../../image_hash/
+executables:
+  dartalog-server: server

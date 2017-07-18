@@ -1,0 +1,19 @@
+<auth-status (authedChanged)="onAuthChanged($event)"></auth-status>
+
+<div *ngIf="noItemsFound&&!processing" class="no-items">No Items Found</div>
+<item-grid [items]="items" (itemDroppedOn)="droppedOnItem($event)" (selectedItemsChanged)="itemSelectChanged()"></item-grid>
+
+<div class="sidebar">
+Label pallet
+
+    <tag-entry style="width: 100%" [(selectedTags)]="palletTags" [showSelectedTags]="false"></tag-entry>
+
+    <material-chips>
+        <material-chip *ngFor="let t of palletTags" (remove)="palletTags.remove(t)" (dragstart)="palletTagDragStart($event,t)" draggable="true" data-tag="{{tagToQueryString(t)}}">{{formatTag(t)}}</material-chip>
+    </material-chips>
+    <material-button (trigger)="tagSelected()">Tag Selected</material-button>
+</div>
+<div class="footer_buttons">
+<a href="{{currentRssLink}}" target="_blank" ><material-button><glyph icon="ic_rss_feed"></glyph>Latest</material-button></a>
+<a href="{{currentRandomRssLink}}" target="_blank" ><material-button><glyph icon="ic_rss_feed"></glyph>Random</material-button></a>
+</div>

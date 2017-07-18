@@ -1,0 +1,15 @@
+
+div.sidebar {
+    width:20%;
+    position:fixed;
+    right:0;
+    top:50pt;
+    margin-right:12pt;
+    border: solid 1px black;
+}
+
+
+div.footer_buttons {
+    clear: both;
+}
+
