@@ -135,9 +135,9 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       while(otherComparisons.isNotEmpty) {
         final ExtensionData data = otherComparisons[0];
-        otherComparisons.removeAt(0);
         await _api.extensionData.delete(
             "itemComparison", "similarItems", data.primaryId, data.secondaryId);
+        otherComparisons.removeAt(0);
       }
       await refresh();
     });

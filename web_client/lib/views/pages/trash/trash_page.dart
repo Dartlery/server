@@ -78,21 +78,25 @@ class TrashPage extends APage implements OnInit, OnDestroy {
 
   Future<Null> deleteSelected() async {
     if (selectedItems.isEmpty) return;
-    for (IdWrapper item in selectedItems) {
-      await performApiCall(() async {
+    await performApiCall(() async {
+    while(selectedItems.isNotEmpty) {
+      final IdWrapper item = selectedItems[0];
         await _api.items.delete(item.id, permanent: true);
-      });
+        items.removeAt(0);
     }
+    });
     await refresh();
   }
 
   Future<Null> restoreSelected() async {
     if (selectedItems.isEmpty) return;
-    for (IdWrapper item in selectedItems) {
-      await performApiCall(() async {
+    await performApiCall(() async {
+      while(selectedItems.isNotEmpty) {
+        final IdWrapper item = selectedItems[0];
         await _api.items.restore(item.id);
-      });
-    }
+        items.removeAt(0);
+      }
+    });
     await refresh();
   }
 
