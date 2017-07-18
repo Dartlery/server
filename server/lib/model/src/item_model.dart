@@ -87,7 +87,8 @@ class ItemModel extends AIdBasedModel<Item> {
   String get defaultDeletePrivilegeRequirement => UserPrivilege.normal;
 
   @override
-  String get defaultReadPrivilegeRequirement => UserPrivilege.none;
+  String get defaultReadPrivilegeRequirement => UserPrivilege.normal;
+
   @override
   String get defaultWritePrivilegeRequirement => UserPrivilege.normal;
   @override
