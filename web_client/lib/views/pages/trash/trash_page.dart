@@ -82,7 +82,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
     while(selectedItems.isNotEmpty) {
       final IdWrapper item = selectedItems[0];
         await _api.items.delete(item.id, permanent: true);
-        items.removeAt(0);
+        items.remove(item);
     }
     });
     await refresh();
@@ -94,7 +94,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       while(selectedItems.isNotEmpty) {
         final IdWrapper item = selectedItems[0];
         await _api.items.restore(item.id);
-        items.removeAt(0);
+        items.remove(item);
       }
     });
     await refresh();

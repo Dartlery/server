@@ -19,7 +19,7 @@ class ItemComparisonExtension extends AExtension {
 
   static const String pluginIdStatic = "itemComparison";
 
-  static const int similarityCutoff = 85;
+  static const int similarityCutoff = 87;
 
   static const String perceptualHashKeyName = "perceptualHash";
   static const String similarItemsKeyName = "similarItems";
