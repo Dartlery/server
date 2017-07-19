@@ -14,7 +14,7 @@ RUN cd /build/web_client && pub get
 
 ADD . /build
 
-RUN cd /build/web_client && pub build --mode=release --output=/app/web/ && cd /build/server && dart --snapshot=/app/server.snapshot bin/server.dart && cd / && rm /build -R
+RUN cd /build/web_client && pub build --mode=release --output=/app/ && cd /build/server && dart --snapshot=/app/server.snapshot bin/server.dart && cd / && rm /build -R
 
 WORKDIR /app
 
