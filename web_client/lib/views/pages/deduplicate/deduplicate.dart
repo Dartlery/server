@@ -19,7 +19,7 @@ import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
-import 'package:dartlery/views/controls/image_compare.dart';
+import 'package:angular_image_compare/image_compare_component.dart';
 import 'package:dartlery_shared/tools.dart';
 import '../src/a_page.dart';
 import 'package:dartlery/data/data.dart';
@@ -32,9 +32,9 @@ import 'package:dartlery/data/data.dart';
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
       ErrorOutputComponent,
+      ImageCompareComponent,
       commonControls,
       NgClass,
-      ImageCompareComponent
     ],
     styleUrls: const <String>["../../shared.css", "deduplicate.css"],
     templateUrl: "deduplicate.html")
@@ -51,6 +51,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   List<ExtensionData> otherComparisons = <ExtensionData>[];
 
   int currentImage = 0;
+
+  bool splitComparison = false;
 
   ApiService _api;
   Router _router;
@@ -72,8 +74,10 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
       : super(_auth, _router, pageControl) {
     pageControl.setPageTitle("Deduplicate");
     pageControl
-        .setAvailablePageActions([PageAction.refresh, PageAction.compare]);
+        .setAvailablePageActions([PageAction.refresh, PageAction.compare, _animatePageAction]);
   }
+
+  // TODO: Learn how to use this animate class for this: https://github.com/dart-lang/angular_components/blob/master/lib/src/components/material_progress/material_progress.dart
 
   String getOtherImageId(ExtensionData data) {
     if (isNullOrWhitespace(currentItemId)) return "";
@@ -178,12 +182,17 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     refresh();
   }
 
+  static const PageAction _animatePageAction = const PageAction("animate", "av_timer");
+
   void onPageActionRequested(PageAction action) {
     switch (action) {
       case PageAction.refresh:
         this.refresh();
         break;
       case PageAction.compare:
+        splitComparison = !splitComparison;
+        break;
+      case _animatePageAction:
         animatedComparison = !animatedComparison;
         break;
       default:
@@ -214,7 +223,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       try {
         if (isNotNullOrWhitespace(currentItemId)) {
-          String currentItemId = this.currentItemId;
+          final String currentItemId = this.currentItemId;
           response = await _api.extensionData.getByPrimaryId(
               "itemComparison", "similarItems", currentItemId,
               bidirectional: true,

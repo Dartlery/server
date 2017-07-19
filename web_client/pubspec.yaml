@@ -24,6 +24,9 @@ dependencies:
   material_sidenav: "^2.0.0"
   material_menu: "^2.0.1"
 
+  angular_image_compare:
+    git: https://github.com/dartninja/angular_image_compare.git
+
 dev_dependencies:
   browser: ^0.10.0
   dart_to_js_script_rewriter: ^1.0.1

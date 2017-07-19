@@ -136,6 +136,9 @@ Future<Null> wait({int milliseconds: 100}) {
   return completer.future;
 }
 
+/// Calculates the size of a rectangle that fits within the confines of another
+/// rectangle the size of the dimensions described by [outer] with the same
+/// aspect ratio as the rectangle described by [inner].
 Point fitWithin(Point inner, Point outer) {
   final double outerRatio = outer.x/outer.y;
   final double innerRatio = inner.x/ inner.y;
@@ -151,6 +154,4 @@ Point fitWithin(Point inner, Point outer) {
   } else {
     return new Point(outer.x, outer.y);
   }
-
-
 }
