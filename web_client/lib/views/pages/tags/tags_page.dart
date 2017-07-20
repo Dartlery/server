@@ -127,6 +127,25 @@ class TagsPage extends APage implements OnDestroy {
     await refresh();
   }
 
+  Future<Null> deleteSelected() async {
+    final Iterable<TagWrapper> selected = tags.where((TagWrapper tw) => tw.selected);
+    pageControl.setProgress(0, max: selected.length);
+    int i = 1;
+    await performApiCall(() async {
+      for(TagWrapper tag in selected) {
+        if (tag.hasCategory) {
+          await _api.tags.delete(tag.id, tag.category);
+        } else {
+          await _api.tags.deleteWithoutCategory(tag.id);
+        }
+        pageControl.setProgress(0, max: selected.length);
+        i++;
+      }
+    });
+    await refresh();
+
+  }
+
   Future<Null> deleteTag(TagWrapper tag) async {
     pageControl.setIndeterminateProgress();
     await performApiCall(() async {

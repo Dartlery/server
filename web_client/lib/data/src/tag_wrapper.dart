@@ -6,6 +6,8 @@ class TagWrapper {
   Tag _tag;
   TagInfo _tagInfo;
 
+  bool selected = false;
+
   Tag get tag {
     if (_tag != null) {
       return _tag;

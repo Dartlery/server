@@ -7,12 +7,14 @@
                 <material-input [(ngModel)]="tagQuery" floatingLabl autoFocus label="Search"></material-input>
                 <material-button (trigger)="refresh()" raised>Search</material-button>
                 <material-button (trigger)="recountTags()" raised>Re-Count Tags</material-button>
+                <material-button (trigger)="deleteSelected()" raised>Delete Selected</material-button>
                 <div *ngIf="noItemsFound&&!processing" class="no-items">No Tags Found</div>
 
 
                 <table *ngIf="!noItemsFound">
                     <tr><th>Tag</th><th>Usage Count</th><th>Redirect</th><th>Delete</th></tr>
                     <tr *ngFor="let t of tags" >
+                        <td><material-checkbox [(checked)]="t.selected" class="tag-select-check"></material-checkbox></td>
                         <td><a [routerLink]="['ItemsSearch', {'query':t.toQueryString()}]" >{{t}}</a></td>
                         <td>{{t.count}}</td>
                         <td><a [routerLink]="['ItemsSearch', {'query':t.redirect?.toQueryString()}]" >{{t.redirect}}</a></td>
