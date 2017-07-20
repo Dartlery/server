@@ -104,6 +104,7 @@ class TagsPage extends APage implements OnDestroy {
       : 'Category...';
 
   Future<Null> onSubmit() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       if (categorySelection.selectedValues.length > 0)
         model.category = categorySelection.selectedValues.first;
@@ -114,29 +115,32 @@ class TagsPage extends APage implements OnDestroy {
 //        await _api.tags.updateWithoutCategory(model, selectedTag.id);
 //      else
 //        await _api.tags.update(model, selectedTag.id, selectedTag.category);
-      await this.refresh();
     }, form: form);
+    await this.refresh();
   }
 
   Future<Null> recountTags() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       await _api.tags.resetTagInfo();
-      await refresh();
     });
+    await refresh();
   }
 
   Future<Null> deleteTag(TagWrapper tag) async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       if (tag.hasCategory) {
         await _api.tags.delete(tag.id, tag.category);
       } else {
         await _api.tags.deleteWithoutCategory(tag.id);
       }
-      await refresh();
     });
+    await refresh();
   }
 
   Future<Null> refresh() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       final List<String> categories = await _api.tagCategories.getAllIds();
       categories.insert(0, "");
@@ -150,6 +154,8 @@ class TagsPage extends APage implements OnDestroy {
         data = await _api.tags.search(tagQuery);
       }
       tags.addTagInfos(data.items);
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 

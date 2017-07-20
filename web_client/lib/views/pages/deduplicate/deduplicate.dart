@@ -1,15 +1,17 @@
-import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
+import 'dart:math';
 
 import 'package:angular2/angular2.dart';
 import 'package:angular2/platform/browser.dart';
 import 'package:angular2/platform/common.dart';
 import 'package:angular2/router.dart';
 import 'package:angular_components/angular_components.dart';
+import 'package:angular_image_compare/image_compare_component.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/client.dart';
+import 'package:dartlery/data/data.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/auth_status_component.dart';
@@ -17,12 +19,11 @@ import 'package:dartlery/views/controls/common_controls.dart';
 import 'package:dartlery/views/controls/error_output.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
+import 'package:dartlery_shared/tools.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
-import 'package:angular_image_compare/image_compare_component.dart';
-import 'package:dartlery_shared/tools.dart';
+
 import '../src/a_page.dart';
-import 'package:dartlery/data/data.dart';
 
 @Component(
     selector: 'deduplicate-page',
@@ -41,9 +42,12 @@ import 'package:dartlery/data/data.dart';
 class DeduplicatePage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("DeduplicatePage");
 
-  String currentItemId;
+  static const PageAction _animatePageAction =
+      const PageAction("animate", "av_timer");
 
+  String currentItemId;
   ExtensionData model;
+
   Item firstComparisonItem = new Item();
 
   Item secondComparisonItem = new Item();
@@ -53,43 +57,37 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   int currentImage = 0;
 
   bool splitComparison = false;
-
   ApiService _api;
+
   Router _router;
 
   AuthenticationService _auth;
 
   Location _location;
-
   RouteParams _params;
   StreamSubscription<PageAction> _pageActionSubscription;
+
   String filterItemId;
 
   final NumberFormat f = new NumberFormat.decimalPattern();
 
   bool animatedComparison = true;
 
+  // TODO: Learn how to use this animate class for this: https://github.com/dart-lang/angular_components/blob/master/lib/src/components/material_progress/material_progress.dart
+
+  TagList differentTags = new TagList();
+
   DeduplicatePage(PageControlService pageControl, this._api, this._auth,
       this._router, this._params, this._location)
       : super(_auth, _router, pageControl) {
     pageControl.setPageTitle("Deduplicate");
-    pageControl
-        .setAvailablePageActions([PageAction.refresh, PageAction.compare, _animatePageAction]);
+    pageControl.setAvailablePageActions(
+        [PageAction.refresh, PageAction.compare, _animatePageAction]);
   }
-
-  // TODO: Learn how to use this animate class for this: https://github.com/dart-lang/angular_components/blob/master/lib/src/components/material_progress/material_progress.dart
-
-  String getOtherImageId(ExtensionData data) {
-    if (isNullOrWhitespace(currentItemId)) return "";
-    if (data.primaryId == currentItemId) {
-      return data.secondaryId;
-    } else {
-      return data.primaryId;
-    }
-  }
+  int get firstComparisonPixelCount =>
+      (firstComparisonItem?.height ?? 0) * (firstComparisonItem?.width ?? 0);
 
   int get firstLength => int.parse(firstComparisonItem?.length ?? "0");
-  int get secondLength => int.parse(secondComparisonItem?.length ?? "0");
 
   int get lengthWinner {
     if (firstLength > secondLength) {
@@ -103,11 +101,10 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   @override
   Logger get loggerImpl => _log;
 
-  int get firstComparisonPixelCount =>
-      (firstComparisonItem?.height ?? 0) * (firstComparisonItem?.width ?? 0);
-
   int get secondComparisonPixelCount =>
       (secondComparisonItem?.height ?? 0) * (secondComparisonItem?.width ?? 0);
+
+  int get secondLength => int.parse(secondComparisonItem?.length ?? "0");
 
   int get sizeWinner {
     if (firstComparisonPixelCount > secondComparisonPixelCount) {
@@ -127,45 +124,64 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     differentTags.clear();
   }
 
-  Future<Null> clearSimilarity(ExtensionData data) async {
-    await performApiCall(() async {
-      await _api.extensionData.delete(
-          "itemComparison", "similarItems", data.primaryId, data.secondaryId);
-      await refresh();
-    });
-  }
-
   Future<Null> clearAll() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
-      while(otherComparisons.isNotEmpty) {
+      int i = 1;
+      final int total = otherComparisons.length;
+      pageControl.setProgress(0, max: total);
+      while (otherComparisons.isNotEmpty) {
         final ExtensionData data = otherComparisons[0];
         await _api.extensionData.delete(
             "itemComparison", "similarItems", data.primaryId, data.secondaryId);
         otherComparisons.removeAt(0);
+        pageControl.setProgress(i, max: total);
+        i++;
       }
       await refresh();
     });
   }
 
+  Future<Null> clearSimilarity(ExtensionData data) async {
+    pageControl.setIndeterminateProgress();
+    await performApiCall(() async {
+      await _api.extensionData.delete(
+          "itemComparison", "similarItems", data.primaryId, data.secondaryId);
+    });
+    await refresh();
+  }
+
   Future<Null> deleteItem(String id) async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       await _api.items.delete(id);
 
       if (id == currentItemId) currentItemId == "";
-
-      await refresh();
     });
+    await refresh();
+  }
+
+  String getOtherImageId(ExtensionData data) {
+    if (isNullOrWhitespace(currentItemId)) return "";
+    if (data.primaryId == currentItemId) {
+      return data.secondaryId;
+    } else {
+      return data.primaryId;
+    }
   }
 
   Future<Null> mergeItems(String sourceId, String targetId,
       {bool refresh: true}) async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       final IdRequest request = new IdRequest();
       request.id = sourceId;
       await _api.items.mergeItems(request, targetId);
-      if (sourceId == currentItemId) currentItemId== "";
-      if (refresh) await this.refresh();
+      if (sourceId == currentItemId) currentItemId == "";
+    }, after: () async {
+      pageControl.clearProgress();
     });
+    if (refresh) await this.refresh();
   }
 
   @override
@@ -181,8 +197,6 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
         pageControl.pageActionRequested.listen(onPageActionRequested);
     refresh();
   }
-
-  static const PageAction _animatePageAction = const PageAction("animate", "av_timer");
 
   void onPageActionRequested(PageAction action) {
     switch (action) {
@@ -201,24 +215,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     }
   }
 
-  Future<Null> selectComparison(ExtensionData ed) async {
-    model = ed;
-
-    if (isNotNullOrWhitespace(currentItemId)) {
-      firstComparisonItem = await _api.items.getById(currentItemId);
-      secondComparisonItem = await _api.items.getById(getOtherImageId(ed));
-    } else {
-      firstComparisonItem = await _api.items.getById(model.primaryId);
-      secondComparisonItem = await _api.items.getById(model.secondaryId);
-    }
-    final Diff<TagWrapper> tagDiff = new Diff<TagWrapper>(
-        firstComparisonItem.tags.map((Tag t) => new TagWrapper.fromTag(t)),
-        secondComparisonItem.tags.map((Tag t) => new TagWrapper.fromTag(t)));
-    differentTags.clear();
-    differentTags.addAll(tagDiff.different);
-  }
-
   Future<Null> refresh() async {
+    pageControl.setIndeterminateProgress();
     PaginatedExtensionDataResponse response;
     await performApiCall(() async {
       try {
@@ -261,8 +259,30 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
       } on DetailedApiRequestError catch (e, st) {
         if (e.status != 404) throw e;
       }
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 
-  TagList differentTags = new TagList();
+  Future<Null> selectComparison(ExtensionData ed) async {
+    pageControl.setIndeterminateProgress();
+    await performApiCall(() async {
+      model = ed;
+
+      if (isNotNullOrWhitespace(currentItemId)) {
+        firstComparisonItem = await _api.items.getById(currentItemId);
+        secondComparisonItem = await _api.items.getById(getOtherImageId(ed));
+      } else {
+        firstComparisonItem = await _api.items.getById(model.primaryId);
+        secondComparisonItem = await _api.items.getById(model.secondaryId);
+      }
+      final Diff<TagWrapper> tagDiff = new Diff<TagWrapper>(
+          firstComparisonItem.tags.map((Tag t) => new TagWrapper.fromTag(t)),
+          secondComparisonItem.tags.map((Tag t) => new TagWrapper.fromTag(t)));
+      differentTags.clear();
+      differentTags.addAll(tagDiff.different);
+    }, after: () async {
+      pageControl.clearProgress();
+    });
+  }
 }

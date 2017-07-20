@@ -78,10 +78,11 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   }
 
   Future<Null> deleteConfirmClicked() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       await itemApi.delete(selectedId);
-      await refresh();
     });
+    await refresh();
   }
 
   @override
@@ -116,22 +117,26 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   }
 
   Future<Null> onSubmit() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       if (isNewItem) {
         await itemApi.create(model);
       } else {
         await itemApi.update(model, selectedId);
       }
-      await this.refresh();
     }, form: form);
+    await this.refresh();
   }
 
   Future<Null> refresh() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       final List<dynamic> data = await getItems();
       items.clear();
       items.addAll(data);
       await refreshInternal();
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 
@@ -147,12 +152,15 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
   }
 
   Future<Null> selectItem(String id) async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       reset();
       if (isNotNullOrWhitespace(id))
         model = await itemApi.getById(id);
       selectedId = id;
       await selectItemInternal(id);
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 

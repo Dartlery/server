@@ -74,9 +74,13 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   Future<Null> deleteSelected() async {
     if (selectedItems.isEmpty) return;
+    pageControl.setProgress(0,max: selectedItems.length);
+    int i = 1;
     for (IdWrapper item in selectedItems) {
       await performApiCall(() async {
         await _api.items.delete(item.id);
+        pageControl.setProgress(i,max: selectedItems.length);
+        i++;
       });
     }
     await refresh();
@@ -192,6 +196,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   Future<Null> refresh() async {
     await performApiCall(() async {
+      pageControl.setIndeterminateProgress();
       int page = 0;
       String query = "";
       String routeName = itemsPageRoute.name;
@@ -231,6 +236,8 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       }
       info.currentPage = page;
       pageControl.setPaginationInfo(info);
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 

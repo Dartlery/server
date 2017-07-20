@@ -57,6 +57,7 @@ class UsersPage extends AMaintenancePage<api.User> {
   }
 
   Future<Null> onSubmitPassword(String userUuid) async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       if (changePassword != changePasswordConfirm) {
         final AbstractControl control =
@@ -70,6 +71,8 @@ class UsersPage extends AMaintenancePage<api.User> {
       request.newPassword = changePassword;
 
       await this.api.users.changePassword(request, userUuid);
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 }

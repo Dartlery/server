@@ -77,6 +77,7 @@ class MainApp implements OnInit, OnDestroy {
   StreamSubscription<List> _pageActionsSubscription;
   StreamSubscription<MessageEventArgs> _messageSubscription;
   StreamSubscription<Null> _loginRequestSubscription;
+  StreamSubscription<ProgressEventArgs> _progressSubscription;
 
   String _pageTitleOverride = "";
 
@@ -91,6 +92,7 @@ class MainApp implements OnInit, OnDestroy {
     _pageActionsSubscription =
         _pageControl.availablePageActionsSet.listen(onPageActionsSet);
     _messageSubscription = _pageControl.messageSent.listen(onMessageSent);
+    _progressSubscription = _pageControl.progressChanged.listen(onProgressChanged);
   }
 
   bool confirmDeleteVisible = false;
@@ -110,6 +112,8 @@ class MainApp implements OnInit, OnDestroy {
   bool get userLoggedIn {
     return _auth.isAuthenticated;
   }
+
+  ProgressEventArgs progressModel = new ProgressEventArgs();
 
   void pageActionTriggered(PageAction action) {
     switch (action) {
@@ -138,6 +142,7 @@ class MainApp implements OnInit, OnDestroy {
     _loginRequestSubscription.cancel();
     _searchSubscription.cancel();
     _pageActionsSubscription.cancel();
+    _progressSubscription.cancel();
   }
 
   @override
@@ -203,5 +208,9 @@ class MainApp implements OnInit, OnDestroy {
 
   void navBarIconClicked() {
     sideNavOpen = !sideNavOpen;
+  }
+
+  void onProgressChanged(ProgressEventArgs e) {
+    this.progressModel = e;
   }
 }

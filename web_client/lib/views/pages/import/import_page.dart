@@ -68,23 +68,26 @@ class ImportPage extends APage implements OnInit, OnDestroy {
     }
   }
   Future<Null> refresh() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       results = (await _api.import.getResults()).items;
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 
   Future<Null> clearSuccessResults() async {
     await performApiCall(() async {
       await _api.import.clearResults();
-      await refresh();
     });
+    await refresh();
   }
 
   Future<Null> clearAllResults() async {
     await performApiCall(() async {
       await _api.import.clearResults(everything: true);
-      await refresh();
     });
+    await refresh();
   }
   Future<Null> beginImport() async {
     await performApiCall(() async {

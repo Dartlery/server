@@ -98,6 +98,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   }
 
   Future<Null> delete() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       model = await _api.items.delete(itemId);
       if (nextItemAvailable) {
@@ -113,15 +114,20 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
       } else {
         await _router.navigate([homeRoute.name]);
       }
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 
   Future<Null> refresh() async {
+    pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       model = await _api.items.getById(itemId);
 
       nextItem = await _searchService.getNextItem(model.id);
       previousItem = await _searchService.getPreviousItem(model.id);
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 

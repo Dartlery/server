@@ -23,6 +23,10 @@ class PageControlService {
   final StreamController<List<PageAction>> _availablePageActionController =
       new StreamController<List<PageAction>>.broadcast();
 
+  final StreamController<ProgressEventArgs> _progressController = new StreamController<ProgressEventArgs>();
+
+  Stream<ProgressEventArgs> get progressChanged => _progressController.stream;
+
   Stream<PageAction> get pageActionRequested => _pageActionController.stream;
 
   Stream<String> get pageTitleChanged => _pageTitleController.stream;
@@ -95,10 +99,49 @@ class PageControlService {
   void sendMessage(String title, String message) {
     _messageController.add(new MessageEventArgs(title, message));
   }
+
+  void clearProgress() {
+    _progressController.add(new ProgressEventArgs());
+  }
+
+  void setIndeterminateProgress() {
+    _progressController.add(new ProgressEventArgs()..show=true..indeterminate=true);
+
+  }
+
+  void setProgress(int value, {int min = 0, int max = 100}) {
+    _progressController.add(new ProgressEventArgs()..show=true..value=value..min=min..max=max);
+  }
+
+//  Future<Null> performAsyncProgressLoop<T>(List<T> items, Future<dynamic> callback(T item), {bool depleting=false}) async {
+//    int i = 1;
+//    final int total = items.length;
+//    setProgress(0,max: total);
+//    if(depleting) {
+//      while(items.length>0) {
+//
+//      }
+//    } else {
+//      for(T item in items) {
+//        await callback(item);
+//        setProgress(1,max: total);
+//        i++;
+//      }
+//    }
+//
+//  }
 }
 
 class MessageEventArgs {
   final String title;
   final String message;
   MessageEventArgs(this.title, this.message);
+}
+
+class ProgressEventArgs {
+  bool show = false;
+  bool indeterminate= false;
+  int value = 0;
+  int min = 0;
+  int max = 100;
 }

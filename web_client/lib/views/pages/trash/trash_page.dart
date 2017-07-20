@@ -61,8 +61,8 @@ class TrashPage extends APage implements OnInit, OnDestroy {
 
   final ItemSearchService _search;
 
-  TrashPage(this._api, this._routeParams,
-      PageControlService pageControl, this._router, this._auth, this._search, this._routeData)
+  TrashPage(this._api, this._routeParams, PageControlService pageControl,
+      this._router, this._auth, this._search, this._routeData)
       : super(_auth, _router, pageControl) {
     setActions();
     pageControl.setPageTitle("Trash");
@@ -78,24 +78,39 @@ class TrashPage extends APage implements OnInit, OnDestroy {
 
   Future<Null> deleteSelected() async {
     if (selectedItems.isEmpty) return;
+    int i = 1;
+    final int total = selectedItems.length;
+    pageControl.setProgress(0, max: total);
     await performApiCall(() async {
-    while(selectedItems.isNotEmpty) {
-      final IdWrapper item = selectedItems[0];
+      while (selectedItems.isNotEmpty) {
+        final IdWrapper item = selectedItems[0];
         await _api.items.delete(item.id, permanent: true);
         items.remove(item);
-    }
+        pageControl.setProgress(i, max: total);
+        i++;
+      }
+    }, after: () async {
+      pageControl.clearProgress();
     });
     await refresh();
   }
 
   Future<Null> restoreSelected() async {
     if (selectedItems.isEmpty) return;
+
+    int i = 1;
+    final int total = selectedItems.length;
+    pageControl.setProgress(0, max: total);
     await performApiCall(() async {
-      while(selectedItems.isNotEmpty) {
+      while (selectedItems.isNotEmpty) {
         final IdWrapper item = selectedItems[0];
         await _api.items.restore(item.id);
         items.remove(item);
+        pageControl.setProgress(i, max: total);
+        i++;
       }
+    }, after: () async {
+      pageControl.clearProgress();
     });
     await refresh();
   }
@@ -147,7 +162,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
         break;
       case PageAction.restore:
         this.restoreSelected();
-      break;
+        break;
       default:
         throw new Exception(
             action.toString() + " not implemented for this page");
@@ -192,12 +207,13 @@ class TrashPage extends APage implements OnInit, OnDestroy {
 
   Future<Null> refresh() async {
     await performApiCall(() async {
+      pageControl.setIndeterminateProgress();
       int page = 0;
       String query = "";
       String routeName = itemsPageRoute.name;
       if (_routeParams.params.containsKey(pageRouteParameter)) {
         page = int.parse(_routeParams.get(pageRouteParameter) ?? '1',
-            onError: (_) => 1) -
+                onError: (_) => 1) -
             1;
       }
       if (_routeParams.params.containsKey(queryRouteParameter)) {
@@ -213,7 +229,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       }
 
       final PaginatedItemResponse response =
-      await _search.performSearch(page: page, inTrash: true);
+          await _search.performSearch(page: page, inTrash: true);
 
       selectedItems.clear();
       items.clear();
@@ -231,6 +247,8 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       }
       info.currentPage = page;
       pageControl.setPaginationInfo(info);
+    }, after: () async {
+      pageControl.clearProgress();
     });
   }
 
@@ -248,5 +266,4 @@ class TrashPage extends APage implements OnInit, OnDestroy {
 //    }
     pageControl.setAvailablePageActions(actions);
   }
-
 }

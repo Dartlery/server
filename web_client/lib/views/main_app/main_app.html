@@ -58,6 +58,10 @@
     </div>
     <div class="middle-content">
     </div>
+    <material-progress *ngIf="progressModel.show" class="fit" [indeterminate]="progressModel.indeterminate"
+                       [activeProgress]="progressModel.value" [min]="progressModel.min" [max]="progressModel.max">
+
+    </material-progress>
 </material-toolbar>
 
 
