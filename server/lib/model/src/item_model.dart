@@ -210,7 +210,8 @@ class ItemModel extends AIdBasedModel<Item> {
 
   @override
   Future<Item> getById(String uuid, {bool bypassAuthentication: false}) async {
-    await validateGetPrivileges();
+    if(!bypassAuthentication)
+      await validateGetPrivileges();
 
     final Item output =
         await super.getById(uuid, bypassAuthentication: bypassAuthentication);

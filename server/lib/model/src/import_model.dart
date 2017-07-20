@@ -203,7 +203,7 @@ class ImportModel extends AModel {
       if(mergeExisting) {
         _log.info("Item already exists, merging");
         final TagList newTags = new TagList.from(newItem.tags);
-        final Item existingItem = await itemModel.getById(newItem.id);
+        final Item existingItem = await itemModel.getById(newItem.id, bypassAuthentication: true);
         result.id = existingItem.id;
         final TagList existingTags = new TagList.from(existingItem.tags);
         existingTags.addAll(newTags);
