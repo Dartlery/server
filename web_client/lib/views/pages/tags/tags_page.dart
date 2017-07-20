@@ -138,7 +138,7 @@ class TagsPage extends APage implements OnDestroy {
         } else {
           await _api.tags.deleteWithoutCategory(tag.id);
         }
-        pageControl.setProgress(0, max: selected.length);
+        pageControl.setProgress(i, max: selected.length);
         i++;
       }
     });
