@@ -98,6 +98,8 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     return -1;
   }
 
+  int totalItems = 0;
+
   @override
   Logger get loggerImpl => _log;
 
@@ -246,6 +248,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
             "itemComparison", "similarItems",
             orderDescending: true, perPage: 1);
         if (response.items.isNotEmpty) {
+          totalItems = response.totalCount;
           currentItemId = response.items.first.primaryId;
           response = await _api.extensionData.getByPrimaryId(
               "itemComparison", "similarItems", currentItemId,
