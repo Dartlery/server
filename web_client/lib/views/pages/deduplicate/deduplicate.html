@@ -17,7 +17,7 @@
                                     materialTooltip="Delete left item"></confirm-button>
                 </td>
                 <td>
-                    {{firstComparisonItem.height}}x{{firstComparisonItem.width}}<br/>
+                    {{firstComparisonItem.width}}x{{firstComparisonItem.height}}<br/>
                     <span [ngClass]="{'win': sizeWinner==0, 'lose': sizeWinner==1}">
                 {{f.format(firstComparisonPixelCount)}} pixels
             </span>
@@ -42,7 +42,7 @@
                                     materialTooltip="Merge left item into right item"></confirm-button>
                 </td>
                 <td>
-                    {{secondComparisonItem.height}}x{{secondComparisonItem.width}}<br/>
+                    {{secondComparisonItem.width}}x{{secondComparisonItem.height}}<br/>
                     <span [ngClass]="{'win': sizeWinner==1, 'lose': sizeWinner==0}">
                 {{f.format(secondComparisonPixelCount)}} pixels
             </span>
