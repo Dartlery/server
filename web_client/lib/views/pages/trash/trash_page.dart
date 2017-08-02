@@ -209,23 +209,11 @@ class TrashPage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       pageControl.setIndeterminateProgress();
       int page = 0;
-      String query = "";
-      String routeName = itemsPageRoute.name;
+      final String routeName = trashPageRoute.name;
       if (_routeParams.params.containsKey(pageRouteParameter)) {
         page = int.parse(_routeParams.get(pageRouteParameter) ?? '1',
                 onError: (_) => 1) -
             1;
-      }
-      if (_routeParams.params.containsKey(queryRouteParameter)) {
-        query = _routeParams.get(queryRouteParameter);
-      }
-
-      if (isNotNullOrWhitespace(query)) {
-        final TagList tagList = new TagList.fromQueryString(query);
-        _search.setTags(tagList);
-        routeName = itemsSearchPageRoute.name;
-      } else {
-        _search.clearTags();
       }
 
       final PaginatedItemResponse response =
@@ -239,9 +227,6 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       final PaginationInfo info = new PaginationInfo();
       for (int i = 0; i < response.totalPages; i++) {
         final Map<String, String> params = <String, String>{};
-        if (isNotNullOrWhitespace(query)) {
-          params[queryRouteParameter] = query;
-        }
         params[pageRouteParameter] = (i + 1).toString();
         info.pageParams.add([routeName, params]);
       }

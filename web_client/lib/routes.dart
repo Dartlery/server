@@ -23,6 +23,12 @@ const Route trashRoute = const Route(
     component: TrashPage,
     data: const <String,dynamic>{"trash":true});
 
+const Route trashPageRoute = const Route(
+    path: '/trash/:$pageRouteParameter',
+    name: "TrashPage",
+    component: TrashPage,
+    data: const <String,dynamic>{"trash":true});
+
 const String idRouteParameter = "id";
 
 const Route itemsPageRoute = const Route(
@@ -68,7 +74,8 @@ const List<Route> routes = const <Route>[
   deduplicateRoute,
   tagsRoute,
   importRoute,
-  trashRoute
+  trashRoute,
+  trashPageRoute
 ];
 
 const Route setupRoute = const Route(
