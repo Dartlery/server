@@ -5,6 +5,7 @@
         <material-tab label="Edit Tags">
             <div>
                 <material-input [(ngModel)]="tagQuery" floatingLabl autoFocus label="Search"></material-input>
+                <material-checkbox [(ngModel)]="showRedirects" label="Show Redirects"></material-checkbox>
                 <material-button (trigger)="refresh()" raised>Search</material-button>
                 <material-button (trigger)="recountTags()" raised>Re-Count Tags</material-button>
                 <material-button (trigger)="deleteSelected()" raised>Delete Selected</material-button>

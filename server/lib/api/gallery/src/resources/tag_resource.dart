@@ -97,10 +97,10 @@ class TagResource extends AResource {
 
   @ApiMethod(method: HttpMethod.get, path: '$searchApiPath/$tagApiPath/{query}')
   Future<PaginatedTagResponse> search(String query,
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: null, bool redirects: null}) async {
     return catchExceptionsAwait<PaginatedTagResponse>(() async {
       return new PaginatedTagResponse.fromPaginatedData(await _tagModel.search(query,
-          countAsc: countAsc, perPage: perPage, page: page));
+          countAsc: countAsc, perPage: perPage, page: page, redirects: redirects));
     });
   }
 

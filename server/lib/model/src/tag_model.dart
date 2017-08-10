@@ -163,10 +163,11 @@ class TagModel extends ATypedModel<TagInfo> {
   }
 
   Future<PaginatedData<TagInfo>> search(String query,
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: null,
+      bool redirects: null}) async {
     await validateReadPrivilegeRequirement();
     return await _tagDataSource.searchPaginated(query,
-        perPage: perPage, page: page, countAsc: countAsc);
+        perPage: perPage, page: page, countAsc: countAsc, redirects: redirects);
   }
 
   Future<int> setRedirect(TagInfo redirect) async {

@@ -173,7 +173,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
       {SelectorBuilder selector,
       String sortBy,
       int limit: defaultPerPage,
-      bool countAsc: true}) async {
+      bool countAsc: null,
+      bool redirects: null}) async {
     SelectorBuilder sb;
     if (selector == null)
       sb = where;
@@ -182,6 +183,14 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
     sb.match(fullNameField, ".*${escapeAll(query)}.*",
         multiLine: false, caseInsensitive: true);
+
+    if(redirects!=null) {
+      if(redirects) {
+        sb.exists(redirectField);
+      } else {
+        sb.notExists(redirectField);
+      }
+    }
 
     if (countAsc != null) sb.sortBy(countField, descending: !countAsc);
 
@@ -192,12 +201,19 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   @override
   Future<PaginatedData<TagInfo>> searchPaginated(String query,
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: true}) async {
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: true, bool redirects: null}) async {
     final SelectorBuilder sb = where.match(
         fullNameField, ".*${escapeAll(query)}.*",
         multiLine: false, caseInsensitive: true);
 
     if (countAsc != null) sb.sortBy(countField, descending: !countAsc);
+    if(redirects!=null) {
+      if(redirects) {
+        sb.exists(redirectField);
+      } else {
+        sb.notExists(redirectField);
+      }
+    }
 
     sb.sortBy(fullNameField);
 

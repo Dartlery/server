@@ -33,6 +33,8 @@ class TagsPage extends APage implements OnDestroy {
 
   api.Tag selectedTag;
 
+  bool showRedirects = false;
+
   StringSelectionOptions<String> categoryOptions =
       new StringSelectionOptions<String>([]);
   final SelectionModel<String> categorySelection =
@@ -171,7 +173,10 @@ class TagsPage extends APage implements OnDestroy {
       if (isNullOrWhitespace(tagQuery)) {
         data = await _api.tags.getAllTagInfo();
       } else {
-        data = await _api.tags.search(tagQuery);
+        if(!showRedirects)
+          data = await _api.tags.search(tagQuery, redirects: false);
+        else
+          data = await _api.tags.search(tagQuery);
       }
       tags.addTagInfos(data.items);
     }, after: () async {

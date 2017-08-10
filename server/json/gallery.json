@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "4047328c32891c9c62dccfddd1a69e934bb224f3",
+ "etag": "257daff6db68f04dac054dac4b0f04e7eec1f110",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -8,9 +8,9 @@
  "revision": "0",
  "description": "Item REST API",
  "protocol": "rest",
- "baseUrl": "http://localhost:3278/api/gallery/v0.1/",
+ "baseUrl": "http://localhost:8080/api/gallery/v0.1/",
  "basePath": "/api/gallery/v0.1/",
- "rootUrl": "http://localhost:3278/",
+ "rootUrl": "http://localhost:8080/",
  "servicePath": "api/gallery/v0.1/",
  "parameters": {},
  "schemas": {
@@ -1106,6 +1106,12 @@
       "countAsc": {
        "type": "boolean",
        "description": "Query parameter: 'countAsc'.",
+       "required": false,
+       "location": "query"
+      },
+      "redirects": {
+       "type": "boolean",
+       "description": "Query parameter: 'redirects'.",
        "required": false,
        "location": "query"
       }

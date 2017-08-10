@@ -28,6 +28,7 @@ dependencies:
   shelf_route: ^0.14.3
   shelf_rpc: ^0.0.3
   shelf_static: ^0.2.5
+  plugin: ^0.2.0
 #  version: any
   sqljocky:
     git: https://github.com/mnordine/sqljocky.git
@@ -36,11 +37,14 @@ dependencies:
   exif: ^0.1.1
   image_hash:
     git: https://github.com/dartninja/image_hash.git
+
 dev_dependencies:
   test: any
 dependency_overrides:
   image:
     git: https://github.com/brendan-duncan/image.git
+  rpc:
+    git: git://github.com/dart-lang/rpc.git
 #  image_hash:
 #    path: ../../image_hash/
 executables:

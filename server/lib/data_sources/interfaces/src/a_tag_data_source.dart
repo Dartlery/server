@@ -17,10 +17,11 @@ abstract class ATagDataSource extends ATwoIdBasedDataSource<TagInfo> {
 
   @override
   Future<IdDataList<TagInfo>> search(String query,
-      {int limit: defaultPerPage, bool countAsc: true});
+      {int limit: defaultPerPage, bool countAsc: null,
+      bool redirects: null});
 
   Future<PaginatedData<TagInfo>> searchPaginated(String query,
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: true});
+      {int page: 0, int perPage: defaultPerPage, bool countAsc: null, bool redirects: null});
 
   /// This function should cause all tags to be re-counted
   /// and unused tags to be deleted.

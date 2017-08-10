@@ -28,7 +28,7 @@ class GalleryApi {
   TagsResourceApi get tags => new TagsResourceApi(_requester);
   UsersResourceApi get users => new UsersResourceApi(_requester);
 
-  GalleryApi(http.Client client, {core.String rootUrl: "http://localhost:3278/", core.String servicePath: "api/gallery/v0.1/"}) :
+  GalleryApi(http.Client client, {core.String rootUrl: "http://localhost:8080/", core.String servicePath: "api/gallery/v0.1/"}) :
       _requester = new commons.ApiRequester(client, rootUrl, servicePath, USER_AGENT);
 }
 
@@ -1516,6 +1516,8 @@ class TagsResourceApi {
    *
    * [countAsc] - Query parameter: 'countAsc'.
    *
+   * [redirects] - Query parameter: 'redirects'.
+   *
    * Completes with a [PaginatedTagResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
@@ -1524,7 +1526,7 @@ class TagsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<PaginatedTagResponse> search(core.String query, {core.int page, core.int perPage, core.bool countAsc}) {
+  async.Future<PaginatedTagResponse> search(core.String query, {core.int page, core.int perPage, core.bool countAsc, core.bool redirects}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1543,6 +1545,9 @@ class TagsResourceApi {
     }
     if (countAsc != null) {
       _queryParams["countAsc"] = ["${countAsc}"];
+    }
+    if (redirects != null) {
+      _queryParams["redirects"] = ["${redirects}"];
     }
 
     _url = 'search/tags/' + commons.Escaper.ecapeVariable('$query');

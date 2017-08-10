@@ -2935,6 +2935,7 @@ main() {
       var arg_page = 42;
       var arg_perPage = 42;
       var arg_countAsc = true;
+      var arg_redirects = true;
       mock.register(unittest.expectAsync2((http.BaseRequest req, json) {
         var path = (req.url).path;
         var pathOffset = 0;
@@ -2969,6 +2970,7 @@ main() {
         unittest.expect(core.int.parse(queryMap["page"].first), unittest.equals(arg_page));
         unittest.expect(core.int.parse(queryMap["perPage"].first), unittest.equals(arg_perPage));
         unittest.expect(queryMap["countAsc"].first, unittest.equals("$arg_countAsc"));
+        unittest.expect(queryMap["redirects"].first, unittest.equals("$arg_redirects"));
 
 
         var h = {
@@ -2977,7 +2979,7 @@ main() {
         var resp = convert.JSON.encode(buildPaginatedTagResponse());
         return new async.Future.value(stringResponse(200, h, resp));
       }), true);
-      res.search(arg_query, page: arg_page, perPage: arg_perPage, countAsc: arg_countAsc).then(unittest.expectAsync1(((api.PaginatedTagResponse response) {
+      res.search(arg_query, page: arg_page, perPage: arg_perPage, countAsc: arg_countAsc, redirects: arg_redirects).then(unittest.expectAsync1(((api.PaginatedTagResponse response) {
         checkPaginatedTagResponse(response);
       })));
     });
