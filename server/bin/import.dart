@@ -23,20 +23,15 @@ Future<Null> main(List<String> args) async {
   parser.addOption("sourceDb");
   parser.addOption("sourceDbUser");
   parser.addOption("sourceDbPassword");
+  parser.addOption('mongo', abbr: 'm', defaultsTo: '"mongodb://localhost:27017/dartlery"');
+
   final ArgResults argResults = parser.parse(args);
 
   // Currently only supports importing from shimmie. Yay!
 
   // TODO: Set up a function for loading settings data
-  String connectionString = "mongodb://localhost:27017/dartlery";
+  final String connectionString = argResults["mongo"];
 
-  try {
-    final OptionsFile optionsFile = new OptionsFile('server.options');
-    connectionString =
-        optionsFile.getString("connection_string", connectionString);
-  } on FileSystemException catch (e) {
-    _log.info("server.options not found, using all default settings", e);
-  }
 
   final ModuleInjector parentInjector =
       createModelModuleInjector(connectionString);

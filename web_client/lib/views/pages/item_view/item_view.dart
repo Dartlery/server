@@ -39,7 +39,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   Item model = new Item();
 
   bool get isImage {
-    return MimeTypes.imageTypes.contains(model?.mime);
+    return MimeTypes.imageTypes.contains(model?.mime)||model?.mime==MimeTypes.pdf;
   }
 
   bool get isVideo {

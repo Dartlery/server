@@ -324,6 +324,9 @@ class MediaMimeResolver extends MimeTypeResolver {
 
     addMagicNumber(const <int>[0x00, 0x00, 0x01, 0xB0], MimeTypes.mpeg,
         mask: const <int>[0xFF, 0xFF, 0xFF, 0xF0]);
+
+    //25 50 44 46
+    addMagicNumber(const<int>[0x25,0x50,0x44,0x46], MimeTypes.pdf);
   }
 
   String getMimeType(List<int> data) {

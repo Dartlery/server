@@ -17,7 +17,8 @@ class MimeTypes {
     asf: "asf",
     mpeg: "mpeg",
     mkv: "mkv",
-    swf: "swf"
+    swf: "swf",
+    pdf: "pdf"
   };
 
   static const String jpeg = "image/jpeg";
@@ -39,6 +40,8 @@ class MimeTypes {
   static const String mpeg = 'video/mpeg';
   static const String mkv = 'video/x-matroska';
   static const String swf = "application/x-shockwave-flash";
+
+  static const String pdf = "application/pdf";
 
   static const List<String> animatableImageTypes = const <String>[
     gif,
@@ -71,7 +74,7 @@ class MimeTypes {
     webp,
     webm,
     mp4,
-    swf
+    swf,
   ];
 
   static const List<String> videoTypes = const <String>[

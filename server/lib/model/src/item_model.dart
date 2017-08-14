@@ -20,6 +20,8 @@ class ItemModel extends AIdBasedModel<Item> {
   static final Logger _log = new Logger('ItemModel');
   static final RegExp legalIdCharacters = new RegExp("[a-zA-Z0-9_\-]");
 
+  static const int jpegQuality = 90;
+
   final AItemDataSource itemDataSource;
   final ATagDataSource tagDataSource;
   final TagModel _tagModel;
@@ -175,6 +177,82 @@ class ItemModel extends AIdBasedModel<Item> {
     }
 
     return output;
+  }
+
+  Future<List<int>> generatePdfThumbnail(String originalFile) async {
+    _log.fine("generatePdfThumbnail start");
+    final Directory tempFolder =
+    await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
+    final String tempfile = path.join(tempFolder.path, "thumbnail.png");
+    try {
+      String command = "convert";
+      final List<String> args = <String>[
+          '${originalFile}[0]',
+          tempfile];
+      if(Platform.isWindows) {
+        args.insert(0, command);
+        command = "magick";
+      }
+      final ProcessResult result = await Process.run(command,args);
+      if (result.exitCode != 0) {
+        throw new Exception(
+            "Error while generating PDF thumbnail: ${result.stderr
+                .toString()}");
+      }
+      return await getFileData(tempfile);
+    } finally {
+      try {
+        await tempFolder.delete(recursive: true);
+      } catch (e, st) {
+        _log.warning("Error while deleting PDF thumbnail temp file", e, st);
+      }
+      _log.fine("generatePdfThumbnail end");
+    }
+  }
+
+
+  Future<List<int>> generatePdfMontage(String originalFile) async {
+    _log.fine("generatePdfThumbnail start");
+    final Directory tempFolder =
+    await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
+    final String tempfile = path.join(tempFolder.path, "thumbnail.png");
+    try {
+      String command = "montage";
+      final List<String> args = <String>[
+        originalFile,
+        '-density',
+        '288',
+        '-resize',
+        '50%',
+        '-mode',
+        'Concatenate',
+        '-tile',
+        '6x',
+        "-background",
+        "'#000000'",
+        tempfile
+      ];
+      if(Platform.isWindows) {
+        args.insert(0, command);
+        command = "magick";
+      }
+
+
+      final ProcessResult result = await Process.run(command, args);
+      if (result.exitCode != 0) {
+        throw new Exception(
+            "Error while generating PDF montage: ${result.stderr
+                .toString()}");
+      }
+      return await getFileData(tempfile);
+    } finally {
+      try {
+        await tempFolder.delete(recursive: true);
+      } catch (e, st) {
+        _log.warning("Error while deleting montage temp file", e, st);
+      }
+      _log.fine("generatePdfMontage end");
+    }
   }
 
   Future<List<int>> generateFfmpegThumbnail(String originalFile) async {
@@ -600,7 +678,8 @@ class ItemModel extends AIdBasedModel<Item> {
       try {
         _log.fine("Is video mime type");
         item.video = true;
-        originalImage = image.decodePng(await generateFfmpegThumbnail(originalFile));
+        originalImage =
+            image.decodePng(await generateFfmpegThumbnail(originalFile));
         await getFfprobeData(item, originalFile);
       } catch (e, st) {
         if (mime == MimeTypes.swf) {
@@ -611,6 +690,8 @@ class ItemModel extends AIdBasedModel<Item> {
           rethrow;
         }
       }
+    } else if(mime==MimeTypes.pdf) {
+      originalImage = image.decodePng(await generatePdfMontage(originalFile));
     } else {
       throw new InvalidInputException("MIME type not supported: $mime");
     }
@@ -626,13 +707,17 @@ class ItemModel extends AIdBasedModel<Item> {
         _log.fine(
             "Non-web-friendly MIME type, generating full-size image for display");
         filesWritten.add(await _writeBytes(getFullFilePathForHash(item.id),
-            image.encodeJpg(originalImage, quality: 90),
+            image.encodeJpg(originalImage, quality: jpegQuality),
             deleteExisting: true));
         _log.fine("Full-size image generated");
         item.fullFileAvailable = true;
       }
 
       try {
+        if(mime==MimeTypes.pdf) {
+          originalImage = image.decodePng(await generatePdfThumbnail(originalFile));
+        }
+
         filesWritten.add(await _createAndSaveThumbnail(originalImage, item.id));
       } catch (e, st) {
         _log.warning("Error while generating thumbnail for ${item.id}", e, st);
@@ -714,7 +799,7 @@ class ItemModel extends AIdBasedModel<Item> {
 
       thumbnail = image.copyResize(img, newWidth.floor(), maxDimension, image.AVERAGE);
     }
-    return image.encodeJpg(thumbnail, quality: 90);
+    return image.encodeJpg(thumbnail, quality: jpegQuality);
   }
 
 
