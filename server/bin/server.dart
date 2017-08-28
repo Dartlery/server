@@ -12,6 +12,8 @@ import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart'
     as server_logging;
 
+import 'package:dartlery/data_sources/data_sources.dart';
+
 Future<Null> main(List<String> args) async {
   // Add a simple log handler to log information to a server side file.
   Logger.root.level = Level.INFO;
