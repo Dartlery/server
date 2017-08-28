@@ -14,8 +14,8 @@ class LogEntry {
     this.timestamp = logRecord.time;
     this.message = logRecord.message;
     this.level = logRecord.level.toString();
-    this.error = logRecord.error.toString();
+    this.error = logRecord.error?.toString();
     this.logger = logRecord.loggerName;
-    this.stackTrace = logRecord.stackTrace.toString();
+    this.stackTrace = logRecord.stackTrace?.toString();
   }
 }

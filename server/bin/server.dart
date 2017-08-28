@@ -74,7 +74,7 @@ void startBackgroundIsolate(BackgroundConfig config) {
   final ModuleInjector injector =
       createModelModuleInjector(config.connectionString);
 
-  final DbLoggingHandler dbLoggingHandler = injector.get(DbLoggingHandler);
+  final DbLoggingHandler dbLoggingHandler = new DbLoggingHandler(injector.get(ALogDataSource));
   Logger.root.onRecord.listen(dbLoggingHandler);
 
 

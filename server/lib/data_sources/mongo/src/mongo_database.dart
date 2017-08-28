@@ -71,7 +71,7 @@ class MongoDatabase {
           MongoLogDataSource.timestampField: -1
         },
         name: "LogTimestampIndex",
-        unique: true);
+        unique: false);
 
     final DbCollection output =
     db.collection(_logCollection);
