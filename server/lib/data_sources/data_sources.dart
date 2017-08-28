@@ -21,6 +21,7 @@ ModuleInjector createDataSourceModuleInjector(String connectionString) {
     ..bind(AImportResultsDataSource,
         toImplementation: MongoImportResultsDataSource)
     ..bind(MongoTagDataSource)
+    ..bind(ALogDataSource, toImplementation:  MongoLogDataSource)
     ..bind(MongoDbConnectionPool,
         toFactory: () => new MongoDbConnectionPool(connectionString));
 

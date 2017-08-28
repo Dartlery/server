@@ -10,6 +10,7 @@ import 'mongo_db_connection_pool.dart';
 import 'mongo_extension_data_source.dart';
 import 'mongo_item_data_source.dart';
 import 'mongo_tag_data_source.dart';
+import 'mongo_log_data_source.dart';
 import 'mongo_background_queue_data_source.dart';
 import 'mongo_import_results_data_source.dart';
 
@@ -23,6 +24,7 @@ class MongoDatabase {
   static const String _backgroundQueueCollection = "backgroundQueue";
   static const String _extensionDataCollection = "extensionData";
   static const String _importResultsCollection = "importResults";
+  static const String _logCollection = "log";
 
   static const String redirectEntryName = "redirect";
   static const int maxConnections = 3;
@@ -59,7 +61,20 @@ class MongoDatabase {
         },
         name: "BackgroundQueueIndex");
     final DbCollection output =
-        await getIdCollection(_backgroundQueueCollection);
+    await getIdCollection(_backgroundQueueCollection);
+    return output;
+  }
+
+  Future<DbCollection> getLogCollection() async {
+    await db.createIndex(_logCollection,
+        keys: {
+          MongoLogDataSource.timestampField: -1
+        },
+        name: "LogTimestampIndex",
+        unique: true);
+
+    final DbCollection output =
+    db.collection(_logCollection);
     return output;
   }
 

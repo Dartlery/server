@@ -20,3 +20,4 @@ export 'src/background_queue_item.dart';
 export 'src/extension_data.dart';
 export 'src/extension_data.list.dart';
 export 'src/tag_info.dart';
+export 'src/log_entry.dart';

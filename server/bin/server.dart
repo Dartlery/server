@@ -73,6 +73,11 @@ void startBackgroundIsolate(BackgroundConfig config) {
 
   final ModuleInjector injector =
       createModelModuleInjector(config.connectionString);
+
+  final DbLoggingHandler dbLoggingHandler = injector.get(DbLoggingHandler);
+  Logger.root.onRecord.listen(dbLoggingHandler);
+
+
   final BackgroundService service = injector.get(BackgroundService);
   service.start();
 }

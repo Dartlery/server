@@ -28,11 +28,13 @@ import 'package:shelf_static/shelf_static.dart';
 import 'package:path/path.dart' as path;
 
 import 'src/exceptions/setup_required_exception.dart';
+import 'src/db_logging_handler.dart';
 import 'tools.dart';
 import 'package:dartlery/services/background_service.dart';
 
 export 'src/exceptions/setup_disabled_exception.dart';
 export 'src/exceptions/setup_required_exception.dart';
+export 'src/db_logging_handler.dart';
 export 'src/settings.dart';
 
 final String rootDirectory = Directory.current.path;
@@ -257,9 +259,14 @@ class Server {
     final ModuleInjector injector = new ModuleInjector(<Module>[
       GalleryApi.injectorModules,
       FeedApi.injectorModules,
-      new Module()..bind(Server)
+      new Module()
+        ..bind(DbLoggingHandler)
+        ..bind(Server)
     ], parentInjector);
 
+    final DbLoggingHandler dbLoggingHandler = injector.get(DbLoggingHandler);
+    Logger.root.onRecord.listen(dbLoggingHandler);
+    
     final Server server = injector.get(Server);
     server.instanceUuid = instanceUuid ?? generateUuid();
     server.connectionString = connectionString;

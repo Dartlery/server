@@ -7,3 +7,4 @@ export 'src/mongo_tag_category_data_source.dart';
 export 'src/mongo_background_queue_data_source.dart';
 export 'src/mongo_extension_data_source.dart';
 export 'src/mongo_import_results_data_source.dart';
+export 'src/mongo_log_data_source.dart';
