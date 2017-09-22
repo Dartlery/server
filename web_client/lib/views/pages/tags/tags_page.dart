@@ -17,6 +17,7 @@ import 'package:angular_forms/angular_forms.dart';
 @Component(
     selector: 'tags-page',
     directives: const [
+    CORE_DIRECTIVES,
       materialDirectives,
       commonControls,
       formDirectives,

@@ -12,7 +12,7 @@ import 'package:logging/logging.dart';
     styles: const [
       'div.paginator { position:fixed; background-color:white; bottom: 8pt; right:8pt; margin-left:8pt;}'
     ],
-    directives: const [ROUTER_DIRECTIVES, materialDirectives],
+    directives: const [CORE_DIRECTIVES, ROUTER_DIRECTIVES, materialDirectives],
     providers: const [materialProviders],
     template: '''
     <div class="paginator" *ngIf="pages.isNotEmpty" >

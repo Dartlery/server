@@ -8,11 +8,12 @@ import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
 import 'package:logging/logging.dart';
 import 'package:dartlery/data/data.dart';
+import 'package:angular_forms/angular_forms.dart';
 import '../src/a_maintenance_page.dart';
 
 @Component(
     selector: 'collections-page',
-    directives: const [materialDirectives, commonControls],
+    directives: const [CORE_DIRECTIVES, formDirectives, materialDirectives, commonControls],
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css", "tag_categories_page.css"],
     templateUrl: 'tag_categories_page.html')

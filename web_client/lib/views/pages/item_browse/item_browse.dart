@@ -22,6 +22,7 @@ import 'package:dartlery/views/controls/item_grid/item_grid.dart';
     selector: 'item-browse',
     providers: const [materialProviders],
     directives: const [
+    CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,

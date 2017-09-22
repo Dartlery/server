@@ -12,7 +12,7 @@ import 'package:dartlery/api/api.dart';
     styles: const [''],
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[materialDirectives],
+    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives],
     template: '''<div>
     <material-button *ngIf="!showConfirmation" icon (trigger)="showConfirmation=true"><glyph icon="{{icon}}"></glyph></material-button> 
     <material-button *ngIf="showConfirmation" icon (trigger)="showConfirmation=false"><glyph icon="cancel"></glyph></material-button>

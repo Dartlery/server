@@ -9,11 +9,12 @@ import 'package:logging/logging.dart';
 import 'package:angular_router/angular_router.dart';
 import '../src/a_error_thing.dart';
 import 'package:dartlery_shared/global.dart';
+import 'package:angular_forms/angular_forms.dart';
 
 @Component(
     selector: 'login-form',
     styleUrls: const ["../shared.css"],
-    directives: const [materialDirectives],
+    directives: const [CORE_DIRECTIVES,formDirectives,materialDirectives],
     providers: const [materialProviders],
     template: '''<modal [visible]="visible">
       <material-dialog class="basic-dialog">

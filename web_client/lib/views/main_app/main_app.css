@@ -3,11 +3,8 @@
 }
 
 .content {
-    position:absolute;
-    top:64px;
-    bottom:0;
-    left:0;
-    right:0;
+    position:relative;
+    max-height: calc(100vh - 64px);
     overflow-y: auto;
     overflow-x:hidden;
     z-index:0;

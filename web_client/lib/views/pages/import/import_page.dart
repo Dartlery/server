@@ -15,6 +15,7 @@ import '../src/a_page.dart';
     selector: 'import-page',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
+    CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,

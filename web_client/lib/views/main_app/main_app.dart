@@ -24,9 +24,11 @@ import 'package:dartlery/data/data.dart';
     templateUrl: 'main_app.html',
     styleUrls: const [
       '../shared.css',
-      'main_app.css'
+      'main_app.css',
+      'package:angular_components/src/components/app_layout/layout.scss.css'
     ],
     directives: const [
+    CORE_DIRECTIVES,
       ROUTER_DIRECTIVES,
       materialDirectives,
       pageDirectives,

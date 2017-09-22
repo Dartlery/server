@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:dartlery_shared/global.dart';
 
 @Component(
+    directives: CORE_DIRECTIVES,
     selector: 'auth-status',
     styleUrls: const ['../shared.css'],
     template:

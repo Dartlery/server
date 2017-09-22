@@ -13,6 +13,7 @@ import 'package:dartlery/data/data.dart';
     selector: 'item-grid',
     providers: const [materialProviders],
     directives: const [
+    CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
     ],

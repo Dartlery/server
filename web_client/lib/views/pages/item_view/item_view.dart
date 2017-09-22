@@ -22,6 +22,7 @@ import 'package:dartlery/views/controls/common_controls.dart';
     selector: 'item-view',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
+    CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
