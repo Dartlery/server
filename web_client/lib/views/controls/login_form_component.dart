@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:html';
 import 'package:dartlery/routes.dart';
-import 'package:angular2/angular2.dart';
+import 'package:angular/angular.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
-import 'package:angular2/router.dart';
+import 'package:angular_router/angular_router.dart';
 import '../src/a_error_thing.dart';
 import 'package:dartlery_shared/global.dart';
 

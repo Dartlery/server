@@ -2,9 +2,8 @@ import 'dart:collection';
 import 'dart:async';
 import 'dart:html';
 
-import 'package:angular2/angular2.dart';
-import 'package:angular2/platform/common.dart';
-import 'package:angular2/router.dart';
+import 'package:angular/angular.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/client.dart';

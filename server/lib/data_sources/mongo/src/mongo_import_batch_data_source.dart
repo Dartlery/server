@@ -12,29 +12,14 @@ import 'a_mongo_data_source.dart';
 import 'a_mongo_two_id_data_source.dart';
 import 'constants.dart';
 
-class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
-    with AImportResultsDataSource {
-  static final Logger _log = new Logger('MongoImportResultsDataSource');
-  static const String fileNameField = "fileName";
-
-  static const String resultField = "result";
-  static const String errorField = "error";
-  static const String sourceField = "source";
-  static const String timestampField = "timestamp";
+class MongoImportBatchDataSource extends AMongoObjectDataSource<ImportBatch>
+    with AImportBatchDataSource {
+  static final Logger _log = new Logger('MongoImportBatchDataSource');
   static const String batchTimestampField = "batchTimestamp";
-  static const String thumbnailCreatedField = "thumbnailCreated";
-  MongoImportResultsDataSource(MongoDbConnectionPool pool) : super(pool);
+  MongoImportBatchDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
   Logger get childLogger => _log;
-
-  Future<Null> clear([bool everything = false]) async {
-    if (!everything) {
-      await deleteFromDb(where.nin(resultField, ["error", "warning"]));
-    } else {
-      await deleteFromDb({});
-    }
-  }
 
   @override
   Future<ImportResult> createObject(Map<String, dynamic> data) async {
@@ -55,21 +40,20 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
 
   @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
-      con.getImportResultsCollection();
+      con.getImportBatchCollection();
 
   @override
   Future<Null> record(ImportResult data) async {
     await insertIntoDb(data);
   }
 
+  static const String importCountsField= "importCounts";
+  static const String sourceField= "source";
+
   @override
-  void updateMap(ImportResult item, Map<String, dynamic> data) {
-    data[idField] = item.id;
-    data[fileNameField] = item.fileName;
-    data[resultField] = item.result;
-    data[thumbnailCreatedField] = item.thumbnailCreated;
-    data[errorField] = item.error;
-    data[timestampField] = item.timestamp;
+  void updateMap(ImportBatch item, Map<String, dynamic> data) {
+    data[importCountsField] = item.importCounts;
+    data[sourceField] = item.source;
     data[batchTimestampField] = item.batchTimestamp;
   }
 }

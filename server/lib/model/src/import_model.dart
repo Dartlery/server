@@ -95,10 +95,12 @@ class ImportModel extends AModel {
         password: mysqlPassword,
         db: mysqlDb);
 
-    final DateTime batchTimestamp = new DateTime.now();
-
     final int batchSize = 100;
     int lastId = startAt;
+
+    final ImportBatch importBatch = new ImportBatch();
+    importBatch.source = "shimmie";
+    importBatch.batchTimestamp = new DateTime.now();
 
     final Results results = await pool.query(
         "SELECT * FROM images WHERE ID >= $lastId ORDER BY ID ASC LIMIT $batchSize");
@@ -108,8 +110,7 @@ class ImportModel extends AModel {
       for (Row row in rows) {
         lastId = row.id;
         final ImportResult result = new ImportResult();
-        result.batchTimestamp = batchTimestamp;
-        result.source = "shimmie";
+        result.batchTimestamp = importBatch.batchTimestamp;
         result.fileName = "${row.id} - ${row.filename}";
         try {
           final Item newItem = new Item();

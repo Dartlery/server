@@ -1,19 +1,16 @@
 import 'dart:async';
 import 'dart:html' as html;
 
-import 'package:angular2/angular2.dart';
-import 'package:angular2/platform/common.dart';
-import 'package:angular2/router.dart';
+import 'package:angular/angular.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
-import 'package:material_toolbar/material_toolbar.dart';
+import 'package:angular_forms/angular_forms.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/login_form_component.dart';
 import 'package:dartlery/views/controls/paginator_component.dart';
 import 'package:dartlery/views/controls/item_upload_component.dart';
-import 'package:material_menu/material_menu.dart';
-import 'package:material_sidenav/material_sidenav.dart';
 import 'package:dartlery/views/pages/pages.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
@@ -37,9 +34,6 @@ import 'package:dartlery/data/data.dart';
       ItemUploadComponent,
       PaginatorComponent,
       commonControls,
-      MaterialToolbarComponent,
-      menuDirectives,
-      MaterialSidenavComponent
     ],
     providers: const [
       FORM_PROVIDERS,

@@ -2,7 +2,7 @@ import 'dart:html' as html;
 import 'package:dartlery/client.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery_shared/tools.dart';
-import 'package:angular2/router.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:dartlery/data/data.dart';
 import '../../src/a_api_error_thing.dart';
 import 'package:dartlery/api/api.dart';

@@ -4,7 +4,7 @@ import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/client.dart';
 import 'package:dartlery/api/api.dart';
 
-import 'package:angular2/core.dart';
+import 'package:angular/core.dart';
 import 'settings_service.dart';
 
 export 'package:dartlery/api/api.dart' show PaginatedResponse;
