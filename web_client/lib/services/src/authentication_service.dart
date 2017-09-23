@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:angular2/core.dart';
+import 'package:angular/core.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/client.dart';
 import 'package:dartlery_shared/global.dart';

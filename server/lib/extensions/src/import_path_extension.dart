@@ -22,8 +22,8 @@ class ImportPathExtension extends AExtension {
       final Map data = queueItem.data;
       await _importModel.importFromPath(data["path"],
           stopOnError: data["stopOnError"],
-          interpretShimmieNames: data["interpretShimmieNames"],
-          overrideBatchTimestamp: data["batchTimestamp"],
+          interpretFileNames: data["interpretFileNames"],
+          overrideBatchId: data["batchId"],
           mergeExisting: data["mergeExisting"]);
     } catch (e, st) {
       _log.severe(e, st);

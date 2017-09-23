@@ -13,6 +13,7 @@ import 'mongo_tag_data_source.dart';
 import 'mongo_log_data_source.dart';
 import 'mongo_background_queue_data_source.dart';
 import 'mongo_import_results_data_source.dart';
+import 'mongo_import_batch_data_source.dart';
 
 class MongoDatabase {
   static final Logger _log = new Logger('_MongoDatabase');
@@ -24,6 +25,7 @@ class MongoDatabase {
   static const String _backgroundQueueCollection = "backgroundQueue";
   static const String _extensionDataCollection = "extensionData";
   static const String _importResultsCollection = "importResults";
+  static const String _importBatchesCollection = "importBatches";
   static const String _logCollection = "log";
 
   static const String redirectEntryName = "redirect";
@@ -120,6 +122,22 @@ class MongoDatabase {
         name: "ImportResultsResult",
         unique: false);
     return db.collection(_importResultsCollection);
+  }
+
+  Future<DbCollection> getImportBatchCollection() async {
+    await db.createIndex(_importBatchesCollection,
+        keys: {
+          MongoImportBatchDataSource.timestampField: -1
+        },
+        name: "ImportBatchesTimestamp",
+        unique: true);
+    await db.createIndex(_importBatchesCollection,
+        keys: {
+          idField: -1
+        },
+        name: "ImportBatchesIDIndex",
+        unique: true);
+    return db.collection(_importBatchesCollection);
   }
 
   Future<DbCollection> getTagsCollection() async {

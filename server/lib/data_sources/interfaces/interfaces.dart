@@ -8,4 +8,5 @@ export 'src/a_two_id_based_data_source.dart';
 export 'src/a_background_queue_data_source.dart';
 export 'src/a_extension_data_source.dart';
 export 'src/a_import_result_data_source.dart';
+export 'src/a_import_batch_data_source.dart';
 export 'src/a_log_data_source.dart';

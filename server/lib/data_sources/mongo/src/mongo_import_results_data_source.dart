@@ -17,6 +17,8 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
   static final Logger _log = new Logger('MongoImportResultsDataSource');
   static const String fileNameField = "fileName";
 
+  static const String itemIdField = "itemId";
+  static const String batchIdField = "batchId";
   static const String resultField = "result";
   static const String errorField = "error";
   static const String sourceField = "source";
@@ -28,30 +30,30 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
   @override
   Logger get childLogger => _log;
 
-  Future<Null> clear([bool everything = false]) async {
+  Future<Null> clear(String batchId, [bool everything = false]) async {
     if (!everything) {
-      await deleteFromDb(where.nin(resultField, ["error", "warning"]));
+      await deleteFromDb(where.eq(batchIdField, batchId).nin(resultField, ["error", "warning"]));
     } else {
-      await deleteFromDb({});
+      await deleteFromDb(where.eq(batchIdField, batchId));
     }
   }
 
   @override
   Future<ImportResult> createObject(Map<String, dynamic> data) async {
     final ImportResult output = new ImportResult();
-    output.id = data[idField];
+    output.batchId = data[batchIdField];
+    output.itemId = data[itemIdField];
     output.fileName = data[fileNameField];
     output.result = data[resultField];
     output.error = data[errorField];
     output.thumbnailCreated = data[thumbnailCreatedField];
-    output.source = data[sourceField];
     output.timestamp = data[timestampField];
     return output;
   }
 
-  Future<PaginatedData<ImportResult>> get({int page: 0, int perPage}) async {
+  Future<PaginatedData<ImportResult>> get(String batchId, {int page: 0, int perPage}) async {
     return await getPaginatedFromDb(
-        where.sortBy(timestampField, descending: true));
+        where.eq(batchIdField, batchId).sortBy(timestampField, descending: true));
   }
 
   @override
@@ -65,13 +67,12 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
 
   @override
   void updateMap(ImportResult item, Map<String, dynamic> data) {
-    data[idField] = item.id;
+    data[batchIdField] = item.batchId;
+    data[itemIdField] = item.itemId;
     data[fileNameField] = item.fileName;
     data[resultField] = item.result;
     data[thumbnailCreatedField] = item.thumbnailCreated;
     data[errorField] = item.error;
-    data[sourceField] = item.source;
     data[timestampField] = item.timestamp;
-    data[batchTimestampField] = item.batchTimestamp;
   }
 }

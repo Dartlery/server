@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "257daff6db68f04dac054dac4b0f04e7eec1f110",
+ "etag": "722a09542c8982589a1e7caa675709ecef645fb0",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -391,7 +391,7 @@
     "stopOnError": {
      "type": "boolean"
     },
-    "interpretShimmieNames": {
+    "interpretFileNames": {
      "type": "boolean"
     },
     "mergeExisting": {
@@ -404,6 +404,39 @@
    "type": "object",
    "properties": {
     "data": {
+     "type": "string"
+    }
+   }
+  },
+  "ListOfImportBatch": {
+   "id": "ListOfImportBatch",
+   "type": "array",
+   "items": {
+    "$ref": "ImportBatch"
+   }
+  },
+  "ImportBatch": {
+   "id": "ImportBatch",
+   "type": "object",
+   "properties": {
+    "timestamp": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "source": {
+     "type": "string"
+    },
+    "importCounts": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "integer",
+      "format": "int32"
+     }
+    },
+    "finished": {
+     "type": "boolean"
+    },
+    "id": {
      "type": "string"
     }
    }
@@ -444,17 +477,13 @@
    "id": "ImportResult",
    "type": "object",
    "properties": {
-    "batchTimestamp": {
-     "type": "string",
-     "format": "date-time"
+    "batchId": {
+     "type": "string"
     },
-    "id": {
+    "itemId": {
      "type": "string"
     },
     "fileName": {
-     "type": "string"
-    },
-    "source": {
      "type": "string"
     },
     "result": {
@@ -1225,7 +1254,7 @@
    "methods": {
     "importFromPath": {
      "id": "GalleryApi.import.importFromPath",
-     "path": "import/results/",
+     "path": "import/",
      "httpMethod": "POST",
      "parameters": {},
      "parameterOrder": [],
@@ -1236,11 +1265,46 @@
       "$ref": "StringResponse"
      }
     },
-    "getResults": {
-     "id": "GalleryApi.import.getResults",
-     "path": "import/results/",
+    "getImportBatches": {
+     "id": "GalleryApi.import.getImportBatches",
+     "path": "import/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfImportBatch"
+     }
+    },
+    "getImportBatch": {
+     "id": "GalleryApi.import.getImportBatch",
+     "path": "import/{batchId}/",
      "httpMethod": "GET",
      "parameters": {
+      "batchId": {
+       "type": "string",
+       "description": "Path parameter: 'batchId'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "batchId"
+     ],
+     "response": {
+      "$ref": "ImportBatch"
+     }
+    },
+    "getImportBatchResults": {
+     "id": "GalleryApi.import.getImportBatchResults",
+     "path": "import/{batchId}/results/",
+     "httpMethod": "GET",
+     "parameters": {
+      "batchId": {
+       "type": "string",
+       "description": "Path parameter: 'batchId'.",
+       "required": true,
+       "location": "path"
+      },
       "page": {
        "type": "integer",
        "description": "Query parameter: 'page'.",
@@ -1254,16 +1318,24 @@
        "location": "query"
       }
      },
-     "parameterOrder": [],
+     "parameterOrder": [
+      "batchId"
+     ],
      "response": {
       "$ref": "PaginatedImportResultsResponse"
      }
     },
     "clearResults": {
      "id": "GalleryApi.import.clearResults",
-     "path": "import/results/",
+     "path": "import/{batchId}/",
      "httpMethod": "DELETE",
      "parameters": {
+      "batchId": {
+       "type": "string",
+       "description": "Path parameter: 'batchId'.",
+       "required": true,
+       "location": "path"
+      },
       "everything": {
        "type": "boolean",
        "description": "Query parameter: 'everything'.",
@@ -1271,7 +1343,9 @@
        "location": "query"
       }
      },
-     "parameterOrder": []
+     "parameterOrder": [
+      "batchId"
+     ]
     }
    },
    "resources": {}

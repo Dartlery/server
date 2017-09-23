@@ -2,7 +2,7 @@ import 'package:option/option.dart';
 import 'dart:async';
 import 'dart:indexed_db' as idb;
 import 'a_data_source.dart';
-import 'package:angular2/core.dart';
+import 'package:angular/core.dart';
 
 @Injectable()
 class SettingsService extends ADataSource {

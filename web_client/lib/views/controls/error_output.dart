@@ -1,6 +1,6 @@
 import 'package:dartlery_shared/tools.dart';
 import 'dart:async';
-import 'package:angular2/angular2.dart';
+import 'package:angular/angular.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:logging/logging.dart';
@@ -12,7 +12,7 @@ import 'package:dartlery/api/api.dart';
     styles: const ['.error_output li { font-size:smaller; }'],
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[materialDirectives],
+    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives],
     template: '''<span class="error_output" *ngIf="hasError">
         <glyph icon="error_outline"  tooltipTarget   #ref="tooltipTarget"></glyph>
       {{message}}

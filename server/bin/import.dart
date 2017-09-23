@@ -66,7 +66,7 @@ Future<Null> main(List<String> args) async {
       if (isNullOrWhitespace(argResults["path"]))
         throw new Exception("Path is required");
       await importModel.importFromPath(argResults["path"],
-          interpretShimmieNames: true, stopOnError: stopOnError);
+          interpretFileNames: true, stopOnError: stopOnError);
   }
 
   //await importModel.importFromPath(r"\\darkholme\rand\importTest", interpretShimmieNames: true, stopOnError: true);

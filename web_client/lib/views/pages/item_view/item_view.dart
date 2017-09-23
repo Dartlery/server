@@ -3,11 +3,11 @@ import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery_shared/global.dart';
 import 'dart:async';
 import 'package:dartlery/client.dart';
-import 'package:angular2/angular2.dart';
-import 'package:angular2/platform/common.dart';
+import 'package:angular/angular.dart';
 import 'dart:convert';
+import 'package:angular_forms/angular_forms.dart';
 
-import 'package:angular2/router.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/routes.dart';
@@ -22,6 +22,7 @@ import 'package:dartlery/views/controls/common_controls.dart';
     selector: 'item-view',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
+    CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,

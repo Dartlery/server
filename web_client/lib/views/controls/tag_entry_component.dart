@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:angular2/angular2.dart';
-import 'package:angular2/router.dart';
+import 'package:angular/angular.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
@@ -18,7 +18,7 @@ import '../src/a_api_error_thing.dart';
     styles: const [''],
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[materialDirectives, ROUTER_DIRECTIVES],
+    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives, ROUTER_DIRECTIVES],
     template: '''
     <div style="width: 100%;white-space: nowrap;">
     <material-chips *ngIf="showSelectedTags" style="float: left;">

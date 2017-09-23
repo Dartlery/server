@@ -1,55 +1,71 @@
-.win { color:green;}
-.lose { color:red; }
-.tie {  }
+.win {
+    color: green;
+}
+
+.lose {
+    color: red;
+}
+
+.tie {
+}
 
 table td {
     white-space: nowrap;
 }
 
-
-@media (max-width: 600px) {
-    .imageCompare {
-        height: calc(100vh - 56px - 64px);
-    }
-}
-
 .leftTags {
-    position: absolute;left:0;top:0;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
+
 .rightTags {
-    position: absolute;right:155px;top:0;text-align:right;
+    position: absolute;
+    right: 155px;
+    top: 0;
+    text-align: right;
 }
+
 .selectedItem {
     background-color: grey;
 }
+
 .imageCompare {
     height: calc(100vh - 64px - 64px);
     width: calc(100% - 155px);
 }
+
 .similarItems {
     position: absolute;
-    top:0;
-    right:0;
-    bottom:50pt;
+    top: 0;
+    right: 0;
+    bottom: 50pt;
     overflow-y: auto;
     overflow-x: hidden;
 }
+
 .similarItems div {
     cursor: pointer;
 }
+
 .similarItems img {
     height: 100px;
-    width:100px;
+    width: 100px;
     object-fit: cover;
 }
 
 .mergeControls {
-    width: calc(100% - 155px); text-align: center; position: fixed; bottom: 0; left:0 ; right:0;
+    width: calc(100% - 155px);
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .bulkActions {
-    width:155px;
+    width: 155px;
     position: absolute;
-    right:0;
-    bottom:0;
+    right: 0;
+    bottom: 0;
 }

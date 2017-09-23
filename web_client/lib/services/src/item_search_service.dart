@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:angular2/angular2.dart';
+import 'package:angular/angular.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/api/api.dart';
 import 'api_service.dart';

@@ -13,13 +13,13 @@ class SettingsModel extends AModel {
 
   SettingsModel(this._settingsDataSource, AUserDataSource userDataSource): super(userDataSource);
 
-  Future<Map<String,String>> get() async {
-    await validateGetPrivileges();
-    return _settingsDataSource.getAll();
-  }
-
-  Future<Null> set(Map<String,String> data) async {
-    await validateUpdatePrivilegeRequirement();
-    return _settingsDataSource.setAll(data);
-  }
+//  Future<Map<String,String>> get() async {
+//    await validateGetPrivileges();
+//    return _settingsDataSource.getAll();
+//  }
+//
+//  Future<Null> set(Map<String,String> data) async {
+//    await validateUpdatePrivilegeRequirement();
+//    return _settingsDataSource.setAll(data);
+//  }
 }

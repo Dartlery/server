@@ -1,4 +1,4 @@
-import 'package:angular2/router.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:dartlery/views/pages/pages.dart';
 
 const Route tagCategoriesRoute = const Route(

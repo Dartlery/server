@@ -28,19 +28,19 @@ class SettingsResource extends AResource {
   final ImportModel _settingsModel;
 
   SettingsResource(this._settingsModel);
-
-  @ApiMethod(method: HttpMethod.get, path: '$_apiPath/')
-  Future<Map<String,String>> get() =>
-      catchExceptionsAwait<Map<String,String>>(() async {
-            return _settingsModel.get();
-      });
-
-
-
-  @ApiMethod(method: HttpMethod.patch, path: '$_apiPath/')
-  Future<Null> save(Map<String,String> data) =>
-      catchExceptionsAwait<Null>(() async {
-        return _settingsModel.save(data);
-      });
+//
+//  @ApiMethod(method: HttpMethod.get, path: '$_apiPath/')
+//  Future<Map<String,String>> get() =>
+//      catchExceptionsAwait<Map<String,String>>(() async {
+//            return _settingsModel.get();
+//      });
+//
+//
+//
+//  @ApiMethod(method: HttpMethod.patch, path: '$_apiPath/')
+//  Future<Null> save(Map<String,String> data) =>
+//      catchExceptionsAwait<Null>(() async {
+//        return _settingsModel.save(data);
+//      });
 
 }

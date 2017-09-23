@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:angular2/angular2.dart';
-import 'package:angular2/router.dart';
+import 'package:angular/angular.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart' as api;
 import 'package:dartlery/services/services.dart';
@@ -10,10 +10,11 @@ import 'package:logging/logging.dart';
 import 'package:dartlery/data/data.dart';
 import '../src/a_maintenance_page.dart';
 import 'package:dartlery_shared/global.dart';
+import 'package:angular_forms/angular_forms.dart';
 
 @Component(
     selector: 'users-page',
-    directives: const [materialDirectives, commonControls],
+    directives: const [CORE_DIRECTIVES, formDirectives, materialDirectives, commonControls],
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css", "users_page.css"],
     templateUrl: 'users_page.html')

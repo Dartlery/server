@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:angular2/angular2.dart';
-import 'package:angular2/router.dart';
+import 'package:angular/angular.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:meta/meta.dart';
-
+import 'package:angular_forms/angular_forms.dart';
 import 'a_error_thing.dart';
 
 abstract class AApiErrorThing extends AErrorThing {

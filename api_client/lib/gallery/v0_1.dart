@@ -10,53 +10,54 @@ import 'dart:convert' as convert;
 import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:http/http.dart' as http;
 
-export 'package:_discoveryapis_commons/_discoveryapis_commons.dart' show
-    ApiRequestError, DetailedApiRequestError;
+export 'package:_discoveryapis_commons/_discoveryapis_commons.dart'
+    show ApiRequestError, DetailedApiRequestError;
 
 const core.String USER_AGENT = 'dart-api-client gallery/v0.1';
 
-/** Item REST API */
+/// Item REST API
 class GalleryApi {
-
   final commons.ApiRequester _requester;
 
-  ExtensionDataResourceApi get extensionData => new ExtensionDataResourceApi(_requester);
+  ExtensionDataResourceApi get extensionData =>
+      new ExtensionDataResourceApi(_requester);
   ImportResourceApi get import => new ImportResourceApi(_requester);
   ItemsResourceApi get items => new ItemsResourceApi(_requester);
   SetupResourceApi get setup => new SetupResourceApi(_requester);
-  TagCategoriesResourceApi get tagCategories => new TagCategoriesResourceApi(_requester);
+  TagCategoriesResourceApi get tagCategories =>
+      new TagCategoriesResourceApi(_requester);
   TagsResourceApi get tags => new TagsResourceApi(_requester);
   UsersResourceApi get users => new UsersResourceApi(_requester);
 
-  GalleryApi(http.Client client, {core.String rootUrl: "http://localhost:8080/", core.String servicePath: "api/gallery/v0.1/"}) :
-      _requester = new commons.ApiRequester(client, rootUrl, servicePath, USER_AGENT);
+  GalleryApi(http.Client client,
+      {core.String rootUrl: "http://localhost:8080/",
+      core.String servicePath: "api/gallery/v0.1/"})
+      : _requester =
+            new commons.ApiRequester(client, rootUrl, servicePath, USER_AGENT);
 }
-
 
 class ExtensionDataResourceApi {
   final commons.ApiRequester _requester;
 
-  ExtensionDataResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  ExtensionDataResourceApi(commons.ApiRequester client) : _requester = client;
 
-  /**
-   * Request parameters:
-   *
-   * [extensionId] - Path parameter: 'extensionId'.
-   *
-   * [key] - Path parameter: 'key'.
-   *
-   * [primaryId] - Path parameter: 'primaryId'.
-   *
-   * [secondaryId] - Path parameter: 'secondaryId'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future delete(core.String extensionId, core.String key, core.String primaryId, core.String secondaryId) {
+  /// Request parameters:
+  ///
+  /// [extensionId] - Path parameter: 'extensionId'.
+  ///
+  /// [key] - Path parameter: 'key'.
+  ///
+  /// [primaryId] - Path parameter: 'primaryId'.
+  ///
+  /// [secondaryId] - Path parameter: 'secondaryId'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future delete(core.String extensionId, core.String key,
+      core.String primaryId, core.String secondaryId) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -79,42 +80,52 @@ class ExtensionDataResourceApi {
 
     _downloadOptions = null;
 
-    _url = 'extension_data/' + commons.Escaper.ecapeVariable('$extensionId') + '/' + commons.Escaper.ecapeVariable('$key') + '/' + commons.Escaper.ecapeVariable('$primaryId') + '/' + commons.Escaper.ecapeVariable('$secondaryId') + '/';
+    _url = 'extension_data/' +
+        commons.Escaper.ecapeVariable('$extensionId') +
+        '/' +
+        commons.Escaper.ecapeVariable('$key') +
+        '/' +
+        commons.Escaper.ecapeVariable('$primaryId') +
+        '/' +
+        commons.Escaper.ecapeVariable('$secondaryId') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * Request parameters:
-   *
-   * [extensionId] - Path parameter: 'extensionId'.
-   *
-   * [key] - Path parameter: 'key'.
-   *
-   * [orderByValues] - Query parameter: 'orderByValues'.
-   *
-   * [orderDescending] - Query parameter: 'orderDescending'.
-   *
-   * [page] - Query parameter: 'page'.
-   *
-   * [perPage] - Query parameter: 'perPage'.
-   *
-   * Completes with a [PaginatedExtensionDataResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<PaginatedExtensionDataResponse> get(core.String extensionId, core.String key, {core.bool orderByValues, core.bool orderDescending, core.int page, core.int perPage}) {
+  /// Request parameters:
+  ///
+  /// [extensionId] - Path parameter: 'extensionId'.
+  ///
+  /// [key] - Path parameter: 'key'.
+  ///
+  /// [orderByValues] - Query parameter: 'orderByValues'.
+  ///
+  /// [orderDescending] - Query parameter: 'orderDescending'.
+  ///
+  /// [page] - Query parameter: 'page'.
+  ///
+  /// [perPage] - Query parameter: 'perPage'.
+  ///
+  /// Completes with a [PaginatedExtensionDataResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<PaginatedExtensionDataResponse> get(
+      core.String extensionId, core.String key,
+      {core.bool orderByValues,
+      core.bool orderDescending,
+      core.int page,
+      core.int perPage}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -141,38 +152,44 @@ class ExtensionDataResourceApi {
       _queryParams["perPage"] = ["${perPage}"];
     }
 
-    _url = 'extension_data/' + commons.Escaper.ecapeVariable('$extensionId') + '/' + commons.Escaper.ecapeVariable('$key') + '/';
+    _url = 'extension_data/' +
+        commons.Escaper.ecapeVariable('$extensionId') +
+        '/' +
+        commons.Escaper.ecapeVariable('$key') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new PaginatedExtensionDataResponse.fromJson(data));
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
+    return _response
+        .then((data) => new PaginatedExtensionDataResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [extensionId] - Path parameter: 'extensionId'.
-   *
-   * [key] - Path parameter: 'key'.
-   *
-   * [primaryId] - Path parameter: 'primaryId'.
-   *
-   * [secondaryId] - Path parameter: 'secondaryId'.
-   *
-   * Completes with a [PaginatedExtensionDataResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<PaginatedExtensionDataResponse> getByPrimaryAndSecondaryId(core.String extensionId, core.String key, core.String primaryId, core.String secondaryId) {
+  /// Request parameters:
+  ///
+  /// [extensionId] - Path parameter: 'extensionId'.
+  ///
+  /// [key] - Path parameter: 'key'.
+  ///
+  /// [primaryId] - Path parameter: 'primaryId'.
+  ///
+  /// [secondaryId] - Path parameter: 'secondaryId'.
+  ///
+  /// Completes with a [PaginatedExtensionDataResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<PaginatedExtensionDataResponse> getByPrimaryAndSecondaryId(
+      core.String extensionId,
+      core.String key,
+      core.String primaryId,
+      core.String secondaryId) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -193,46 +210,58 @@ class ExtensionDataResourceApi {
       throw new core.ArgumentError("Parameter secondaryId is required.");
     }
 
-    _url = 'extension_data/' + commons.Escaper.ecapeVariable('$extensionId') + '/' + commons.Escaper.ecapeVariable('$key') + '/' + commons.Escaper.ecapeVariable('$primaryId') + '/' + commons.Escaper.ecapeVariable('$secondaryId') + '/';
+    _url = 'extension_data/' +
+        commons.Escaper.ecapeVariable('$extensionId') +
+        '/' +
+        commons.Escaper.ecapeVariable('$key') +
+        '/' +
+        commons.Escaper.ecapeVariable('$primaryId') +
+        '/' +
+        commons.Escaper.ecapeVariable('$secondaryId') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new PaginatedExtensionDataResponse.fromJson(data));
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
+    return _response
+        .then((data) => new PaginatedExtensionDataResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [extensionId] - Path parameter: 'extensionId'.
-   *
-   * [key] - Path parameter: 'key'.
-   *
-   * [primaryId] - Path parameter: 'primaryId'.
-   *
-   * [bidirectional] - Query parameter: 'bidirectional'.
-   *
-   * [orderByValues] - Query parameter: 'orderByValues'.
-   *
-   * [orderDescending] - Query parameter: 'orderDescending'.
-   *
-   * [page] - Query parameter: 'page'.
-   *
-   * [perPage] - Query parameter: 'perPage'.
-   *
-   * Completes with a [PaginatedExtensionDataResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<PaginatedExtensionDataResponse> getByPrimaryId(core.String extensionId, core.String key, core.String primaryId, {core.bool bidirectional, core.bool orderByValues, core.bool orderDescending, core.int page, core.int perPage}) {
+  /// Request parameters:
+  ///
+  /// [extensionId] - Path parameter: 'extensionId'.
+  ///
+  /// [key] - Path parameter: 'key'.
+  ///
+  /// [primaryId] - Path parameter: 'primaryId'.
+  ///
+  /// [bidirectional] - Query parameter: 'bidirectional'.
+  ///
+  /// [orderByValues] - Query parameter: 'orderByValues'.
+  ///
+  /// [orderDescending] - Query parameter: 'orderDescending'.
+  ///
+  /// [page] - Query parameter: 'page'.
+  ///
+  /// [perPage] - Query parameter: 'perPage'.
+  ///
+  /// Completes with a [PaginatedExtensionDataResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<PaginatedExtensionDataResponse> getByPrimaryId(
+      core.String extensionId, core.String key, core.String primaryId,
+      {core.bool bidirectional,
+      core.bool orderByValues,
+      core.bool orderDescending,
+      core.int page,
+      core.int perPage}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -265,39 +294,42 @@ class ExtensionDataResourceApi {
       _queryParams["perPage"] = ["${perPage}"];
     }
 
-    _url = 'extension_data/' + commons.Escaper.ecapeVariable('$extensionId') + '/' + commons.Escaper.ecapeVariable('$key') + '/' + commons.Escaper.ecapeVariable('$primaryId') + '/';
+    _url = 'extension_data/' +
+        commons.Escaper.ecapeVariable('$extensionId') +
+        '/' +
+        commons.Escaper.ecapeVariable('$key') +
+        '/' +
+        commons.Escaper.ecapeVariable('$primaryId') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new PaginatedExtensionDataResponse.fromJson(data));
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
+    return _response
+        .then((data) => new PaginatedExtensionDataResponse.fromJson(data));
   }
-
 }
-
 
 class ImportResourceApi {
   final commons.ApiRequester _requester;
 
-  ImportResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  ImportResourceApi(commons.ApiRequester client) : _requester = client;
 
-  /**
-   * Request parameters:
-   *
-   * [everything] - Query parameter: 'everything'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future clearResults({core.bool everything}) {
+  /// Request parameters:
+  ///
+  /// [batchId] - Path parameter: 'batchId'.
+  ///
+  /// [everything] - Query parameter: 'everything'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future clearResults(core.String batchId, {core.bool everything}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -305,40 +337,38 @@ class ImportResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
+    if (batchId == null) {
+      throw new core.ArgumentError("Parameter batchId is required.");
+    }
     if (everything != null) {
       _queryParams["everything"] = ["${everything}"];
     }
 
     _downloadOptions = null;
 
-    _url = 'import/results/';
+    _url = 'import/' + commons.Escaper.ecapeVariable('$batchId') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * Request parameters:
-   *
-   * [page] - Query parameter: 'page'.
-   *
-   * [perPage] - Query parameter: 'perPage'.
-   *
-   * Completes with a [PaginatedImportResultsResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<PaginatedImportResultsResponse> getResults({core.int page, core.int perPage}) {
+  /// Request parameters:
+  ///
+  /// [batchId] - Path parameter: 'batchId'.
+  ///
+  /// Completes with a [ImportBatch].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<ImportBatch> getImportBatch(core.String batchId) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -346,6 +376,50 @@ class ImportResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
+    if (batchId == null) {
+      throw new core.ArgumentError("Parameter batchId is required.");
+    }
+
+    _url = 'import/' + commons.Escaper.ecapeVariable('$batchId') + '/';
+
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
+    return _response.then((data) => new ImportBatch.fromJson(data));
+  }
+
+  /// Request parameters:
+  ///
+  /// [batchId] - Path parameter: 'batchId'.
+  ///
+  /// [page] - Query parameter: 'page'.
+  ///
+  /// [perPage] - Query parameter: 'perPage'.
+  ///
+  /// Completes with a [PaginatedImportResultsResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<PaginatedImportResultsResponse> getImportBatchResults(
+      core.String batchId,
+      {core.int page,
+      core.int perPage}) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (batchId == null) {
+      throw new core.ArgumentError("Parameter batchId is required.");
+    }
     if (page != null) {
       _queryParams["page"] = ["${page}"];
     }
@@ -353,31 +427,57 @@ class ImportResourceApi {
       _queryParams["perPage"] = ["${perPage}"];
     }
 
-    _url = 'import/results/';
+    _url = 'import/' + commons.Escaper.ecapeVariable('$batchId') + '/results/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new PaginatedImportResultsResponse.fromJson(data));
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
+    return _response
+        .then((data) => new PaginatedImportResultsResponse.fromJson(data));
   }
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * Completes with a [StringResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// Completes with a [ListOfImportBatch].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<ListOfImportBatch> getImportBatches() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    _url = 'import/';
+
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfImportBatch.fromJson(data));
+  }
+
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// Completes with a [StringResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<StringResponse> importFromPath(ImportPathRequest request) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -390,40 +490,34 @@ class ImportResourceApi {
       _body = convert.JSON.encode((request).toJson());
     }
 
-    _url = 'import/results/';
+    _url = 'import/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new StringResponse.fromJson(data));
   }
-
 }
-
 
 class ItemsResourceApi {
   final commons.ApiRequester _requester;
 
-  ItemsResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  ItemsResourceApi(commons.ApiRequester client) : _requester = client;
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * Completes with a [IdResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// Completes with a [IdResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<IdResponse> createItem(CreateItemRequest request) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -438,29 +532,26 @@ class ItemsResourceApi {
 
     _url = 'items/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * [permanent] - Query parameter: 'permanent'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// [permanent] - Query parameter: 'permanent'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future delete(core.String id, {core.bool permanent}) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -480,29 +571,26 @@ class ItemsResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [Item].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [Item].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<Item> getById(core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -517,29 +605,26 @@ class ItemsResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new Item.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [ListOfTag].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [ListOfTag].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<ListOfTag> getTagsByItemId(core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -554,36 +639,37 @@ class ItemsResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/tags/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfTag.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [page] - Query parameter: 'page'.
-   *
-   * [perPage] - Query parameter: 'perPage'.
-   *
-   * [cutoffDate] - Query parameter: 'cutoffDate'.
-   *
-   * [inTrash] - Query parameter: 'inTrash'.
-   *
-   * Completes with a [PaginatedItemResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<PaginatedItemResponse> getVisibleIds({core.int page, core.int perPage, core.String cutoffDate, core.bool inTrash}) {
+  /// Request parameters:
+  ///
+  /// [page] - Query parameter: 'page'.
+  ///
+  /// [perPage] - Query parameter: 'perPage'.
+  ///
+  /// [cutoffDate] - Query parameter: 'cutoffDate'.
+  ///
+  /// [inTrash] - Query parameter: 'inTrash'.
+  ///
+  /// Completes with a [PaginatedItemResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<PaginatedItemResponse> getVisibleIds(
+      {core.int page,
+      core.int perPage,
+      core.String cutoffDate,
+      core.bool inTrash}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -606,34 +692,31 @@ class ItemsResourceApi {
 
     _url = 'items/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new PaginatedItemResponse.fromJson(data));
   }
 
-  /**
-   * Merges the data from [sourceItemId] into the item specified by [id], and
-   * then deletes the item associated with [sourceItemId]
-   *
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * [targetItemId] - Path parameter: 'targetItemId'.
-   *
-   * Completes with a [Item].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Merges the data from [sourceItemId] into the item specified by [id], and
+  /// then deletes the item associated with [sourceItemId]
+  ///
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// [targetItemId] - Path parameter: 'targetItemId'.
+  ///
+  /// Completes with a [Item].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<Item> mergeItems(IdRequest request, core.String targetItemId) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -649,29 +732,27 @@ class ItemsResourceApi {
       throw new core.ArgumentError("Parameter targetItemId is required.");
     }
 
-    _url = 'items/' + commons.Escaper.ecapeVariable('$targetItemId') + '/merge/';
+    _url =
+        'items/' + commons.Escaper.ecapeVariable('$targetItemId') + '/merge/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new Item.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future restore(core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -688,38 +769,39 @@ class ItemsResourceApi {
 
     _url = 'trash/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * Request parameters:
-   *
-   * [tags] - Path parameter: 'tags'.
-   *
-   * [page] - Query parameter: 'page'.
-   *
-   * [perPage] - Query parameter: 'perPage'.
-   *
-   * [cutoffDate] - Query parameter: 'cutoffDate'.
-   *
-   * [inTrash] - Query parameter: 'inTrash'.
-   *
-   * Completes with a [PaginatedItemResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<PaginatedItemResponse> searchVisible(core.String tags, {core.int page, core.int perPage, core.String cutoffDate, core.bool inTrash}) {
+  /// Request parameters:
+  ///
+  /// [tags] - Path parameter: 'tags'.
+  ///
+  /// [page] - Query parameter: 'page'.
+  ///
+  /// [perPage] - Query parameter: 'perPage'.
+  ///
+  /// [cutoffDate] - Query parameter: 'cutoffDate'.
+  ///
+  /// [inTrash] - Query parameter: 'inTrash'.
+  ///
+  /// Completes with a [PaginatedItemResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<PaginatedItemResponse> searchVisible(core.String tags,
+      {core.int page,
+      core.int perPage,
+      core.String cutoffDate,
+      core.bool inTrash}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -745,31 +827,28 @@ class ItemsResourceApi {
 
     _url = 'search/items/' + commons.Escaper.ecapeVariable('$tags') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new PaginatedItemResponse.fromJson(data));
   }
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [IdResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [IdResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<IdResponse> update(Item request, core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -787,29 +866,26 @@ class ItemsResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future updateTagsForItemId(ListOfTag request, core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -829,38 +905,32 @@ class ItemsResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/tags/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
-
 }
-
 
 class SetupResourceApi {
   final commons.ApiRequester _requester;
 
-  SetupResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  SetupResourceApi(commons.ApiRequester client) : _requester = client;
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * Completes with a [SetupResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// Completes with a [SetupResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<SetupResponse> apply(SetupRequest request) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -875,27 +945,24 @@ class SetupResourceApi {
 
     _url = 'setup/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new SetupResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * Completes with a [SetupResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// Completes with a [SetupResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<SetupResponse> get() {
     var _url = null;
     var _queryParams = new core.Map();
@@ -904,41 +971,34 @@ class SetupResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'setup/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new SetupResponse.fromJson(data));
   }
-
 }
-
 
 class TagCategoriesResourceApi {
   final commons.ApiRequester _requester;
 
-  TagCategoriesResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  TagCategoriesResourceApi(commons.ApiRequester client) : _requester = client;
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * Completes with a [IdResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// Completes with a [IdResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<IdResponse> create(TagCategory request) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -953,27 +1013,24 @@ class TagCategoriesResourceApi {
 
     _url = 'tag_categories/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future delete(core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -990,27 +1047,24 @@ class TagCategoriesResourceApi {
 
     _url = 'tag_categories/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * Request parameters:
-   *
-   * Completes with a [ListOfString].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// Completes with a [ListOfString].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<ListOfString> getAllIds() {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1019,32 +1073,28 @@ class TagCategoriesResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'tag_categories/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfString.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [TagCategory].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [TagCategory].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<TagCategory> getById(core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1059,31 +1109,28 @@ class TagCategoriesResourceApi {
 
     _url = 'tag_categories/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new TagCategory.fromJson(data));
   }
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [IdResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [IdResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<IdResponse> update(TagCategory request, core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1101,38 +1148,32 @@ class TagCategoriesResourceApi {
 
     _url = 'tag_categories/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
-
 }
-
 
 class TagsResourceApi {
   final commons.ApiRequester _requester;
 
-  TagsResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  TagsResourceApi(commons.ApiRequester client) : _requester = client;
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * [category] - Path parameter: 'category'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// [category] - Path parameter: 'category'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future clearRedirect(core.String id, core.String category) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1150,29 +1191,30 @@ class TagsResourceApi {
 
     _downloadOptions = null;
 
-    _url = 'tag_redirects/' + commons.Escaper.ecapeVariable('$id') + '/' + commons.Escaper.ecapeVariable('$category') + '/';
+    _url = 'tag_redirects/' +
+        commons.Escaper.ecapeVariable('$id') +
+        '/' +
+        commons.Escaper.ecapeVariable('$category') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future clearRedirectWithoutCategory(core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1189,31 +1231,28 @@ class TagsResourceApi {
 
     _url = 'tag_redirects/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * [category] - Path parameter: 'category'.
-   *
-   * Completes with a [CountResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// [category] - Path parameter: 'category'.
+  ///
+  /// Completes with a [CountResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<CountResponse> delete(core.String id, core.String category) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1229,31 +1268,32 @@ class TagsResourceApi {
       throw new core.ArgumentError("Parameter category is required.");
     }
 
-    _url = 'tag/' + commons.Escaper.ecapeVariable('$id') + '/' + commons.Escaper.ecapeVariable('$category') + '/';
+    _url = 'tag/' +
+        commons.Escaper.ecapeVariable('$id') +
+        '/' +
+        commons.Escaper.ecapeVariable('$category') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new CountResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [CountResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [CountResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<CountResponse> deleteWithoutCategory(core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1268,34 +1308,32 @@ class TagsResourceApi {
 
     _url = 'tag/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new CountResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [page] - Query parameter: 'page'.
-   *
-   * [perPage] - Query parameter: 'perPage'.
-   *
-   * [countAsc] - Query parameter: 'countAsc'.
-   *
-   * Completes with a [PaginatedTagResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<PaginatedTagResponse> getAllTagInfo({core.int page, core.int perPage, core.bool countAsc}) {
+  /// Request parameters:
+  ///
+  /// [page] - Query parameter: 'page'.
+  ///
+  /// [perPage] - Query parameter: 'perPage'.
+  ///
+  /// [countAsc] - Query parameter: 'countAsc'.
+  ///
+  /// Completes with a [PaginatedTagResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<PaginatedTagResponse> getAllTagInfo(
+      {core.int page, core.int perPage, core.bool countAsc}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1315,27 +1353,24 @@ class TagsResourceApi {
 
     _url = 'tags/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new PaginatedTagResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * Completes with a [ListOfTagInfo].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// Completes with a [ListOfTagInfo].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<ListOfTagInfo> getRedirects() {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1344,34 +1379,30 @@ class TagsResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'tag_redirects/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfTagInfo.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * [category] - Path parameter: 'category'.
-   *
-   * Completes with a [TagInfo].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// [category] - Path parameter: 'category'.
+  ///
+  /// Completes with a [TagInfo].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<TagInfo> getTagInfo(core.String id, core.String category) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1387,31 +1418,32 @@ class TagsResourceApi {
       throw new core.ArgumentError("Parameter category is required.");
     }
 
-    _url = 'tags/' + commons.Escaper.ecapeVariable('$id') + '/' + commons.Escaper.ecapeVariable('$category') + '/';
+    _url = 'tags/' +
+        commons.Escaper.ecapeVariable('$id') +
+        '/' +
+        commons.Escaper.ecapeVariable('$category') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new TagInfo.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [id] - Path parameter: 'id'.
-   *
-   * Completes with a [TagInfo].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [id] - Path parameter: 'id'.
+  ///
+  /// Completes with a [TagInfo].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<TagInfo> getTagInfoWithoutCategory(core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1426,29 +1458,26 @@ class TagsResourceApi {
 
     _url = 'tags/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new TagInfo.fromJson(data));
   }
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * Completes with a [CountResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// Completes with a [CountResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<CountResponse> replace(ReplaceTagsRequest request) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1463,25 +1492,22 @@ class TagsResourceApi {
 
     _url = 'tags/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new CountResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future resetTagInfo() {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1490,43 +1516,43 @@ class TagsResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _downloadOptions = null;
 
     _url = 'tag_info/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * Request parameters:
-   *
-   * [query] - Path parameter: 'query'.
-   *
-   * [page] - Query parameter: 'page'.
-   *
-   * [perPage] - Query parameter: 'perPage'.
-   *
-   * [countAsc] - Query parameter: 'countAsc'.
-   *
-   * [redirects] - Query parameter: 'redirects'.
-   *
-   * Completes with a [PaginatedTagResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<PaginatedTagResponse> search(core.String query, {core.int page, core.int perPage, core.bool countAsc, core.bool redirects}) {
+  /// Request parameters:
+  ///
+  /// [query] - Path parameter: 'query'.
+  ///
+  /// [page] - Query parameter: 'page'.
+  ///
+  /// [perPage] - Query parameter: 'perPage'.
+  ///
+  /// [countAsc] - Query parameter: 'countAsc'.
+  ///
+  /// [redirects] - Query parameter: 'redirects'.
+  ///
+  /// Completes with a [PaginatedTagResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
+  async.Future<PaginatedTagResponse> search(core.String query,
+      {core.int page,
+      core.int perPage,
+      core.bool countAsc,
+      core.bool redirects}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1552,27 +1578,24 @@ class TagsResourceApi {
 
     _url = 'search/tags/' + commons.Escaper.ecapeVariable('$query');
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new PaginatedTagResponse.fromJson(data));
   }
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future setRedirect(TagInfo request) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1589,38 +1612,32 @@ class TagsResourceApi {
 
     _url = 'tag_redirects/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
-
 }
-
 
 class UsersResourceApi {
   final commons.ApiRequester _requester;
 
-  UsersResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  UsersResourceApi(commons.ApiRequester client) : _requester = client;
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * [uuid] - Path parameter: 'uuid'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// [uuid] - Path parameter: 'uuid'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future changePassword(PasswordChangeRequest request, core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1640,29 +1657,26 @@ class UsersResourceApi {
 
     _url = 'users/' + commons.Escaper.ecapeVariable('$uuid') + '/password/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * Completes with a [IdResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// Completes with a [IdResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<IdResponse> create(User request) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1677,27 +1691,24 @@ class UsersResourceApi {
 
     _url = 'users/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * [uuid] - Path parameter: 'uuid'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [uuid] - Path parameter: 'uuid'.
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future delete(core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1714,29 +1725,26 @@ class UsersResourceApi {
 
     _url = 'users/' + commons.Escaper.ecapeVariable('$uuid') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
-  /**
-   * Request parameters:
-   *
-   * [uuid] - Path parameter: 'uuid'.
-   *
-   * Completes with a [User].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// [uuid] - Path parameter: 'uuid'.
+  ///
+  /// Completes with a [User].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<User> getById(core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1751,27 +1759,24 @@ class UsersResourceApi {
 
     _url = 'users/' + commons.Escaper.ecapeVariable('$uuid') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new User.fromJson(data));
   }
 
-  /**
-   * Request parameters:
-   *
-   * Completes with a [User].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// Request parameters:
+  ///
+  /// Completes with a [User].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<User> getMe() {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1780,34 +1785,30 @@ class UsersResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'current_user/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new User.fromJson(data));
   }
 
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * [uuid] - Path parameter: 'uuid'.
-   *
-   * Completes with a [IdResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
+  /// [request] - The metadata request object.
+  ///
+  /// Request parameters:
+  ///
+  /// [uuid] - Path parameter: 'uuid'.
+  ///
+  /// Completes with a [IdResponse].
+  ///
+  /// Completes with a [commons.ApiRequestError] if the API endpoint returned an
+  /// error.
+  ///
+  /// If the used [http.Client] completes with an error when making a REST call,
+  /// this method will complete with the same error.
   async.Future<IdResponse> update(User request, core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
@@ -1825,19 +1826,15 @@ class UsersResourceApi {
 
     _url = 'users/' + commons.Escaper.ecapeVariable('$uuid') + '/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
-
 }
-
-
 
 class CountResponse {
   core.int count;
@@ -1851,7 +1848,8 @@ class CountResponse {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (count != null) {
       _json["count"] = count;
     }
@@ -1875,7 +1873,8 @@ class CreateItemRequest {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (file != null) {
       _json["file"] = (file).toJson();
     }
@@ -1906,7 +1905,8 @@ class ExtensionData {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (primaryId != null) {
       _json["primaryId"] = primaryId;
     }
@@ -1932,7 +1932,8 @@ class IdRequest {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (id != null) {
       _json["id"] = id;
     }
@@ -1956,7 +1957,8 @@ class IdResponse {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (id != null) {
       _json["id"] = id;
     }
@@ -1967,8 +1969,57 @@ class IdResponse {
   }
 }
 
+class ImportBatch {
+  core.bool finished;
+  core.String id;
+  core.Map<core.String, core.int> importCounts;
+  core.String source;
+  core.DateTime timestamp;
+
+  ImportBatch();
+
+  ImportBatch.fromJson(core.Map _json) {
+    if (_json.containsKey("finished")) {
+      finished = _json["finished"];
+    }
+    if (_json.containsKey("id")) {
+      id = _json["id"];
+    }
+    if (_json.containsKey("importCounts")) {
+      importCounts = _json["importCounts"];
+    }
+    if (_json.containsKey("source")) {
+      source = _json["source"];
+    }
+    if (_json.containsKey("timestamp")) {
+      timestamp = core.DateTime.parse(_json["timestamp"]);
+    }
+  }
+
+  core.Map<core.String, core.Object> toJson() {
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
+    if (finished != null) {
+      _json["finished"] = finished;
+    }
+    if (id != null) {
+      _json["id"] = id;
+    }
+    if (importCounts != null) {
+      _json["importCounts"] = importCounts;
+    }
+    if (source != null) {
+      _json["source"] = source;
+    }
+    if (timestamp != null) {
+      _json["timestamp"] = (timestamp).toIso8601String();
+    }
+    return _json;
+  }
+}
+
 class ImportPathRequest {
-  core.bool interpretShimmieNames;
+  core.bool interpretFileNames;
   core.bool mergeExisting;
   core.String path;
   core.bool stopOnError;
@@ -1976,8 +2027,8 @@ class ImportPathRequest {
   ImportPathRequest();
 
   ImportPathRequest.fromJson(core.Map _json) {
-    if (_json.containsKey("interpretShimmieNames")) {
-      interpretShimmieNames = _json["interpretShimmieNames"];
+    if (_json.containsKey("interpretFileNames")) {
+      interpretFileNames = _json["interpretFileNames"];
     }
     if (_json.containsKey("mergeExisting")) {
       mergeExisting = _json["mergeExisting"];
@@ -1991,9 +2042,10 @@ class ImportPathRequest {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
-    if (interpretShimmieNames != null) {
-      _json["interpretShimmieNames"] = interpretShimmieNames;
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
+    if (interpretFileNames != null) {
+      _json["interpretFileNames"] = interpretFileNames;
     }
     if (mergeExisting != null) {
       _json["mergeExisting"] = mergeExisting;
@@ -2009,20 +2061,19 @@ class ImportPathRequest {
 }
 
 class ImportResult {
-  core.DateTime batchTimestamp;
+  core.String batchId;
   core.String error;
   core.String fileName;
-  core.String id;
+  core.String itemId;
   core.String result;
-  core.String source;
   core.bool thumbnailCreated;
   core.DateTime timestamp;
 
   ImportResult();
 
   ImportResult.fromJson(core.Map _json) {
-    if (_json.containsKey("batchTimestamp")) {
-      batchTimestamp = core.DateTime.parse(_json["batchTimestamp"]);
+    if (_json.containsKey("batchId")) {
+      batchId = _json["batchId"];
     }
     if (_json.containsKey("error")) {
       error = _json["error"];
@@ -2030,14 +2081,11 @@ class ImportResult {
     if (_json.containsKey("fileName")) {
       fileName = _json["fileName"];
     }
-    if (_json.containsKey("id")) {
-      id = _json["id"];
+    if (_json.containsKey("itemId")) {
+      itemId = _json["itemId"];
     }
     if (_json.containsKey("result")) {
       result = _json["result"];
-    }
-    if (_json.containsKey("source")) {
-      source = _json["source"];
     }
     if (_json.containsKey("thumbnailCreated")) {
       thumbnailCreated = _json["thumbnailCreated"];
@@ -2048,9 +2096,10 @@ class ImportResult {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
-    if (batchTimestamp != null) {
-      _json["batchTimestamp"] = (batchTimestamp).toIso8601String();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
+    if (batchId != null) {
+      _json["batchId"] = batchId;
     }
     if (error != null) {
       _json["error"] = error;
@@ -2058,14 +2107,11 @@ class ImportResult {
     if (fileName != null) {
       _json["fileName"] = fileName;
     }
-    if (id != null) {
-      _json["id"] = id;
+    if (itemId != null) {
+      _json["itemId"] = itemId;
     }
     if (result != null) {
       _json["result"] = result;
-    }
-    if (source != null) {
-      _json["source"] = source;
     }
     if (thumbnailCreated != null) {
       _json["thumbnailCreated"] = thumbnailCreated;
@@ -2161,7 +2207,8 @@ class Item {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (audio != null) {
       _json["audio"] = audio;
     }
@@ -2223,8 +2270,32 @@ class Item {
   }
 }
 
-class ListOfString
-    extends collection.ListBase<core.String> {
+class ListOfImportBatch extends collection.ListBase<ImportBatch> {
+  final core.List<ImportBatch> _inner;
+
+  ListOfImportBatch() : _inner = [];
+
+  ListOfImportBatch.fromJson(core.List json)
+      : _inner = json.map((value) => new ImportBatch.fromJson(value)).toList();
+
+  core.List<core.Map<core.String, core.Object>> toJson() {
+    return _inner.map((value) => (value).toJson()).toList();
+  }
+
+  ImportBatch operator [](core.int key) => _inner[key];
+
+  void operator []=(core.int key, ImportBatch value) {
+    _inner[key] = value;
+  }
+
+  core.int get length => _inner.length;
+
+  void set length(core.int newLength) {
+    _inner.length = newLength;
+  }
+}
+
+class ListOfString extends collection.ListBase<core.String> {
   final core.List<core.String> _inner;
 
   ListOfString() : _inner = [];
@@ -2249,8 +2320,7 @@ class ListOfString
   }
 }
 
-class ListOfTag
-    extends collection.ListBase<Tag> {
+class ListOfTag extends collection.ListBase<Tag> {
   final core.List<Tag> _inner;
 
   ListOfTag() : _inner = [];
@@ -2275,8 +2345,7 @@ class ListOfTag
   }
 }
 
-class ListOfTagInfo
-    extends collection.ListBase<TagInfo> {
+class ListOfTagInfo extends collection.ListBase<TagInfo> {
   final core.List<TagInfo> _inner;
 
   ListOfTagInfo() : _inner = [];
@@ -2341,7 +2410,8 @@ class MediaMessage {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (bytes != null) {
       _json["bytes"] = bytes;
     }
@@ -2382,7 +2452,9 @@ class PaginatedExtensionDataResponse {
 
   PaginatedExtensionDataResponse.fromJson(core.Map _json) {
     if (_json.containsKey("items")) {
-      items = _json["items"].map((value) => new ExtensionData.fromJson(value)).toList();
+      items = _json["items"]
+          .map((value) => new ExtensionData.fromJson(value))
+          .toList();
     }
     if (_json.containsKey("page")) {
       page = _json["page"];
@@ -2402,7 +2474,8 @@ class PaginatedExtensionDataResponse {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (items != null) {
       _json["items"] = items.map((value) => (value).toJson()).toList();
     }
@@ -2437,7 +2510,9 @@ class PaginatedImportResultsResponse {
 
   PaginatedImportResultsResponse.fromJson(core.Map _json) {
     if (_json.containsKey("items")) {
-      items = _json["items"].map((value) => new ImportResult.fromJson(value)).toList();
+      items = _json["items"]
+          .map((value) => new ImportResult.fromJson(value))
+          .toList();
     }
     if (_json.containsKey("page")) {
       page = _json["page"];
@@ -2457,7 +2532,8 @@ class PaginatedImportResultsResponse {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (items != null) {
       _json["items"] = items.map((value) => (value).toJson()).toList();
     }
@@ -2502,7 +2578,8 @@ class PaginatedItemResponse {
       pageCount = _json["pageCount"];
     }
     if (_json.containsKey("queryTags")) {
-      queryTags = _json["queryTags"].map((value) => new Tag.fromJson(value)).toList();
+      queryTags =
+          _json["queryTags"].map((value) => new Tag.fromJson(value)).toList();
     }
     if (_json.containsKey("startIndex")) {
       startIndex = _json["startIndex"];
@@ -2516,7 +2593,8 @@ class PaginatedItemResponse {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (items != null) {
       _json["items"] = items;
     }
@@ -2554,7 +2632,8 @@ class PaginatedTagResponse {
 
   PaginatedTagResponse.fromJson(core.Map _json) {
     if (_json.containsKey("items")) {
-      items = _json["items"].map((value) => new TagInfo.fromJson(value)).toList();
+      items =
+          _json["items"].map((value) => new TagInfo.fromJson(value)).toList();
     }
     if (_json.containsKey("page")) {
       page = _json["page"];
@@ -2574,7 +2653,8 @@ class PaginatedTagResponse {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (items != null) {
       _json["items"] = items.map((value) => (value).toJson()).toList();
     }
@@ -2613,7 +2693,8 @@ class PasswordChangeRequest {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (currentPassword != null) {
       _json["currentPassword"] = currentPassword;
     }
@@ -2632,20 +2713,25 @@ class ReplaceTagsRequest {
 
   ReplaceTagsRequest.fromJson(core.Map _json) {
     if (_json.containsKey("newTags")) {
-      newTags = _json["newTags"].map((value) => new Tag.fromJson(value)).toList();
+      newTags =
+          _json["newTags"].map((value) => new Tag.fromJson(value)).toList();
     }
     if (_json.containsKey("originalTags")) {
-      originalTags = _json["originalTags"].map((value) => new Tag.fromJson(value)).toList();
+      originalTags = _json["originalTags"]
+          .map((value) => new Tag.fromJson(value))
+          .toList();
     }
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (newTags != null) {
       _json["newTags"] = newTags.map((value) => (value).toJson()).toList();
     }
     if (originalTags != null) {
-      _json["originalTags"] = originalTags.map((value) => (value).toJson()).toList();
+      _json["originalTags"] =
+          originalTags.map((value) => (value).toJson()).toList();
     }
     return _json;
   }
@@ -2667,7 +2753,8 @@ class SetupRequest {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (adminPassword != null) {
       _json["adminPassword"] = adminPassword;
     }
@@ -2690,7 +2777,8 @@ class SetupResponse {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (adminUser != null) {
       _json["adminUser"] = adminUser;
     }
@@ -2710,7 +2798,8 @@ class StringResponse {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (data != null) {
       _json["data"] = data;
     }
@@ -2734,7 +2823,8 @@ class Tag {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (category != null) {
       _json["category"] = category;
     }
@@ -2761,7 +2851,8 @@ class TagCategory {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (color != null) {
       _json["color"] = color;
     }
@@ -2796,7 +2887,8 @@ class TagInfo {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (category != null) {
       _json["category"] = category;
     }
@@ -2837,7 +2929,8 @@ class User {
   }
 
   core.Map<core.String, core.Object> toJson() {
-    final core.Map<core.String, core.Object> _json = new core.Map<core.String, core.Object>();
+    final core.Map<core.String, core.Object> _json =
+        new core.Map<core.String, core.Object>();
     if (id != null) {
       _json["id"] = id;
     }

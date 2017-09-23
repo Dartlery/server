@@ -3,7 +3,7 @@
 
 <material-checkbox [(ngModel)]="request.stopOnError" label="Stop on error"  ngControl="stopOnError"></material-checkbox>
 <material-checkbox [(ngModel)]="request.mergeExisting" label="Merge existing"  ngControl="mergeExisting"></material-checkbox>
-<material-checkbox [(ngModel)]="request.interpretShimmieNames" label="Interpret Shimmie names"  ngControl="interpretShimmieNames"></material-checkbox>
+<material-checkbox [(ngModel)]="request.interpretFileNames" label="Interpret file names"  ngControl="interpretFileNames"></material-checkbox>
     <material-button raised (trigger)="beginImport()">Begin Import</material-button>
     Note: Import process happens asynchronously and may take up to a minute to start. Refresh this page and see below to get import status.
     Import rules:
@@ -14,16 +14,29 @@
         <li>To add a tag category separate the tag and category with a semicolon, like so: category;tag</li>
         <li>Nested directories will inherit tags from parent directories.</li>
         <li>A category can be applied to multiple tags by creating a parent directory with the name of the category and ending it with a semicolon, like so: category;</li>
-        <li>Tags from a file's name will only be processed if the "Interpret Shimmie names" option is enabled and the file name follows this pattern: 123 - tag1 tag2 tag3.ext</li>
+        <li>Tags from a file's name will only be processed if the "Interpret file names" option is enabled and the file name follows this pattern: 123 - tag1 tag2 tag3.ext</li>
     </ul>
 </form>
+<material-dropdown-select
+        [buttonText]="batchSelectedText"
+        [selection]="batchSelection"
+        [options]="batchOptions"
+        [itemRenderer]="batchRenderer"
 
+>
+</material-dropdown-select>
 <material-button (trigger)="clearSuccessResults()" raised>Clear Success</material-button>
 <material-button (trigger)="clearAllResults()" raised>Clear All</material-button>
 
+<div *ngIf="!batchSelection.selectedValues.isEmpty">
+    Timestamp: {{batch.timestamp}}
+    Source: {{batch.source}}
+    Results: {{batch.importCounts}}
+    Finished: {{batch.finished}}
+</div>
+
 <table class="importResults">
     <tr *ngFor="let r of results">
-        <td>{{r.batchTimestamp}}</td>
         <td>{{r.timestamp}}</td>
         <td>{{r.fileName}}</td>
         <td>{{r.result}}</td>
