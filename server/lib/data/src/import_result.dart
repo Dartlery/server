@@ -1,6 +1,6 @@
 class ImportResult {
-  DateTime batchTimestamp;
-  String id;
+  String batchId;
+  String itemId;
   String fileName;
 
   String result;

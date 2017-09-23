@@ -1,6 +1,6 @@
 class ImportPathRequest {
   String path;
   bool stopOnError = false;
-  bool interpretShimmieNames = true;
-  bool mergeExisting = false;
+  bool interpretFileNames = true;
+  bool mergeExisting = true;
 }

@@ -23,6 +23,8 @@ export 'package:api_client/gallery/v0_1.dart'
         TagCategoriesResourceApi,
         PaginatedExtensionDataResponse,
         ImportResult,
+        ImportBatch,
+        StringResponse,
         ExtensionData,
         TagInfo,
         ReplaceTagsRequest,

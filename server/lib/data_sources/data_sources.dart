@@ -20,6 +20,8 @@ ModuleInjector createDataSourceModuleInjector(String connectionString) {
     ..bind(AExtensionDataSource, toImplementation: MongoExtensionDataSource)
     ..bind(AImportResultsDataSource,
         toImplementation: MongoImportResultsDataSource)
+    ..bind(AImportBatchDataSource,
+        toImplementation: MongoImportBatchDataSource)
     ..bind(MongoTagDataSource)
     ..bind(ALogDataSource, toImplementation:  MongoLogDataSource)
     ..bind(MongoDbConnectionPool,

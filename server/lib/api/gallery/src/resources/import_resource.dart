@@ -29,28 +29,40 @@ class ImportResource extends AResource {
 
   ImportResource(this._importModel);
 
-  @ApiMethod(method: HttpMethod.post, path: '$_apiPath/results/')
+  @ApiMethod(method: HttpMethod.post, path: '$_apiPath/')
   Future<StringResponse> importFromPath(ImportPathRequest request) =>
       catchExceptionsAwait<StringResponse>(() async {
         return new StringResponse((await _importModel.enqueueImportFromPath(
                 request.path,
-                interpretShimmieNames: request.interpretShimmieNames,
+                interpretFileNames: request.interpretFileNames,
                 stopOnError: request.stopOnError,
                 mergeExisting: request.mergeExisting))
             .toString());
       });
 
-  @ApiMethod(method: HttpMethod.get, path: '$_apiPath/results/')
-  Future<PaginatedImportResultsResponse> getResults(
-          {int page: 0, int perPage: defaultPerPage}) =>
-      catchExceptionsAwait<PaginatedImportResultsResponse>(() async {
-        return new PaginatedImportResultsResponse.fromPaginatedData(
-            await _importModel.getResults(page: page, perPage: perPage));
+  @ApiMethod(method: HttpMethod.get, path: '$_apiPath/')
+  Future<List<ImportBatch>> getImportBatches() =>
+      catchExceptionsAwait<List<ImportBatch>>(() async {
+        return await _importModel.getAll();
       });
 
-  @ApiMethod(method: HttpMethod.delete, path: '$_apiPath/results/')
-  Future<Null> clearResults({bool everything: false}) =>
+  @ApiMethod(method: HttpMethod.get, path: '$_apiPath/{batchId}/')
+  Future<ImportBatch> getImportBatch(String batchId) =>
+      catchExceptionsAwait<ImportBatch>(() async {
+        return await _importModel.getById(batchId);
+      });
+
+  @ApiMethod(method: HttpMethod.get, path: '$_apiPath/{batchId}/results/')
+  Future<PaginatedImportResultsResponse> getImportBatchResults(String batchId,
+      {int page: 0, int perPage: defaultPerPage}) =>
+      catchExceptionsAwait<PaginatedImportResultsResponse>(() async {
+        return new PaginatedImportResultsResponse.fromPaginatedData(
+            await _importModel.getBatchResults(batchId, page: page, perPage: perPage));
+      });
+
+  @ApiMethod(method: HttpMethod.delete, path: '$_apiPath/{batchId}/')
+  Future<Null> clearResults(String batchId, {bool everything: false}) =>
       catchExceptionsAwait<Null>(() async {
-        await _importModel.clearResults(everything);
+        await _importModel.clearResults(batchId, everything);
       });
 }

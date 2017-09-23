@@ -131,7 +131,13 @@ class MongoDatabase {
         },
         name: "ImportBatchesTimestamp",
         unique: true);
-    return db.collection(_importResultsCollection);
+    await db.createIndex(_importBatchesCollection,
+        keys: {
+          idField: -1
+        },
+        name: "ImportBatchesIDIndex",
+        unique: true);
+    return db.collection(_importBatchesCollection);
   }
 
   Future<DbCollection> getTagsCollection() async {

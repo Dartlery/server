@@ -9,33 +9,32 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:option/option.dart';
 
 import 'a_mongo_data_source.dart';
-import 'a_mongo_two_id_data_source.dart';
+import 'a_mongo_id_data_source.dart';
 import 'constants.dart';
 
-class MongoImportBatchDataSource extends AMongoObjectDataSource<ImportBatch>
+class MongoImportBatchDataSource extends AMongoIdDataSource<ImportBatch>
     with AImportBatchDataSource {
   static final Logger _log = new Logger('MongoImportBatchDataSource');
-  static const String batchTimestampField = "batchTimestamp";
+
+  static const String timestampField = "timestamp";
+  static const String importCountsField= "importCounts";
+  static const String sourceField= "source";
+  static const String finishedField= "finished";
+
   MongoImportBatchDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
   Logger get childLogger => _log;
 
   @override
-  Future<ImportResult> createObject(Map<String, dynamic> data) async {
-    final ImportResult output = new ImportResult();
-    output.id = data[idField];
-    output.fileName = data[fileNameField];
-    output.result = data[resultField];
-    output.error = data[errorField];
-    output.thumbnailCreated = data[thumbnailCreatedField];
+  Future<ImportBatch> createObject(Map<String, dynamic> data) async {
+    final ImportBatch output = new ImportBatch();
+    AMongoIdDataSource.setIdForData(output, data);
+    output.source = data[sourceField];
+    output.importCounts = data[importCountsField];
+    output.finished = data[finishedField];
     output.timestamp = data[timestampField];
     return output;
-  }
-
-  Future<PaginatedData<ImportResult>> get({int page: 0, int perPage}) async {
-    return await getPaginatedFromDb(
-        where.sortBy(timestampField, descending: true));
   }
 
   @override
@@ -43,17 +42,33 @@ class MongoImportBatchDataSource extends AMongoObjectDataSource<ImportBatch>
       con.getImportBatchCollection();
 
   @override
-  Future<Null> record(ImportResult data) async {
-    await insertIntoDb(data);
-  }
-
-  static const String importCountsField= "importCounts";
-  static const String sourceField= "source";
-
-  @override
   void updateMap(ImportBatch item, Map<String, dynamic> data) {
+    super.updateMap(item, data);
     data[importCountsField] = item.importCounts;
     data[sourceField] = item.source;
-    data[batchTimestampField] = item.batchTimestamp;
+    data[timestampField] = item.timestamp;
+    data[finishedField] = item.finished;
+  }
+
+  @override
+  Future<Null> incrementImportCount(String batchId, String result) async {
+    final Option<Map> opt = await genericFindOne(where.eq(idField, batchId));
+    if(opt.isEmpty) {
+      throw new NotFoundException("Batch not found: $batchId");
+    }
+    final Map doc = opt.first;
+    if(doc[importCountsField]==null) {
+      doc[importCountsField] = <String,num>{};
+    }
+    if(!doc[importCountsField].containsKey(result)) {
+      doc[importCountsField][result] = 0;
+    }
+    doc[importCountsField][result]++;
+    await genericUpdate(where.eq(idField, batchId), doc);
+  }
+
+  @override
+  Future<Null> markBatchFinished(String batchId) async {
+    await genericUpdate(where.eq(idField, batchId), modify.set(finishedField, true));
   }
 }
