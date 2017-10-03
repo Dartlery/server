@@ -8,22 +8,26 @@ import 'package:dartlery/data_sources/mongo/mongo.dart' as mongo;
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
+import 'package:server/model/model.dart';
+import 'package:server/server.dart';
 
-import 'a_typed_model.dart';
-
-class TagModel extends ATypedModel<TagInfo> {
+class TagModel extends ATypedModel<TagInfo, User> {
   static final Logger _log = new Logger('TagModel');
 
   final ATagDataSource _tagDataSource;
   final AItemDataSource _itemDataSource;
 
   final ATagCategoryDataSource _tagCategoryDataSource;
-  TagModel(this._tagDataSource, this._tagCategoryDataSource,
-      this._itemDataSource, AUserDataSource userDataSource)
-      : super(userDataSource);
+  TagModel(
+      this._tagDataSource,
+      this._tagCategoryDataSource,
+      this._itemDataSource,
+      AUserDataSource userDataSource,
+      APrivilegeSet privilegeSet)
+      : super(userDataSource, privilegeSet);
 
   @override
   Logger get loggerImpl => _log;
@@ -163,7 +167,9 @@ class TagModel extends ATypedModel<TagInfo> {
   }
 
   Future<PaginatedData<TagInfo>> search(String query,
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: null,
+      {int page: 0,
+      int perPage: defaultPerPage,
+      bool countAsc: null,
       bool redirects: null}) async {
     await validateReadPrivilegeRequirement();
     return await _tagDataSource.searchPaginated(query,

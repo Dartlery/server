@@ -6,13 +6,17 @@ import 'package:args/args.dart';
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/services/background_service.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:di/di.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart'
     as server_logging;
 
+import 'package:server/server.dart';
+
 import 'package:dartlery/data_sources/data_sources.dart';
+import 'package:gcloud/service_scope.dart' as ss;
+
 
 Future<Null> main(List<String> args) async {
   // Add a simple log handler to log information to a server side file.
@@ -58,7 +62,7 @@ Future<Null> main(List<String> args) async {
 
   final String ip = result['ip'];
 
-  final Server server = Server.createInstance(connectionString);
+  final DartleryServer server = DartleryServer.createInstance(connectionString);
   server.start(ip, port);
 
   // Now we start the thread for the background service
@@ -66,25 +70,32 @@ Future<Null> main(List<String> args) async {
       startBackgroundIsolate,
       new BackgroundConfig()
         ..loggingLevel = Logger.root.level
-        ..connectionString = connectionString);
+        ..connectionString = connectionString
+        ..context = server.createServerContext());
 }
 
 void startBackgroundIsolate(BackgroundConfig config) {
-  Logger.root.level = config.loggingLevel;
-  Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
-
-  final ModuleInjector injector =
-      createModelModuleInjector(config.connectionString);
-
-  final DbLoggingHandler dbLoggingHandler = new DbLoggingHandler(injector.get(ALogDataSource));
-  Logger.root.onRecord.listen(dbLoggingHandler);
+  ss.fork(() {
+    ss.register(SERVICE_CONTEXT, config.context);
 
 
-  final BackgroundService service = injector.get(BackgroundService);
-  service.start();
+    Logger.root.level = config.loggingLevel;
+    Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
+
+    final ModuleInjector injector =
+    createModelModuleInjector(config.connectionString);
+
+    final DbLoggingHandler dbLoggingHandler =
+    new DbLoggingHandler(injector.get(ALogDataSource));
+    Logger.root.onRecord.listen(dbLoggingHandler);
+
+    final BackgroundService service = injector.get(BackgroundService);
+    return service.start();
+  });
 }
 
 class BackgroundConfig {
   String connectionString;
   Level loggingLevel;
+  DartleryServerContext context;
 }

@@ -32,4 +32,4 @@ export 'package:api_client/gallery/v0_1.dart'
         PaginatedImportResultsResponse,
         ImportPathRequest;
 
-export 'src/api_http_client.dart';
+export 'package:lib_angular/angular.dart';

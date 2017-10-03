@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/data/data.dart';
-import 'a_id_based_data_source.dart';
+import 'package:server/data_sources/interfaces.dart';
+import 'package:server/data/data.dart';
+import 'package:server/server.dart';
 
 abstract class AItemDataSource extends AIdBasedDataSource<Item> {
   static final Logger _log = new Logger('AItemDataSource');
@@ -11,7 +13,10 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
   Future<IdDataList<Item>> getVisible(String userUuid, {bool inTrash: false});
 
   Future<List<Item>> getVisibleRandom(String userUuid,
-      {List<Tag> filterTags, int perPage: defaultPerRandomPage, bool inTrash: false, bool imagesOnly: false});
+      {List<Tag> filterTags,
+      int perPage: defaultPerRandomPage,
+      bool inTrash: false,
+      bool imagesOnly: false});
 
   Future<IdDataList<Item>> searchVisible(String userUuid, String query,
       {bool inTrash: false});

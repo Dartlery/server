@@ -1,6 +1,5 @@
 import 'package:dartlery_shared/global.dart';
 import 'package:di/di.dart';
-import 'package:dartlery_shared/tools.dart';
 import 'package:rpc/rpc.dart';
 
 import 'src/resources/item_resource.dart';
@@ -15,21 +14,16 @@ export 'src/resources/setup_resource.dart';
 export 'src/resources/user_resource.dart';
 import 'src/resources/import_resource.dart';
 export 'src/resources/import_resource.dart';
-import 'package:dartlery/model/model.dart';
 
-//export 'src/requests/bulk_item_action_request.dart';
-//export 'src/requests/item_action_request.dart';
-//export 'src/requests/create_item_request.dart';
-//export 'src/requests/update_item_request.dart';
-//export 'src/requests/transfer_request.dart';
 export 'src/requests/password_change_request.dart';
 export 'src/requests/replace_tags_requst.dart';
+import 'package:server/api/api.dart';
 
 @ApiClass(
     version: galleryApiVersion,
     name: galleryApiName,
     description: 'Item REST API')
-class GalleryApi {
+class GalleryApi extends AApi {
   static const String importPath = "import";
   static const String itemsPath = "items";
   static const String usersPath = "users";

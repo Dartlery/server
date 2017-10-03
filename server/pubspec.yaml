@@ -37,7 +37,10 @@ dependencies:
   exif: ^0.1.1
   image_hash:
     git: https://github.com/dartninja/image_hash.git
-
+  server:
+    path: ../libs/server
+  tools:
+    path: ../libs/tools
 dev_dependencies:
   test: any
 dependency_overrides:

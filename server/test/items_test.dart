@@ -2,14 +2,14 @@ import 'dart:io';
 import 'package:rpc/rpc.dart';
 import 'package:test/test.dart';
 import 'shared/api.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/api/gallery/gallery_api.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery_shared/global.dart';
 
-Server server;
+DartleryServer server;
 GalleryApi get api => server.galleryApi;
 
 Map<String, User> users;

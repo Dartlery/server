@@ -7,16 +7,16 @@ import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
-import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
-
-import '../../../src/a_api_error_thing.dart';
 
 @Component(
     selector: 'redirects-tab',
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES,materialDirectives, commonControls],
+    directives: const <dynamic>[
+      CORE_DIRECTIVES,
+      materialDirectives,
+      commonControls
+    ],
     template: '''
     <table>
     <tr>
@@ -36,22 +36,22 @@ import '../../../src/a_api_error_thing.dart';
     </tr>
     </table>
     ''')
-class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
+class RedirectsTab extends AApiView<ApiService> implements OnInit, OnDestroy {
   static final Logger _log = new Logger("RedirectsTab");
 
   Tag startTag;
 
   Tag endTag;
-  final ApiService _api;
+
   final PageControlService _pageControl;
 
   StreamSubscription<PageAction> _pageActionSubscription;
 
   final List<TagInfo> redirects = new List<TagInfo>();
 
-  RedirectsTab(this._api, this._pageControl, Router router,
+  RedirectsTab(ApiService api, this._pageControl, Router router,
       AuthenticationService authenticationService)
-      : super(router, authenticationService);
+      : super(api, router, authenticationService);
   @override
   Logger get loggerImpl => _log;
 
@@ -60,9 +60,9 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
   Future<Null> clearRedirect(TagInfo t) async {
     await performApiCall(() async {
       if (t.category == null) {
-        await _api.tags.clearRedirectWithoutCategory(t.id);
+        await api.tags.clearRedirectWithoutCategory(t.id);
       } else {
-        await _api.tags.clearRedirect(t.id, t.category);
+        await api.tags.clearRedirect(t.id, t.category);
       }
       await refresh();
     });
@@ -77,7 +77,7 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
 
       request.redirect = endTag;
 
-      await _api.tags.setRedirect(request);
+      await api.tags.setRedirect(request);
       startTag = null;
       endTag = null;
       await refresh();
@@ -118,7 +118,7 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
   Future<Null> refresh() async {
     await performApiCall(() async {
       redirects.clear();
-      redirects.addAll(await _api.tags.getRedirects());
+      redirects.addAll(await api.tags.getRedirects());
     });
   }
 }

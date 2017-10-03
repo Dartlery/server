@@ -2,28 +2,28 @@ import 'dart:async';
 import 'package:crypt/crypt.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:dartlery/data_sources/data_sources.dart' as data_sources;
-import 'a_id_based_model.dart';
-import 'a_model.dart';
+import 'package:server/model/model.dart';
 
-class UserModel extends AIdBasedModel<User> {
+class UserModel extends AIdBasedModel<User, User> implements AUserModel<User> {
   static final Logger _log = new Logger('UserModel');
 
-  UserModel(AUserDataSource userDataSource) : super(userDataSource);
+  UserModel(AUserDataSource userDataSource, APrivilegeSet privilegeSet)
+      : super(userDataSource, privilegeSet);
 
   @override
   Logger get loggerImpl => _log;
 
   @override
-  AUserDataSource get dataSource => userDataSource;
+  AUserDataSource<User> get dataSource => userDataSource;
 
   @override
-  String get defaultReadPrivilegeRequirement => UserPrivilege.moderator;
+  String get defaultReadPrivilegeRequirement => UserPrivilegeSet.moderator;
 
   @override
   Future<Null> validateFields(User user, Map<String, String> fieldErrors,
@@ -34,14 +34,13 @@ class UserModel extends AIdBasedModel<User> {
       fieldErrors["name"] = "Required";
     }
 
-    if (isNullOrWhitespace(existingId) ||
-        !isNullOrWhitespace(user.password)) {
+    if (isNullOrWhitespace(existingId) || !isNullOrWhitespace(user.password)) {
       _validatePassword(fieldErrors, user.password);
     }
     if (isNullOrWhitespace(user.type)) {
       fieldErrors["type"] = "Required";
     } else {
-      if (!UserPrivilege.values.contains(user.type))
+      if (!privilegeSet.privileges.contains(user.type))
         fieldErrors["type"] = "Invalid";
     }
   }
@@ -115,7 +114,7 @@ class UserModel extends AIdBasedModel<User> {
     }
 
     if (currentUserId != username &&
-        !(await userHasPrivilege(UserPrivilege.admin)))
+        !(await userHasPrivilege(APrivilegeSet.admin)))
       throw new ForbiddenException(
           "You do not have permission to change another user's password");
 

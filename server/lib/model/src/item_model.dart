@@ -7,16 +7,18 @@ import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/services/extension_service.dart';
-import 'package:dartlery/tools.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:exif/exif.dart';
 import 'package:image/image.dart' as image;
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:path/path.dart' as path;
+import 'package:server/model/model.dart';
+import 'package:server/server.dart';
+import 'package:server/tools.dart';
 
-class ItemModel extends AIdBasedModel<Item> {
+class ItemModel extends AIdBasedModel<Item, User> {
   static final Logger _log = new Logger('ItemModel');
   static final RegExp legalIdCharacters = new RegExp("[a-zA-Z0-9_\-]");
 
@@ -48,7 +50,7 @@ class ItemModel extends AIdBasedModel<Item> {
   DateFormat downloadNameDateFormat = new DateFormat('yMdHms');
 
   Future<Null> adjustAll(Iterable<Item> items) async {
-    for(Item i in items) {
+    for (Item i in items) {
       await performAdjustments(i);
     }
   }
@@ -78,21 +80,27 @@ class ItemModel extends AIdBasedModel<Item> {
   final RegExp _videoFrameRateRegex =
       new RegExp(r"^avg_frame_rate=(\d+)\/(\d+)$", multiLine: true);
 
-  ItemModel(this.itemDataSource, this.tagDataSource, this.tagCategoryDataSource,
-      this._extensionServices, this._tagModel, AUserDataSource userDataSource)
-      : super(userDataSource);
+  ItemModel(
+      this.itemDataSource,
+      this.tagDataSource,
+      this.tagCategoryDataSource,
+      this._extensionServices,
+      this._tagModel,
+      AUserDataSource userDataSource,
+      APrivilegeSet privilegeSet)
+      : super(userDataSource, privilegeSet);
 
   @override
   AItemDataSource get dataSource => itemDataSource;
 
   @override
-  String get defaultDeletePrivilegeRequirement => UserPrivilege.normal;
+  String get defaultDeletePrivilegeRequirement => UserPrivilegeSet.normal;
 
   @override
-  String get defaultReadPrivilegeRequirement => UserPrivilege.normal;
+  String get defaultReadPrivilegeRequirement => UserPrivilegeSet.normal;
 
   @override
-  String get defaultWritePrivilegeRequirement => UserPrivilege.normal;
+  String get defaultWritePrivilegeRequirement => UserPrivilegeSet.normal;
   @override
   Logger get loggerImpl => _log;
   @override
@@ -135,7 +143,6 @@ class ItemModel extends AIdBasedModel<Item> {
     await itemDataSource.setTrashStatus(id, false);
   }
 
-
   @override
   Future<String> delete(String id) async {
     await validateDeletePrivileges(id);
@@ -152,7 +159,8 @@ class ItemModel extends AIdBasedModel<Item> {
     }
 
     try {
-      final File file = new File(getOriginalFilePathForHash(id));
+      final File file = new File(dartleryServerContext
+          .getOriginalFilePathForHash(id));
       if (file.existsSync()) {
         await file.delete();
       }
@@ -160,7 +168,8 @@ class ItemModel extends AIdBasedModel<Item> {
       _log.warning("Error while deleting original file", e, st);
     }
     try {
-      final File file = new File(getFullFilePathForHash(id));
+      final File file = new File(
+          dartleryServerContext.getFullFilePathForHash(id));
       if (file.existsSync()) {
         await file.delete();
       }
@@ -168,7 +177,8 @@ class ItemModel extends AIdBasedModel<Item> {
       _log.warning("Error while deleting full file", e, st);
     }
     try {
-      final File file = new File(getThumbnailFilePathForHash(id));
+      final File file = new File(dartleryServerContext
+          .getThumbnailFilePathForHash(id));
       if (file.existsSync()) {
         await file.delete();
       }
@@ -182,18 +192,16 @@ class ItemModel extends AIdBasedModel<Item> {
   Future<List<int>> generatePdfThumbnail(String originalFile) async {
     _log.fine("generatePdfThumbnail start");
     final Directory tempFolder =
-    await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
+        await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
     final String tempfile = path.join(tempFolder.path, "thumbnail.png");
     try {
       String command = "convert";
-      final List<String> args = <String>[
-          '${originalFile}[0]',
-          tempfile];
-      if(Platform.isWindows) {
+      final List<String> args = <String>['${originalFile}[0]', tempfile];
+      if (Platform.isWindows) {
         args.insert(0, command);
         command = "magick";
       }
-      final ProcessResult result = await Process.run(command,args);
+      final ProcessResult result = await Process.run(command, args);
       if (result.exitCode != 0) {
         throw new Exception(
             "Error while generating PDF thumbnail: ${result.stderr
@@ -210,11 +218,10 @@ class ItemModel extends AIdBasedModel<Item> {
     }
   }
 
-
   Future<List<int>> generatePdfMontage(String originalFile) async {
     _log.fine("generatePdfThumbnail start");
     final Directory tempFolder =
-    await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
+        await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
     final String tempfile = path.join(tempFolder.path, "thumbnail.png");
     try {
       String command = "montage";
@@ -232,16 +239,14 @@ class ItemModel extends AIdBasedModel<Item> {
         "'#000000'",
         tempfile
       ];
-      if(Platform.isWindows) {
+      if (Platform.isWindows) {
         args.insert(0, command);
         command = "magick";
       }
 
-
       final ProcessResult result = await Process.run(command, args);
       if (result.exitCode != 0) {
-        throw new Exception(
-            "Error while generating PDF montage: ${result.stderr
+        throw new Exception("Error while generating PDF montage: ${result.stderr
                 .toString()}");
       }
       return await getFileData(tempfile);
@@ -288,8 +293,7 @@ class ItemModel extends AIdBasedModel<Item> {
 
   @override
   Future<Item> getById(String uuid, {bool bypassAuthentication: false}) async {
-    if(!bypassAuthentication)
-      await validateGetPrivileges();
+    if (!bypassAuthentication) await validateGetPrivileges();
 
     final Item output =
         await super.getById(uuid, bypassAuthentication: bypassAuthentication);
@@ -409,7 +413,10 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<PaginatedIdData<Item>> getVisible(
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
+      {int page: 0,
+      int perPage: defaultPerPage,
+      DateTime cutoffDate,
+      bool inTrash: false}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -417,8 +424,12 @@ class ItemModel extends AIdBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetAllPrivileges();
-    final PaginatedData<Item> output =await dataSource.getVisiblePaginated(this.currentUserId,
-        page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: inTrash);
+    final PaginatedData<Item> output = await dataSource.getVisiblePaginated(
+        this.currentUserId,
+        page: page,
+        perPage: perPage,
+        cutoffDate: cutoffDate,
+        inTrash: inTrash);
 
     await adjustAll(output.data);
 
@@ -435,14 +446,16 @@ class ItemModel extends AIdBasedModel<Item> {
     }
     await validateGetPrivileges();
 
-
-    final PaginatedData<Item> output =await dataSource.getVisiblePaginated(this.currentUserId,
-        page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: true);
+    final PaginatedData<Item> output = await dataSource.getVisiblePaginated(
+        this.currentUserId,
+        page: page,
+        perPage: perPage,
+        cutoffDate: cutoffDate,
+        inTrash: true);
     await adjustAll(output.data);
 
     return output;
   }
-
 
   Future<Item> merge(String targetItemId, String sourceItemId,
       {bool bypassAuthentication: false, bool moveToTrash: true}) async {
@@ -476,28 +489,36 @@ class ItemModel extends AIdBasedModel<Item> {
       await tagDataSource.incrementTagCount(diff.both, -1);
     }
 
-    final Item output =(await itemDataSource.getById(targetItemId)).first;
+    final Item output = (await itemDataSource.getById(targetItemId)).first;
     await performAdjustments(output);
     return output;
   }
 
   Future<List<Item>> getRandom(
-      {List<Tag> filterTags, int perPage: defaultPerRandomPage, bool imagesOnly: false}) async {
+      {List<Tag> filterTags,
+      int perPage: defaultPerRandomPage,
+      bool imagesOnly: false}) async {
     await validateSearchPrivileges();
 
-    if(filterTags!=null) {
+    if (filterTags != null) {
       filterTags = await _tagModel.handleTags(filterTags);
     }
 
-    final List<Item> output =await  itemDataSource.getVisibleRandom(this.currentUserId,
-        perPage: perPage, filterTags: filterTags, imagesOnly: imagesOnly);
+    final List<Item> output = await itemDataSource.getVisibleRandom(
+        this.currentUserId,
+        perPage: perPage,
+        filterTags: filterTags,
+        imagesOnly: imagesOnly);
 
     await adjustAll(output);
     return output;
   }
 
   Future<PaginatedIdData<Item>> searchVisible(List<Tag> tags,
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
+      {int page: 0,
+      int perPage: defaultPerPage,
+      DateTime cutoffDate,
+      bool inTrash: false}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -508,8 +529,8 @@ class ItemModel extends AIdBasedModel<Item> {
 
     await _tagModel.handleTags(tags);
 
-
-    final PaginatedData<Item> output =await dataSource.searchVisiblePaginated(this.currentUserId, tags,
+    final PaginatedData<Item> output = await dataSource.searchVisiblePaginated(
+        this.currentUserId, tags,
         page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: inTrash);
     await adjustAll(output.data);
 
@@ -567,7 +588,8 @@ class ItemModel extends AIdBasedModel<Item> {
     await super.validateFields(item, fieldErrors);
 
     if (isNullOrWhitespace(existingId)) {
-      if ((item.fileData == null || item.fileData.length == 0)&&isNullOrWhitespace(item.filePath)) {
+      if ((item.fileData == null || item.fileData.length == 0) &&
+          isNullOrWhitespace(item.filePath)) {
         fieldErrors["file"] = "Required";
       }
     }
@@ -590,7 +612,8 @@ class ItemModel extends AIdBasedModel<Item> {
     _log.fine("_createAndSaveThumbnail start");
     final List<int> thumbnailData = await _resizeImage(image);
 
-    final File thumbnailFile = new File(getThumbnailFilePathForHash(hash));
+    final File thumbnailFile = new File(dartleryServerContext
+        .getThumbnailFilePathForHash(hash));
 
     if (thumbnailFile.existsSync()) thumbnailFile.deleteSync();
     thumbnailFile.createSync(recursive: true);
@@ -627,7 +650,8 @@ class ItemModel extends AIdBasedModel<Item> {
 
     item.mime = mime;
 
-    final String originalFile = getOriginalFilePathForHash(item.id);
+    final String originalFile = dartleryServerContext
+        .getOriginalFilePathForHash(item.id);
 
     filesWritten.add(await item.writeFileData(originalFile));
 
@@ -638,7 +662,8 @@ class ItemModel extends AIdBasedModel<Item> {
         _log.fine("Is animatable image MIME type");
         try {
           _log.fine("Decoding animation");
-          final image.Animation anim = image.decodeAnimation(await item.getFileDataSafely());
+          final image.Animation anim =
+              image.decodeAnimation(await item.getFileDataSafely());
           _log.fine("Animation decoded");
           if (anim.length > 1) {
             _log.fine("Has more than one frame, marking as video");
@@ -690,7 +715,7 @@ class ItemModel extends AIdBasedModel<Item> {
           rethrow;
         }
       }
-    } else if(mime==MimeTypes.pdf) {
+    } else if (mime == MimeTypes.pdf) {
       originalImage = image.decodePng(await generatePdfMontage(originalFile));
     } else {
       throw new InvalidInputException("MIME type not supported: $mime");
@@ -706,7 +731,9 @@ class ItemModel extends AIdBasedModel<Item> {
       } else {
         _log.fine(
             "Non-web-friendly MIME type, generating full-size image for display");
-        filesWritten.add(await _writeBytes(getFullFilePathForHash(item.id),
+        filesWritten.add(await _writeBytes(
+            dartleryServerContext
+                .getFullFilePathForHash(item.id),
             image.encodeJpg(originalImage, quality: jpegQuality),
             deleteExisting: true));
         _log.fine("Full-size image generated");
@@ -714,8 +741,9 @@ class ItemModel extends AIdBasedModel<Item> {
       }
 
       try {
-        if(mime==MimeTypes.pdf) {
-          originalImage = image.decodePng(await generatePdfThumbnail(originalFile));
+        if (mime == MimeTypes.pdf) {
+          originalImage =
+              image.decodePng(await generatePdfThumbnail(originalFile));
         }
 
         filesWritten.add(await _createAndSaveThumbnail(originalImage, item.id));
@@ -733,7 +761,7 @@ class ItemModel extends AIdBasedModel<Item> {
     // Some images fool the image library's method for identifying image types,
     // so we manually help it out with the two formats know to have issues.
     final List<int> fileData = await item.getFileDataSafely();
-    switch(item.mime) {
+    switch (item.mime) {
       case MimeTypes.png:
         return image.decodePng(fileData);
       case MimeTypes.gif:
@@ -748,11 +776,10 @@ class ItemModel extends AIdBasedModel<Item> {
   Future<Null> _handleFileUpload(Item item) async {
     _log.fine("_handleFileUpload start");
 
-    if(item.fileData==null) {
-      if(isNullOrWhitespace(item.filePath))
+    if (item.fileData == null) {
+      if (isNullOrWhitespace(item.filePath))
         throw new Exception(("No file data or file path specified"));
     }
-
 
     _log.fine("Generating file hash...");
     item.id = await item.calculateHash();
@@ -790,19 +817,19 @@ class ItemModel extends AIdBasedModel<Item> {
     }
   }
 
-  Future<List<int>> _resizeImage(image.Image img, {int maxDimension: 300}) async {
+  Future<List<int>> _resizeImage(image.Image img,
+      {int maxDimension: 300}) async {
     image.Image thumbnail;
     if (img.width < img.height) {
       thumbnail = image.copyResize(img, maxDimension, -1, image.AVERAGE);
     } else {
       final double newWidth = img.width * (maxDimension / img.height);
 
-      thumbnail = image.copyResize(img, newWidth.floor(), maxDimension, image.AVERAGE);
+      thumbnail =
+          image.copyResize(img, newWidth.floor(), maxDimension, image.AVERAGE);
     }
     return image.encodeJpg(thumbnail, quality: jpegQuality);
   }
-
-
 
   Future<File> _writeBytes(String path, List<int> bytes,
       {bool deleteExisting: false}) async {

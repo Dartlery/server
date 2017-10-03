@@ -2,7 +2,9 @@ import 'package:dartlery_shared/global.dart';
 import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:dartlery/data/data.dart';
-import 'a_two_id_based_data_source.dart';
+import 'package:server/data_sources/interfaces.dart';
+import 'package:server/data/data.dart';
+import 'package:server/server.dart';
 
 abstract class ATagDataSource extends ATwoIdBasedDataSource<TagInfo> {
   static final Logger _log = new Logger('ATagDataSource');
@@ -17,11 +19,13 @@ abstract class ATagDataSource extends ATwoIdBasedDataSource<TagInfo> {
 
   @override
   Future<IdDataList<TagInfo>> search(String query,
-      {int limit: defaultPerPage, bool countAsc: null,
-      bool redirects: null});
+      {int limit: defaultPerPage, bool countAsc: null, bool redirects: null});
 
   Future<PaginatedData<TagInfo>> searchPaginated(String query,
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: null, bool redirects: null});
+      {int page: 0,
+      int perPage: defaultPerPage,
+      bool countAsc: null,
+      bool redirects: null});
 
   /// This function should cause all tags to be re-counted
   /// and unused tags to be deleted.

@@ -6,12 +6,12 @@ import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:image/image.dart';
 import 'package:image_hash/image_hash.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
-
+import 'package:server/server.dart';
 import 'a_extension.dart';
 
 class ItemComparisonExtension extends AExtension {
@@ -38,7 +38,7 @@ class ItemComparisonExtension extends AExtension {
     try {
       String itemId;
       DateTime startPoint;
-      if(item.data is String) {
+      if (item.data is String) {
         if (item.data.contains(":")) {
           final int i = item.data.indexOf(":");
           itemId = item.data.substring(0, i);
@@ -46,7 +46,7 @@ class ItemComparisonExtension extends AExtension {
         } else {
           itemId = item.data;
         }
-      } else if(item.data is Map) {
+      } else if (item.data is Map) {
         itemId = item.data["itemId"];
         startPoint = item.data["lastProcessed"];
       }
@@ -92,11 +92,10 @@ class ItemComparisonExtension extends AExtension {
       }
       if (lastProcessedDate != null) {
         _log.fine("Re-enqueing with new start point of $lastProcessedDate");
-        final Map<String, dynamic> data = <String,dynamic>{};
+        final Map<String, dynamic> data = <String, dynamic>{};
         data["itemId"] = itemId;
         data["lastProcessed"] = lastProcessedDate;
-        await _backgroundQueueDataSource.addToQueue(
-            this.extensionId, data,
+        await _backgroundQueueDataSource.addToQueue(this.extensionId, data,
             priority: item.priority + 1);
       }
     } catch (e, st) {
@@ -138,11 +137,9 @@ class ItemComparisonExtension extends AExtension {
   @override
   Future<Null> onRestoringItem(String itemId) async {
     final Option<Item> item = await _itemDataSource.getById(itemId);
-    if(item.isEmpty)
-      throw new NotFoundException("Item not found: $itemId");
+    if (item.isEmpty) throw new NotFoundException("Item not found: $itemId");
     await _enqueueBackgroundComparison(item.first);
   }
-
 
   Future<bool> _checkForComparisonResult(String itemId1, String itemId2) async {
     try {
@@ -170,7 +167,8 @@ class ItemComparisonExtension extends AExtension {
     } on NotFoundException {
       // Hash hasn't been generated, have to make it
     }
-    final String fileName = getOriginalFilePathForHash(imageID);
+    final String fileName = dartleryServerContext
+        .getOriginalFilePathForHash(imageID);
 
     final File f = new File(fileName);
     if (!f.existsSync()) return null;

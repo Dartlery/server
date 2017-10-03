@@ -1,10 +1,7 @@
-import 'dart:html' as html;
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery_shared/global.dart';
 import 'dart:async';
-import 'package:dartlery/client.dart';
 import 'package:angular/angular.dart';
-import 'dart:convert';
 import 'package:angular_forms/angular_forms.dart';
 
 import 'package:angular_router/angular_router.dart';
@@ -12,26 +9,26 @@ import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
-import 'package:dartlery/views/controls/auth_status_component.dart';
-import 'package:dartlery/views/controls/error_output.dart';
 import 'package:logging/logging.dart';
-import '../src/a_page.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
+import '../../src/a_dartlery_view.dart';
 
 @Component(
     selector: 'item-view',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
       ErrorOutputComponent,
       commonControls
     ],
-    styleUrls: const <String>["../../shared.css", "item_view.css"],
+    styleUrls: const <String>["package:lib_angular/shared.css", "item_view.css"],
     templateUrl: "item_view.html")
-class ItemViewPage extends APage implements OnInit, OnDestroy {
+class ItemViewPage extends APage<ApiService>
+    with ADartleryView
+    implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemViewPage");
 
   NgForm form;
@@ -40,14 +37,14 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   Item model = new Item();
 
   bool get isImage {
-    return MimeTypes.imageTypes.contains(model?.mime)||model?.mime==MimeTypes.pdf;
+    return MimeTypes.imageTypes.contains(model?.mime) ||
+        model?.mime == MimeTypes.pdf;
   }
 
   bool get isVideo {
     return MimeTypes.videoTypes.contains(model?.mime);
   }
 
-  ApiService _api;
   Router _router;
   AuthenticationService _auth;
   Location _location;
@@ -57,9 +54,9 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
 
   StreamSubscription<PageAction> _pageActionSubscription;
 
-  ItemViewPage(PageControlService pageControl, this._api, this._auth,
+  ItemViewPage(PageControlService pageControl, ApiService api, this._auth,
       this._router, this._params, this._location, this._searchService)
-      : super(_auth, _router, pageControl) {
+      : super(api, _auth, _router, pageControl) {
     pageControl.setPageTitle("Item View");
     pageControl
         .setAvailablePageActions([PageAction.refresh, PageAction.delete]);
@@ -71,8 +68,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   @override
   void ngOnInit() {
     final String _id = _params.get(idRouteParameter);
-    if (isNullOrWhitespace(_id))
-      throw new Exception("Empty ID passed");
+    if (isNullOrWhitespace(_id)) throw new Exception("Empty ID passed");
     itemId = _id;
     _pageActionSubscription =
         pageControl.pageActionRequested.listen(onPageActionRequested);
@@ -101,7 +97,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   Future<Null> delete() async {
     pageControl.setIndeterminateProgress();
     await performApiCall(() async {
-      model = await _api.items.delete(itemId);
+      model = await api.items.delete(itemId);
       if (nextItemAvailable) {
         await _router.navigate([
           itemViewRoute.name,
@@ -123,7 +119,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   Future<Null> refresh() async {
     pageControl.setIndeterminateProgress();
     await performApiCall(() async {
-      model = await _api.items.getById(itemId);
+      model = await api.items.getById(itemId);
 
       nextItem = await _searchService.getNextItem(model.id);
       previousItem = await _searchService.getPreviousItem(model.id);

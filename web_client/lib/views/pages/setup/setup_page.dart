@@ -6,26 +6,25 @@ import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
-import 'package:dartlery/views/controls/auth_status_component.dart';
-import 'package:dartlery/views/controls/error_output.dart';
 import 'package:logging/logging.dart';
-import '../src/a_page.dart';
 import 'package:angular_forms/angular_forms.dart';
+import 'package:lib_angular/angular.dart';
+import 'package:lib_angular/views/views.dart';
 
 @Component(
     selector: 'setup-page',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
-    formDirectives,
+      formDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
       ErrorOutputComponent
     ],
-    styleUrls: const <String>["../../shared.css"],
+    styleUrls: const <String>["package:lib_angular/shared.css"],
     templateUrl: "setup_page.html")
-class SetupPage extends APage implements OnInit {
+class SetupPage extends APage<ApiService> implements OnInit {
   static final Logger _log = new Logger("SetupPage");
 
   @ViewChild("setupForm")
@@ -35,12 +34,12 @@ class SetupPage extends APage implements OnInit {
   SetupRequest request = new SetupRequest();
   String confirmPassword = "";
 
-  ApiService _api;
   Router _router;
   AuthenticationService _auth;
 
-  SetupPage(PageControlService pageControl, this._api, this._auth, this._router)
-      : super(_auth, _router, pageControl) {
+  SetupPage(
+      PageControlService pageControl, ApiService api, this._auth, this._router)
+      : super(api, _auth, _router, pageControl) {
     pageControl.setPageTitle("Setup");
   }
 
@@ -56,7 +55,7 @@ class SetupPage extends APage implements OnInit {
     await performApiCall(() async {
       try {
         //final SetupResponse response =
-        await _api.setup.get();
+        await api.setup.get();
       } on DetailedApiRequestError catch (e, st) {
         loggerImpl.warning(e, st);
         if (e.status == 403) {
@@ -82,7 +81,7 @@ class SetupPage extends APage implements OnInit {
       await performApiCall(() async {
         try {
           //final SetupResponse response =
-          await _api.setup.apply(request);
+          await api.setup.apply(request);
           await refresh();
         } on DetailedApiRequestError catch (e, st) {
           loggerImpl.warning(e, st);

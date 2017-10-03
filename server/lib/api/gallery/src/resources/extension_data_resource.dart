@@ -8,6 +8,8 @@ import 'package:dartlery/model/model.dart';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 import '../responses/paginated_extension_data_response.dart';
+import 'package:server/api/api.dart';
+import 'package:server/server.dart';
 
 class ExtensionDataResource extends AResource {
   static final Logger _log = new Logger('ExtensionDataResource');

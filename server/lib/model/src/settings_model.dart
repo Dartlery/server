@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
-import 'a_model.dart';
+import 'package:server/model/model.dart';
+import 'package:tools/tools.dart';
 
 class SettingsModel extends AModel {
   static final Logger _log = new Logger('SettingsModel');
@@ -11,7 +12,9 @@ class SettingsModel extends AModel {
 
   final ASettingsDataSource _settingsDataSource;
 
-  SettingsModel(this._settingsDataSource, AUserDataSource userDataSource): super(userDataSource);
+  SettingsModel(this._settingsDataSource, AUserDataSource userDataSource,
+      APrivilegeSet privilegeSet)
+      : super(userDataSource, privilegeSet);
 
 //  Future<Map<String,String>> get() async {
 //    await validateGetPrivileges();

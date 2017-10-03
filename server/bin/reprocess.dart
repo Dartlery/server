@@ -1,4 +1,4 @@
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:args/args.dart';

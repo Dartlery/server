@@ -1,9 +1,7 @@
-import 'package:dartlery_shared/tools.dart';
-import 'package:option/option.dart';
+import 'package:tools/tools.dart';
 import 'package:rpc/rpc.dart';
 
-import 'a_id_data.dart';
-import 'tag_category.dart';
+import 'package:server/data/data.dart';
 import 'package:dartlery_shared/global.dart';
 
 @ApiMessage(includeSuper: true)
@@ -18,11 +16,12 @@ class Tag extends AIdData {
   Tag.withValues(String name, [this.category]) : super.withValues(name);
 
   static Tag parse(String tagString) {
-    if(tagString.contains(";")) {
+    if (tagString.contains(";")) {
       final List<String> parts = tagString.split(categoryDeliminator);
-      return new Tag.withValues(parts.sublist(1).join(categoryDeliminator).trim(),parts[0].trim());
+      return new Tag.withValues(
+          parts.sublist(1).join(categoryDeliminator).trim(), parts[0].trim());
     } else {
-     return new Tag.withValues(tagString);
+      return new Tag.withValues(tagString);
     }
   }
 

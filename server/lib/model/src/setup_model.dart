@@ -8,10 +8,10 @@ import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/data_sources/mongo/mongo.dart' as mongo;
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:logging/logging.dart';
-
-import 'a_model.dart';
+import 'package:server/model/model.dart';
+import 'package:server/server.dart';
 
 class SetupModel extends AModel {
   static final Logger _log = new Logger('UserModel');
@@ -21,8 +21,9 @@ class SetupModel extends AModel {
 
   final UserModel userModel;
 
-  SetupModel(this.userModel, AUserDataSource userDataSource)
-      : super(userDataSource);
+  SetupModel(this.userModel, AUserDataSource userDataSource,
+      APrivilegeSet privilegeSet)
+      : super(userDataSource, privilegeSet);
 
   Future<SetupResponse> apply(SetupRequest request) async {
     await _checkIfSetupEnabled();
@@ -48,7 +49,7 @@ class SetupModel extends AModel {
       if (isNotNullOrWhitespace(request.adminUser)) {
         try {
           await userModel.createUserWith(
-              request.adminUser, request.adminPassword, UserPrivilege.admin,
+              request.adminUser, request.adminPassword, APrivilegeSet.admin,
               bypassAuthentication: true);
         } on DataValidationException catch (e) {
           fieldErrors.addAll(e.fieldErrors);
@@ -58,7 +59,8 @@ class SetupModel extends AModel {
       }
     });
 
-    await new File(setupLockFilePath).create();
+    await new File(dartleryServerContext.setupLockFilePath)
+        .create();
 
     return await checkSetup();
   }
@@ -74,7 +76,7 @@ class SetupModel extends AModel {
   }
 
   Future<SetupResponse> checkSetup() async {
-    if (!await isSetupAvailable()) {
+    if (!await dartleryServerContext.isSetupAvailable()) {
       throw new SetupDisabledException();
     }
 
@@ -86,7 +88,7 @@ class SetupModel extends AModel {
   }
 
   Future<Null> _checkIfSetupEnabled() async {
-    if (!await isSetupAvailable()) {
+    if (!await dartleryServerContext.isSetupAvailable()) {
       throw new SetupDisabledException();
     }
   }

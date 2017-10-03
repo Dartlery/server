@@ -12,22 +12,20 @@ import 'package:dartlery/client.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
-import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
-import 'package:dartlery/views/controls/error_output.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
+import 'package:tools/tools.dart';
+import 'package:dartlery_shared/global.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
-
-import '../src/a_page.dart';
+import '../../src/a_dartlery_view.dart';
 
 @Component(
     selector: 'deduplicate-page',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
@@ -35,10 +33,13 @@ import '../src/a_page.dart';
       ImageCompareComponent,
       commonControls,
       NgClass,
+      libComponents
     ],
-    styleUrls: const <String>["../../shared.css", "deduplicate.css"],
+    styleUrls: const <String>["package:lib_angular/shared.css", "deduplicate.css"],
     templateUrl: "deduplicate.html")
-class DeduplicatePage extends APage implements OnInit, OnDestroy {
+class DeduplicatePage extends APage<ApiService>
+    with ADartleryView
+    implements OnInit, OnDestroy {
   static final Logger _log = new Logger("DeduplicatePage");
 
   static const PageAction _animatePageAction =
@@ -56,7 +57,6 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   int currentImage = 0;
 
   bool splitComparison = false;
-  ApiService _api;
 
   Router _router;
 
@@ -76,9 +76,9 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
 
   TagList differentTags = new TagList();
 
-  DeduplicatePage(PageControlService pageControl, this._api, this._auth,
+  DeduplicatePage(PageControlService pageControl, ApiService api, this._auth,
       this._router, this._params, this._location)
-      : super(_auth, _router, pageControl) {
+      : super(api, _auth, _router, pageControl) {
     pageControl.setPageTitle("Deduplicate");
     pageControl.setAvailablePageActions(
         [PageAction.refresh, PageAction.compare, _animatePageAction]);
@@ -133,7 +133,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
       pageControl.setProgress(0, max: total);
       while (otherComparisons.isNotEmpty) {
         final ExtensionData data = otherComparisons[0];
-        await _api.extensionData.delete(
+        await api.extensionData.delete(
             "itemComparison", "similarItems", data.primaryId, data.secondaryId);
         otherComparisons.removeAt(0);
         pageControl.setProgress(i, max: total);
@@ -146,7 +146,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   Future<Null> clearSimilarity(ExtensionData data) async {
     pageControl.setIndeterminateProgress();
     await performApiCall(() async {
-      await _api.extensionData.delete(
+      await api.extensionData.delete(
           "itemComparison", "similarItems", data.primaryId, data.secondaryId);
     });
     await refresh();
@@ -155,7 +155,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
   Future<Null> deleteItem(String id) async {
     pageControl.setIndeterminateProgress();
     await performApiCall(() async {
-      await _api.items.delete(id);
+      await api.items.delete(id);
 
       if (id == currentItemId) currentItemId == "";
     });
@@ -177,7 +177,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       final IdRequest request = new IdRequest();
       request.id = sourceId;
-      await _api.items.mergeItems(request, targetId);
+      await api.items.mergeItems(request, targetId);
       if (sourceId == currentItemId) currentItemId == "";
     }, after: () async {
       pageControl.clearProgress();
@@ -223,7 +223,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
       try {
         if (isNotNullOrWhitespace(currentItemId)) {
           final String currentItemId = this.currentItemId;
-          response = await _api.extensionData.getByPrimaryId(
+          response = await api.extensionData.getByPrimaryId(
               "itemComparison", "similarItems", currentItemId,
               bidirectional: true,
               orderByValues: true,
@@ -243,13 +243,12 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
 
       try {
         clear();
-        response = await _api.extensionData.get(
-            "itemComparison", "similarItems",
+        response = await api.extensionData.get("itemComparison", "similarItems",
             orderDescending: true, perPage: 1);
         if (response.items.isNotEmpty) {
           totalItems = response.totalCount;
           currentItemId = response.items.first.primaryId;
-          response = await _api.extensionData.getByPrimaryId(
+          response = await api.extensionData.getByPrimaryId(
               "itemComparison", "similarItems", currentItemId,
               bidirectional: true,
               orderByValues: true,
@@ -272,11 +271,11 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
       model = ed;
 
       if (isNotNullOrWhitespace(currentItemId)) {
-        firstComparisonItem = await _api.items.getById(currentItemId);
-        secondComparisonItem = await _api.items.getById(getOtherImageId(ed));
+        firstComparisonItem = await api.items.getById(currentItemId);
+        secondComparisonItem = await api.items.getById(getOtherImageId(ed));
       } else {
-        firstComparisonItem = await _api.items.getById(model.primaryId);
-        secondComparisonItem = await _api.items.getById(model.secondaryId);
+        firstComparisonItem = await api.items.getById(model.primaryId);
+        secondComparisonItem = await api.items.getById(model.secondaryId);
       }
       final Diff<TagWrapper> tagDiff = new Diff<TagWrapper>(
           firstComparisonItem.tags.map((Tag t) => new TagWrapper.fromTag(t)),

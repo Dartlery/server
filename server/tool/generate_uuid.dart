@@ -1,4 +1,4 @@
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 
 void main() {
   print(generateUuid());

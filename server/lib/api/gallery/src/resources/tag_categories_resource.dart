@@ -6,10 +6,8 @@ import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
-
-import '../../gallery_api.dart';
-import '../requests/password_change_request.dart';
-import 'package:dartlery_shared/global.dart';
+import 'package:tools/tools.dart';
+import 'package:server/api/api.dart';
 
 class TagCategoriesResource extends AIdResource<TagCategory> {
   static final Logger _log = new Logger('UserResource');
@@ -21,7 +19,7 @@ class TagCategoriesResource extends AIdResource<TagCategory> {
   Logger get childLogger => _log;
 
   @override
-  AIdBasedModel<TagCategory> get idModel => _tagCategoryModel;
+  AIdBasedModel<TagCategory, User> get idModel => _tagCategoryModel;
 
   @override
   @ApiMethod(method: 'POST', path: '${tagCategoriesApiPath}/')
@@ -44,7 +42,7 @@ class TagCategoriesResource extends AIdResource<TagCategory> {
 
   @override
   String generateRedirect(String newId) =>
-      "$serverApiRoot${tagCategoriesApiPath}/$newId";
+      "${dartleryServerContext.apiPrefix}${tagCategoriesApiPath}/$newId";
 
   @override
   @ApiMethod(path: '${tagCategoriesApiPath}/{id}/')

@@ -1,90 +1,33 @@
 import 'dart:async';
-import 'dart:html';
-
 import 'package:angular/core.dart';
-import 'package:dartlery/api/api.dart';
-import 'package:dartlery/client.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+
 import 'package:logging/logging.dart';
-import 'package:option/option.dart';
 
 import 'api_service.dart';
-import 'settings_service.dart';
+import 'package:lib_angular/angular.dart';
+import 'package:dartlery/data/data.dart';
+import 'package:dartlery/api/api.dart' as api;
 
 @Injectable()
-class AuthenticationService {
+class AuthenticationService extends AAuthenticationService<User> {
   static final Logger _log = new Logger("AuthenticationService");
 
-  final SettingsService _settings;
   final ApiService _api;
-  Option<User> user = new None<User>();
 
-  final StreamController<bool> _authStatusController =
-      new StreamController<bool>.broadcast();
+  AuthenticationService(SettingsService settingsService, this._api)
+      : super(settingsService, new UserPrivilegeSet());
 
-  final StreamController<Null> _promptController =
-      new StreamController<Null>.broadcast();
+  bool get isModerator => hasPrivilege(UserPrivilegeSet.moderator);
+  bool get isNormalUser => hasPrivilege(UserPrivilegeSet.normal);
 
-  AuthenticationService(this._settings, this._api);
-
-  Stream<bool> get authStatusChanged => _authStatusController.stream;
-
-  bool get isAdmin => hasPrivilege(UserPrivilege.admin);
-  bool get isAuthenticated => user.isNotEmpty;
-  bool get isModerator => hasPrivilege(UserPrivilege.moderator);
-
-  bool get isNormalUser => hasPrivilege(UserPrivilege.normal);
-  Stream<Null> get loginPrompted => _promptController.stream;
-
-  Future<Null> authenticate(String user, String password) async {
-    final String url = "${getServerRoot()}login/";
-    final Map<String, String> values = {"username": user, "password": password};
-
-    final HttpRequest request = await HttpRequest.postFormData(url, values);
-    if (!request.responseHeaders.containsKey(HttpHeaders.AUTHORIZATION))
-      throw new Exception("Response did not include Authorization header");
-
-    final String auth = request.responseHeaders[HttpHeaders.AUTHORIZATION];
-    if (isNullOrWhitespace(auth))
-      throw new Exception("Auth request did not return a key");
-
-    await _settings.cacheAuthKey(auth);
-
-    await evaluateAuthentication();
-  }
-
-  Future<Null> clear() async {
-    if (this.user.isNotEmpty) {
-      this.user = new None<User>();
-      _authStatusController.add(false);
-    }
-    await _settings.clearAuthCache();
-  }
-
-  Future<Null> evaluateAuthentication() async {
-    try {
-      final User apiUser = await _api.users.getMe();
-      this.user = new Some<User>(apiUser);
-      _authStatusController.add(true);
-    } on DetailedApiRequestError catch (e, st) {
-      if (e.status >= 400 && e.status < 500) {
-        // Not authenticated, nothing to see here
-        await clear();
-      } else {
-        _log.severe("evaluateAuthentication", e, st);
-        rethrow;
-      }
-    }
-  }
-
-  bool hasPrivilege(String needed) {
-    return this.user.any((User user) {
-      return UserPrivilege.evaluate(needed, user.type);
-    });
-  }
-
-  void promptForAuthentication() {
-    _promptController.add(null);
+  @override
+  Future<User> get currentUser async {
+    final api.User apiUser = await _api.users.getMe();
+    final User localUser = new User()
+      ..id = apiUser.id
+      ..name = apiUser.name
+      ..privilege = apiUser.type;
+    return localUser;
   }
 }

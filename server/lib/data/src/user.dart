@@ -1,26 +1,14 @@
 import 'package:dartlery_shared/global.dart';
 import 'package:rpc/rpc.dart';
 
-import 'a_id_data.dart';
+import 'package:server/data/data.dart';
 
 @ApiMessage(includeSuper: true)
-class User extends AIdData {
-  String password;
-  String name;
-  String type;
-
+class User extends AUser {
   User();
-
-  User.copy(dynamic o) : super.copy(o) {
-    this.name = o.name;
-    this.type = o.type;
-    if (o.password == null)
-      this.password = "";
-    else
-      this.password = o.password;
-  }
+  User.copy(dynamic o) : super.copy(o);
 
   bool evaluateType(String needed) {
-    return UserPrivilege.evaluate(needed, this.type);
+    return new UserPrivilegeSet().evaluate(needed, this.type);
   }
 }

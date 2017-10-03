@@ -3,16 +3,17 @@ import 'dart:async';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:option/option.dart';
-
-import 'a_mongo_two_id_data_source.dart';
-import 'constants.dart';
+import '../mongo.dart';
+import 'package:server/data_sources/mongo/mongo.dart';
+import 'package:server/data/data.dart';
+import 'package:server/server.dart';
 
 class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
-    with ATagDataSource {
+    implements ATagDataSource {
   static final Logger _log = new Logger('MongoTagDataSource');
 
   static const String categoryField = 'category';
@@ -20,6 +21,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   static const String fullNameField = "fullName";
   static const String redirectField = "redirect";
   static const String countField = "count";
+
   MongoTagDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
@@ -31,8 +33,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   @override
   Future<Null> cleanUpTags() async {
     await databaseWrapper((MongoDatabase con) async {
-      final DbCollection itemsCol = await con.getItemsCollection();
-      final DbCollection tagCol = await con.getTagsCollection();
+      final DbCollection itemsCol = await itemsCollection.getDbCollection(con);
+      final DbCollection tagCol = await tagsCollection.getDbCollection(con);
 
       await tagCol.update({}, modify.set(countField, 0), multiUpdate: true);
 
@@ -72,7 +74,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   Future<int> countTagUse(Tag t) async {
     return databaseWrapper<int>((MongoDatabase con) async {
       if (t.internalId == null) throw new Exception("Tag internal ID missing");
-      final DbCollection itemsCol = await con.getItemsCollection();
+      final DbCollection itemsCol = await itemsCollection.getDbCollection(con);
       return await itemsCol.count(where.eq("tags", t.internalId));
     });
   }
@@ -84,10 +86,9 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     if (data[redirectField] != null) {
       final Option<TagInfo> redirect =
           await getByInternalId(data[redirectField]);
-      if (redirect.isEmpty)
-        throw new Exception("Redirect tag target not found");
-
-      output.redirect = redirect.first;
+      if (redirect.isNotEmpty)
+        output.redirect = redirect.first;
+        //throw new Exception("Redirect tag target not found");
     }
 
     AMongoTwoIdDataSource.setIdForData(output, data);
@@ -109,8 +110,9 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
       {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
     final SelectorBuilder sb = where;
     if (countAsc != null) sb.sortBy(countField, descending: !countAsc);
-    return await getPaginatedFromDb(sb,
+    final PaginatedData<TagInfo> output =  await getPaginatedFromDb(sb,
         offset: getOffset(page, perPage), limit: perPage);
+    return output;
   }
 
   @override
@@ -131,8 +133,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 //  }
 
   @override
-  Future<DbCollection> getCollection(MongoDatabase con) =>
-      con.getTagsCollection();
+  MongoCollection get collection => tagsCollection;
 
   @override
   Future<List<TagInfo>> getRedirects() async {
@@ -184,8 +185,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     sb.match(fullNameField, ".*${escapeAll(query)}.*",
         multiLine: false, caseInsensitive: true);
 
-    if(redirects!=null) {
-      if(redirects) {
+    if (redirects != null) {
+      if (redirects) {
         sb.exists(redirectField);
       } else {
         sb.notExists(redirectField);
@@ -201,14 +202,17 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   @override
   Future<PaginatedData<TagInfo>> searchPaginated(String query,
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: true, bool redirects: null}) async {
+      {int page: 0,
+      int perPage: defaultPerPage,
+      bool countAsc: true,
+      bool redirects: null}) async {
     final SelectorBuilder sb = where.match(
         fullNameField, ".*${escapeAll(query)}.*",
         multiLine: false, caseInsensitive: true);
 
     if (countAsc != null) sb.sortBy(countField, descending: !countAsc);
-    if(redirects!=null) {
-      if(redirects) {
+    if (redirects != null) {
+      if (redirects) {
         sb.exists(redirectField);
       } else {
         sb.notExists(redirectField);
@@ -257,8 +261,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   SelectorBuilder _createTagCriteria(String id, String category,
       {String fieldPrefix = ""}) {
-    if (isNotNullOrWhitespace(fieldPrefix))
-      fieldPrefix = "$fieldPrefix.";
+    if (isNotNullOrWhitespace(fieldPrefix)) fieldPrefix = "$fieldPrefix.";
 
     final SelectorBuilder select = where.match(
         "$fieldPrefix$idField", "^${escapeAll(id)}\$",

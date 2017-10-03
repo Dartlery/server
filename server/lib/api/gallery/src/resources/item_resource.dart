@@ -3,16 +3,17 @@ import 'dart:async';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/model/model.dart';
-import 'package:dartlery/tools.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 
 import '../../gallery_api.dart';
 import '../requests/create_item_request.dart';
-import '../requests/item_search_request.dart';
 import '../responses/paginated_item_response.dart';
+import 'package:server/api/api.dart';
+import 'package:server/tools.dart';
+import 'package:server/server.dart';
 
 class ItemResource extends AIdResource<Item> {
   static final Logger _log = new Logger('ItemResource');
@@ -25,7 +26,7 @@ class ItemResource extends AIdResource<Item> {
   Logger get childLogger => _log;
 
   @override
-  AIdBasedModel<Item> get idModel => itemModel;
+  AIdBasedModel<Item, User> get idModel => itemModel;
 
   // Created only to satisfy the interface; should not be used.
   @override
@@ -48,19 +49,20 @@ class ItemResource extends AIdResource<Item> {
 
   @override
   @ApiMethod(method: HttpMethod.delete, path: '$_apiPath/{id}/')
-  Future<VoidMessage> delete(String id, {bool permanent: false})=>      catchExceptionsAwait(() async {
-      if(permanent)
-        await itemModel.delete(id);
-      else
-        await itemModel.moveToTrash(id);
-      return new VoidMessage();
-  });
+  Future<VoidMessage> delete(String id, {bool permanent: false}) =>
+      catchExceptionsAwait(() async {
+        if (permanent)
+          await itemModel.delete(id);
+        else
+          await itemModel.moveToTrash(id);
+        return new VoidMessage();
+      });
 
   @ApiMethod(method: HttpMethod.delete, path: 'trash/{id}/')
-  Future<VoidMessage> restore(String id)=>      catchExceptionsAwait(() async {
-    await itemModel.restoreFromTrash(id);
-    return new VoidMessage();
-  });
+  Future<VoidMessage> restore(String id) => catchExceptionsAwait(() async {
+        await itemModel.restoreFromTrash(id);
+        return new VoidMessage();
+      });
 
   @override
   @ApiMethod(path: '$_apiPath/{id}/')
@@ -76,11 +78,13 @@ class ItemResource extends AIdResource<Item> {
 
   @ApiMethod(path: '$_apiPath/')
   Future<PaginatedItemResponse> getVisibleIds(
-          {int page: 0, int perPage: defaultPerPage, String cutoffDate, bool inTrash: false}) =>
+          {int page: 0,
+          int perPage: defaultPerPage,
+          String cutoffDate,
+          bool inTrash: false}) =>
       catchExceptionsAwait(() async {
         DateTime dt;
-        if (isNotNullOrWhitespace(cutoffDate))
-          dt = DateTime.parse(cutoffDate);
+        if (isNotNullOrWhitespace(cutoffDate)) dt = DateTime.parse(cutoffDate);
 
         return new PaginatedItemResponse.convertPaginatedData(
             await itemModel.getVisible(
@@ -98,21 +102,26 @@ class ItemResource extends AIdResource<Item> {
           () => itemModel.merge(targetItemId, sourceItemId.id));
 
   @ApiMethod(method: HttpMethod.get, path: '$searchApiPath/$_apiPath/{tags}/')
-  Future<PaginatedItemResponse> searchVisible(String tags, {int page: 0, int perPage: defaultPerPage, String cutoffDate, bool inTrash: false}) =>
-      catchExceptionsAwait(() async  {
-          final List<Tag> queryTags  = new TagList.fromJson(tags).toList();
-          DateTime cutoffDateParsed;
-          if(isNotNullOrWhitespace(cutoffDate)) {
-            cutoffDateParsed = DateTime.parse(cutoffDate);
-          }
+  Future<PaginatedItemResponse> searchVisible(String tags,
+          {int page: 0,
+          int perPage: defaultPerPage,
+          String cutoffDate,
+          bool inTrash: false}) =>
+      catchExceptionsAwait(() async {
+        final List<Tag> queryTags = new TagList.fromJson(tags).toList();
+        DateTime cutoffDateParsed;
+        if (isNotNullOrWhitespace(cutoffDate)) {
+          cutoffDateParsed = DateTime.parse(cutoffDate);
+        }
 
-          return new PaginatedItemResponse.convertPaginatedData(
-              await itemModel.searchVisible(queryTags,
-                  page: page,
-                  perPage: perPage,
-                  cutoffDate: cutoffDateParsed,
-              inTrash: inTrash),
-              (Item item) => item.id)..queryTags=queryTags;
+        return new PaginatedItemResponse.convertPaginatedData(
+            await itemModel.searchVisible(queryTags,
+                page: page,
+                perPage: perPage,
+                cutoffDate: cutoffDateParsed,
+                inTrash: inTrash),
+            (Item item) => item.id)
+          ..queryTags = queryTags;
       });
 
   @override

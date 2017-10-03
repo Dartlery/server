@@ -2,15 +2,11 @@ import 'dart:async';
 
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
-import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:option/option.dart';
-
-import 'a_mongo_data_source.dart';
-import 'a_mongo_two_id_data_source.dart';
-import 'constants.dart';
+import 'package:server/data_sources/mongo/mongo.dart';
+import '../mongo.dart';
+import 'package:server/data/data.dart';
 
 class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
     with AImportResultsDataSource {
@@ -32,7 +28,9 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
 
   Future<Null> clear(String batchId, [bool everything = false]) async {
     if (!everything) {
-      await deleteFromDb(where.eq(batchIdField, batchId).nin(resultField, ["error", "warning"]));
+      await deleteFromDb(where
+          .eq(batchIdField, batchId)
+          .nin(resultField, ["error", "warning"]));
     } else {
       await deleteFromDb(where.eq(batchIdField, batchId));
     }
@@ -51,14 +49,15 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
     return output;
   }
 
-  Future<PaginatedData<ImportResult>> get(String batchId, {int page: 0, int perPage}) async {
-    return await getPaginatedFromDb(
-        where.eq(batchIdField, batchId).sortBy(timestampField, descending: true));
+  Future<PaginatedData<ImportResult>> get(String batchId,
+      {int page: 0, int perPage}) async {
+    return await getPaginatedFromDb(where
+        .eq(batchIdField, batchId)
+        .sortBy(timestampField, descending: true));
   }
 
   @override
-  Future<DbCollection> getCollection(MongoDatabase con) =>
-      con.getImportResultsCollection();
+  MongoCollection get collection => importResultsCollection;
 
   @override
   Future<Null> record(ImportResult data) async {

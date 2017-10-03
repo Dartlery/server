@@ -1,10 +1,10 @@
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/api/api.dart';
-import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery/client.dart';
+import 'package:tools/tools.dart';
 import 'dart:html' as html;
-abstract class AView {
+
+abstract class ADartleryView {
   String formatTag(Tag t) => TagWrapper.formatTag(t);
   String tagToQueryString(Tag t) => TagWrapper.createQueryStringForTag(t);
 

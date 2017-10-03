@@ -1,14 +1,14 @@
 import 'dart:async';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:dartlery_shared/global.dart';
-import 'a_mongo_two_id_data_source.dart';
-import 'constants.dart';
-import 'package:option/option.dart';
-import 'a_mongo_data_source.dart';
+import 'package:server/data_sources/mongo/mongo.dart';
+import '../mongo.dart';
+import 'package:server/data/data.dart';
+import 'package:server/server.dart';
 
 class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
     with AExtensionDataSource {
@@ -26,8 +26,7 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
   MongoExtensionDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
-  Future<DbCollection> getCollection(MongoDatabase con) =>
-      con.getExtensionDataCollection();
+  MongoCollection get collection => extensionDataCollection;
 
   @override
   Future<Null> create(ExtensionData data) async {
@@ -44,8 +43,7 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
 
   SelectorBuilder _generateQuery(String extensionId, String key,
       String primaryId, String secondaryId, bool setNulls) {
-    if (isNullOrWhitespace(primaryId) &&
-        isNotNullOrWhitespace(secondaryId))
+    if (isNullOrWhitespace(primaryId) && isNotNullOrWhitespace(secondaryId))
       throw new ArgumentError("primaryId required if specifying a secondaryId");
 
     final SelectorBuilder query =

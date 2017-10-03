@@ -5,30 +5,29 @@ import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:angular_forms/angular_forms.dart';
-import 'package:dartlery/api/api.dart';
+import 'package:dartlery/api/api.dart' as api;
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
-import 'package:dartlery/views/controls/login_form_component.dart';
-import 'package:dartlery/views/controls/paginator_component.dart';
 import 'package:dartlery/views/controls/item_upload_component.dart';
 import 'package:dartlery/views/pages/pages.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
-import 'package:dartlery/data/data.dart';
+import 'package:dartlery/data/data.dart' as data;
+import 'package:lib_angular/angular.dart';
 
 @Component(
     selector: 'main-app',
     //encapsulation: ViewEncapsulation.Native,
     templateUrl: 'main_app.html',
     styleUrls: const [
-      '../shared.css',
+      'package:lib_angular/shared.css',
       'main_app.css',
       'package:angular_components/src/components/app_layout/layout.scss.css'
     ],
     directives: const [
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       ROUTER_DIRECTIVES,
       materialDirectives,
       pageDirectives,
@@ -36,6 +35,8 @@ import 'package:dartlery/data/data.dart';
       ItemUploadComponent,
       PaginatorComponent,
       commonControls,
+      libComponents,
+      ButtonToolbarComponent
     ],
     providers: const [
       FORM_PROVIDERS,
@@ -43,9 +44,10 @@ import 'package:dartlery/data/data.dart';
       materialProviders,
       PageControlService,
       ItemSearchService,
-      SettingsService,
+      api.SettingsService,
       ApiService,
       AuthenticationService,
+      const Provider(AAuthenticationService, useClass: AuthenticationService),
       const Provider(APP_BASE_HREF, useValue: "/"),
       const Provider(LocationStrategy, useClass: HashLocationStrategy),
     ])
@@ -61,16 +63,11 @@ class MainApp implements OnInit, OnDestroy {
   bool isLoginOpen = false;
   bool isUploadOpen = false;
 
-  final List<PageAction> availableActions = <PageAction>[];
-
-  bool showSearchBar = false;
-
   bool userIsModerator = false;
   bool userIsAdmin = false;
 
   StreamSubscription<String> _pageTitleSubscription;
   StreamSubscription<String> _searchSubscription;
-  StreamSubscription<List> _pageActionsSubscription;
   StreamSubscription<MessageEventArgs> _messageSubscription;
   StreamSubscription<Null> _loginRequestSubscription;
   StreamSubscription<ProgressEventArgs> _progressSubscription;
@@ -79,21 +76,9 @@ class MainApp implements OnInit, OnDestroy {
 
   String query = "";
 
-  MainApp(this._auth, this._location, this._router, this._pageControl) {
-    _pageTitleSubscription =
-        _pageControl.pageTitleChanged.listen(onPageTitleChanged);
-    _loginRequestSubscription =
-        _auth.loginPrompted.listen(promptForAuthentication);
-    _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
-    _pageActionsSubscription =
-        _pageControl.availablePageActionsSet.listen(onPageActionsSet);
-    _messageSubscription = _pageControl.messageSent.listen(onMessageSent);
-    _progressSubscription = _pageControl.progressChanged.listen(onProgressChanged);
-  }
+  MainApp(this._auth, this._location, this._router, this._pageControl);
 
-  bool confirmDeleteVisible = false;
-
-  User get currentUser => _auth.user.getOrDefault(null);
+  data.User get currentUser => _auth.user.getOrDefault(null);
 
   String get pageTitle {
     if (isNotNullOrWhitespace(_pageTitleOverride)) {
@@ -103,29 +88,11 @@ class MainApp implements OnInit, OnDestroy {
     }
   }
 
-  bool get showSearch => availableActions.contains(PageAction.search);
-
   bool get userLoggedIn {
     return _auth.isAuthenticated;
   }
 
   ProgressEventArgs progressModel = new ProgressEventArgs();
-
-  void pageActionTriggered(PageAction action) {
-    switch (action) {
-      case PageAction.delete:
-        confirmDeleteVisible = true;
-        break;
-      default:
-        _pageControl.requestPageAction(action);
-        break;
-    }
-  }
-
-  void confirmDelete() {
-    confirmDeleteVisible = false;
-    _pageControl.requestPageAction(PageAction.delete);
-  }
 
   Future<Null> clearAuthentication() async {
     await _auth.clear();
@@ -137,15 +104,23 @@ class MainApp implements OnInit, OnDestroy {
     _pageTitleSubscription.cancel();
     _loginRequestSubscription.cancel();
     _searchSubscription.cancel();
-    _pageActionsSubscription.cancel();
     _progressSubscription.cancel();
   }
 
   @override
   Future<Null> ngOnInit() async {
+    _pageTitleSubscription =
+        _pageControl.pageTitleChanged.listen(onPageTitleChanged);
+    _loginRequestSubscription =
+        _auth.loginPrompted.listen(promptForAuthentication);
+    _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
+    _messageSubscription = _pageControl.messageSent.listen(onMessageSent);
+    _progressSubscription =
+        _pageControl.progressChanged.listen(onProgressChanged);
+
     try {
       await _auth.evaluateAuthentication();
-    } on DetailedApiRequestError catch (e, st) {
+    } on api.DetailedApiRequestError catch (e, st) {
       if (e.status == httpStatusServerNeedsSetup) {
         await _router.navigate([setupRoute.name]);
       } else {
@@ -153,11 +128,6 @@ class MainApp implements OnInit, OnDestroy {
         rethrow;
       }
     }
-  }
-
-  void onPageActionsSet(List<PageAction> actions) {
-    this.availableActions.clear();
-    this.availableActions.addAll(actions);
   }
 
   void onPageTitleChanged(String title) {
@@ -182,8 +152,8 @@ class MainApp implements OnInit, OnDestroy {
     }
   }
 
-  Future<Null> tagSearchChanged(List<Tag> event) async {
-    final String query = TagList.convertToQueryString(event);
+  Future<Null> tagSearchChanged(List<api.Tag> event) async {
+    final String query = data.TagList.convertToQueryString(event);
     await _router.navigate([
       itemsSearchRoute.name,
       {queryRouteParameter: query}
@@ -198,12 +168,6 @@ class MainApp implements OnInit, OnDestroy {
     this.errorMessage = e.message;
     this.errorMessageHeader = e.title;
     this.errorMessageVisible = true;
-  }
-
-  bool sideNavOpen = false;
-
-  void navBarIconClicked() {
-    sideNavOpen = !sideNavOpen;
   }
 
   void onProgressChanged(ProgressEventArgs e) {

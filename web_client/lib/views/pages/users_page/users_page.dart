@@ -7,21 +7,26 @@ import 'package:dartlery/api/api.dart' as api;
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
 import 'package:logging/logging.dart';
-import 'package:dartlery/data/data.dart';
-import '../src/a_maintenance_page.dart';
-import 'package:dartlery_shared/global.dart';
 import 'package:angular_forms/angular_forms.dart';
+import 'package:dartlery_shared/global.dart';
+import 'package:tools/tools.dart';
+import 'package:lib_angular/angular.dart';
 
 @Component(
     selector: 'users-page',
-    directives: const [CORE_DIRECTIVES, formDirectives, materialDirectives, commonControls],
+    directives: const [
+      CORE_DIRECTIVES,
+      formDirectives,
+      materialDirectives,
+      commonControls
+    ],
     providers: const [materialProviders],
-    styleUrls: const ["../../shared.css", "users_page.css"],
+    styleUrls: const ["package:lib_angular/shared.css", "users_page.css"],
     templateUrl: 'users_page.html')
-class UsersPage extends AMaintenancePage<api.User> {
+class UsersPage extends AMaintenancePage<ApiService, api.User> {
   static final Logger _log = new Logger("UsersPage");
 
-  List<String> get userTypes => UserPrivilege.values;
+  List<String> get userTypes => new UserPrivilegeSet().privileges;
 
   @ViewChild("changePasswordForm")
   NgForm changePasswordForm;

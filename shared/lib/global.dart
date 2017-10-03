@@ -1,15 +1,6 @@
 import 'dart:convert';
-import 'tools.dart';
-export 'src/exceptions/forbidden_exception.dart';
-export 'src/exceptions/invalid_input_exception.dart';
-export 'src/exceptions/not_found_exception.dart';
 export 'src/exceptions/validation_exception.dart';
-export 'src/exceptions/not_implemented_exception.dart';
-export 'src/exceptions/unauthorized_exception.dart';
-export 'src/exceptions/duplicate_item_exception.dart';
-export 'src/user_privilege.dart';
-export 'src/mime_types.dart';
-export 'src/diff.dart';
+export 'src/user_privilege_set.dart';
 import 'package:path/path.dart' as path;
 
 const String appName = "Dartlery";
@@ -17,7 +8,6 @@ const String galleryApiVersion = "v0.1";
 const String galleryApiName = "gallery";
 const String galleryApiPath = "$apiPrefix/$galleryApiName/$galleryApiVersion/";
 
-const int defaultPerPage = 60;
 const int defaultPerRandomPage = 1;
 
 const String hostedFilesPath = "data";
@@ -32,7 +22,6 @@ final String hostedFilesThumbnailsPath =
     path.join(hostedFilesPath, thumbnailFileFolderName);
 final String hostedFilesOriginalPath =
     path.join(hostedFilesPath, originalFileFolderName);
-const int httpStatusServerNeedsSetup = 555;
 
 const int paginatedDataLimit = 60;
 
@@ -80,7 +69,8 @@ final List<String> _reservedWords = <String>[
 bool isReservedWord(String input) =>
     _reservedWords.contains(input.trim().toLowerCase());
 
-List<T> createTagListFromJson<T>(String json, T createTag(String id, String category)) {
+List<T> createTagListFromJson<T>(
+    String json, T createTag(String id, String category)) {
   final List<T> output = <T>[];
   final JsonDecoder decode = new JsonDecoder();
   final dynamic data = decode.convert(json);
@@ -101,7 +91,7 @@ List<T> createTagListFromJson<T>(String json, T createTag(String id, String cate
     }
     output.add(createTag(id, category));
   }
-  return  output;
+  return output;
 }
 
 String tagListToJson(Iterable<dynamic> tagList) {

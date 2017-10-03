@@ -5,7 +5,8 @@ import 'package:dartlery/client.dart';
 import 'package:dartlery/api/api.dart';
 
 import 'package:angular/core.dart';
-import 'settings_service.dart';
+import 'package:lib_angular/angular.dart';
+import 'package:lib_angular/tools.dart';
 
 export 'package:dartlery/api/api.dart' show PaginatedResponse;
 

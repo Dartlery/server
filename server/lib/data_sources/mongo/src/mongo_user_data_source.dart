@@ -6,12 +6,13 @@ import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:option/option.dart';
-
-import 'a_mongo_id_data_source.dart';
-import 'constants.dart';
+import 'package:tools/tools.dart';
+import '../mongo.dart';
+import 'package:server/data_sources/mongo/mongo.dart';
+import 'package:server/data_sources/interfaces.dart';
 
 class MongoUserDataSource extends AMongoIdDataSource<User>
-    with AUserDataSource {
+    with AUserDataSource<User> {
   static final Logger _log = new Logger('MongoUserDataSource');
   @override
   Logger get childLogger => _log;
@@ -33,12 +34,11 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
 
   @override
   Future<List<User>> getAdmins() {
-    return this.getFromDb(where.eq(typeField, UserPrivilege.admin));
+    return this.getFromDb(where.eq(typeField, APrivilegeSet.admin));
   }
 
   @override
-  Future<DbCollection> getCollection(MongoDatabase con) =>
-      con.getUsersCollection();
+  MongoCollection get collection => usersCollection;
 
   @override
   Future<Option<String>> getPasswordHash(String username) async {

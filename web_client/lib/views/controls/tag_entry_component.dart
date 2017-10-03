@@ -8,17 +8,20 @@ import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
-
-import '../src/a_api_error_thing.dart';
+import 'package:lib_angular/views/views.dart';
+import 'package:tools/tools.dart';
 
 @Component(
     selector: 'tag-entry',
     styles: const [''],
-    styleUrls: const ['../shared.css'],
+    styleUrls: const ['package:lib_angular/shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives, ROUTER_DIRECTIVES],
+    directives: const <dynamic>[
+      CORE_DIRECTIVES,
+      materialDirectives,
+      ROUTER_DIRECTIVES
+    ],
     template: '''
     <div style="width: 100%;white-space: nowrap;">
     <material-chips *ngIf="showSelectedTags" style="float: left;">
@@ -38,7 +41,7 @@ import '../src/a_api_error_thing.dart';
     </span>
     </div>
     ''')
-class TagEntryComponent extends AApiErrorThing implements OnDestroy {
+class TagEntryComponent extends AApiView<ApiService> implements OnDestroy {
   static final Logger _log = new Logger("TagEntryComponent");
 
   @Input()
@@ -70,8 +73,8 @@ class TagEntryComponent extends AApiErrorThing implements OnDestroy {
   final StreamController<Tag> _selectedTagChangeController =
       new StreamController<Tag>();
 
-  TagEntryComponent(this._api, Router router, AuthenticationService auth)
-      : super(router, auth);
+  TagEntryComponent(ApiService api, Router router, AuthenticationService auth)
+      : super(api, router, auth);
 
   bool get inputVisible {
     if (singleTag && selectedTagsInternal.isNotEmpty) return false;

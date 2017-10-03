@@ -8,19 +8,19 @@ import 'package:dartlery/data_sources/mongo/mongo.dart' as mongo;
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:logging/logging.dart';
+import 'package:server/model/model.dart';
+import 'package:server/server.dart';
 
-import 'a_model.dart';
-import 'a_typed_model.dart';
-
-class ExtensionDataModel extends ATypedModel<ExtensionData> {
+class ExtensionDataModel extends ATypedModel<ExtensionData, User> {
   static final Logger _log = new Logger('ExtensionDataModel');
 
   AExtensionDataSource _extensionDataSource;
 
-  ExtensionDataModel(this._extensionDataSource, AUserDataSource userDataSource)
-      : super(userDataSource);
+  ExtensionDataModel(this._extensionDataSource, AUserDataSource userDataSource,
+      APrivilegeSet privilegeSet)
+      : super(userDataSource, privilegeSet);
 
   @override
   Logger get loggerImpl => _log;

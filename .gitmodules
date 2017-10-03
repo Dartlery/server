@@ -1,3 +1,12 @@
 [submodule "libs"]
 	path = libs
 	url = https://github.com/dartlery/libs.git
+[submodule "libs/angular"]
+	path = libs/angular
+	url = https://github.com/dartalog/lib_angular.git
+[submodule "libs/tools"]
+	path = libs/tools
+	url = https://github.com/dartalog/dart_tools
+[submodule "libs/server"]
+	path = libs/server
+	url = https://github.com/dartalog/lib_server.git

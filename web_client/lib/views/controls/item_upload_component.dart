@@ -2,25 +2,27 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:angular/angular.dart';
-import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
-import 'package:dartlery/api/api.dart';
-import 'package:dartlery/data/data.dart';
-import 'package:dartlery/routes.dart';
-import 'package:dartlery/services/services.dart';
-import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
-import 'package:logging/logging.dart';
-import 'package:mime/mime.dart';
 import 'package:angular_forms/angular_forms.dart';
-import '../src/a_api_error_thing.dart';
+import 'package:angular_router/angular_router.dart';
+import 'package:dartlery/api/api.dart';
+import 'package:dartlery/services/services.dart';
+import 'package:lib_angular/views/views.dart';
+import 'package:logging/logging.dart';
+
 import 'common_controls.dart';
 
 @Component(
     selector: 'item-upload',
-    styleUrls: const ['../shared.css'],
+    styleUrls: const ['package:lib_angular/shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES,formDirectives,materialDirectives, commonControls],
+    directives: const <dynamic>[
+      CORE_DIRECTIVES,
+      formDirectives,
+      materialDirectives,
+      commonControls,
+      libComponents
+    ],
     template: '''<modal [visible]="visible">
       <material-dialog class="basic-dialog">
           <h3 header>Upload</h3>
@@ -41,7 +43,7 @@ import 'common_controls.dart';
           </div>
       </material-dialog>
     </modal>''')
-class ItemUploadComponent extends AApiErrorThing {
+class ItemUploadComponent extends AApiView<ApiService> {
   static final Logger _log = new Logger("ItemUploadComponent");
 
   List<Tag> tags = <Tag>[];
@@ -55,17 +57,11 @@ class ItemUploadComponent extends AApiErrorThing {
 
   String fileUpload;
 
-  void setTags(List<Tag> event) {
-    this.tags = event;
-  }
-
   @Output()
   EventEmitter<bool> visibleChange = new EventEmitter<bool>();
 
-  final ApiService _api;
-
-  ItemUploadComponent(this._api, Router router, AuthenticationService auth)
-      : super(router, auth);
+  ItemUploadComponent(ApiService api, Router router, AuthenticationService auth)
+      : super(api, router, auth);
 
   @override
   Logger get loggerImpl => _log;
@@ -120,7 +116,7 @@ class ItemUploadComponent extends AApiErrorThing {
       request.item.fileName = fileName;
       request.file = msg;
 
-      await _api.items.createItem(request);
+      await api.items.createItem(request);
 
       visible = false;
     });
@@ -130,5 +126,9 @@ class ItemUploadComponent extends AApiErrorThing {
     msg = null;
 
     errorMessage = "";
+  }
+
+  void setTags(List<Tag> event) {
+    this.tags = event;
   }
 }

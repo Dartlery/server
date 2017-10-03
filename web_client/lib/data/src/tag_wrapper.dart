@@ -1,5 +1,5 @@
 import 'package:dartlery/api/api.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery_shared/global.dart';
 
 class TagWrapper {

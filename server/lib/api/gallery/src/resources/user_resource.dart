@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
@@ -9,6 +8,7 @@ import 'package:rpc/rpc.dart';
 
 import '../../gallery_api.dart';
 import '../requests/password_change_request.dart';
+import 'package:server/api/api.dart';
 
 class UserResource extends AIdResource<User> {
   static final Logger _log = new Logger('UserResource');
@@ -20,7 +20,7 @@ class UserResource extends AIdResource<User> {
   Logger get childLogger => _log;
 
   @override
-  AIdBasedModel<User> get idModel => _userModel;
+  AIdBasedModel<User, User> get idModel => _userModel;
 
   @ApiMethod(method: 'PUT', path: '${GalleryApi.usersPath}/{uuid}/password/')
   Future<VoidMessage> changePassword(String uuid, PasswordChangeRequest pcr) =>
@@ -40,7 +40,7 @@ class UserResource extends AIdResource<User> {
 
   @override
   String generateRedirect(String newUuid) =>
-      "$serverApiRoot${GalleryApi.usersPath}/$newUuid";
+      "${dartleryServerContext.apiPrefix}${GalleryApi.usersPath}/$newUuid";
 
   @override
   @ApiMethod(path: '${GalleryApi.usersPath}/{uuid}/')

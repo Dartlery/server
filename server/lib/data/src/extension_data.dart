@@ -1,5 +1,5 @@
 import 'package:rpc/rpc.dart';
-import 'a_data.dart';
+import 'package:server/data/data.dart';
 
 class ExtensionData extends AData {
   @ApiProperty(ignore: true)

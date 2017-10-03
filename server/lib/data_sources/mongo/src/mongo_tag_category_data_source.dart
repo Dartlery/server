@@ -4,9 +4,8 @@ import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-
-import 'a_mongo_id_data_source.dart';
-import 'constants.dart';
+import '../mongo.dart';
+import 'package:server/data_sources/mongo/mongo.dart';
 
 class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory>
     with ATagCategoryDataSource {
@@ -31,8 +30,7 @@ class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory>
   }
 
   @override
-  Future<DbCollection> getCollection(MongoDatabase con) =>
-      con.getTagCategoriesCollection();
+  MongoCollection get collection => tagCategoriesCollection;
 
   @override
   void updateMap(TagCategory tag, Map data) {

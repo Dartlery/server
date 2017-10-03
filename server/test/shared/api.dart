@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery/model/model.dart';
 import 'dart:async';
 import 'package:dartlery/api/gallery/gallery_api.dart';
@@ -49,7 +49,7 @@ Future<Null> _nukeDatabase(String connectionString) async {
   await pool.databaseWrapper((MongoDatabase db) => db.nukeDatabase());
 }
 
-Future<Server> setUpServer() async {
+Future<DartleryServer> setUpServer() async {
   final String serverUuid = generateUuid();
   String connectionString =
       "mongodb://127.0.0.1:27017/dartlery_test_$serverUuid";
@@ -57,14 +57,15 @@ Future<Server> setUpServer() async {
   try {
     final OptionsFile optionsFile = new OptionsFile('test/test.options');
     connectionString =
-        optionsFile.getString("connection_string", connectionString) + "_$serverUuid";
+        optionsFile.getString("connection_string", connectionString) +
+            "_$serverUuid";
   } on FileSystemException {}
 
   await _nukeDatabase(connectionString);
   disableSetup();
 
-  final Server server =
-      Server.createInstance(connectionString, instanceUuid: serverUuid);
+  final DartleryServer server =
+      DartleryServer.createInstance(connectionString, instanceUuid: serverUuid);
 
   final String password = testAdminPassword;
   final String uuid = await server.userModel.createUserWith(
@@ -79,7 +80,7 @@ Future<Server> setUpServer() async {
   return server;
 }
 
-Future<Null> tearDownServer(Server server) async {
+Future<Null> tearDownServer(DartleryServer server) async {
   final MongoDbConnectionPool pool = server.injector.get(MongoDbConnectionPool);
   await pool.closeConnections();
   await _nukeDatabase(server.connectionString);

@@ -6,12 +6,12 @@ import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:image/image.dart';
 import 'package:image_hash/image_hash.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
-
+import 'package:server/server.dart';
 import 'a_extension.dart';
 
 class ItemReprocessExtension extends AExtension {
@@ -32,7 +32,8 @@ class ItemReprocessExtension extends AExtension {
       final Item item =
           await _itemModel.getById(queueItem.data, bypassAuthentication: true);
       item.errors.clear();
-      final File f = new File(getOriginalFilePathForHash(queueItem.data));
+      final File f = new File(dartleryServerContext
+          .getOriginalFilePathForHash(queueItem.data));
       item.fileData = f.readAsBytesSync();
       await _itemModel.processItem(item);
       await _itemModel.update(item.id, item, bypassAuthentication: true);

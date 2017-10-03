@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:path/path.dart' as path;
-import 'package:dartlery/api/src/a_resource.dart';
 import 'package:logging/logging.dart';
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/data/feed/feed.dart';
@@ -8,9 +6,9 @@ import 'package:rpc/rpc.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/server.dart';
-import 'package:dartlery_shared/tools.dart';
-import '../../feed_api.dart';
-import '../../../api_tools.dart';
+import 'package:tools/tools.dart';
+import 'package:server/api/api.dart';
+import 'package:server/server.dart';
 
 class ItemFeedResource extends AResource {
   static final Logger _log = new Logger('ItemResource');
@@ -41,7 +39,10 @@ class ItemFeedResource extends AResource {
       });
 
   @ApiMethod(path: 'items/random/')
-  Future<Feed> getRandomItems({int perPage: defaultPerRandomPage, String tags, bool imagesOnly: false}) =>
+  Future<Feed> getRandomItems(
+          {int perPage: defaultPerRandomPage,
+          String tags,
+          bool imagesOnly: false}) =>
       catchExceptionsAwait<Feed>(() async {
         String title = "Random items";
         TagList tagList;
@@ -51,7 +52,9 @@ class ItemFeedResource extends AResource {
           title = "$title $tagList";
         }
         final List<Item> items = await _itemModel.getRandom(
-            filterTags: tagList?.toList(), perPage: perPage, imagesOnly: imagesOnly);
+            filterTags: tagList?.toList(),
+            perPage: perPage,
+            imagesOnly: imagesOnly);
         return createItemFeed(items, title);
       });
 
@@ -76,16 +79,24 @@ class ItemFeedResource extends AResource {
       final FeedItem fItem = new FeedItem(i.id);
       String imageUrl;
       if (i.fullFileAvailable) {
-        imageUrl = urlPath.join(requestRoot, dataPath, fullFileFolderName,
-            i.id.substring(0, fileHashPrefixLength), i.id);
+        imageUrl = urlPath.join(
+            requestRoot,
+            dartleryServerContext.dataPath,
+            fullFileFolderName,
+            i.id.substring(0, fileHashPrefixLength),
+            i.id);
       } else {
-        imageUrl = urlPath.join(requestRoot, dataPath, originalFileFolderName,
-            i.id.substring(0, fileHashPrefixLength), i.id);
+        imageUrl = urlPath.join(
+            requestRoot,
+            dartleryServerContext.dataPath,
+            originalFileFolderName,
+            i.id.substring(0, fileHashPrefixLength),
+            i.id);
       }
 
       fItem.bannerImage = urlPath.join(
           requestRoot,
-          dataPath,
+          dartleryServerContext.dataPath,
           thumbnailFileFolderName,
           i.id.substring(0, fileHashPrefixLength),
           i.id);

@@ -10,26 +10,23 @@ import 'package:dartlery/client.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
-import 'package:dartlery/views/controls/auth_status_component.dart';
-import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
 import '../../controls/tag_entry_component.dart';
-import '../src/a_page.dart';
-import 'package:dartlery/views/controls/item_grid/item_grid.dart';
+import 'package:lib_angular/views/views.dart';
+import '../../src/a_dartlery_view.dart';
 
 @Component(
     selector: 'item-browse',
     providers: const [materialProviders],
     directives: const [
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
       TagEntryComponent,
       ItemGrid
     ],
-    styleUrls: const ["../../shared.css"],
+    styleUrls: const ["package:lib_angular/shared.css"],
     template: '''
     <auth-status (authedChanged)="onAuthChanged(\$event)"></auth-status>
 
@@ -38,18 +35,19 @@ import 'package:dartlery/views/controls/item_grid/item_grid.dart';
 
     <div class="sidebar">
     ''')
-class TrashPage extends APage implements OnInit, OnDestroy {
+class TrashPage extends APage<ApiService>
+    with ADartleryView
+    implements OnInit, OnDestroy {
   static final Logger _log = new Logger("TrashPage");
   bool curatorAuth = false;
 
   bool userLoggedIn;
-  final ApiService _api;
   final RouteParams _routeParams;
 
   final Router _router;
   final RouteData _routeData;
   final AuthenticationService _auth;
-  final List<IdWrapper> items = <IdWrapper>[];
+  final List<ItemGridItem<String>> items = <ItemGridItem<String>>[];
   String _currentQuery = "";
 
   StreamSubscription<String> _searchSubscription;
@@ -61,9 +59,9 @@ class TrashPage extends APage implements OnInit, OnDestroy {
 
   final ItemSearchService _search;
 
-  TrashPage(this._api, this._routeParams, PageControlService pageControl,
+  TrashPage(ApiService api, this._routeParams, PageControlService pageControl,
       this._router, this._auth, this._search, this._routeData)
-      : super(_auth, _router, pageControl) {
+      : super(api, _auth, _router, pageControl) {
     setActions();
     pageControl.setPageTitle("Trash");
   }
@@ -73,8 +71,8 @@ class TrashPage extends APage implements OnInit, OnDestroy {
 
   bool get noItemsFound => items.isEmpty;
 
-  List<IdWrapper> get selectedItems =>
-      items.where((IdWrapper item) => item.selected).toList();
+  List<ItemGridItem<String>> get selectedItems =>
+      items.where((ItemGridItem<String> item) => item.selected).toList();
 
   Future<Null> deleteSelected() async {
     if (selectedItems.isEmpty) return;
@@ -83,8 +81,8 @@ class TrashPage extends APage implements OnInit, OnDestroy {
     pageControl.setProgress(0, max: total);
     await performApiCall(() async {
       while (selectedItems.isNotEmpty) {
-        final IdWrapper item = selectedItems[0];
-        await _api.items.delete(item.id, permanent: true);
+        final ItemGridItem<String> item = selectedItems[0];
+        await api.items.delete(item.id, permanent: true);
         items.remove(item);
         pageControl.setProgress(i, max: total);
         i++;
@@ -103,8 +101,8 @@ class TrashPage extends APage implements OnInit, OnDestroy {
     pageControl.setProgress(0, max: total);
     await performApiCall(() async {
       while (selectedItems.isNotEmpty) {
-        final IdWrapper item = selectedItems[0];
-        await _api.items.restore(item.id);
+        final ItemGridItem<String> item = selectedItems[0];
+        await api.items.restore(item.id);
         items.remove(item);
         pageControl.setProgress(i, max: total);
         i++;
@@ -222,7 +220,14 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       selectedItems.clear();
       items.clear();
       if (response.items.isNotEmpty)
-        items.addAll(response.items.map((String id) => new IdWrapper(id)));
+        items.addAll(response.items.map((String id) => new ItemGridItem<String>()
+          ..data = id
+          ..id = id
+          ..downloadLink = getOriginalFileUrl(id)
+          ..newWindowLink = getOriginalFileUrl(id)
+          ..route = [itemViewRoute.name, {"id": id}]
+          ..thumbnail = getThumbnailFileUrl(id)
+        ));
 
       final PaginationInfo info = new PaginationInfo();
       for (int i = 0; i < response.totalPages; i++) {

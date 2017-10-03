@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'shared/api.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/api/gallery/gallery_api.dart';
@@ -9,7 +9,7 @@ import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/model/model.dart' as model;
 import 'package:dartlery/data_sources/data_sources.dart';
 
-Server server;
+DartleryServer server;
 GalleryApi get api => server.galleryApi;
 
 const String testTagName = "TEST TAG";
@@ -69,7 +69,8 @@ void main() {
     });
 
     test("search()", () async {
-      final PaginatedResponse<TagInfo> tags = await api.tags.search(testTagName);
+      final PaginatedResponse<TagInfo> tags =
+          await api.tags.search(testTagName);
 
       expect(tags.totalCount, 2);
       expect(tags.items.first == initialCategoryTag, isTrue);
@@ -176,12 +177,13 @@ void main() {
 
     test("Search redirect", () async {
       final TagList searchTags = new TagList.from([initialTag]);
-      final PaginatedItemResponse response = await api.items.searchVisible(searchTags.toJson());
+      final PaginatedItemResponse response =
+          await api.items.searchVisible(searchTags.toJson());
       expect(response, isNotNull);
       expect(response.totalCount, 1);
       expect(response.queryTags, isNotNull);
       expect(response.queryTags.length, 1);
-      expect(response.queryTags.first==initialCategoryTag, isTrue);
+      expect(response.queryTags.first == initialCategoryTag, isTrue);
     });
 
     test("Chained redirect", () async {

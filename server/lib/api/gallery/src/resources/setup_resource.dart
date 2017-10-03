@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 import '../responses/setup_response.dart';
 import '../requests/setup_request.dart';
+import 'package:server/api/api.dart';
 
 class SetupResource extends AResource {
   static final Logger _log = new Logger('SetupResource');

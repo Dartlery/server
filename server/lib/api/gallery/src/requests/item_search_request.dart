@@ -1,5 +1,6 @@
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery_shared/global.dart';
+import 'package:server/server.dart';
 
 class ItemSearchRequest {
   List<Tag> tags = <Tag>[];

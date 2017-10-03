@@ -1,4 +1,4 @@
-import 'a_id_data.dart';
+import 'package:server/data/data.dart';
 
 class BackgroundQueueItem extends AIdData {
   dynamic data;

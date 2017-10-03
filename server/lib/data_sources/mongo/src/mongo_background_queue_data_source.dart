@@ -1,14 +1,12 @@
 import 'dart:async';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:dartlery_shared/global.dart';
-import 'a_mongo_two_id_data_source.dart';
-import 'constants.dart';
 import 'package:option/option.dart';
-import 'a_mongo_data_source.dart';
+import 'package:server/data_sources/mongo/mongo.dart';
+import '../mongo.dart';
 
 class MongoBackgroundQueueDataSource
     extends AMongoObjectDataSource<BackgroundQueueItem>
@@ -26,8 +24,7 @@ class MongoBackgroundQueueDataSource
   MongoBackgroundQueueDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
-  Future<DbCollection> getCollection(MongoDatabase con) =>
-      con.getBackgroundQueueCollection();
+  MongoCollection get collection => backgroundQueueCollection;
 
   @override
   Future<Null> addToQueue(String extensionId, dynamic data,

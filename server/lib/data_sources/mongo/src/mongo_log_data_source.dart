@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:dartlery_shared/global.dart';
-import 'a_mongo_two_id_data_source.dart';
-import 'constants.dart';
-import 'package:option/option.dart';
-import 'a_mongo_data_source.dart';
+import '../mongo.dart';
+import 'package:server/data_sources/mongo/mongo.dart';
 
 class MongoLogDataSource extends AMongoObjectDataSource<LogEntry>
     with ALogDataSource {
@@ -26,8 +23,7 @@ class MongoLogDataSource extends AMongoObjectDataSource<LogEntry>
   MongoLogDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
-  Future<DbCollection> getCollection(MongoDatabase con) =>
-      con.getLogCollection();
+  MongoCollection get collection => logCollection;
 
   @override
   Future<Null> create(LogEntry data) async {

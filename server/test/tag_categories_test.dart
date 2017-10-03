@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'shared/api.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/api/gallery/gallery_api.dart';
@@ -8,7 +8,7 @@ import 'package:dartlery/api/api.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/model/model.dart' as model;
 
-Server server;
+DartleryServer server;
 GalleryApi get api => server.galleryApi;
 
 void main() {

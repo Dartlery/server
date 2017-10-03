@@ -1,16 +1,14 @@
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'dart:async';
-import 'dart:io';
 import 'package:args/args.dart';
 import 'package:dartlery/model/model.dart';
 import 'package:di/di.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart'
     as server_logging;
-import 'package:options_file/options_file.dart';
 
 Future<Null> main(List<String> args) async {
-  Logger.root.level = Level.INFO;
+  Logger.root.level = Level.FINEST;
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
   final Logger _log = new Logger("server.main()");
 
@@ -23,7 +21,8 @@ Future<Null> main(List<String> args) async {
   parser.addOption("sourceDb");
   parser.addOption("sourceDbUser");
   parser.addOption("sourceDbPassword");
-  parser.addOption('mongo', abbr: 'm', defaultsTo: '"mongodb://localhost:27017/dartlery"');
+  parser.addOption('mongo',
+      abbr: 'm', defaultsTo: '"mongodb://localhost:27017/dartlery"');
 
   final ArgResults argResults = parser.parse(args);
 
@@ -31,7 +30,6 @@ Future<Null> main(List<String> args) async {
 
   // TODO: Set up a function for loading settings data
   final String connectionString = argResults["mongo"];
-
 
   final ModuleInjector parentInjector =
       createModelModuleInjector(connectionString);
@@ -55,10 +53,21 @@ Future<Null> main(List<String> args) async {
 
       if (isNotNullOrWhitespace(argResults["start"])) {
         final int start = int.parse(argResults["start"]);
-        await importModel.importFromShimmie(argResults["path"],argResults["sourceDbHost"],argResults["sourceDbUser"],argResults["sourceDbPassword"],argResults["sourceDb"],
-            stopOnError: stopOnError, startAt: start);
+        await importModel.importFromShimmie(
+            argResults["path"],
+            argResults["sourceDbHost"],
+            argResults["sourceDbUser"],
+            argResults["sourceDbPassword"],
+            argResults["sourceDb"],
+            stopOnError: stopOnError,
+            startAt: start);
       } else {
-        await importModel.importFromShimmie(argResults["path"],argResults["sourceDbHost"],argResults["sourceDbUser"],argResults["sourceDbPassword"],argResults["sourceDb"],
+        await importModel.importFromShimmie(
+            argResults["path"],
+            argResults["sourceDbHost"],
+            argResults["sourceDbUser"],
+            argResults["sourceDbPassword"],
+            argResults["sourceDb"],
             stopOnError: stopOnError);
       }
       break;

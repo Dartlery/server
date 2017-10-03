@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:async';
 import 'dart:html';
 
+import 'package:dartlery/routes.dart';
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
@@ -10,39 +11,38 @@ import 'package:dartlery/client.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
-import 'package:dartlery/views/controls/auth_status_component.dart';
-import 'package:dartlery_shared/global.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:logging/logging.dart';
 import '../../controls/tag_entry_component.dart';
-import '../src/a_page.dart';
-import 'package:dartlery/views/controls/item_grid/item_grid.dart';
+import 'package:lib_angular/views/views.dart';
+import '../../src/a_dartlery_view.dart';
 
 @Component(
     selector: 'item-browse',
     providers: const [materialProviders],
     directives: const [
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
       TagEntryComponent,
       ItemGrid
     ],
-    styleUrls: const ["../../shared.css",'item_browse.css'],
+    styleUrls: const ["package:lib_angular/shared.css", 'item_browse.css'],
     templateUrl: 'item_browse.html')
-class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
+class ItemBrowseComponent extends APage<ApiService>
+    with ADartleryView
+    implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemBrowseComponent");
   bool curatorAuth = false;
 
   bool userLoggedIn;
-  final ApiService _api;
   final RouteParams _routeParams;
 
   final Router _router;
   final RouteData _routeData;
   final AuthenticationService _auth;
-  final List<IdWrapper> items = <IdWrapper>[];
+  final List<ItemGridItem<String>> items = <ItemGridItem<String>>[];
   String _currentQuery = "";
 
   StreamSubscription<String> _searchSubscription;
@@ -58,9 +58,15 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   String get currentRandomRssLink => _search.getCurrentRandomFeedUrl();
 
-  ItemBrowseComponent(this._api, this._routeParams,
-      PageControlService pageControl, this._router, this._auth, this._search, this._routeData)
-      : super(_auth, _router, pageControl) {
+  ItemBrowseComponent(
+      ApiService api,
+      this._routeParams,
+      PageControlService pageControl,
+      this._router,
+      this._auth,
+      this._search,
+      this._routeData)
+      : super(api, _auth, _router, pageControl) {
     setActions();
   }
 
@@ -69,17 +75,17 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   bool get noItemsFound => items.isEmpty;
 
-  List<IdWrapper> get selectedItems =>
-      items.where((IdWrapper item) => item.selected).toList();
+  List<ItemGridItem<String>> get selectedItems =>
+      items.where((ItemGridItem<String> item) => item.selected).toList();
 
   Future<Null> deleteSelected() async {
     if (selectedItems.isEmpty) return;
-    pageControl.setProgress(0,max: selectedItems.length);
+    pageControl.setProgress(0, max: selectedItems.length);
     int i = 1;
-    for (IdWrapper item in selectedItems) {
+    for (ItemGridItem<String> item in selectedItems) {
       await performApiCall(() async {
-        await _api.items.delete(item.id);
-        pageControl.setProgress(i,max: selectedItems.length);
+        await api.items.delete(item.data);
+        pageControl.setProgress(i, max: selectedItems.length);
         i++;
       });
     }
@@ -87,7 +93,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   }
 
   bool get viewingTrash {
-    return _routeData?.data["trash"]??false;
+    return _routeData?.data["trash"] ?? false;
   }
 
   Tag _draggingTag;
@@ -202,7 +208,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       String routeName = itemsPageRoute.name;
       if (_routeParams.params.containsKey(pageRouteParameter)) {
         page = int.parse(_routeParams.get(pageRouteParameter) ?? '1',
-            onError: (_) => 1) -
+                onError: (_) => 1) -
             1;
       }
       if (_routeParams.params.containsKey(queryRouteParameter)) {
@@ -218,12 +224,19 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       }
 
       final PaginatedItemResponse response =
-      await _search.performSearch(page: page, inTrash: viewingTrash);
+          await _search.performSearch(page: page, inTrash: viewingTrash);
 
       selectedItems.clear();
       items.clear();
       if (response.items.isNotEmpty)
-        items.addAll(response.items.map((String id) => new IdWrapper(id)));
+        items.addAll(response.items.map((String id) => new ItemGridItem<String>()
+          ..data = id
+            ..id = id
+            ..downloadLink = getOriginalFileUrl(id)
+            ..newWindowLink = getOriginalFileUrl(id)
+            ..route = [itemViewRoute.name, {"id": id}]
+            ..thumbnail = getThumbnailFileUrl(id)
+          ));
 
       final PaginationInfo info = new PaginationInfo();
       for (int i = 0; i < response.totalPages; i++) {
@@ -258,8 +271,8 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   }
 
   Future<Null> tagSelected() async {
-    for (IdWrapper id in selectedItems) {
-      await applyTagsToItem(id.id, palletTags);
+    for (ItemGridItem<String> id in selectedItems) {
+      await applyTagsToItem(id.data, palletTags);
     }
   }
 
@@ -268,11 +281,10 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   Future<Null> applyTagsToItem(String id, List<Tag> tags) async {
     await performApiCall(() async {
-      final TagList newTags = new TagList.fromTags(
-          await _api.items.getTagsByItemId(id));
+      final TagList newTags =
+          new TagList.fromTags(await api.items.getTagsByItemId(id));
       newTags.addTags(tags);
-      await _api.items.updateTagsForItemId(newTags.toListOfTag(), id);
+      await api.items.updateTagsForItemId(newTags.toListOfTag(), id);
     });
   }
-
 }

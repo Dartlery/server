@@ -1,6 +1,12 @@
 import 'package:angular_router/angular_router.dart';
 import 'package:dartlery/views/pages/pages.dart';
+import 'package:lib_angular/angular.dart';
 
+const Route setupRoute = const Route(
+  path: '/setup',
+  name: setupRouteName,
+  component: SetupPage,
+);
 const Route tagCategoriesRoute = const Route(
   path: '/tagCategories',
   name: 'TagCategories',
@@ -21,13 +27,13 @@ const Route trashRoute = const Route(
     path: '/trash',
     name: "Trash",
     component: TrashPage,
-    data: const <String,dynamic>{"trash":true});
+    data: const <String, dynamic>{"trash": true});
 
 const Route trashPageRoute = const Route(
     path: '/trash/:$pageRouteParameter',
     name: "TrashPage",
     component: TrashPage,
-    data: const <String,dynamic>{"trash":true});
+    data: const <String, dynamic>{"trash": true});
 
 const String idRouteParameter = "id";
 
@@ -77,12 +83,6 @@ const List<Route> routes = const <Route>[
   trashRoute,
   trashPageRoute
 ];
-
-const Route setupRoute = const Route(
-  path: '/setup',
-  name: 'Setup',
-  component: SetupPage,
-);
 
 const Route usersRoute = const Route(
   path: '/users',

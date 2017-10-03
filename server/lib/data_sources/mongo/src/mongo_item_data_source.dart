@@ -4,13 +4,14 @@ import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
-import 'package:dartlery_shared/tools.dart';
+import 'package:tools/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:option/option.dart';
-
-import 'a_mongo_id_data_source.dart';
-import 'constants.dart';
+import 'package:server/data/data.dart';
+import 'package:server/server.dart';
+import 'package:server/data_sources/mongo/mongo.dart';
+import '../mongo.dart';
 import 'mongo_tag_data_source.dart';
 
 class MongoItemDataSource extends AMongoIdDataSource<Item>
@@ -103,8 +104,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<DbCollection> getCollection(MongoDatabase con) =>
-      con.getItemsCollection();
+  MongoCollection get collection => itemsCollection;
 
   @override
   Future<IdDataList<Item>> getVisible(String userUuid,
@@ -173,18 +173,24 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   Future<List<Item>> getVisibleRandom(String userUuid,
       {List<Tag> filterTags,
       int perPage: defaultPerRandomPage,
-      bool inTrash: false, bool imagesOnly: false}) async {
+      bool inTrash: false,
+      bool imagesOnly: false}) async {
     final List<Map> matchers = [
       {inTrashField: inTrash}
     ];
 
-    if(filterTags!=null) {
-      final List tagIds = new List.from(filterTags.map((Tag t) => t.internalId));
-      matchers.add({tagsField: {$all: tagIds}});
+    if (filterTags != null) {
+      final List tagIds =
+          new List.from(filterTags.map((Tag t) => t.internalId));
+      matchers.add({
+        tagsField: {$all: tagIds}
+      });
     }
-    if(imagesOnly) {
+    if (imagesOnly) {
       matchers.add({videoField: false});
-      matchers.add({mimeField: {$in: MimeTypes.imageTypes}});
+      matchers.add({
+        mimeField: {$in: MimeTypes.imageTypes}
+      });
     }
 
     return await collectionWrapper<List<Item>>((DbCollection col) async {

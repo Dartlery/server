@@ -25,9 +25,13 @@ dependencies:
   mime: ^0.9.3
 
   angular_image_compare:
-    #path: ../../angular_image_compare
-    git: https://github.com/dartninja/angular_image_compare.git
+    path: ../../angular_image_compare
+    #git: https://github.com/dartninja/angular_image_compare.git
 
+  lib_angular:
+    path: ../libs/angular
+  tools:
+    path: ../libs/tools
 dev_dependencies:
   browser: ^0.10.0
   dart_to_js_script_rewriter: ^1.0.1
