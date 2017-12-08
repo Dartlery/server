@@ -23,9 +23,6 @@ class MongoLogDataSource extends AMongoObjectDataSource<LogEntry>
   MongoLogDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
-  MongoCollection get collection => logCollection;
-
-  @override
   Future<Null> create(LogEntry data) async {
     await insertIntoDb(data);
   }

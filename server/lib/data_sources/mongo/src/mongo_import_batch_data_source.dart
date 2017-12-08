@@ -10,43 +10,17 @@ import 'package:option/option.dart';
 
 import 'package:server/data_sources/mongo/mongo.dart';
 import '../mongo.dart';
+import 'package:server/data_sources/data_sources.dart';
 
 class MongoImportBatchDataSource extends AMongoIdDataSource<ImportBatch>
     with AImportBatchDataSource {
   static final Logger _log = new Logger('MongoImportBatchDataSource');
-
-  static const String timestampField = "timestamp";
-  static const String importCountsField = "importCounts";
-  static const String sourceField = "source";
-  static const String finishedField = "finished";
 
   MongoImportBatchDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
   Logger get childLogger => _log;
 
-  @override
-  Future<ImportBatch> createObject(Map<String, dynamic> data) async {
-    final ImportBatch output = new ImportBatch();
-    AMongoIdDataSource.setIdForData(output, data);
-    output.source = data[sourceField];
-    output.importCounts = data[importCountsField];
-    output.finished = data[finishedField];
-    output.timestamp = data[timestampField];
-    return output;
-  }
-
-  @override
-  MongoCollection get collection => importBatchCollection;
-
-  @override
-  void updateMap(ImportBatch item, Map<String, dynamic> data) {
-    super.updateMap(item, data);
-    data[importCountsField] = item.importCounts;
-    data[sourceField] = item.source;
-    data[timestampField] = item.timestamp;
-    data[finishedField] = item.finished;
-  }
 
   @override
   Future<Null> incrementImportCount(String batchId, String result) async {
@@ -55,19 +29,19 @@ class MongoImportBatchDataSource extends AMongoIdDataSource<ImportBatch>
       throw new NotFoundException("Batch not found: $batchId");
     }
     final Map doc = opt.first;
-    if (doc[importCountsField] == null) {
-      doc[importCountsField] = <String, num>{};
+    if (doc[ImportBatch.importCountsField] == null) {
+      doc[ImportBatch.importCountsField] = <String, num>{};
     }
-    if (!doc[importCountsField].containsKey(result)) {
-      doc[importCountsField][result] = 0;
+    if (!doc[ImportBatch.importCountsField].containsKey(result)) {
+      doc[ImportBatch.importCountsField][result] = 0;
     }
-    doc[importCountsField][result]++;
+    doc[ImportBatch.importCountsField][result]++;
     await genericUpdate(where.eq(idField, batchId), doc);
   }
 
   @override
   Future<Null> markBatchFinished(String batchId) async {
     await genericUpdate(
-        where.eq(idField, batchId), modify.set(finishedField, true));
+        where.eq(idField, batchId), modify.set(ImportBatch.finishedField, true));
   }
 }

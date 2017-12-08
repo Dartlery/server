@@ -5,10 +5,21 @@ import 'package:logging/logging.dart';
 import 'package:server/data/data.dart';
 import 'tag.dart';
 import 'package:server/tools.dart';
+import 'package:server/data_sources/data_sources.dart';
 
 @ApiMessage(includeSuper: true)
 class Item extends AIdData {
   static final Logger _log = new Logger('Item');
+
+  static const String uploadedIndexName = "UploadedIndex";
+  static const String itemTagsIndex = "ItemTagsIndex";
+
+  @ApiProperty(ignore: true)
+
+  @DbIndex(itemTagsIndex, order: 0)
+  @DbIndex(uploadedIndexName, order: 0)
+  bool inTrash = false;
+
 
   String extension;
   @ApiProperty(ignore: true)
@@ -26,14 +37,19 @@ class Item extends AIdData {
   Map<String, String> metadata = <String, String>{};
   String mime;
   String source;
+
+  @DbIndex(itemTagsIndex, order: 1)
+  @DbLink()
   List<Tag> tags = <Tag>[];
+
+  @DbIndex(itemTagsIndex, order: 2, ascending: false)
+  @DbIndex(uploadedIndexName, order: 1, ascending: false)
   DateTime uploaded;
+
   String uploader;
   List<String> errors = <String>[];
   bool fullFileAvailable = false;
 
-  @ApiProperty(ignore: true)
-  bool inTrash = false;
 
   Item();
 

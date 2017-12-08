@@ -30,9 +30,6 @@ class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory>
   }
 
   @override
-  MongoCollection get collection => tagCategoriesCollection;
-
-  @override
   void updateMap(TagCategory tag, Map data) {
     super.updateMap(tag, data);
     data[colorField] = tag.color;

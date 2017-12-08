@@ -12,6 +12,7 @@ import 'package:server/data/data.dart';
 import 'package:server/server.dart';
 import 'package:server/data_sources/mongo/mongo.dart';
 import '../mongo.dart';
+import 'package:server/data_sources/data_sources.dart';
 import 'mongo_tag_data_source.dart';
 
 class MongoItemDataSource extends AMongoIdDataSource<Item>
@@ -103,8 +104,6 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
         sortDescending: sortDescending);
   }
 
-  @override
-  MongoCollection get collection => itemsCollection;
 
   @override
   Future<IdDataList<Item>> getVisible(String userUuid,

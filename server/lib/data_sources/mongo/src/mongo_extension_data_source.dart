@@ -16,17 +16,8 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
   @override
   Logger get childLogger => _log;
 
-  static const String extensionIdField = 'extensionId';
-  static const String keyField = "key";
-  static const String primaryIdField = "primaryId";
-  static const String secondaryIdField = "secondaryId";
-  static const String valueField = "value";
-  static const String inTrashField = "inTrash";
 
   MongoExtensionDataSource(MongoDbConnectionPool pool) : super(pool);
-
-  @override
-  MongoCollection get collection => extensionDataCollection;
 
   @override
   Future<Null> create(ExtensionData data) async {
@@ -47,15 +38,15 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
       throw new ArgumentError("primaryId required if specifying a secondaryId");
 
     final SelectorBuilder query =
-        where.eq(extensionIdField, extensionId).eq(keyField, key);
+        where.eq(ExtensionData.extensionIdField, extensionId).eq(ExtensionData.keyField, key);
 
     if (isNotNullOrWhitespace(primaryId))
-      query.eq(primaryIdField, primaryId);
-    else if (setNulls) query.eq(primaryIdField, null);
+      query.eq(ExtensionData.primaryIdField, primaryId);
+    else if (setNulls) query.eq(ExtensionData.primaryIdField, null);
 
     if (isNotNullOrWhitespace(secondaryId))
-      query.eq(secondaryIdField, secondaryId);
-    else if (setNulls) query.eq(secondaryIdField, null);
+      query.eq(ExtensionData.secondaryIdField, secondaryId);
+    else if (setNulls) query.eq(ExtensionData.secondaryIdField, null);
 
     return query;
   }
@@ -71,11 +62,11 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
   Future<Null> deleteBidirectional(
       String extensionId, String key, String bidirectionalId) async {
     final SelectorBuilder query = where
-        .eq(extensionIdField, extensionId)
-        .eq(keyField, key)
+        .eq(ExtensionData.extensionIdField, extensionId)
+        .eq(ExtensionData.keyField, key)
         .and(where
-            .eq(primaryIdField, bidirectionalId)
-            .or(where.eq(secondaryIdField, bidirectionalId)));
+            .eq(ExtensionData.primaryIdField, bidirectionalId)
+            .or(where.eq(ExtensionData.secondaryIdField, bidirectionalId)));
     await deleteFromDb(query);
   }
 
@@ -94,17 +85,17 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
       int page: 0,
       int perPage}) async {
     final SelectorBuilder query = where
-        .eq(extensionIdField, extensionId)
-        .eq(keyField, key)
+        .eq(ExtensionData.extensionIdField, extensionId)
+        .eq(ExtensionData.keyField, key)
         .and(where
-            .eq(primaryIdField, bidirectionalId)
-            .or(where.eq(secondaryIdField, bidirectionalId)));
+            .eq(ExtensionData.primaryIdField, bidirectionalId)
+            .or(where.eq(ExtensionData.secondaryIdField, bidirectionalId)));
     if (orderByValues)
-      query.sortBy(valueField, descending: orderDescending);
+      query.sortBy(ExtensionData.valueField, descending: orderDescending);
     else
       query
-          .sortBy(primaryIdField, descending: orderDescending)
-          .sortBy(secondaryIdField, descending: orderDescending);
+          .sortBy(ExtensionData.primaryIdField, descending: orderDescending)
+          .sortBy(ExtensionData.secondaryIdField, descending: orderDescending);
 
     return await getPaginatedFromDb(query);
   }
@@ -121,32 +112,13 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
     final SelectorBuilder query =
         _generateQuery(extensionId, key, primaryId, secondaryId, useNullIds);
     if (orderByValues)
-      query.sortBy(valueField, descending: orderDescending);
+      query.sortBy(ExtensionData.valueField, descending: orderDescending);
     else
       query
-          .sortBy(primaryIdField, descending: orderDescending)
-          .sortBy(secondaryIdField, descending: orderDescending);
+          .sortBy(ExtensionData.primaryIdField, descending: orderDescending)
+          .sortBy(ExtensionData.secondaryIdField, descending: orderDescending);
 
     return await getPaginatedFromDb(query);
   }
 
-  @override
-  void updateMap(ExtensionData item, Map<String, dynamic> data) {
-    data[extensionIdField] = item.extensionId;
-    data[keyField] = item.key;
-    data[primaryIdField] = item.primaryId;
-    data[secondaryIdField] = item.secondaryId;
-    data[valueField] = item.value;
-  }
-
-  @override
-  Future<ExtensionData> createObject(Map<String, dynamic> data) async {
-    final ExtensionData output = new ExtensionData();
-    output.extensionId = data[extensionIdField];
-    output.key = data[keyField];
-    output.primaryId = data[primaryIdField];
-    output.secondaryId = data[secondaryIdField];
-    output.value = data[valueField];
-    return output;
-  }
 }

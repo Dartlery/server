@@ -57,9 +57,6 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
   }
 
   @override
-  MongoCollection get collection => importResultsCollection;
-
-  @override
   Future<Null> record(ImportResult data) async {
     await insertIntoDb(data);
   }
