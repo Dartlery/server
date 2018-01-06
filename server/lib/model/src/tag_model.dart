@@ -1,26 +1,23 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
-import 'package:dartlery/data_sources/mongo/mongo.dart' as mongo;
-import 'package:dartlery/model/model.dart';
-import 'package:dartlery/server.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
-
 import 'a_typed_model.dart';
+import 'package:orm/orm.dart' as orm;
 
 class TagModel extends ATypedModel<TagInfo> {
   static final Logger _log = new Logger('TagModel');
 
-  final ATagDataSource _tagDataSource;
+  final TagDataSource _tagDataSource;
+
   final AItemDataSource _itemDataSource;
 
   final ATagCategoryDataSource _tagCategoryDataSource;
+
   TagModel(this._tagDataSource, this._tagCategoryDataSource,
       this._itemDataSource, AUserDataSource userDataSource)
       : super(userDataSource);
@@ -31,17 +28,18 @@ class TagModel extends ATypedModel<TagInfo> {
   Future<Null> clearRedirect(String id, [String category]) async {
     await validateUpdatePrivilegeRequirement();
 
-    final Option<TagInfo> tagOpt = await _tagDataSource.getById(id, category);
+    try {
+      final TagInfo tag = await _tagDataSource.getByIdAndCategory(
+          id, category);
+      tag.redirect = null;
 
-    if (tagOpt.isEmpty)
+      await _tagDataSource.update(id, category, tag);
+
+    } on orm.ItemNotFoundException catch (e) {
       throw new NotFoundException(
           "Specified tag not found: ${Tag.formatTag(id, category)}");
+    }
 
-    final TagInfo tag = tagOpt.first;
-
-    tag.redirect = null;
-
-    await _tagDataSource.update(id, category, tag);
   }
 
   Future<int> delete(String id, String category) async {
@@ -49,15 +47,15 @@ class TagModel extends ATypedModel<TagInfo> {
 
     final TagInfo t = new TagInfo.withValues(id, category);
     validate(t);
-
-    final Option<TagInfo> dbTag = await _tagDataSource.getById(id, category);
-
-    if (dbTag.isEmpty)
-      throw new NotFoundException(
-          "Tag not found: ${Tag.formatTag(id, category)}");
-
+try {
+    final TagInfo dbTag = await _tagDataSource.getByIdAndCategory(id, category);
     await _tagDataSource.deleteById(dbTag.first.id, dbTag.first.category);
-    return await _itemDataSource.replaceTags([dbTag.first], []);
+    return await _itemDataSource.replaceTags([dbTag], []);
+} on orm.ItemNotFoundException catch (e) {
+  throw new NotFoundException(
+      "Specified tag not found: ${Tag.formatTag(id, category)}");
+}
+
   }
 
   Future<PaginatedData<TagInfo>> getAllInfo(
@@ -217,13 +215,13 @@ class TagModel extends ATypedModel<TagInfo> {
       await _tagDataSource.update(redirect.id, redirect.category, redirect);
     }
 
-    final Option<TagInfo> newTag =
-        await _tagDataSource.getById(redirect.id, redirect.category);
+    final TagInfo newTag =
+        await _tagDataSource.getByIdAndCategory(redirect.id, redirect.category);
 
     final int changed = await _itemDataSource
-        .replaceTags([newTag.first], [newTag.first.redirect]);
+        .replaceTags([newTag], [newTag.redirect]);
 
-    await _tagDataSource.refreshTagCount([newTag.first, newTag.first.redirect]);
+    await _tagDataSource.refreshTagCount([newTag, newTag.redirect]);
 
     return changed;
   }

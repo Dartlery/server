@@ -26,6 +26,7 @@ import 'package:shelf_route/shelf_route.dart';
 import 'package:shelf_rpc/shelf_rpc.dart' as shelf_rpc;
 import 'package:shelf_static/shelf_static.dart';
 import 'package:path/path.dart' as path;
+import 'package:orm/orm.dart';
 
 import 'src/exceptions/setup_required_exception.dart';
 import 'src/db_logging_handler.dart';

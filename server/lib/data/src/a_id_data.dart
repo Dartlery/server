@@ -1,6 +1,13 @@
-import 'a_data.dart';
+import 'package:orm/orm.dart';
 
-class AIdData extends AData {
+import 'package:rpc/rpc.dart';
+
+class AIdData extends OrmObject {
+  @override
+  @ApiProperty(ignore: true)
+  dynamic get ormInternalId;
+
+  @DbField()
   String id = "";
 
   AIdData();

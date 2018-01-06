@@ -4,13 +4,12 @@ import 'package:rpc/rpc.dart';
 
 import 'a_id_data.dart';
 import 'tag_category.dart';
+import 'package:orm/meta.dart';
 import 'package:dartlery_shared/global.dart';
 
 @ApiMessage(includeSuper: true)
 class Tag extends AIdData {
-  @ApiProperty(ignore: true)
-  dynamic internalId;
-
+  @DbField()
   String category;
 
   Tag();
