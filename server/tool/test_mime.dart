@@ -34,8 +34,8 @@ Future<Null> main(List<String> args) async {
           _log.info("Is image MIME type");
 
           // This is being implemented to test the new JPEG decoder, so for now we're just looking at jpeg files
-          if (mime != MimeTypes.jpeg)
-            continue;
+          //if (mime != MimeTypes.jpeg)
+//            continue;
 
           final List<int> data = await getFileData(f.path);
           if (MimeTypes.animatableImageTypes.contains(mime)) {
@@ -46,7 +46,7 @@ Future<Null> main(List<String> args) async {
               _log.info("Animation decoded");
             } catch (e, st) {
               // Not an animation
-              _log.info("Not an animation!", e, st);
+              _log.info("Not decodable as animation!", e, st);
               decodeImage(data);
             }
           } else {
