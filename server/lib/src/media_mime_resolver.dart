@@ -259,6 +259,29 @@ class MediaMimeResolver extends MimeTypeResolver {
           0xFF,
           0xFF
         ]);
+    addMagicNumber(
+        const <int>[
+          0x00,
+          0x00,
+          0x00,
+          0x08,
+          0x77,
+          0x69,
+          0x64,
+          0x65,
+        ],
+        MimeTypes.quicktime,
+        mask: const <int>[
+          0x00,
+          0x00,
+          0x00,
+          0xFF,
+          0xFF,
+          0xFF,
+          0xFF,
+          0xFF,
+        ]);
+
 
     addMagicNumber(const <int>[0x43, 0x57, 0x53], MimeTypes.swf);
     addMagicNumber(const <int>[0x46, 0x57, 0x53], MimeTypes.swf);

@@ -27,3 +27,4 @@ server.snapshot
 setup.lock
 server/files/
 server/data/
+server/tool/image_test.log
