@@ -39,6 +39,7 @@ class ImportPage extends APage implements OnInit, OnDestroy {
   new SelectionModel<ImportBatch>.withList();
 
   void onSelectionChanged(dynamic test) {
+    batch = batchSelection.selectedValues.first;
     refresh();
   }
 
@@ -55,7 +56,7 @@ class ImportPage extends APage implements OnInit, OnDestroy {
 
   final List<ImportBatch> batches = <ImportBatch>[];
 
-  ImportBatch get batch => batchSelection.selectedValues.isEmpty ? null : batchSelection.selectedValues.first;
+  ImportBatch batch;
 
   ImportPage(PageControlService pageControl, this._api, this._auth,
       Router router)
@@ -116,6 +117,7 @@ class ImportPage extends APage implements OnInit, OnDestroy {
         if (batch != null) {
           results.addAll(
               (await _api.import.getImportBatchResults(batch.id)).items);
+            this.batch = batches.firstWhere((ImportBatch b) => b.id==batch.id);
         }
       }, after: () async {
         pageControl.clearProgress();
