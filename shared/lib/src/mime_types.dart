@@ -1,24 +1,24 @@
 class MimeTypes {
   static const Map<String, String> extensions = const <String, String>{
-    jpeg: "jpg",
+    asf: "asf",
+    avi: "avi",
+    flv: "flv",
     gif: "gif",
+    jpeg: "jpg",
+    mkv: "mkv",
+    mpeg: "mpeg",
+    mp4: "mp4",
+    openExr: "exr",
+    pdf: "pdf",
     png: "png",
-    tga: "tga",
-    tiff: "tiff",
-    webp: "webp",
     psd: "psd",
     pvr: "pvr",
-    openExr: "exr",
-    webm: "webm",
-    mp4: "mp4",
-    flv: "flv",
     quicktime: "mov",
-    avi: "avi",
-    asf: "asf",
-    mpeg: "mpeg",
-    mkv: "mkv",
     swf: "swf",
-    pdf: "pdf"
+    tiff: "tiff",
+    tga: "tga",
+    webp: "webp",
+    webm: "webm",
   };
 
   static const String jpeg = "image/jpeg";

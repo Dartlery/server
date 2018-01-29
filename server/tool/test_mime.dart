@@ -5,6 +5,7 @@ import 'package:logging_handlers/server_logging_handlers.dart' as server_logging
 import 'package:dartlery/tools.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:image/image.dart';
+import 'package:path/path.dart' as pathTools;
 
 Future<Null> main(List<String> args) async {
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
@@ -29,6 +30,15 @@ Future<Null> main(List<String> args) async {
 
         final String mime = await mediaMimeResolver.getMimeTypeForFile(f.path);
         _log.info("Mime: $mime");
+
+        dynamic extension =pathTools.extension(entity.path);
+        _log.info(extension.runtimeType.toString());
+        if(extension==null) {
+          _log.info("Null extension");
+        } else {
+          _log.info(extension);
+        }
+
 
         if (MimeTypes.imageTypes.contains(mime)) {
           _log.info("Is image MIME type");

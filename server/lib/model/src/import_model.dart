@@ -306,7 +306,18 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
           newItem.filePath = entity.path;
           //newItem.fileData = await getFileData(entity.path);
           newItem.fileName = path.basename(entity.path);
-          newItem.extension = path.extension(entity.path).substring(1);
+          dynamic extension = path.extension(entity.path);
+          if(isNullOrWhitespace(extension)) {
+            final dynamic mime = mediaMimeResolver.getMimeTypeForFile(entity.path);
+            if(MimeTypes.extensions.containsKey(mime)) {
+              extension = MimeTypes.extensions[mime];
+            } else {
+              throw new Exception("Unrecognized mime type: $mime");
+            }
+          } else {
+            extension = extension.substring(1);
+          }
+          newItem.extension = extension;
           await _createItem(newItem, result, mergeExisting);
           _log.info("Imported file ${entity.path}");
         } catch (e, st) {
