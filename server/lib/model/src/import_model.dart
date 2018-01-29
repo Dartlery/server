@@ -308,7 +308,7 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
           newItem.fileName = path.basename(entity.path);
           dynamic extension = path.extension(entity.path);
           if(isNullOrWhitespace(extension)) {
-            final dynamic mime = mediaMimeResolver.getMimeTypeForFile(entity.path);
+            final dynamic mime = await mediaMimeResolver.getMimeTypeForFile(entity.path);
             if(MimeTypes.extensions.containsKey(mime)) {
               extension = MimeTypes.extensions[mime];
             } else {
