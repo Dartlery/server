@@ -143,6 +143,33 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     });
   }
 
+  Future<Null> deleteAll() async {
+    pageControl.setIndeterminateProgress();
+    await performApiCall(() async {
+      int i = 1;
+      final int total = otherComparisons.length;
+      pageControl.setProgress(0, max: total);
+      while (otherComparisons.isNotEmpty) {
+        final ExtensionData data = otherComparisons[0];
+
+        final String toDelete = getOtherImageId(data);
+
+        if(isNotNullOrWhitespace(toDelete)) {
+          await _api.items.delete(toDelete);
+        }
+
+        otherComparisons.removeAt(0);
+        pageControl.setProgress(i, max: total + 1);
+        i++;
+      }
+      await _api.items.delete(this.currentItemId);
+      pageControl.setProgress(total + 1, max: total + 1);
+
+      await refresh();
+    });
+  }
+
+
   Future<Null> clearSimilarity(ExtensionData data) async {
     pageControl.setIndeterminateProgress();
     await performApiCall(() async {
