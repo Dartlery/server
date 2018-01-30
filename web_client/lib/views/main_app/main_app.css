@@ -11,5 +11,8 @@
 }
 
 .progress_div {
-    position: relative;
+    position: absolute;
+    top:40pt;
+    left:0;
+    right:0;
 }
