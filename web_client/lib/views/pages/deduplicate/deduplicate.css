@@ -39,7 +39,7 @@ table td {
     position: absolute;
     top: 0;
     right: 0;
-    bottom: 50pt;
+    bottom: 75pt;
     overflow-y: auto;
     overflow-x: hidden;
 }
