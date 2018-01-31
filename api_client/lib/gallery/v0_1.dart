@@ -107,6 +107,8 @@ class ExtensionDataResourceApi {
   ///
   /// [orderByValues] - Query parameter: 'orderByValues'.
   ///
+  /// [orderByIds] - Query parameter: 'orderByIds'.
+  ///
   /// [orderDescending] - Query parameter: 'orderDescending'.
   ///
   /// [page] - Query parameter: 'page'.
@@ -123,6 +125,7 @@ class ExtensionDataResourceApi {
   async.Future<PaginatedExtensionDataResponse> get(
       core.String extensionId, core.String key,
       {core.bool orderByValues,
+      core.bool orderByIds,
       core.bool orderDescending,
       core.int page,
       core.int perPage}) {
@@ -141,6 +144,9 @@ class ExtensionDataResourceApi {
     }
     if (orderByValues != null) {
       _queryParams["orderByValues"] = ["${orderByValues}"];
+    }
+    if (orderByIds != null) {
+      _queryParams["orderByIds"] = ["${orderByIds}"];
     }
     if (orderDescending != null) {
       _queryParams["orderDescending"] = ["${orderDescending}"];
@@ -242,6 +248,8 @@ class ExtensionDataResourceApi {
   ///
   /// [orderByValues] - Query parameter: 'orderByValues'.
   ///
+  /// [orderByIds] - Query parameter: 'orderByIds'.
+  ///
   /// [orderDescending] - Query parameter: 'orderDescending'.
   ///
   /// [page] - Query parameter: 'page'.
@@ -259,6 +267,7 @@ class ExtensionDataResourceApi {
       core.String extensionId, core.String key, core.String primaryId,
       {core.bool bidirectional,
       core.bool orderByValues,
+      core.bool orderByIds,
       core.bool orderDescending,
       core.int page,
       core.int perPage}) {
@@ -283,6 +292,9 @@ class ExtensionDataResourceApi {
     }
     if (orderByValues != null) {
       _queryParams["orderByValues"] = ["${orderByValues}"];
+    }
+    if (orderByIds != null) {
+      _queryParams["orderByIds"] = ["${orderByIds}"];
     }
     if (orderDescending != null) {
       _queryParams["orderDescending"] = ["${orderDescending}"];

@@ -272,7 +272,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
         clear();
         response = await _api.extensionData.get(
             "itemComparison", "similarItems",
-            orderDescending: true, perPage: 1);
+            orderDescending: false, perPage: 1);
         if (response.items.isNotEmpty) {
           totalItems = response.totalCount;
           currentItemId = response.items.first.primaryId;

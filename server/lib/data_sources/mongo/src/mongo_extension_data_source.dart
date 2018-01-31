@@ -117,17 +117,21 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
       String secondaryId,
       bool useNullIds: false,
       bool orderByValues: false,
+      bool orderByIds: false,
       bool orderDescending: false,
       int page: 0,
       int perPage: defaultPerPage}) async {
     final SelectorBuilder query =
         _generateQuery(extensionId, key, primaryId, secondaryId, useNullIds);
-    if (orderByValues)
-      query.sortBy(valueField, descending: orderDescending);
-    else
+    if(orderByIds)
       query
           .sortBy(primaryIdField, descending: orderDescending)
           .sortBy(secondaryIdField, descending: orderDescending);
+    if (orderByValues)
+      query.sortBy(valueField, descending: orderDescending);
+
+    if(!orderByIds&&!orderByValues)
+      query.sortBy(internalIdField, descending: orderDescending);
 
     return await getPaginatedFromDb(query);
   }

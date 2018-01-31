@@ -39,6 +39,7 @@ class ExtensionDataModel extends ATypedModel<ExtensionData> {
       {String primaryId,
       String secondaryId,
       bool orderByValues: false,
+      bool orderByIds: false,
       bool orderDescending: false,
       int page: 0,
       int perPage: defaultPerPage}) async {
@@ -47,6 +48,7 @@ class ExtensionDataModel extends ATypedModel<ExtensionData> {
         primaryId: primaryId,
         secondaryId: secondaryId,
         orderByValues: orderByValues,
+        orderByIds: orderByIds,
         orderDescending: orderDescending,
         page: page,
         perPage: perPage);

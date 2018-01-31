@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "722a09542c8982589a1e7caa675709ecef645fb0",
+ "etag": "f71924619ab4798c5f0f0a12136861d919421086",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -1375,6 +1375,12 @@
        "required": false,
        "location": "query"
       },
+      "orderByIds": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderByIds'.",
+       "required": false,
+       "location": "query"
+      },
       "orderDescending": {
        "type": "boolean",
        "description": "Query parameter: 'orderDescending'.",
@@ -1511,6 +1517,12 @@
       "orderByValues": {
        "type": "boolean",
        "description": "Query parameter: 'orderByValues'.",
+       "required": false,
+       "location": "query"
+      },
+      "orderByIds": {
+       "type": "boolean",
+       "description": "Query parameter: 'orderByIds'.",
        "required": false,
        "location": "query"
       },

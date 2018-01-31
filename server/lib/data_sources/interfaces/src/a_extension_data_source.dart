@@ -18,6 +18,7 @@ abstract class AExtensionDataSource extends ADataSource {
       String secondaryId,
       bool useNullIds: false,
       bool orderByValues: false,
+      bool orderByIds: false,
       bool orderDescending: false,
       int page: 0,
       int perPage});

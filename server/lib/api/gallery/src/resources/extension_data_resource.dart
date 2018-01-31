@@ -25,7 +25,7 @@ class ExtensionDataResource extends AResource {
       method: HttpMethod.get,
       path: '$extensionDataApiPath/{extensionId}/{key}/')
   Future<PaginatedExtensionDataResponse> get(String extensionId, String key,
-      {bool orderByValues: false,
+      {bool orderByValues: false, bool orderByIds: false,
       bool orderDescending: false,
       int page: 0,
       int perPage: defaultPerPage}) async {
@@ -34,6 +34,7 @@ class ExtensionDataResource extends AResource {
           await _extensionDataModel.get(extensionId, key,
               orderByValues: orderByValues,
               orderDescending: orderDescending,
+              orderByIds: orderByIds,
               page: page,
               perPage: perPage)
             ..forEach((ExtensionData data) {
@@ -80,6 +81,7 @@ class ExtensionDataResource extends AResource {
       String extensionId, String key, String primaryId,
       {bool bidirectional,
       bool orderByValues: false,
+      bool orderByIds: false,
       bool orderDescending: false,
       int page: 0,
       int perPage: defaultPerPage}) async {
@@ -97,6 +99,7 @@ class ExtensionDataResource extends AResource {
             primaryId: primaryId,
             orderDescending: orderDescending,
             orderByValues: orderByValues,
+            orderByIds: orderByIds,
             perPage: perPage,
             page: page);
       }

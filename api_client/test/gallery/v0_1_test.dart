@@ -1185,6 +1185,7 @@ main() {
       var arg_extensionId = "foo";
       var arg_key = "foo";
       var arg_orderByValues = true;
+      var arg_orderByIds = true;
       var arg_orderDescending = true;
       var arg_page = 42;
       var arg_perPage = 42;
@@ -1241,6 +1242,8 @@ main() {
         }
         unittest.expect(queryMap["orderByValues"].first,
             unittest.equals("$arg_orderByValues"));
+        unittest.expect(
+            queryMap["orderByIds"].first, unittest.equals("$arg_orderByIds"));
         unittest.expect(queryMap["orderDescending"].first,
             unittest.equals("$arg_orderDescending"));
         unittest.expect(
@@ -1257,6 +1260,7 @@ main() {
       res
           .get(arg_extensionId, arg_key,
               orderByValues: arg_orderByValues,
+              orderByIds: arg_orderByIds,
               orderDescending: arg_orderDescending,
               page: arg_page,
               perPage: arg_perPage)
@@ -1366,6 +1370,7 @@ main() {
       var arg_primaryId = "foo";
       var arg_bidirectional = true;
       var arg_orderByValues = true;
+      var arg_orderByIds = true;
       var arg_orderDescending = true;
       var arg_page = 42;
       var arg_perPage = 42;
@@ -1433,6 +1438,8 @@ main() {
             unittest.equals("$arg_bidirectional"));
         unittest.expect(queryMap["orderByValues"].first,
             unittest.equals("$arg_orderByValues"));
+        unittest.expect(
+            queryMap["orderByIds"].first, unittest.equals("$arg_orderByIds"));
         unittest.expect(queryMap["orderDescending"].first,
             unittest.equals("$arg_orderDescending"));
         unittest.expect(
@@ -1450,6 +1457,7 @@ main() {
           .getByPrimaryId(arg_extensionId, arg_key, arg_primaryId,
               bidirectional: arg_bidirectional,
               orderByValues: arg_orderByValues,
+              orderByIds: arg_orderByIds,
               orderDescending: arg_orderDescending,
               page: arg_page,
               perPage: arg_perPage)
