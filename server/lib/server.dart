@@ -197,8 +197,8 @@ class Server {
 
       final Handler handler = const Pipeline()
           .addMiddleware(logRequests())
-          .addMiddleware(_fixCORS)
           .addMiddleware(exceptionHandler())
+          .addMiddleware(_fixCORS)
           .addHandler(root.handler);
 
       _server = await io.serve(handler, bindIp, port);
