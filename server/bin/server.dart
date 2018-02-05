@@ -24,6 +24,7 @@ Future<Null> main(List<String> args) async {
     ..addOption('port', abbr: 'p', defaultsTo: '8080')
     ..addOption('ip', abbr: 'i', defaultsTo: '0.0.0.0')
     ..addOption('mongo', abbr: 'm', defaultsTo: '')
+    ..addOption('data', abbr: 'd', defaultsTo: '')
     ..addOption('log', abbr: 'l');
 
   final ArgResults result = parser.parse(args);
@@ -58,7 +59,12 @@ Future<Null> main(List<String> args) async {
 
   final String ip = result['ip'];
 
-  final Server server = Server.createInstance(connectionString);
+  String dataPath = result['data'];
+  if (isNullOrWhitespace(dataPath)) {
+    dataPath = null;
+  }
+
+  final Server server = Server.createInstance(connectionString, dataPath: dataPath);
   server.start(ip, port);
 
   // Now we start the thread for the background service

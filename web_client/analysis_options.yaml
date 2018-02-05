@@ -1,5 +1,5 @@
 analyzer:
-  strong-mode:
+  strong-mode: true
     - implicit-downcasts: false
     - implicit-dynamic: false
   errors:

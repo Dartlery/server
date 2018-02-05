@@ -87,16 +87,16 @@
 <login-form [(visible)]="isLoginOpen" id="userAuthElement"></login-form>
 <item-upload [(visible)]="isUploadOpen" id="uploadElement"></item-upload>
 
-<modal [visible]="confirmDeleteVisible">
+<modal [visible]="confirmActionVisible">
     <material-dialog class="basic-dialog">
-        <h3 header>Delete</h3>
+        <h3 header>{{confirmingAction?.name}}</h3>
         <p>
-            Are you sure you wish to delete?
+            Are you sure you wish to {{confirmingAction?.name}}?
         </p>
         <div footer style="text-align: right">
             <material-yes-no-buttons yesHighlighted
-                                     yesText="Delete" (yes)="confirmDelete()"
-                                     noText="Cancel" (no)="confirmDeleteVisible = false">
+                                     yesText="Yes" (yes)="confirmAction()"
+                                     noText="No" (no)="confirmActionVisible = false">
             </material-yes-no-buttons>
         </div>
     </material-dialog>

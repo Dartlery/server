@@ -72,6 +72,7 @@ const List<Route> routes = const <Route>[
   setupRoute,
   usersRoute,
   deduplicateRoute,
+  deduplicateItemRoute,
   tagsRoute,
   importRoute,
   trashRoute,
@@ -99,5 +100,5 @@ const Route deduplicateRoute = const Route(
 const Route deduplicateItemRoute = const Route(
   path: '/deduplicate/:$idRouteParameter',
   name: 'DeduplicateItem',
-  component: DeduplicatePage,
+  component: DeduplicateItemPage,
 );

@@ -37,6 +37,7 @@ export 'src/exceptions/setup_required_exception.dart';
 export 'src/db_logging_handler.dart';
 export 'src/settings.dart';
 
+
 final String rootDirectory = Directory.current.path;
 String serverRoot, serverApiRoot;
 
@@ -102,6 +103,7 @@ class Server {
 
   String instanceUuid;
   String connectionString;
+  String dataPath;
   ModuleInjector injector;
 
   final ApiServer _apiServer =
@@ -119,20 +121,19 @@ class Server {
       if (_server != null)
         throw new Exception("Server has already been started");
 
-      String pathToBuild;
-
-      pathToBuild = join(rootDirectory, hostedFilesPath);
-
-      final Handler staticImagesHandler = createStaticHandler(pathToBuild,
+      final Handler staticImagesHandler = createStaticHandler(dataPath,
           listDirectories: false,
           serveFilesOutsidePath: false,
           useHeaderBytesForContentType: true,
           contentTypeResolver: mediaMimeResolver);
       // TODO: Submit patch to the static handler project to allow overriding the mime resolver
 
+
       _apiServer.addApi(this.galleryApi);
       _apiServer.addApi(this.feedApi);
       _apiServer.enableDiscoveryApi();
+
+      _log.info("Data path: $dataPath");
 
       final JwtSessionHandler<Principal, SessionClaimSet> sessionHandler =
           new JwtSessionHandler<Principal, SessionClaimSet>(
@@ -162,7 +163,7 @@ class Server {
 
       final Router<dynamic> root = router()
         ..add('/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)
-        ..add("/$dataPath/", <String>['GET', 'OPTIONS'], staticImagesHandler,
+        ..add("/data/", <String>['GET', 'OPTIONS'], staticImagesHandler,
             exactMatch: false)
         ..add(
             '/$apiPrefix/',
@@ -172,7 +173,7 @@ class Server {
         ..add('/discovery/', <String>['GET', 'HEAD', 'OPTIONS'], apiPipeline,
             exactMatch: false);
 
-      pathToBuild = join(rootDirectory, 'web/');
+      String pathToBuild = join(rootDirectory, 'web/');
       final Directory siteDir = new Directory(pathToBuild);
       if (siteDir.existsSync()) {
         final Handler staticSiteHandler = createStaticHandler(pathToBuild,
@@ -252,7 +253,7 @@ class Server {
     return new Some<Principal>(new Principal(user.get().id));
   }
 
-  static Server createInstance(String connectionString, {String instanceUuid}) {
+  static Server createInstance(String connectionString, {String instanceUuid, String dataPath = null}) {
     final ModuleInjector parentInjector =
         createModelModuleInjector(connectionString);
 
@@ -271,6 +272,13 @@ class Server {
     server.instanceUuid = instanceUuid ?? generateUuid();
     server.connectionString = connectionString;
     server.injector = injector;
+
+    if(dataPath==null) {
+      server.dataPath = join(rootDirectory, hostedFilesPath);;
+    } else {
+      server.dataPath = dataPath;
+    }
+
 
     return server;
   }

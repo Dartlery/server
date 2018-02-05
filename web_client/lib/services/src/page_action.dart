@@ -3,7 +3,7 @@ class PageAction {
   static const PageAction refresh = const PageAction("refresh", "refresh");
   static const PageAction add = const PageAction("add", "add");
   static const PageAction edit = const PageAction("edit", "edit");
-  static const PageAction delete = const PageAction("delete", "delete");
+  static const PageAction delete = const PageAction("delete", "delete", true);
   static const PageAction compare = const PageAction("compare", "compare");
   static const PageAction tag = const PageAction("tag", "label");
   static const PageAction restore = const PageAction("restore","restore");
@@ -12,5 +12,8 @@ class PageAction {
 
   final String icon;
   final String name;
-  const PageAction(this.name, this.icon);
+  final bool confirm;
+  const PageAction(this.name, this.icon, [this.confirm = false]);
+
+  String toString() => "Page Action: $name";
 }

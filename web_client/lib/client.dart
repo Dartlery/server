@@ -69,11 +69,13 @@ String getServerRoot() {
   output.write(window.location.host);
   output.write("/");
 
+
+
   // When running in dev, since I use PHPStorm, the client runs via a different
   // server than the dartalog server component. This is usually on a 5-digit port,
   // which theoretically wouldn't be used ina  real deployment.
   // TODO: Figure out a cleaner way of handling this
-  if (window.location.port.length >= 5) return "http://localhost:8080/";
+  if (window.location.port.length >= 5) return "https://dartlery.darkholme.net/";//return "http://localhost:8080/";
 
   return output.toString();
 }

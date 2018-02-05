@@ -91,7 +91,7 @@ class MainApp implements OnInit, OnDestroy {
     _progressSubscription = _pageControl.progressChanged.listen(onProgressChanged);
   }
 
-  bool confirmDeleteVisible = false;
+  bool confirmActionVisible = false;
 
   User get currentUser => _auth.user.getOrDefault(null);
 
@@ -111,20 +111,20 @@ class MainApp implements OnInit, OnDestroy {
 
   ProgressEventArgs progressModel = new ProgressEventArgs();
 
+  PageAction confirmingAction;
+
   void pageActionTriggered(PageAction action) {
-    switch (action) {
-      case PageAction.delete:
-        confirmDeleteVisible = true;
-        break;
-      default:
-        _pageControl.requestPageAction(action);
-        break;
+    if(action.confirm) {
+      confirmingAction = action;
+      confirmActionVisible = true;
+    } else {
+      _pageControl.requestPageAction(action);
     }
   }
 
-  void confirmDelete() {
-    confirmDeleteVisible = false;
-    _pageControl.requestPageAction(PageAction.delete);
+  void confirmAction() {
+    confirmActionVisible = false;
+    _pageControl.requestPageAction(confirmingAction);
   }
 
   Future<Null> clearAuthentication() async {
