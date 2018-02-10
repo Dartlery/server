@@ -15,6 +15,7 @@ import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 import '../src/deduplicate_shared.dart';
 import '../src/a_page.dart';
 
@@ -39,8 +40,6 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
   static const PageAction _animatePageAction =
       const PageAction("animate", "av_timer");
 
-  static const PageAction _removeAction =
-      const PageAction("remove", "remove_circle", true);
   String currentItemId;
 
   ExtensionData model;
@@ -61,7 +60,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
   Location _location;
   RouteParams _params;
 
-  StreamSubscription<PageAction> _pageActionSubscription;
+  StreamSubscription<PageActionEventArgs> _pageActionSubscription;
 
   final NumberFormat f = new NumberFormat.decimalPattern();
 
@@ -218,8 +217,8 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
     refresh();
   }
 
-  void onPageActionRequested(PageAction action) {
-    switch (action) {
+  void onPageActionRequested(PageActionEventArgs e) {
+    switch (e.action) {
       case PageAction.refresh:
         this.refresh();
         break;
@@ -229,15 +228,17 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
       case _animatePageAction:
         animatedComparison = !animatedComparison;
         break;
-      case _removeAction:
-        clearAll();
+      case clearSimilarAction:
+        if(e.value??false)
+          clearAll();
         break;
       case PageAction.delete:
-        deleteAll();
+        if(e.value??false)
+          deleteAll();
         break;
       default:
         throw new Exception(
-            action.toString() + " not implemented for this page");
+            e.action.toString() + " not implemented for this page");
     }
   }
 
@@ -326,7 +327,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
       actions.add(PageAction.compare);
       actions.add(_animatePageAction);
       actions.add(PageAction.delete);
-      actions.add(_removeAction);
+      actions.add(clearSimilarAction);
     actions.add(PageAction.refresh);
 
     pageControl.setAvailablePageActions(actions);

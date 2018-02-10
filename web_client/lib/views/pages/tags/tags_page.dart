@@ -13,6 +13,7 @@ import 'tabs/redirects_tab.dart';
 import 'tabs/replace_tab.dart';
 import '../src/a_page.dart';
 import 'package:angular_forms/angular_forms.dart';
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 
 @Component(
     selector: 'tags-page',
@@ -47,7 +48,7 @@ class TagsPage extends APage implements OnDestroy {
   api.Tag model = new api.Tag();
 
   TagList tags = new TagList();
-  StreamSubscription<PageAction> _pageActionSubscription;
+  StreamSubscription<PageActionEventArgs> _pageActionSubscription;
 
   @ViewChild("editForm")
   NgForm form;
@@ -72,15 +73,15 @@ class TagsPage extends APage implements OnDestroy {
 
   bool get noItemsFound => tags.isEmpty;
 
-  void onPageActionRequested(PageAction action) {
+  void onPageActionRequested(PageActionEventArgs e) {
     try {
-      switch (action) {
+      switch (e.action) {
         case PageAction.refresh:
           this.refresh();
           break;
         default:
           throw new Exception(
-              action.toString() + " not implemented for this page");
+              e.action.toString() + " not implemented for this page");
       }
     } catch (e, st) {
       handleException(e, st);

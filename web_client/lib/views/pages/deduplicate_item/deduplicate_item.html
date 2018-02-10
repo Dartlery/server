@@ -63,6 +63,7 @@
                     <td>
                         <confirm-button icon="delete_forever" (trigger)="deleteItem(getOtherImageId(ed))"
                                         materialTooltip="Delete right item"></confirm-button>
+                        <material-button icon [routerLink]="['DeduplicateItem',{id: getOtherImageId(ed)}]"><glyph icon="open_in_browser"></glyph></material-button>
                     </td>
                     <td>
                         <img src="{{getThumbnailFileUrl(getOtherImageId(ed))}}" /><br/>

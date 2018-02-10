@@ -17,6 +17,7 @@ import 'package:logging/logging.dart';
 import '../../controls/tag_entry_component.dart';
 import '../src/a_page.dart';
 import 'package:dartlery/views/controls/item_grid/item_grid.dart';
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 
 @Component(
     selector: 'item-browse',
@@ -54,7 +55,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
 
   StreamSubscription<String> _searchSubscription;
 
-  StreamSubscription<PageAction> _pageActionSubscription;
+  StreamSubscription<PageActionEventArgs> _pageActionSubscription;
   StreamSubscription<bool> _authChangedSubscription;
 
   List<Tag> palletTags = <Tag>[];
@@ -146,13 +147,14 @@ class TrashPage extends APage implements OnInit, OnDestroy {
     await this.refresh();
   }
 
-  void onPageActionRequested(PageAction action) {
-    switch (action) {
+  void onPageActionRequested(PageActionEventArgs e) {
+    switch (e.action) {
       case PageAction.refresh:
         this.refresh();
         break;
       case PageAction.delete:
-        this.deleteSelected();
+        if(e.value??false)
+          this.deleteSelected();
         break;
       case PageAction.openInNew:
         this.openSelectedItemsInNewWindow();
@@ -165,7 +167,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
         break;
       default:
         throw new Exception(
-            action.toString() + " not implemented for this page");
+            e.action.toString() + " not implemented for this page");
     }
   }
 

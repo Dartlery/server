@@ -10,6 +10,7 @@ import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery/views/controls/error_output.dart';
 import 'package:angular_forms/angular_forms.dart';
 import 'package:logging/logging.dart';
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 import '../src/a_page.dart';
 import "package:intl/intl_browser.dart";
 
@@ -77,21 +78,21 @@ class ImportPage extends APage implements OnInit, OnDestroy {
     refresh();
   }
 
-  StreamSubscription<PageAction> _pageActionSubscription;
+  StreamSubscription<PageActionEventArgs> _pageActionSubscription;
 
   @override
   void ngOnDestroy() {
     _pageActionSubscription.cancel();
   }
 
-  void onPageActionRequested(PageAction action) {
-    switch (action) {
+  void onPageActionRequested(PageActionEventArgs e) {
+    switch (e.action) {
       case PageAction.refresh:
         this.refresh();
         break;
       default:
         throw new Exception(
-            action.toString() + " not implemented for this page");
+            e.action.toString() + " not implemented for this page");
     }
   }
 

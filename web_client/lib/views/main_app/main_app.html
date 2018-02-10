@@ -54,7 +54,7 @@
                              class="material-drawer-button" (trigger)="drawer.toggle()">
                 <material-icon icon="menu"></material-icon>
             </material-button>
-            <span class="material-header-title">{{pageTitle}}</span>
+            <span class="material-header-title"><page-title></page-title></span>
             <div class="material-spacer"></div>
             <nav class="material-navigation">
                 <tag-entry style="width: 100%" (selectedTagsChange)="tagSearchChanged($event)"></tag-entry>
@@ -66,15 +66,12 @@
                 <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" leadingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>
             </nav>
             <nav class="material-navigation">
-                <material-button *ngFor="let a of availableActions" icon (trigger)="pageActionTriggered(a)"><glyph icon="{{a.icon}}"></glyph></material-button>
+                <page-actions></page-actions>
             </nav>
         </div>
     </header>
     <div class="progress_div">
-        <material-progress *ngIf="progressModel.show" class="fit" [indeterminate]="progressModel.indeterminate"
-                           [activeProgress]="progressModel.value" [min]="progressModel.min" [max]="progressModel.max">
-
-        </material-progress>
+        <page-progress></page-progress>
     </div>
     <div class="content">
         <router-outlet></router-outlet>
@@ -86,30 +83,4 @@
 
 <login-form [(visible)]="isLoginOpen" id="userAuthElement"></login-form>
 <item-upload [(visible)]="isUploadOpen" id="uploadElement"></item-upload>
-
-<modal [visible]="confirmActionVisible">
-    <material-dialog class="basic-dialog">
-        <h3 header>{{confirmingAction?.name}}</h3>
-        <p>
-            Are you sure you wish to {{confirmingAction?.name}}?
-        </p>
-        <div footer style="text-align: right">
-            <material-yes-no-buttons yesHighlighted
-                                     yesText="Yes" (yes)="confirmAction()"
-                                     noText="No" (no)="confirmActionVisible = false">
-            </material-yes-no-buttons>
-        </div>
-    </material-dialog>
-</modal>
-
-<modal [visible]="errorMessageVisible">
-    <material-dialog class="basic-dialog">
-        <h3 header>{{errorMessageHeader}}</h3>
-        <p>
-            {{errorMessage}}
-        </p>
-        <div footer style="text-align: right">
-            <material-button (trigger)="errorMessageVisible=false">OK</material-button>
-        </div>
-    </material-dialog>
-</modal>
+<page-messages></page-messages>

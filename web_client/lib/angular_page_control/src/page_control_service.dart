@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:angular/core.dart';
-import 'package:dartlery/data/data.dart';
+import 'package:uuid/uuid.dart';
 import 'page_action.dart';
+import 'pagination_info.dart';
+import 'page_message.dart';
 
 @Injectable()
 class PageControlService {
@@ -14,11 +16,14 @@ class PageControlService {
   final StreamController<MessageEventArgs> _messageController =
       new StreamController<MessageEventArgs>.broadcast();
 
+  final StreamController<ResponseEventArgs> _responseController =
+    new StreamController<ResponseEventArgs>.broadcast();
+
   final StreamController<String> _pageTitleController =
       new StreamController<String>.broadcast();
 
-  final StreamController<PageAction> _pageActionController =
-      new StreamController<PageAction>.broadcast();
+  final StreamController<PageActionEventArgs> _pageActionController =
+      new StreamController<PageActionEventArgs>.broadcast();
 
   final StreamController<List<PageAction>> _availablePageActionController =
       new StreamController<List<PageAction>>.broadcast();
@@ -27,23 +32,29 @@ class PageControlService {
 
   Stream<ProgressEventArgs> get progressChanged => _progressController.stream;
 
-  Stream<PageAction> get pageActionRequested => _pageActionController.stream;
+  Stream<PageActionEventArgs> get pageActionRequested => _pageActionController.stream;
 
   Stream<String> get pageTitleChanged => _pageTitleController.stream;
 
   Stream<MessageEventArgs> get messageSent => _messageController.stream;
 
+  Stream<ResponseEventArgs> get responseSent => _responseController.stream;
+
   Stream<List<PageAction>> get availablePageActionsSet =>
       _availablePageActionController.stream;
 
-  void requestPageAction(PageAction action) {
-    switch (action) {
+  void requestPageAction(PageActionEventArgs e) {
+    switch (e.action) {
       case PageAction.search:
         throw new Exception("Use the search() function");
       default:
-        this._pageActionController.add(action);
+        this._pageActionController.add(e);
         break;
     }
+  }
+
+  void sendResponse(ResponseEventArgs e) {
+    this._responseController.add(e);
   }
 
   Stream<PaginationInfo> get paginationChanged => _paginationController.stream;
@@ -96,8 +107,12 @@ class PageControlService {
     setPageTitle("");
   }
 
-  void sendMessage(String title, String message) {
-    _messageController.add(new MessageEventArgs(title, message));
+
+  String sendMessage(PageMessage message) {
+    Uuid uuid = new Uuid();
+    String id = uuid.v1();
+    _messageController.add(new MessageEventArgs(message, id));
+    return id;
   }
 
   void clearProgress() {
@@ -133,9 +148,24 @@ class PageControlService {
 }
 
 class MessageEventArgs {
-  final String title;
-  final String message;
-  MessageEventArgs(this.title, this.message);
+  final PageMessage message;
+  final String id;
+  MessageEventArgs(this.message, this.id);
+}
+
+class ResponseEventArgs<T> {
+  final PageMessage originalMessage;
+  final String id;
+  final T value;
+
+  ResponseEventArgs(this.originalMessage, this.id, this.value);
+}
+
+class PageActionEventArgs {
+  final PageAction action;
+  final dynamic value;
+
+  PageActionEventArgs(this.action, {this.value = null});
 }
 
 class ProgressEventArgs {

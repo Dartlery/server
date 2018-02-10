@@ -7,7 +7,7 @@ import 'package:dartlery/services/services.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:meta/meta.dart';
 import 'package:angular_forms/angular_forms.dart';
-
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 import 'a_page.dart';
 
 abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
@@ -17,7 +17,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   dynamic model;
 
-  StreamSubscription<PageAction> _pageActionSubscription;
+  StreamSubscription<PageActionEventArgs> _pageActionSubscription;
 
   @protected
   final ApiService api;
@@ -97,9 +97,9 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
     //refresh();
   }
 
-  void onPageActionRequested(PageAction action) {
+  void onPageActionRequested(PageActionEventArgs e) {
     try {
-      switch (action) {
+      switch (e.action) {
         case PageAction.refresh:
           this.refresh();
           break;
@@ -110,7 +110,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
           break;
         default:
           throw new Exception(
-              action.toString() + " not implemented for this page");
+              e.action.toString() + " not implemented for this page");
       }
     } catch (e, st) {
       handleException(e, st);

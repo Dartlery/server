@@ -20,6 +20,7 @@ import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 
 import '../src/a_page.dart';
 import '../src/deduplicate_shared.dart';
@@ -42,16 +43,13 @@ import '../src/deduplicate_shared.dart';
 class DeduplicatePage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("DeduplicatePage");
 
-  static const PageAction _removeAction =
-      const PageAction("remove", "remove_circle", true);
-
   ApiService _api;
   Router _router;
   AuthenticationService _auth;
   Location _location;
   RouteParams _params;
 
-  StreamSubscription<PageAction> _pageActionSubscription;
+  StreamSubscription<PageActionEventArgs> _pageActionSubscription;
 
   List<ItemComparison> selectedItems = <ItemComparison>[];
 
@@ -156,20 +154,24 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     refresh();
   }
 
-  void onPageActionRequested(PageAction action) {
-    switch (action) {
+  void onPageActionRequested(PageActionEventArgs e) {
+    switch (e.action) {
       case PageAction.refresh:
         this.refresh();
         break;
-      case _removeAction:
-        this.clearSelected(this.selectedItems);
+      case clearSimilarAction:
+        if(e.value??false) {
+          this.clearSelected(this.selectedItems);
+        }
         break;
       case PageAction.delete:
-        this.deleteAll(this.selectedItems);
+        if(e.value??false) {
+          this.deleteAll(this.selectedItems);
+        }
         break;
       default:
         throw new Exception(
-            action.toString() + " not implemented for this page");
+            e.action.toString() + " not implemented for this page");
     }
   }
 
@@ -211,7 +213,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
 
     if (selectedItems.length > 0) {
       actions.add(PageAction.delete);
-      actions.add(_removeAction);
+      actions.add(clearSimilarAction);
     }
     actions.add(PageAction.refresh);
 

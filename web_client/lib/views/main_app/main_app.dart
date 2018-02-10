@@ -9,7 +9,7 @@ import 'package:dartlery/api/api.dart';
 import 'package:dartlery/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/login_form_component.dart';
-import 'package:dartlery/views/controls/paginator_component.dart';
+import 'package:dartlery/angular_page_control/src/paginator_component.dart';
 import 'package:dartlery/views/controls/item_upload_component.dart';
 import 'package:dartlery/views/pages/pages.dart';
 import 'package:dartlery_shared/global.dart';
@@ -17,6 +17,7 @@ import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
 import 'package:dartlery/data/data.dart';
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 
 @Component(
     selector: 'main-app',
@@ -36,6 +37,7 @@ import 'package:dartlery/data/data.dart';
       ItemUploadComponent,
       PaginatorComponent,
       commonControls,
+      pageControlComponents
     ],
     providers: const [
       FORM_PROVIDERS,
@@ -61,71 +63,40 @@ class MainApp implements OnInit, OnDestroy {
   bool isLoginOpen = false;
   bool isUploadOpen = false;
 
-  final List<PageAction> availableActions = <PageAction>[];
-
   bool showSearchBar = false;
 
   bool userIsModerator = false;
   bool userIsAdmin = false;
 
-  StreamSubscription<String> _pageTitleSubscription;
   StreamSubscription<String> _searchSubscription;
-  StreamSubscription<List> _pageActionsSubscription;
-  StreamSubscription<MessageEventArgs> _messageSubscription;
   StreamSubscription<Null> _loginRequestSubscription;
-  StreamSubscription<ProgressEventArgs> _progressSubscription;
 
-  String _pageTitleOverride = "";
 
   String query = "";
 
   MainApp(this._auth, this._location, this._router, this._pageControl) {
-    _pageTitleSubscription =
-        _pageControl.pageTitleChanged.listen(onPageTitleChanged);
     _loginRequestSubscription =
         _auth.loginPrompted.listen(promptForAuthentication);
     _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
-    _pageActionsSubscription =
-        _pageControl.availablePageActionsSet.listen(onPageActionsSet);
-    _messageSubscription = _pageControl.messageSent.listen(onMessageSent);
-    _progressSubscription = _pageControl.progressChanged.listen(onProgressChanged);
   }
-
-  bool confirmActionVisible = false;
 
   User get currentUser => _auth.user.getOrDefault(null);
 
-  String get pageTitle {
-    if (isNotNullOrWhitespace(_pageTitleOverride)) {
-      return _pageTitleOverride;
-    } else {
-      return appName;
-    }
-  }
 
   bool get showSearch => availableActions.contains(PageAction.search);
+
+  final List<PageAction> availableActions = <PageAction>[];
 
   bool get userLoggedIn {
     return _auth.isAuthenticated;
   }
 
-  ProgressEventArgs progressModel = new ProgressEventArgs();
 
   PageAction confirmingAction;
 
-  void pageActionTriggered(PageAction action) {
-    if(action.confirm) {
-      confirmingAction = action;
-      confirmActionVisible = true;
-    } else {
-      _pageControl.requestPageAction(action);
-    }
-  }
 
-  void confirmAction() {
-    confirmActionVisible = false;
-    _pageControl.requestPageAction(confirmingAction);
-  }
+
+
 
   Future<Null> clearAuthentication() async {
     await _auth.clear();
@@ -134,15 +105,19 @@ class MainApp implements OnInit, OnDestroy {
 
   @override
   void ngOnDestroy() {
-    _pageTitleSubscription.cancel();
+    _pageActionsSubscription.cancel();
     _loginRequestSubscription.cancel();
     _searchSubscription.cancel();
-    _pageActionsSubscription.cancel();
-    _progressSubscription.cancel();
   }
+
+  StreamSubscription<List> _pageActionsSubscription;
+
 
   @override
   Future<Null> ngOnInit() async {
+    _pageActionsSubscription =
+        _pageControl.availablePageActionsSet.listen(onPageActionsSet);
+
     try {
       await _auth.evaluateAuthentication();
     } on DetailedApiRequestError catch (e, st) {
@@ -154,15 +129,12 @@ class MainApp implements OnInit, OnDestroy {
       }
     }
   }
-
   void onPageActionsSet(List<PageAction> actions) {
     this.availableActions.clear();
     this.availableActions.addAll(actions);
   }
 
-  void onPageTitleChanged(String title) {
-    this._pageTitleOverride = title;
-  }
+
 
   void onSearchChanged(String query) {
     this.query = query;
@@ -190,15 +162,6 @@ class MainApp implements OnInit, OnDestroy {
     ]);
   }
 
-  bool errorMessageVisible = false;
-  String errorMessageHeader = "Error";
-  String errorMessage = "Error message";
-
-  void onMessageSent(MessageEventArgs e) {
-    this.errorMessage = e.message;
-    this.errorMessageHeader = e.title;
-    this.errorMessageVisible = true;
-  }
 
   bool sideNavOpen = false;
 
@@ -206,7 +169,5 @@ class MainApp implements OnInit, OnDestroy {
     sideNavOpen = !sideNavOpen;
   }
 
-  void onProgressChanged(ProgressEventArgs e) {
-    this.progressModel = e;
-  }
+
 }

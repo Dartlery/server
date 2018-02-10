@@ -14,9 +14,9 @@
                 <material-button icon [routerLink]="['DeduplicateItem',{id: comparison.primaryId}]"><glyph icon="open_in_browser"></glyph></material-button>
             </td>
             <td>
-                <confirm-button icon="remove_circle" orientation="horizontal"
+                <confirm-button icon="clear_all" orientation="horizontal"
                                 (trigger)="clearSimilarity(comparison)"
-                                materialTooltip="Leave items unchanged and remove duplicate indicators"></confirm-button>
+                                materialTooltip="Leave items unchanged and clear duplicate indicators"></confirm-button>
             </td>
         </tr>
     </table>

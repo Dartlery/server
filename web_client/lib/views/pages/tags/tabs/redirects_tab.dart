@@ -10,6 +10,7 @@ import 'package:dartlery/views/controls/common_controls.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 
 import '../../../src/a_api_error_thing.dart';
 
@@ -45,7 +46,7 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
   final ApiService _api;
   final PageControlService _pageControl;
 
-  StreamSubscription<PageAction> _pageActionSubscription;
+  StreamSubscription<PageActionEventArgs> _pageActionSubscription;
 
   final List<TagInfo> redirects = new List<TagInfo>();
 
@@ -100,15 +101,15 @@ class RedirectsTab extends AApiErrorThing implements OnInit, OnDestroy {
         _pageControl.pageActionRequested.listen(onPageActionRequested);
   }
 
-  void onPageActionRequested(PageAction action) {
+  void onPageActionRequested(PageActionEventArgs e) {
     try {
-      switch (action) {
+      switch (e.action) {
         case PageAction.refresh:
           this.refresh();
           break;
         default:
           throw new Exception(
-              action.toString() + " not implemented for this page");
+              e.action.toString() + " not implemented for this page");
       }
     } catch (e, st) {
       handleException(e, st);

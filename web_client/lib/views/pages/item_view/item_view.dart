@@ -17,6 +17,7 @@ import 'package:dartlery/views/controls/error_output.dart';
 import 'package:logging/logging.dart';
 import '../src/a_page.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 
 @Component(
     selector: 'item-view',
@@ -55,7 +56,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
 
   String itemId;
 
-  StreamSubscription<PageAction> _pageActionSubscription;
+  StreamSubscription<PageActionEventArgs> _pageActionSubscription;
 
   ItemViewPage(PageControlService pageControl, this._api, this._auth,
       this._router, this._params, this._location, this._searchService)
@@ -84,17 +85,18 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
     _pageActionSubscription.cancel();
   }
 
-  void onPageActionRequested(PageAction action) {
-    switch (action) {
+  void onPageActionRequested(PageActionEventArgs e) {
+    switch (e.action) {
       case PageAction.refresh:
         this.refresh();
         break;
       case PageAction.delete:
-        delete();
+        if(e.value??false)
+          delete();
         break;
       default:
         throw new Exception(
-            action.toString() + " not implemented for this page");
+            e.action.toString() + " not implemented for this page");
     }
   }
 

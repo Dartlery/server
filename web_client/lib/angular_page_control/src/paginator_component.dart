@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
-import 'package:dartlery/data/data.dart';
-import 'package:dartlery/services/services.dart';
 import 'package:logging/logging.dart';
+import 'pagination_info.dart';
+import 'page_control_service.dart';
 
 @Component(
     selector: 'paginator',

@@ -7,6 +7,7 @@ import 'package:dartlery/data/data.dart';
 import '../../src/a_api_error_thing.dart';
 import 'package:dartlery/api/api.dart';
 import 'dart:math';
+import 'package:dartlery/angular_page_control/angular_page_control.dart';
 import '../../src/a_view.dart';
 
 abstract class APage extends AApiErrorThing with AView {
@@ -20,7 +21,7 @@ abstract class APage extends AApiErrorThing with AView {
   set errorMessage(String message) {
     super.errorMessage = message;
     if (popupUnhandledErrors && isNotNullOrWhitespace(message))
-      pageControl.sendMessage("Error", message);
+      pageControl.sendMessage(new PageMessage("Error", message));
   }
 
 
