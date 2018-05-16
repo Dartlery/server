@@ -24,7 +24,8 @@ class ImportPathExtension extends AExtension {
           stopOnError: data["stopOnError"],
           interpretFileNames: data["interpretFileNames"],
           overrideBatchId: data["batchId"],
-          mergeExisting: data["mergeExisting"]);
+          mergeExisting: data["mergeExisting"],
+          deleteImportedFiles: data["deleteImportedFiles"]);
     } catch (e, st) {
       _log.severe(e, st);
     } finally {}
