@@ -10,7 +10,7 @@ class PageAction {
           buttons: PageMessageButtons.yesNo));
   static const PageAction compare = const PageAction("compare", "compare");
   static const PageAction tag = const PageAction("tag", "label");
-  static const PageAction restore = const PageAction("restore","restore");
+  static const PageAction restore = const PageAction("restore", "restore");
   static const PageAction openInNew =
       const PageAction("openInNew", "open_in_new");
 

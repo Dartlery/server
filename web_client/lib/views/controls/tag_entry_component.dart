@@ -18,7 +18,11 @@ import '../src/a_api_error_thing.dart';
     styles: const [''],
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives, ROUTER_DIRECTIVES],
+    directives: const <dynamic>[
+      CORE_DIRECTIVES,
+      materialDirectives,
+      ROUTER_DIRECTIVES
+    ],
     template: '''
     <div style="width: 100%;white-space: nowrap;">
     <material-chips *ngIf="showSelectedTags" style="float: left;">

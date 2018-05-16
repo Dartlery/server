@@ -18,7 +18,7 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
 @Component(
     selector: 'tags-page',
     directives: const [
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
       commonControls,
       formDirectives,
@@ -133,11 +133,12 @@ class TagsPage extends APage implements OnDestroy {
   }
 
   Future<Null> deleteSelected() async {
-    final Iterable<TagWrapper> selected = tags.where((TagWrapper tw) => tw.selected).toList();
+    final Iterable<TagWrapper> selected =
+        tags.where((TagWrapper tw) => tw.selected).toList();
     pageControl.setProgress(0, max: selected.length);
     int i = 1;
     await performApiCall(() async {
-      for(TagWrapper tag in selected) {
+      for (TagWrapper tag in selected) {
         if (tag.hasCategory) {
           await _api.tags.delete(tag.id, tag.category);
         } else {
@@ -149,7 +150,6 @@ class TagsPage extends APage implements OnDestroy {
       }
     });
     await refresh();
-
   }
 
   Future<Null> deleteTag(TagWrapper tag) async {
@@ -176,7 +176,7 @@ class TagsPage extends APage implements OnDestroy {
       if (isNullOrWhitespace(tagQuery)) {
         data = await _api.tags.getAllTagInfo();
       } else {
-        if(!showRedirects)
+        if (!showRedirects)
           data = await _api.tags.search(tagQuery, redirects: false);
         else
           data = await _api.tags.search(tagQuery);

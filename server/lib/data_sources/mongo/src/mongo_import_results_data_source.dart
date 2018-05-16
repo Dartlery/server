@@ -32,7 +32,9 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
 
   Future<Null> clear(String batchId, [bool everything = false]) async {
     if (!everything) {
-      await deleteFromDb(where.eq(batchIdField, batchId).nin(resultField, ["error", "warning"]));
+      await deleteFromDb(where
+          .eq(batchIdField, batchId)
+          .nin(resultField, ["error", "warning"]));
     } else {
       await deleteFromDb(where.eq(batchIdField, batchId));
     }
@@ -51,9 +53,11 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
     return output;
   }
 
-  Future<PaginatedData<ImportResult>> get(String batchId, {int page: 0, int perPage}) async {
-    return await getPaginatedFromDb(
-        where.eq(batchIdField, batchId).sortBy(timestampField, descending: true));
+  Future<PaginatedData<ImportResult>> get(String batchId,
+      {int page: 0, int perPage}) async {
+    return await getPaginatedFromDb(where
+        .eq(batchIdField, batchId)
+        .sortBy(timestampField, descending: true));
   }
 
   @override

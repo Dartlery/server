@@ -48,7 +48,7 @@ class ItemModel extends AIdBasedModel<Item> {
   DateFormat downloadNameDateFormat = new DateFormat('yMdHms');
 
   Future<Null> adjustAll(Iterable<Item> items) async {
-    for(Item i in items) {
+    for (Item i in items) {
       await performAdjustments(i);
     }
   }
@@ -135,7 +135,6 @@ class ItemModel extends AIdBasedModel<Item> {
     await itemDataSource.setTrashStatus(id, false);
   }
 
-
   @override
   Future<String> delete(String id) async {
     await validateDeletePrivileges(id);
@@ -182,18 +181,16 @@ class ItemModel extends AIdBasedModel<Item> {
   Future<List<int>> generatePdfThumbnail(String originalFile) async {
     _log.fine("generatePdfThumbnail start");
     final Directory tempFolder =
-    await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
+        await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
     final String tempfile = path.join(tempFolder.path, "thumbnail.png");
     try {
       String command = "convert";
-      final List<String> args = <String>[
-          '${originalFile}[0]',
-          tempfile];
-      if(Platform.isWindows) {
+      final List<String> args = <String>['${originalFile}[0]', tempfile];
+      if (Platform.isWindows) {
         args.insert(0, command);
         command = "magick";
       }
-      final ProcessResult result = await Process.run(command,args);
+      final ProcessResult result = await Process.run(command, args);
       if (result.exitCode != 0) {
         throw new Exception(
             "Error while generating PDF thumbnail: ${result.stderr
@@ -210,11 +207,10 @@ class ItemModel extends AIdBasedModel<Item> {
     }
   }
 
-
   Future<List<int>> generatePdfMontage(String originalFile) async {
     _log.fine("generatePdfThumbnail start");
     final Directory tempFolder =
-    await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
+        await Directory.systemTemp.createTemp("dartlery_imagemagick_output");
     final String tempfile = path.join(tempFolder.path, "thumbnail.png");
     try {
       String command = "montage";
@@ -232,16 +228,14 @@ class ItemModel extends AIdBasedModel<Item> {
         "'#000000'",
         tempfile
       ];
-      if(Platform.isWindows) {
+      if (Platform.isWindows) {
         args.insert(0, command);
         command = "magick";
       }
 
-
       final ProcessResult result = await Process.run(command, args);
       if (result.exitCode != 0) {
-        throw new Exception(
-            "Error while generating PDF montage: ${result.stderr
+        throw new Exception("Error while generating PDF montage: ${result.stderr
                 .toString()}");
       }
       return await getFileData(tempfile);
@@ -288,8 +282,7 @@ class ItemModel extends AIdBasedModel<Item> {
 
   @override
   Future<Item> getById(String uuid, {bool bypassAuthentication: false}) async {
-    if(!bypassAuthentication)
-      await validateGetPrivileges();
+    if (!bypassAuthentication) await validateGetPrivileges();
 
     final Item output =
         await super.getById(uuid, bypassAuthentication: bypassAuthentication);
@@ -409,7 +402,10 @@ class ItemModel extends AIdBasedModel<Item> {
   }
 
   Future<PaginatedIdData<Item>> getVisible(
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
+      {int page: 0,
+      int perPage: defaultPerPage,
+      DateTime cutoffDate,
+      bool inTrash: false}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -417,8 +413,12 @@ class ItemModel extends AIdBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetAllPrivileges();
-    final PaginatedData<Item> output =await dataSource.getVisiblePaginated(this.currentUserId,
-        page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: inTrash);
+    final PaginatedData<Item> output = await dataSource.getVisiblePaginated(
+        this.currentUserId,
+        page: page,
+        perPage: perPage,
+        cutoffDate: cutoffDate,
+        inTrash: inTrash);
 
     await adjustAll(output.data);
 
@@ -435,14 +435,16 @@ class ItemModel extends AIdBasedModel<Item> {
     }
     await validateGetPrivileges();
 
-
-    final PaginatedData<Item> output =await dataSource.getVisiblePaginated(this.currentUserId,
-        page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: true);
+    final PaginatedData<Item> output = await dataSource.getVisiblePaginated(
+        this.currentUserId,
+        page: page,
+        perPage: perPage,
+        cutoffDate: cutoffDate,
+        inTrash: true);
     await adjustAll(output.data);
 
     return output;
   }
-
 
   Future<Item> merge(String targetItemId, String sourceItemId,
       {bool bypassAuthentication: false, bool moveToTrash: true}) async {
@@ -476,28 +478,36 @@ class ItemModel extends AIdBasedModel<Item> {
       await tagDataSource.incrementTagCount(diff.both, -1);
     }
 
-    final Item output =(await itemDataSource.getById(targetItemId)).first;
+    final Item output = (await itemDataSource.getById(targetItemId)).first;
     await performAdjustments(output);
     return output;
   }
 
   Future<List<Item>> getRandom(
-      {List<Tag> filterTags, int perPage: defaultPerRandomPage, bool imagesOnly: false}) async {
+      {List<Tag> filterTags,
+      int perPage: defaultPerRandomPage,
+      bool imagesOnly: false}) async {
     await validateSearchPrivileges();
 
-    if(filterTags!=null) {
+    if (filterTags != null) {
       filterTags = await _tagModel.handleTags(filterTags);
     }
 
-    final List<Item> output =await  itemDataSource.getVisibleRandom(this.currentUserId,
-        perPage: perPage, filterTags: filterTags, imagesOnly: imagesOnly);
+    final List<Item> output = await itemDataSource.getVisibleRandom(
+        this.currentUserId,
+        perPage: perPage,
+        filterTags: filterTags,
+        imagesOnly: imagesOnly);
 
     await adjustAll(output);
     return output;
   }
 
   Future<PaginatedIdData<Item>> searchVisible(List<Tag> tags,
-      {int page: 0, int perPage: defaultPerPage, DateTime cutoffDate, bool inTrash: false}) async {
+      {int page: 0,
+      int perPage: defaultPerPage,
+      DateTime cutoffDate,
+      bool inTrash: false}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -508,8 +518,8 @@ class ItemModel extends AIdBasedModel<Item> {
 
     await _tagModel.handleTags(tags);
 
-
-    final PaginatedData<Item> output =await dataSource.searchVisiblePaginated(this.currentUserId, tags,
+    final PaginatedData<Item> output = await dataSource.searchVisiblePaginated(
+        this.currentUserId, tags,
         page: page, perPage: perPage, cutoffDate: cutoffDate, inTrash: inTrash);
     await adjustAll(output.data);
 
@@ -567,7 +577,8 @@ class ItemModel extends AIdBasedModel<Item> {
     await super.validateFields(item, fieldErrors);
 
     if (isNullOrWhitespace(existingId)) {
-      if ((item.fileData == null || item.fileData.length == 0)&&isNullOrWhitespace(item.filePath)) {
+      if ((item.fileData == null || item.fileData.length == 0) &&
+          isNullOrWhitespace(item.filePath)) {
         fieldErrors["file"] = "Required";
       }
     }
@@ -638,7 +649,8 @@ class ItemModel extends AIdBasedModel<Item> {
         _log.fine("Is animatable image MIME type");
         try {
           _log.fine("Decoding animation");
-          final image.Animation anim = image.decodeAnimation(await item.getFileDataSafely());
+          final image.Animation anim =
+              image.decodeAnimation(await item.getFileDataSafely());
           _log.fine("Animation decoded");
           if (anim.length > 1) {
             _log.fine("Has more than one frame, marking as video");
@@ -690,7 +702,7 @@ class ItemModel extends AIdBasedModel<Item> {
           rethrow;
         }
       }
-    } else if(mime==MimeTypes.pdf) {
+    } else if (mime == MimeTypes.pdf) {
       originalImage = image.decodePng(await generatePdfMontage(originalFile));
     } else {
       throw new InvalidInputException("MIME type not supported: $mime");
@@ -714,8 +726,9 @@ class ItemModel extends AIdBasedModel<Item> {
       }
 
       try {
-        if(mime==MimeTypes.pdf) {
-          originalImage = image.decodePng(await generatePdfThumbnail(originalFile));
+        if (mime == MimeTypes.pdf) {
+          originalImage =
+              image.decodePng(await generatePdfThumbnail(originalFile));
         }
 
         filesWritten.add(await _createAndSaveThumbnail(originalImage, item.id));
@@ -733,7 +746,7 @@ class ItemModel extends AIdBasedModel<Item> {
     // Some images fool the image library's method for identifying image types,
     // so we manually help it out with the two formats know to have issues.
     final List<int> fileData = await item.getFileDataSafely();
-    switch(item.mime) {
+    switch (item.mime) {
       case MimeTypes.png:
         return image.decodePng(fileData);
       case MimeTypes.gif:
@@ -748,11 +761,10 @@ class ItemModel extends AIdBasedModel<Item> {
   Future<Null> _handleFileUpload(Item item) async {
     _log.fine("_handleFileUpload start");
 
-    if(item.fileData==null) {
-      if(isNullOrWhitespace(item.filePath))
+    if (item.fileData == null) {
+      if (isNullOrWhitespace(item.filePath))
         throw new Exception(("No file data or file path specified"));
     }
-
 
     _log.fine("Generating file hash...");
     item.id = await item.calculateHash();
@@ -790,19 +802,19 @@ class ItemModel extends AIdBasedModel<Item> {
     }
   }
 
-  Future<List<int>> _resizeImage(image.Image img, {int maxDimension: 300}) async {
+  Future<List<int>> _resizeImage(image.Image img,
+      {int maxDimension: 300}) async {
     image.Image thumbnail;
     if (img.width < img.height) {
       thumbnail = image.copyResize(img, maxDimension, -1, image.AVERAGE);
     } else {
       final double newWidth = img.width * (maxDimension / img.height);
 
-      thumbnail = image.copyResize(img, newWidth.floor(), maxDimension, image.AVERAGE);
+      thumbnail =
+          image.copyResize(img, newWidth.floor(), maxDimension, image.AVERAGE);
     }
     return image.encodeJpg(thumbnail, quality: jpegQuality);
   }
-
-
 
   Future<File> _writeBytes(String path, List<int> bytes,
       {bool deleteExisting: false}) async {

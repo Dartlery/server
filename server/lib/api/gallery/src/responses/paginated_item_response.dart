@@ -8,11 +8,10 @@ class PaginatedItemResponse extends PaginatedResponse<String> {
 
   List<Tag> queryTags;
 
-  PaginatedItemResponse.fromPaginatedData(
-      PaginatedData<String> data)
+  PaginatedItemResponse.fromPaginatedData(PaginatedData<String> data)
       : super.fromPaginatedData(data);
 
   PaginatedItemResponse.convertPaginatedData(
-      PaginatedData data, String conversion(dynamic item)):
-  super.convertPaginatedData(data, conversion);
+      PaginatedData data, String conversion(dynamic item))
+      : super.convertPaginatedData(data, conversion);
 }

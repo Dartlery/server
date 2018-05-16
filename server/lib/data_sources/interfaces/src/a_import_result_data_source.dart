@@ -8,6 +8,7 @@ abstract class AImportResultsDataSource extends ADataSource {
   static final Logger _log = new Logger('AImportResultsDataSource');
 
   Future<Null> record(ImportResult data);
-  Future<PaginatedData<ImportResult>> get(String batchId, {int page: 0, int perPage});
+  Future<PaginatedData<ImportResult>> get(String batchId,
+      {int page: 0, int perPage});
   Future<Null> clear(String batchId, [bool everything = false]);
 }

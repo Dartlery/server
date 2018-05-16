@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:html';
 
@@ -14,7 +13,11 @@ import '../page_action.dart';
     styles: const [''],
     styleUrls: const [''],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives, ROUTER_DIRECTIVES],
+    directives: const <dynamic>[
+      CORE_DIRECTIVES,
+      materialDirectives,
+      ROUTER_DIRECTIVES
+    ],
     template: '''
             <material-progress *ngIf="progressModel.show" class="fit" [indeterminate]="progressModel.indeterminate"
                            [activeProgress]="progressModel.value" [min]="progressModel.min" [max]="progressModel.max">
@@ -29,13 +32,14 @@ class PageProgressComponent implements OnInit, OnDestroy {
 
   StreamSubscription<ProgressEventArgs> _progressSubscription;
 
-
   PageProgressComponent(this._pageControl);
 
   @override
   Future<Null> ngOnInit() async {
-    _progressSubscription = _pageControl.progressChanged.listen(onProgressChanged);
+    _progressSubscription =
+        _pageControl.progressChanged.listen(onProgressChanged);
   }
+
   @override
   void ngOnDestroy() {
     _progressSubscription.cancel();
@@ -44,5 +48,4 @@ class PageProgressComponent implements OnInit, OnDestroy {
   void onProgressChanged(ProgressEventArgs e) {
     this.progressModel = e;
   }
-
 }

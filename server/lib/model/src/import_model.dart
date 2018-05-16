@@ -9,13 +9,13 @@ import 'package:dartlery/tools.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
+import 'package:option/option.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqljocky/sqljocky.dart';
 
-import 'a_model.dart';
+import 'a_id_based_model.dart';
 import 'item_model.dart';
 import 'tag_category_model.dart';
-import 'a_id_based_model.dart';
 
 class ImportModel extends AIdBasedModel<ImportBatch> {
   static final Logger _log = new Logger('ImportModel');
@@ -28,10 +28,8 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
 
   final RegExp fileNameTagsRegexp = new RegExp(r"^\d+ \- (.+)$");
 
-  final RegExp tagSplitterRegExp = new RegExp("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
-
-  @override
-  AImportBatchDataSource get dataSource => _importBatchDataSource;
+  final RegExp tagSplitterRegExp =
+      new RegExp("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
 
   ImportModel(
       this.itemModel,
@@ -43,34 +41,41 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
       : super(userDataSource);
 
   @override
+  AImportBatchDataSource get dataSource => _importBatchDataSource;
+
+  @override
   Logger get loggerImpl => _log;
-
-
-  Future<String> createBatch(String source) async {
-    final ImportBatch importBatch = new ImportBatch();
-    importBatch.source = "shimmie";
-    importBatch.timestamp = new DateTime.now();
-    await _importBatchDataSource.create(importBatch);
-    return importBatch.id;
-  }
 
   Future<Null> clearResults(String batchId, [bool everything = false]) async {
     await validateDeletePrivileges();
-    if(everything) {
+    if (everything) {
       await this.delete(batchId);
     }
     await _importResultsDataSource.clear(batchId, everything);
   }
 
+  Future<String> createBatch(String source, {String id = null}) async {
+    final ImportBatch importBatch = new ImportBatch();
+    importBatch.source = source;
+    importBatch.timestamp = new DateTime.now();
+    if (id != null) importBatch.id = id;
+
+    await _importBatchDataSource.create(importBatch);
+    return importBatch.id;
+  }
+
   Future<String> enqueueImportFromPath(String path,
-      {bool interpretFileNames: false, bool stopOnError: false, bool mergeExisting: false}) async {
+      {bool interpretFileNames: false,
+      bool stopOnError: false,
+      bool mergeExisting: false,
+      bool deleteImportedFiles: false}) async {
     await validateUpdatePrivilegeRequirement();
 
-    if(isNullOrWhitespace(path)) {
+    if (isNullOrWhitespace(path)) {
       throw new ArgumentError.notNull("path");
     }
     final Directory dir = new Directory(path);
-    if(!dir.existsSync()) {
+    if (!dir.existsSync()) {
       throw new ArgumentError("path not found");
     }
 
@@ -82,6 +87,7 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
     data["stopOnError"] = stopOnError;
     data["batchId"] = batchId;
     data["mergeExisting"] = mergeExisting;
+    data["deleteImportedFiles"] = deleteImportedFiles;
     await _backgroundQueueDataSource
         .addToQueue(ImportPathExtension.pluginIdStatic, data, priority: 10);
     return batchId;
@@ -90,37 +96,45 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
   Future<PaginatedData<ImportResult>> getBatchResults(String batchId,
       {int page: 0, int perPage: defaultPerPage}) async {
     await validateGetPrivileges();
-    return await _importResultsDataSource.get(batchId, page: page, perPage: perPage);
+    return await _importResultsDataSource.get(batchId,
+        page: page, perPage: perPage);
   }
 
   Future<Null> importFromPath(String path,
       {bool interpretFileNames: false,
       bool stopOnError: false,
       String overrideBatchId: null,
-      bool mergeExisting: false}) async {
-
+      bool mergeExisting: false,
+      bool deleteImportedFiles: false}) async {
     String batchId = overrideBatchId;
     if (isNullOrWhitespace(batchId)) {
-      batchId = await createBatch("shimmie");
+      batchId = await createBatch("path");
+    } else {
+      final Option<ImportBatch> result =
+          await _importBatchDataSource.getById(batchId);
+      if (result.isEmpty) {
+        await createBatch("path", id: batchId);
+      }
     }
     try {
       final TagList tagList = new TagList();
 
-      await _importFromFolderRecursive(batchId, new Directory(path),
-          tagList, interpretFileNames, stopOnError, mergeExisting);
+      await _importFromFolderRecursive(batchId, new Directory(path), tagList,
+          interpretFileNames, stopOnError, mergeExisting,deleteImportedFiles );
     } finally {
       await _importBatchDataSource.markBatchFinished(batchId);
       _log.info("Path import end");
     }
   }
 
-  Future<Null> importFromShimmie(String imagePath, String mysqlHost, String mysqlUser, String mysqlPassword, String mysqlDb,
-      {int startAt: -1, bool stopOnError: false, bool interpretTagCategories: true, bool mergeExisting: true}) async {
+  Future<Null> importFromShimmie(String imagePath, String mysqlHost,
+      String mysqlUser, String mysqlPassword, String mysqlDb,
+      {int startAt: -1,
+      bool stopOnError: false,
+      bool interpretTagCategories: true,
+      bool mergeExisting: true}) async {
     final ConnectionPool pool = new ConnectionPool(
-        host: mysqlHost,
-        user: mysqlUser,
-        password: mysqlPassword,
-        db: mysqlDb);
+        host: mysqlHost, user: mysqlUser, password: mysqlPassword, db: mysqlDb);
 
     final int batchSize = 100;
     int lastId = startAt;
@@ -167,8 +181,7 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
               if (interpretTagCategories && tagText.contains(":")) {
                 tag.category = tagText.substring(0, tagText.indexOf(":"));
                 tag.id = tagText.substring(tagText.indexOf(":") + 1);
-                if (isNullOrWhitespace(tag.id))
-                  continue;
+                if (isNullOrWhitespace(tag.id)) continue;
               } else {
                 tag.id = tagText;
               }
@@ -219,27 +232,28 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
     for (Match m in tagSplitterRegExp.allMatches(input)) {
       if (isNotNullOrWhitespace(m.group(1))) {
         output.add(m.group(1));
-      } else if (isNotNullOrWhitespace(m.group(2))){
+      } else if (isNotNullOrWhitespace(m.group(2))) {
         output.add(m.group(2));
       } else {
         output.add(m.group(0));
       }
-
     }
     return output;
   }
 
-  Future<Null> _createItem(Item newItem, ImportResult result, bool mergeExisting) async {
+  Future<Null> _createItem(
+      Item newItem, ImportResult result, bool mergeExisting) async {
     try {
       await itemModel.create(newItem, bypassAuthentication: true);
       result.itemId = newItem.id;
       _log.info("Imported new file ${result.itemId}");
       result.result = "added";
     } on DuplicateItemException catch (e, st) {
-      if(mergeExisting) {
+      if (mergeExisting) {
         _log.info("Item already exists, merging");
         final TagList newTags = new TagList.from(newItem.tags);
-        final Item existingItem = await itemModel.getById(newItem.id, bypassAuthentication: true);
+        final Item existingItem =
+            await itemModel.getById(newItem.id, bypassAuthentication: true);
         result.itemId = existingItem.id;
         final TagList existingTags = new TagList.from(existingItem.tags);
         existingTags.addAll(newTags);
@@ -251,7 +265,7 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
         result.itemId = newItem.id;
         result.result = "skipped";
       }
-    } catch (e, st) {
+    } catch (e) {
       result.itemId = newItem.id;
       rethrow;
     }
@@ -264,9 +278,9 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
       bool interpretFileNames,
       bool stopOnError,
       bool mergeExisting,
+      bool deleteImportedFiles,
       {String autoCategory}) async {
     await for (FileSystemEntity entity in currentDirectory.list()) {
-
       if (entity is Directory) {
         final TagList newTagList = new TagList.from(parentTags);
         final String dirName = path.basename(entity.path);
@@ -274,18 +288,20 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
         String newAutoCategory;
         for (String tagString in _breakDownTagString(dirName)) {
           final Tag newTag = Tag.parse(tagString);
-          if(isNullOrWhitespace(newTag.id)) {
+          if (isNullOrWhitespace(newTag.id)) {
             newAutoCategory = newTag.category;
             continue;
           }
-          if(isNotNullOrWhitespace(autoCategory)&&isNullOrWhitespace(newTag.category)) {
+          if (isNotNullOrWhitespace(autoCategory) &&
+              isNullOrWhitespace(newTag.category)) {
             newTag.category = autoCategory;
           }
           newTagList.add(newTag);
         }
 
         await _importFromFolderRecursive(batchId, entity, newTagList,
-            interpretFileNames, stopOnError, mergeExisting, autoCategory:  newAutoCategory);
+            interpretFileNames, stopOnError, mergeExisting, deleteImportedFiles,
+            autoCategory: newAutoCategory);
       } else if (entity is File) {
         final ImportResult result = new ImportResult();
         result.batchId = batchId;
@@ -307,9 +323,10 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
           //newItem.fileData = await getFileData(entity.path);
           newItem.fileName = path.basename(entity.path);
           dynamic extension = path.extension(entity.path);
-          if(isNullOrWhitespace(extension)) {
-            final dynamic mime = await mediaMimeResolver.getMimeTypeForFile(entity.path);
-            if(MimeTypes.extensions.containsKey(mime)) {
+          if (isNullOrWhitespace(extension)) {
+            final dynamic mime =
+                await mediaMimeResolver.getMimeTypeForFile(entity.path);
+            if (MimeTypes.extensions.containsKey(mime)) {
               extension = MimeTypes.extensions[mime];
             } else {
               throw new Exception("Unrecognized mime type: $mime");
@@ -320,6 +337,16 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
           newItem.extension = extension;
           await _createItem(newItem, result, mergeExisting);
           _log.info("Imported file ${entity.path}");
+          if(deleteImportedFiles) {
+            try {
+              // Successful import, delete file
+              await entity.delete();
+              _log.fine("Deleted file ${result.fileName}");
+            } catch (e, st) {
+              _log.warning(
+                  "Unable to delete file after import: ${result.fileName}");
+            }
+          }
         } catch (e, st) {
           _log.severe(e, st);
           result.result = "error";
@@ -337,7 +364,7 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
   Future<Null> _recordResult(ImportResult result) async {
     result.timestamp = new DateTime.now();
     //if (isNullOrWhitespace(result.id)) throw new ArgumentError("ID is missing");
-    if(isNullOrWhitespace(result.batchId))
+    if (isNullOrWhitespace(result.batchId))
       throw new ArgumentError.notNull("batchId");
     if (isNullOrWhitespace(result.result))
       throw new ArgumentError("Result is missing");
@@ -347,7 +374,7 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
       result.thumbnailCreated = f.existsSync();
     }
     await _importResultsDataSource.record(result);
-    await _importBatchDataSource.incrementImportCount(result.batchId, result.result);
-
+    await _importBatchDataSource.incrementImportCount(
+        result.batchId, result.result);
   }
 }

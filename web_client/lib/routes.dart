@@ -21,13 +21,13 @@ const Route trashRoute = const Route(
     path: '/trash',
     name: "Trash",
     component: TrashPage,
-    data: const <String,dynamic>{"trash":true});
+    data: const <String, dynamic>{"trash": true});
 
 const Route trashPageRoute = const Route(
     path: '/trash/:$pageRouteParameter',
     name: "TrashPage",
     component: TrashPage,
-    data: const <String,dynamic>{"trash":true});
+    data: const <String, dynamic>{"trash": true});
 
 const String idRouteParameter = "id";
 

@@ -29,7 +29,7 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
       'package:angular_components/src/components/app_layout/layout.scss.css'
     ],
     directives: const [
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       ROUTER_DIRECTIVES,
       materialDirectives,
       pageDirectives,
@@ -71,7 +71,6 @@ class MainApp implements OnInit, OnDestroy {
   StreamSubscription<String> _searchSubscription;
   StreamSubscription<Null> _loginRequestSubscription;
 
-
   String query = "";
 
   MainApp(this._auth, this._location, this._router, this._pageControl) {
@@ -82,7 +81,6 @@ class MainApp implements OnInit, OnDestroy {
 
   User get currentUser => _auth.user.getOrDefault(null);
 
-
   bool get showSearch => availableActions.contains(PageAction.search);
 
   final List<PageAction> availableActions = <PageAction>[];
@@ -91,12 +89,7 @@ class MainApp implements OnInit, OnDestroy {
     return _auth.isAuthenticated;
   }
 
-
   PageAction confirmingAction;
-
-
-
-
 
   Future<Null> clearAuthentication() async {
     await _auth.clear();
@@ -111,7 +104,6 @@ class MainApp implements OnInit, OnDestroy {
   }
 
   StreamSubscription<List> _pageActionsSubscription;
-
 
   @override
   Future<Null> ngOnInit() async {
@@ -129,12 +121,11 @@ class MainApp implements OnInit, OnDestroy {
       }
     }
   }
+
   void onPageActionsSet(List<PageAction> actions) {
     this.availableActions.clear();
     this.availableActions.addAll(actions);
   }
-
-
 
   void onSearchChanged(String query) {
     this.query = query;
@@ -162,12 +153,9 @@ class MainApp implements OnInit, OnDestroy {
     ]);
   }
 
-
   bool sideNavOpen = false;
 
   void navBarIconClicked() {
     sideNavOpen = !sideNavOpen;
   }
-
-
 }

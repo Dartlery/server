@@ -184,8 +184,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     sb.match(fullNameField, ".*${escapeAll(query)}.*",
         multiLine: false, caseInsensitive: true);
 
-    if(redirects!=null) {
-      if(redirects) {
+    if (redirects != null) {
+      if (redirects) {
         sb.exists(redirectField);
       } else {
         sb.notExists(redirectField);
@@ -201,14 +201,17 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   @override
   Future<PaginatedData<TagInfo>> searchPaginated(String query,
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: true, bool redirects: null}) async {
+      {int page: 0,
+      int perPage: defaultPerPage,
+      bool countAsc: true,
+      bool redirects: null}) async {
     final SelectorBuilder sb = where.match(
         fullNameField, ".*${escapeAll(query)}.*",
         multiLine: false, caseInsensitive: true);
 
     if (countAsc != null) sb.sortBy(countField, descending: !countAsc);
-    if(redirects!=null) {
-      if(redirects) {
+    if (redirects != null) {
+      if (redirects) {
         sb.exists(redirectField);
       } else {
         sb.notExists(redirectField);
@@ -257,8 +260,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
 
   SelectorBuilder _createTagCriteria(String id, String category,
       {String fieldPrefix = ""}) {
-    if (isNotNullOrWhitespace(fieldPrefix))
-      fieldPrefix = "$fieldPrefix.";
+    if (isNotNullOrWhitespace(fieldPrefix)) fieldPrefix = "$fieldPrefix.";
 
     final SelectorBuilder select = where.match(
         "$fieldPrefix$idField", "^${escapeAll(id)}\$",

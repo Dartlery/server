@@ -34,8 +34,7 @@ class UserModel extends AIdBasedModel<User> {
       fieldErrors["name"] = "Required";
     }
 
-    if (isNullOrWhitespace(existingId) ||
-        !isNullOrWhitespace(user.password)) {
+    if (isNullOrWhitespace(existingId) || !isNullOrWhitespace(user.password)) {
       _validatePassword(fieldErrors, user.password);
     }
     if (isNullOrWhitespace(user.type)) {

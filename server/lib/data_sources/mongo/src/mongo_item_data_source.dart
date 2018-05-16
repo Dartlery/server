@@ -173,18 +173,24 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   Future<List<Item>> getVisibleRandom(String userUuid,
       {List<Tag> filterTags,
       int perPage: defaultPerRandomPage,
-      bool inTrash: false, bool imagesOnly: false}) async {
+      bool inTrash: false,
+      bool imagesOnly: false}) async {
     final List<Map> matchers = [
       {inTrashField: inTrash}
     ];
 
-    if(filterTags!=null) {
-      final List tagIds = new List.from(filterTags.map((Tag t) => t.internalId));
-      matchers.add({tagsField: {$all: tagIds}});
+    if (filterTags != null) {
+      final List tagIds =
+          new List.from(filterTags.map((Tag t) => t.internalId));
+      matchers.add({
+        tagsField: {$all: tagIds}
+      });
     }
-    if(imagesOnly) {
+    if (imagesOnly) {
       matchers.add({videoField: false});
-      matchers.add({mimeField: {$in: MimeTypes.imageTypes}});
+      matchers.add({
+        mimeField: {$in: MimeTypes.imageTypes}
+      });
     }
 
     return await collectionWrapper<List<Item>>((DbCollection col) async {

@@ -37,11 +37,11 @@ export 'src/exceptions/setup_required_exception.dart';
 export 'src/db_logging_handler.dart';
 export 'src/settings.dart';
 
-
 final String rootDirectory = Directory.current.path;
 String serverRoot, serverApiRoot;
 
-final String setupLockFilePath = path.join(rootDirectory, dataPath, "setup.lock");
+final String setupLockFilePath =
+    path.join(rootDirectory, dataPath, "setup.lock");
 
 bool _setupDisabled = false;
 
@@ -127,7 +127,6 @@ class Server {
           useHeaderBytesForContentType: true,
           contentTypeResolver: mediaMimeResolver);
       // TODO: Submit patch to the static handler project to allow overriding the mime resolver
-
 
       _apiServer.addApi(this.galleryApi);
       _apiServer.addApi(this.feedApi);
@@ -253,32 +252,31 @@ class Server {
     return new Some<Principal>(new Principal(user.get().id));
   }
 
-  static Server createInstance(String connectionString, {String instanceUuid, String dataPath = null}) {
+  static Server createInstance(String connectionString,
+      {String instanceUuid, String dataPath = null}) {
     final ModuleInjector parentInjector =
         createModelModuleInjector(connectionString);
 
     final ModuleInjector injector = new ModuleInjector(<Module>[
       GalleryApi.injectorModules,
       FeedApi.injectorModules,
-      new Module()
-        ..bind(DbLoggingHandler)
-        ..bind(Server)
+      new Module()..bind(DbLoggingHandler)..bind(Server)
     ], parentInjector);
 
     final DbLoggingHandler dbLoggingHandler = injector.get(DbLoggingHandler);
     Logger.root.onRecord.listen(dbLoggingHandler);
-    
+
     final Server server = injector.get(Server);
     server.instanceUuid = instanceUuid ?? generateUuid();
     server.connectionString = connectionString;
     server.injector = injector;
 
-    if(dataPath==null) {
-      server.dataPath = join(rootDirectory, hostedFilesPath);;
+    if (dataPath == null) {
+      server.dataPath = join(rootDirectory, hostedFilesPath);
+      ;
     } else {
       server.dataPath = dataPath;
     }
-
 
     return server;
   }

@@ -4,6 +4,7 @@ import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery/client.dart';
 import 'dart:html' as html;
+
 abstract class AView {
   String formatTag(Tag t) => TagWrapper.formatTag(t);
   String tagToQueryString(Tag t) => TagWrapper.createQueryStringForTag(t);

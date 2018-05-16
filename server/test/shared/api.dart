@@ -57,7 +57,8 @@ Future<Server> setUpServer() async {
   try {
     final OptionsFile optionsFile = new OptionsFile('test/test.options');
     connectionString =
-        optionsFile.getString("connection_string", connectionString) + "_$serverUuid";
+        optionsFile.getString("connection_string", connectionString) +
+            "_$serverUuid";
   } on FileSystemException {}
 
   await _nukeDatabase(connectionString);

@@ -156,8 +156,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
     pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       reset();
-      if (isNotNullOrWhitespace(id))
-        model = await itemApi.getById(id);
+      if (isNotNullOrWhitespace(id)) model = await itemApi.getById(id);
       selectedId = id;
       await selectItemInternal(id);
     }, after: () async {

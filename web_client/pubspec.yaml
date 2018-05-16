@@ -22,7 +22,7 @@ dependencies:
   logging_handlers: ^0.8.0
   option: ^1.2.0
   _discoveryapis_commons: ^0.1.3
-  mime: ^0.9.3
+  mime: 0.9.5
 
   angular_image_compare:
     #path: ../../angular_image_compare

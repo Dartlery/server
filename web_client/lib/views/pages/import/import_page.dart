@@ -34,17 +34,20 @@ class ImportPage extends APage implements OnInit, OnDestroy {
   final ApiService _api;
   final AuthenticationService _auth;
 
-  final SelectionOptions<ImportBatch> batchOptions = new SelectionOptions<ImportBatch>([]);
+  final SelectionOptions<ImportBatch> batchOptions =
+      new SelectionOptions<ImportBatch>([]);
 
   final SelectionModel<ImportBatch> batchSelection =
-  new SelectionModel<ImportBatch>.withList();
+      new SelectionModel<ImportBatch>.withList();
 
   void onSelectionChanged(dynamic test) {
     batch = batchSelection.selectedValues.first;
     refresh();
   }
 
-  String get batchSelectedText => batchSelection.selectedValues.isEmpty ? "Select Batch" : batchRenderer(batchSelection.selectedValues.first);
+  String get batchSelectedText => batchSelection.selectedValues.isEmpty
+      ? "Select Batch"
+      : batchRenderer(batchSelection.selectedValues.first);
 
   final ItemRenderer<ImportBatch> batchRenderer =
       (ImportBatch item) => item.timestamp.toString();
@@ -59,13 +62,12 @@ class ImportPage extends APage implements OnInit, OnDestroy {
 
   ImportBatch batch;
 
-  ImportPage(PageControlService pageControl, this._api, this._auth,
-      Router router)
+  ImportPage(
+      PageControlService pageControl, this._api, this._auth, Router router)
       : super(_auth, router, pageControl) {
     pageControl.setPageTitle("Import");
     pageControl.setAvailablePageActions([PageAction.refresh]);
     batchSelection.selectionChanges.listen(onSelectionChanged);
-
   }
 
   @override
@@ -99,8 +101,7 @@ class ImportPage extends APage implements OnInit, OnDestroy {
   bool refreshing = false;
   Future<Null> refresh() async {
     try {
-      if(refreshing)
-        return;
+      if (refreshing) return;
       refreshing = true;
       pageControl.setIndeterminateProgress();
       await performApiCall(() async {
@@ -109,16 +110,14 @@ class ImportPage extends APage implements OnInit, OnDestroy {
         batchOptions.optionGroups.clear();
         batches.addAll(await _api.import.getImportBatches());
 
-
-        final OptionGroup<ImportBatch> batchGroup = new OptionGroup<
-            ImportBatch>(batches);
+        final OptionGroup<ImportBatch> batchGroup =
+            new OptionGroup<ImportBatch>(batches);
         batchOptions.optionGroups.add(batchGroup);
-
 
         if (batch != null) {
           results.addAll(
               (await _api.import.getImportBatchResults(batch.id)).items);
-            this.batch = batches.firstWhere((ImportBatch b) => b.id==batch.id);
+          this.batch = batches.firstWhere((ImportBatch b) => b.id == batch.id);
         }
       }, after: () async {
         pageControl.clearProgress();
@@ -129,8 +128,7 @@ class ImportPage extends APage implements OnInit, OnDestroy {
   }
 
   Future<Null> clearSuccessResults() async {
-    if (batch == null)
-      return;
+    if (batch == null) return;
     await performApiCall(() async {
       await _api.import.clearResults(batch.id);
     });
@@ -138,8 +136,7 @@ class ImportPage extends APage implements OnInit, OnDestroy {
   }
 
   Future<Null> clearAllResults() async {
-    if (batch == null)
-      return;
+    if (batch == null) return;
     await performApiCall(() async {
       await _api.import.clearResults(batch.id, everything: true);
     });
@@ -153,11 +150,10 @@ class ImportPage extends APage implements OnInit, OnDestroy {
       final String id = response.data;
       await refresh();
       batches.forEach((ImportBatch ib) {
-        if(ib.id==id) {
+        if (ib.id == id) {
           batchSelection.select(ib);
         }
       });
     });
   }
-
 }

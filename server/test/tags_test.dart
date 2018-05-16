@@ -69,7 +69,8 @@ void main() {
     });
 
     test("search()", () async {
-      final PaginatedResponse<TagInfo> tags = await api.tags.search(testTagName);
+      final PaginatedResponse<TagInfo> tags =
+          await api.tags.search(testTagName);
 
       expect(tags.totalCount, 2);
       expect(tags.items.first == initialCategoryTag, isTrue);
@@ -176,12 +177,13 @@ void main() {
 
     test("Search redirect", () async {
       final TagList searchTags = new TagList.from([initialTag]);
-      final PaginatedItemResponse response = await api.items.searchVisible(searchTags.toJson());
+      final PaginatedItemResponse response =
+          await api.items.searchVisible(searchTags.toJson());
       expect(response, isNotNull);
       expect(response.totalCount, 1);
       expect(response.queryTags, isNotNull);
       expect(response.queryTags.length, 1);
-      expect(response.queryTags.first==initialCategoryTag, isTrue);
+      expect(response.queryTags.first == initialCategoryTag, isTrue);
     });
 
     test("Chained redirect", () async {

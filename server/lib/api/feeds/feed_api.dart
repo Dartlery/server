@@ -8,13 +8,8 @@ import '../api_tools.dart';
 import 'package:dartlery_shared/global.dart';
 export 'src/resources/item_feed_resource.dart';
 
-
-@ApiClass(
-    version: feedApiVersion,
-    name: feedApiName,
-    description: 'Feeds API')
+@ApiClass(version: feedApiVersion, name: feedApiName, description: 'Feeds API')
 class FeedApi {
-
   @ApiResource()
   final ItemFeedResource items;
 

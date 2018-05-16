@@ -23,7 +23,7 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
     selector: 'item-view',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
@@ -41,7 +41,8 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   Item model = new Item();
 
   bool get isImage {
-    return MimeTypes.imageTypes.contains(model?.mime)||model?.mime==MimeTypes.pdf;
+    return MimeTypes.imageTypes.contains(model?.mime) ||
+        model?.mime == MimeTypes.pdf;
   }
 
   bool get isVideo {
@@ -72,8 +73,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
   @override
   void ngOnInit() {
     final String _id = _params.get(idRouteParameter);
-    if (isNullOrWhitespace(_id))
-      throw new Exception("Empty ID passed");
+    if (isNullOrWhitespace(_id)) throw new Exception("Empty ID passed");
     itemId = _id;
     _pageActionSubscription =
         pageControl.pageActionRequested.listen(onPageActionRequested);
@@ -91,8 +91,7 @@ class ItemViewPage extends APage implements OnInit, OnDestroy {
         this.refresh();
         break;
       case PageAction.delete:
-        if(e.value??false)
-          delete();
+        if (e.value ?? false) delete();
         break;
       default:
         throw new Exception(

@@ -160,12 +160,12 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
         this.refresh();
         break;
       case clearSimilarAction:
-        if(e.value??false) {
+        if (e.value ?? false) {
           this.clearSelected(this.selectedItems);
         }
         break;
       case PageAction.delete:
-        if(e.value??false) {
+        if (e.value ?? false) {
           this.deleteAll(this.selectedItems);
         }
         break;
@@ -186,9 +186,10 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
             orderDescending: false, perPage: 30);
         if (response.items.isNotEmpty) {
           for (ExtensionData ed in response.items) {
-            if(this.comparisons.where((ItemComparison ic) =>
-              ic.containsId(ed.primaryId)
-            ).isNotEmpty) continue;
+            if (this
+                .comparisons
+                .where((ItemComparison ic) => ic.containsId(ed.primaryId))
+                .isNotEmpty) continue;
 
             response = await _api.extensionData.getByPrimaryId(
                 "itemComparison", "similarItems", ed.primaryId,
@@ -230,12 +231,10 @@ class ItemComparison {
   String get primaryId => this.primary.primaryId;
 
   bool containsId(String id) {
-    if(this.primaryId==id)
-      return true;
+    if (this.primaryId == id) return true;
 
-    for(ExtensionData ed in comparisons) {
-      if(ed.secondaryId==id||ed.primaryId==id)
-        return true;
+    for (ExtensionData ed in comparisons) {
+      if (ed.secondaryId == id || ed.primaryId == id) return true;
     }
   }
 

@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:html';
 
@@ -14,7 +13,11 @@ import '../page_message.dart';
     styles: const [''],
     styleUrls: const [''],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives, ROUTER_DIRECTIVES],
+    directives: const <dynamic>[
+      CORE_DIRECTIVES,
+      materialDirectives,
+      ROUTER_DIRECTIVES
+    ],
     template: '''
 <modal [visible]="visible">
     <material-dialog class="basic-dialog">
@@ -58,7 +61,8 @@ class PageMessageComponent implements OnInit, OnDestroy {
 
   void buttonPress(int index) {
     visible = false;
-    ResponseEventArgs e = new ResponseEventArgs(message, messageId, message.buttons.text[index].value);
+    ResponseEventArgs e = new ResponseEventArgs(
+        message, messageId, message.buttons.text[index].value);
     _pageControl.sendResponse(e);
   }
 }

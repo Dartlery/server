@@ -1,4 +1,4 @@
-FROM google/dart
+FROM google/dart:1
 
 RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list && apt-get -q update && apt-get install --no-install-recommends -y -q ffmpeg imagemagick ghostscript
 

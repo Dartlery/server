@@ -36,7 +36,8 @@ class ImportResource extends AResource {
                 request.path,
                 interpretFileNames: request.interpretFileNames,
                 stopOnError: request.stopOnError,
-                mergeExisting: request.mergeExisting))
+                mergeExisting: request.mergeExisting,
+                deleteImportedFiles: request.deleteImportedFiles))
             .toString());
       });
 
@@ -54,10 +55,11 @@ class ImportResource extends AResource {
 
   @ApiMethod(method: HttpMethod.get, path: '$_apiPath/{batchId}/results/')
   Future<PaginatedImportResultsResponse> getImportBatchResults(String batchId,
-      {int page: 0, int perPage: defaultPerPage}) =>
+          {int page: 0, int perPage: defaultPerPage}) =>
       catchExceptionsAwait<PaginatedImportResultsResponse>(() async {
         return new PaginatedImportResultsResponse.fromPaginatedData(
-            await _importModel.getBatchResults(batchId, page: page, perPage: perPage));
+            await _importModel.getBatchResults(batchId,
+                page: page, perPage: perPage));
       });
 
   @ApiMethod(method: HttpMethod.delete, path: '$_apiPath/{batchId}/')

@@ -14,7 +14,7 @@ import 'package:angular_forms/angular_forms.dart';
 @Component(
     selector: 'login-form',
     styleUrls: const ["../shared.css"],
-    directives: const [CORE_DIRECTIVES,formDirectives,materialDirectives],
+    directives: const [CORE_DIRECTIVES, formDirectives, materialDirectives],
     providers: const [materialProviders],
     template: '''<modal [visible]="visible">
       <material-dialog class="basic-dialog">

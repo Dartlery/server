@@ -6,7 +6,6 @@ import 'package:rpc/rpc.dart';
 class PaginatedTagResponse extends PaginatedResponse<TagInfo> {
   PaginatedTagResponse();
 
-  PaginatedTagResponse.fromPaginatedData(
-      PaginatedData<TagInfo> data)
+  PaginatedTagResponse.fromPaginatedData(PaginatedData<TagInfo> data)
       : super.fromPaginatedData(data);
 }

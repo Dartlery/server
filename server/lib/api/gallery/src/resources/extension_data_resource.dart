@@ -25,7 +25,8 @@ class ExtensionDataResource extends AResource {
       method: HttpMethod.get,
       path: '$extensionDataApiPath/{extensionId}/{key}/')
   Future<PaginatedExtensionDataResponse> get(String extensionId, String key,
-      {bool orderByValues: false, bool orderByIds: false,
+      {bool orderByValues: false,
+      bool orderByIds: false,
       bool orderDescending: false,
       int page: 0,
       int perPage: defaultPerPage}) async {

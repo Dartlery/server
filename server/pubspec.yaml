@@ -32,7 +32,7 @@ dependencies:
 #  version: any
   sqljocky:
     git: https://github.com/mnordine/sqljocky.git
-  mime: ^0.9.3
+  mime: 0.9.5
   hex: ^0.1.1
   exif: ^0.1.1
   image_hash:

@@ -17,9 +17,9 @@ class MongoImportBatchDataSource extends AMongoIdDataSource<ImportBatch>
   static final Logger _log = new Logger('MongoImportBatchDataSource');
 
   static const String timestampField = "timestamp";
-  static const String importCountsField= "importCounts";
-  static const String sourceField= "source";
-  static const String finishedField= "finished";
+  static const String importCountsField = "importCounts";
+  static const String sourceField = "source";
+  static const String finishedField = "finished";
 
   MongoImportBatchDataSource(MongoDbConnectionPool pool) : super(pool);
 
@@ -53,14 +53,14 @@ class MongoImportBatchDataSource extends AMongoIdDataSource<ImportBatch>
   @override
   Future<Null> incrementImportCount(String batchId, String result) async {
     final Option<Map> opt = await genericFindOne(where.eq(idField, batchId));
-    if(opt.isEmpty) {
+    if (opt.isEmpty) {
       throw new NotFoundException("Batch not found: $batchId");
     }
     final Map doc = opt.first;
-    if(doc[importCountsField]==null) {
-      doc[importCountsField] = <String,num>{};
+    if (doc[importCountsField] == null) {
+      doc[importCountsField] = <String, num>{};
     }
-    if(!doc[importCountsField].containsKey(result)) {
+    if (!doc[importCountsField].containsKey(result)) {
       doc[importCountsField][result] = 0;
     }
     doc[importCountsField][result]++;
@@ -69,6 +69,7 @@ class MongoImportBatchDataSource extends AMongoIdDataSource<ImportBatch>
 
   @override
   Future<Null> markBatchFinished(String batchId) async {
-    await genericUpdate(where.eq(idField, batchId), modify.set(finishedField, true));
+    await genericUpdate(
+        where.eq(idField, batchId), modify.set(finishedField, true));
   }
 }

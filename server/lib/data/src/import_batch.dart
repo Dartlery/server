@@ -6,14 +6,13 @@ import 'package:rpc/rpc.dart';
 class ImportBatch extends AIdData {
   DateTime timestamp;
   String source;
-  Map<String, int> importCounts = <String,int>{};
+  Map<String, int> importCounts = <String, int>{};
   bool finished = false;
 
-  ImportBatch(): super.withValues(generateUuid());
+  ImportBatch() : super.withValues(generateUuid());
 
   void addImportResult(String result) {
-    if(!importCounts.containsKey(result))
-      importCounts[result] = 0;
+    if (!importCounts.containsKey(result)) importCounts[result] = 0;
 
     importCounts[result]++;
   }

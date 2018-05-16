@@ -23,7 +23,8 @@ Future<Null> main(List<String> args) async {
   parser.addOption("sourceDb");
   parser.addOption("sourceDbUser");
   parser.addOption("sourceDbPassword");
-  parser.addOption('mongo', abbr: 'm', defaultsTo: '"mongodb://localhost:27017/dartlery"');
+  parser.addOption('mongo',
+      abbr: 'm', defaultsTo: '"mongodb://localhost:27017/dartlery"');
 
   final ArgResults argResults = parser.parse(args);
 
@@ -31,7 +32,6 @@ Future<Null> main(List<String> args) async {
 
   // TODO: Set up a function for loading settings data
   final String connectionString = argResults["mongo"];
-
 
   final ModuleInjector parentInjector =
       createModelModuleInjector(connectionString);
@@ -55,10 +55,21 @@ Future<Null> main(List<String> args) async {
 
       if (isNotNullOrWhitespace(argResults["start"])) {
         final int start = int.parse(argResults["start"]);
-        await importModel.importFromShimmie(argResults["path"],argResults["sourceDbHost"],argResults["sourceDbUser"],argResults["sourceDbPassword"],argResults["sourceDb"],
-            stopOnError: stopOnError, startAt: start);
+        await importModel.importFromShimmie(
+            argResults["path"],
+            argResults["sourceDbHost"],
+            argResults["sourceDbUser"],
+            argResults["sourceDbPassword"],
+            argResults["sourceDb"],
+            stopOnError: stopOnError,
+            startAt: start);
       } else {
-        await importModel.importFromShimmie(argResults["path"],argResults["sourceDbHost"],argResults["sourceDbUser"],argResults["sourceDbPassword"],argResults["sourceDb"],
+        await importModel.importFromShimmie(
+            argResults["path"],
+            argResults["sourceDbHost"],
+            argResults["sourceDbUser"],
+            argResults["sourceDbPassword"],
+            argResults["sourceDb"],
             stopOnError: stopOnError);
       }
       break;

@@ -13,7 +13,7 @@ import 'package:dartlery/data/data.dart';
     selector: 'item-grid',
     providers: const [materialProviders],
     directives: const [
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
     ],
@@ -40,36 +40,38 @@ class ItemGrid extends AApiErrorThing with AView, OnDestroy {
   @override
   Logger get loggerImpl => _log;
 
-@override
-void ngOnDestroy() {
-  _keyboardSubscription.cancel();
-  _itemDroppedOnStreamController.close();
-  _selectedItemsChangedStreamController.close();
-}
+  @override
+  void ngOnDestroy() {
+    _keyboardSubscription.cancel();
+    _itemDroppedOnStreamController.close();
+    _selectedItemsChangedStreamController.close();
+  }
 
   @Input()
   List<IdWrapper> items = <IdWrapper>[];
 
-  final StreamController<ItemGridDropEventArgs> _itemDroppedOnStreamController = new StreamController<ItemGridDropEventArgs>();
+  final StreamController<ItemGridDropEventArgs> _itemDroppedOnStreamController =
+      new StreamController<ItemGridDropEventArgs>();
 
-  final StreamController<int> _selectedItemsChangedStreamController = new StreamController<int>();
+  final StreamController<int> _selectedItemsChangedStreamController =
+      new StreamController<int>();
 
   @Output()
-  Stream<int> get selectedItemsChanged => _selectedItemsChangedStreamController.stream;
+  Stream<int> get selectedItemsChanged =>
+      _selectedItemsChangedStreamController.stream;
 
   List<IdWrapper> get selectedItems =>
       items.where((IdWrapper item) => item.selected).toList();
 
   @Output()
-  Stream<ItemGridDropEventArgs> get itemDroppedOn => _itemDroppedOnStreamController.stream;
+  Stream<ItemGridDropEventArgs> get itemDroppedOn =>
+      _itemDroppedOnStreamController.stream;
 
   StreamSubscription<KeyboardEvent> _keyboardSubscription;
 
-  ItemGrid(Router router, AuthenticationService auth): super(router, auth) {
+  ItemGrid(Router router, AuthenticationService auth) : super(router, auth) {
     _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
-
   }
-
 
   void itemSelectChanged(bool checked, String id) {
     _selectedItemsChangedStreamController.add(selectedItems.length);
@@ -83,11 +85,9 @@ void ngOnDestroy() {
     _itemDroppedOnStreamController.add(e);
   }
 
-
   void allowDrop(Event ev) {
     ev.preventDefault();
   }
-
 
   void onKeyboardEvent(KeyboardEvent e) {
     if (e.keyCode == KeyCode.A && e.ctrlKey) {
@@ -96,7 +96,6 @@ void ngOnDestroy() {
       }
     }
   }
-
 }
 
 class ItemGridDropEventArgs {

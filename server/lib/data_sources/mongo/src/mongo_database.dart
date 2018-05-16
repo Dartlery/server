@@ -63,20 +63,17 @@ class MongoDatabase {
         },
         name: "BackgroundQueueIndex");
     final DbCollection output =
-    await getIdCollection(_backgroundQueueCollection);
+        await getIdCollection(_backgroundQueueCollection);
     return output;
   }
 
   Future<DbCollection> getLogCollection() async {
     await db.createIndex(_logCollection,
-        keys: {
-          MongoLogDataSource.timestampField: -1
-        },
+        keys: {MongoLogDataSource.timestampField: -1},
         name: "LogTimestampIndex",
         unique: false);
 
-    final DbCollection output =
-    db.collection(_logCollection);
+    final DbCollection output = db.collection(_logCollection);
     return output;
   }
 
@@ -110,15 +107,11 @@ class MongoDatabase {
 
   Future<DbCollection> getImportResultsCollection() async {
     await db.createIndex(_importResultsCollection,
-        keys: {
-          MongoImportResultsDataSource.timestampField: -1
-        },
+        keys: {MongoImportResultsDataSource.timestampField: -1},
         name: "ImportResultsTimestamp",
         unique: false);
     await db.createIndex(_importResultsCollection,
-        keys: {
-          MongoImportResultsDataSource.resultField: 1
-        },
+        keys: {MongoImportResultsDataSource.resultField: 1},
         name: "ImportResultsResult",
         unique: false);
     return db.collection(_importResultsCollection);
@@ -126,17 +119,11 @@ class MongoDatabase {
 
   Future<DbCollection> getImportBatchCollection() async {
     await db.createIndex(_importBatchesCollection,
-        keys: {
-          MongoImportBatchDataSource.timestampField: -1
-        },
+        keys: {MongoImportBatchDataSource.timestampField: -1},
         name: "ImportBatchesTimestamp",
         unique: true);
     await db.createIndex(_importBatchesCollection,
-        keys: {
-          idField: -1
-        },
-        name: "ImportBatchesIDIndex",
-        unique: true);
+        keys: {idField: -1}, name: "ImportBatchesIDIndex", unique: true);
     return db.collection(_importBatchesCollection);
   }
 

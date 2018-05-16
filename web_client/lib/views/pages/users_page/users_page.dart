@@ -14,7 +14,12 @@ import 'package:angular_forms/angular_forms.dart';
 
 @Component(
     selector: 'users-page',
-    directives: const [CORE_DIRECTIVES, formDirectives, materialDirectives, commonControls],
+    directives: const [
+      CORE_DIRECTIVES,
+      formDirectives,
+      materialDirectives,
+      commonControls
+    ],
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css", "users_page.css"],
     templateUrl: 'users_page.html')

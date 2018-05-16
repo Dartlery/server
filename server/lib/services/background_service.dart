@@ -27,6 +27,7 @@ class BackgroundService {
   }
 
   Future<Null> _backgroundThread() async {
+    _log.finest("_backgroundThread start");
     while (!_stop) {
       try {
         _log.info("Starting background service cycle");
@@ -35,7 +36,8 @@ class BackgroundService {
 
         while (nextItem.isNotEmpty) {
           try {
-            await _extensionService.triggerBackgroundServiceCycle(nextItem.first);
+            await _extensionService
+                .triggerBackgroundServiceCycle(nextItem.first);
           } finally {
             await _backgroundQueueDataSource.deleteItem(nextItem.first.id);
           }
@@ -45,6 +47,12 @@ class BackgroundService {
         _log.severe(e, st);
       } finally {
         await wait(milliseconds: 60000);
+        if (_stop) {
+          _log.info("End of background thread loop reached normally");
+        } else {
+          _log.warning("End of background thread loop reached abruptly");
+        }
+        _log.finest("_backgroundThread end");
       }
     }
   }

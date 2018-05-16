@@ -23,14 +23,14 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
     selector: 'item-browse',
     providers: const [materialProviders],
     directives: const [
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
       TagEntryComponent,
       ItemGrid
     ],
-    styleUrls: const ["../../shared.css",'item_browse.css'],
+    styleUrls: const ["../../shared.css", 'item_browse.css'],
     templateUrl: 'item_browse.html')
 class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemBrowseComponent");
@@ -59,8 +59,14 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   String get currentRandomRssLink => _search.getCurrentRandomFeedUrl();
 
-  ItemBrowseComponent(this._api, this._routeParams,
-      PageControlService pageControl, this._router, this._auth, this._search, this._routeData)
+  ItemBrowseComponent(
+      this._api,
+      this._routeParams,
+      PageControlService pageControl,
+      this._router,
+      this._auth,
+      this._search,
+      this._routeData)
       : super(_auth, _router, pageControl) {
     setActions();
   }
@@ -75,12 +81,12 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   Future<Null> deleteSelected() async {
     if (selectedItems.isEmpty) return;
-    pageControl.setProgress(0,max: selectedItems.length);
+    pageControl.setProgress(0, max: selectedItems.length);
     int i = 1;
     for (IdWrapper item in selectedItems) {
       await performApiCall(() async {
         await _api.items.delete(item.id);
-        pageControl.setProgress(i,max: selectedItems.length);
+        pageControl.setProgress(i, max: selectedItems.length);
         i++;
       });
     }
@@ -88,7 +94,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   }
 
   bool get viewingTrash {
-    return _routeData?.data["trash"]??false;
+    return _routeData?.data["trash"] ?? false;
   }
 
   Tag _draggingTag;
@@ -144,8 +150,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
         this.refresh();
         break;
       case PageAction.delete:
-        if(e.value??false)
-          this.deleteSelected();
+        if (e.value ?? false) this.deleteSelected();
         break;
       case PageAction.openInNew:
         this.openSelectedItemsInNewWindow();
@@ -204,7 +209,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       String routeName = itemsPageRoute.name;
       if (_routeParams.params.containsKey(pageRouteParameter)) {
         page = int.parse(_routeParams.get(pageRouteParameter) ?? '1',
-            onError: (_) => 1) -
+                onError: (_) => 1) -
             1;
       }
       if (_routeParams.params.containsKey(queryRouteParameter)) {
@@ -220,7 +225,7 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       }
 
       final PaginatedItemResponse response =
-      await _search.performSearch(page: page, inTrash: viewingTrash);
+          await _search.performSearch(page: page, inTrash: viewingTrash);
 
       selectedItems.clear();
       items.clear();
@@ -270,11 +275,10 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
 
   Future<Null> applyTagsToItem(String id, List<Tag> tags) async {
     await performApiCall(() async {
-      final TagList newTags = new TagList.fromTags(
-          await _api.items.getTagsByItemId(id));
+      final TagList newTags =
+          new TagList.fromTags(await _api.items.getTagsByItemId(id));
       newTags.addTags(tags);
       await _api.items.updateTagsForItemId(newTags.toListOfTag(), id);
     });
   }
-
 }

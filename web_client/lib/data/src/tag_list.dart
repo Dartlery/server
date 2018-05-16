@@ -57,7 +57,7 @@ class TagList extends Iterable<TagWrapper> {
     }
   }
 
-  String toJson() =>tagListToJson(this);
+  String toJson() => tagListToJson(this);
 
   @override
   Iterator<TagWrapper> get iterator => _list.iterator;
@@ -70,8 +70,7 @@ class TagList extends Iterable<TagWrapper> {
   }
 
   void addAll(Iterable<TagWrapper> tags) {
-    for(TagWrapper t in tags)
-      add(t);
+    for (TagWrapper t in tags) add(t);
   }
 
   void remove(TagWrapper tag) {
@@ -90,7 +89,7 @@ class TagList extends Iterable<TagWrapper> {
     return -1;
   }
 
-  bool containsTag(Tag t) => indexOf(new TagWrapper.fromTag(t))!=-1;
+  bool containsTag(Tag t) => indexOf(new TagWrapper.fromTag(t)) != -1;
 
   static String convertToQueryString(List<Tag> tags) {
     return tags.map((Tag t) {
@@ -101,9 +100,7 @@ class TagList extends Iterable<TagWrapper> {
   String toQueryString() => convertToQueryString(this.toListOfTags());
 
   List<Tag> toListOfTags() =>
-      new List<Tag>.from(_list.map((TagWrapper t) =>
-      t.tag
-      ));
+      new List<Tag>.from(_list.map((TagWrapper t) => t.tag));
 
   bool compare(TagList otherList) {
     for (TagWrapper tag in otherList) {

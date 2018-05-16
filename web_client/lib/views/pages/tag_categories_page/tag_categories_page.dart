@@ -13,7 +13,12 @@ import '../src/a_maintenance_page.dart';
 
 @Component(
     selector: 'collections-page',
-    directives: const [CORE_DIRECTIVES, formDirectives, materialDirectives, commonControls],
+    directives: const [
+      CORE_DIRECTIVES,
+      formDirectives,
+      materialDirectives,
+      commonControls
+    ],
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css", "tag_categories_page.css"],
     templateUrl: 'tag_categories_page.html')

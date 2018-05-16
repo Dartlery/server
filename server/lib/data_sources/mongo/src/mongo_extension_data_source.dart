@@ -44,8 +44,7 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
 
   SelectorBuilder _generateQuery(String extensionId, String key,
       String primaryId, String secondaryId, bool setNulls) {
-    if (isNullOrWhitespace(primaryId) &&
-        isNotNullOrWhitespace(secondaryId))
+    if (isNullOrWhitespace(primaryId) && isNotNullOrWhitespace(secondaryId))
       throw new ArgumentError("primaryId required if specifying a secondaryId");
 
     final SelectorBuilder query =
@@ -123,14 +122,13 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
       int perPage: defaultPerPage}) async {
     final SelectorBuilder query =
         _generateQuery(extensionId, key, primaryId, secondaryId, useNullIds);
-    if(orderByIds)
+    if (orderByIds)
       query
           .sortBy(primaryIdField, descending: orderDescending)
           .sortBy(secondaryIdField, descending: orderDescending);
-    if (orderByValues)
-      query.sortBy(valueField, descending: orderDescending);
+    if (orderByValues) query.sortBy(valueField, descending: orderDescending);
 
-    if(!orderByIds&&!orderByValues)
+    if (!orderByIds && !orderByValues)
       query.sortBy(internalIdField, descending: orderDescending);
 
     return await getPaginatedFromDb(query);

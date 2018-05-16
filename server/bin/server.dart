@@ -64,7 +64,8 @@ Future<Null> main(List<String> args) async {
     dataPath = null;
   }
 
-  final Server server = Server.createInstance(connectionString, dataPath: dataPath);
+  final Server server =
+      Server.createInstance(connectionString, dataPath: dataPath);
   server.start(ip, port);
 
   // Now we start the thread for the background service
@@ -82,9 +83,9 @@ void startBackgroundIsolate(BackgroundConfig config) {
   final ModuleInjector injector =
       createModelModuleInjector(config.connectionString);
 
-  final DbLoggingHandler dbLoggingHandler = new DbLoggingHandler(injector.get(ALogDataSource));
+  final DbLoggingHandler dbLoggingHandler =
+      new DbLoggingHandler(injector.get(ALogDataSource));
   Logger.root.onRecord.listen(dbLoggingHandler);
-
 
   final BackgroundService service = injector.get(BackgroundService);
   service.start();

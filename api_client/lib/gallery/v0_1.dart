@@ -2031,6 +2031,7 @@ class ImportBatch {
 }
 
 class ImportPathRequest {
+  core.bool deleteImportedFiles;
   core.bool interpretFileNames;
   core.bool mergeExisting;
   core.String path;
@@ -2039,6 +2040,9 @@ class ImportPathRequest {
   ImportPathRequest();
 
   ImportPathRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("deleteImportedFiles")) {
+      deleteImportedFiles = _json["deleteImportedFiles"];
+    }
     if (_json.containsKey("interpretFileNames")) {
       interpretFileNames = _json["interpretFileNames"];
     }
@@ -2056,6 +2060,9 @@ class ImportPathRequest {
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
         new core.Map<core.String, core.Object>();
+    if (deleteImportedFiles != null) {
+      _json["deleteImportedFiles"] = deleteImportedFiles;
+    }
     if (interpretFileNames != null) {
       _json["interpretFileNames"] = interpretFileNames;
     }

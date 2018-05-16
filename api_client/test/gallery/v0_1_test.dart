@@ -199,6 +199,7 @@ buildImportPathRequest() {
   var o = new api.ImportPathRequest();
   buildCounterImportPathRequest++;
   if (buildCounterImportPathRequest < 3) {
+    o.deleteImportedFiles = true;
     o.interpretFileNames = true;
     o.mergeExisting = true;
     o.path = "foo";
@@ -211,6 +212,7 @@ buildImportPathRequest() {
 checkImportPathRequest(api.ImportPathRequest o) {
   buildCounterImportPathRequest++;
   if (buildCounterImportPathRequest < 3) {
+    unittest.expect(o.deleteImportedFiles, unittest.isTrue);
     unittest.expect(o.interpretFileNames, unittest.isTrue);
     unittest.expect(o.mergeExisting, unittest.isTrue);
     unittest.expect(o.path, unittest.equals('foo'));

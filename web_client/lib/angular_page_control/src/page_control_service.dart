@@ -17,7 +17,7 @@ class PageControlService {
       new StreamController<MessageEventArgs>.broadcast();
 
   final StreamController<ResponseEventArgs> _responseController =
-    new StreamController<ResponseEventArgs>.broadcast();
+      new StreamController<ResponseEventArgs>.broadcast();
 
   final StreamController<String> _pageTitleController =
       new StreamController<String>.broadcast();
@@ -28,11 +28,13 @@ class PageControlService {
   final StreamController<List<PageAction>> _availablePageActionController =
       new StreamController<List<PageAction>>.broadcast();
 
-  final StreamController<ProgressEventArgs> _progressController = new StreamController<ProgressEventArgs>();
+  final StreamController<ProgressEventArgs> _progressController =
+      new StreamController<ProgressEventArgs>();
 
   Stream<ProgressEventArgs> get progressChanged => _progressController.stream;
 
-  Stream<PageActionEventArgs> get pageActionRequested => _pageActionController.stream;
+  Stream<PageActionEventArgs> get pageActionRequested =>
+      _pageActionController.stream;
 
   Stream<String> get pageTitleChanged => _pageTitleController.stream;
 
@@ -107,7 +109,6 @@ class PageControlService {
     setPageTitle("");
   }
 
-
   String sendMessage(PageMessage message) {
     Uuid uuid = new Uuid();
     String id = uuid.v1();
@@ -120,12 +121,17 @@ class PageControlService {
   }
 
   void setIndeterminateProgress() {
-    _progressController.add(new ProgressEventArgs()..show=true..indeterminate=true);
-
+    _progressController.add(new ProgressEventArgs()
+      ..show = true
+      ..indeterminate = true);
   }
 
   void setProgress(int value, {int min = 0, int max = 100}) {
-    _progressController.add(new ProgressEventArgs()..show=true..value=value..min=min..max=max);
+    _progressController.add(new ProgressEventArgs()
+      ..show = true
+      ..value = value
+      ..min = min
+      ..max = max);
   }
 
 //  Future<Null> performAsyncProgressLoop<T>(List<T> items, Future<dynamic> callback(T item), {bool depleting=false}) async {
@@ -170,7 +176,7 @@ class PageActionEventArgs {
 
 class ProgressEventArgs {
   bool show = false;
-  bool indeterminate= false;
+  bool indeterminate = false;
   int value = 0;
   int min = 0;
   int max = 100;

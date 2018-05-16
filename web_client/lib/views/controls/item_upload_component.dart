@@ -20,7 +20,12 @@ import 'common_controls.dart';
     selector: 'item-upload',
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES,formDirectives,materialDirectives, commonControls],
+    directives: const <dynamic>[
+      CORE_DIRECTIVES,
+      formDirectives,
+      materialDirectives,
+      commonControls
+    ],
     template: '''<modal [visible]="visible">
       <material-dialog class="basic-dialog">
           <h3 header>Upload</h3>

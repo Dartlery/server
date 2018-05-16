@@ -28,3 +28,4 @@ setup.lock
 server/files/
 server/data/
 server/tool/image_test.log
+.dart_tool/

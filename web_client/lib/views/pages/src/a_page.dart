@@ -24,8 +24,6 @@ abstract class APage extends AApiErrorThing with AView {
       pageControl.sendMessage(new PageMessage("Error", message));
   }
 
-
-
   String getViewWidthString([int offset = 0]) {
     return "${html.window.innerWidth+offset}px";
   }
@@ -34,5 +32,4 @@ abstract class APage extends AApiErrorThing with AView {
     // The top toolbar is currently permanent, so this height calculation automatically subtracts its height
     return "${html.window.innerHeight+offset-64}px";
   }
-
 }

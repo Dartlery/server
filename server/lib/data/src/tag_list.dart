@@ -14,7 +14,8 @@ class TagList extends Iterable<Tag> {
   }
 
   TagList.fromJson(String json) {
-    this.addAll(createTagListFromJson(json, (String name, String category) => new Tag.withValues(name,category)));
+    this.addAll(createTagListFromJson(json,
+        (String name, String category) => new Tag.withValues(name, category)));
   }
   String toJson() => tagListToJson(this);
 
@@ -54,7 +55,6 @@ class TagList extends Iterable<Tag> {
   bool contains(Tag t) => indexOf(t) != -1;
 }
 
-
 class TagDiff extends Diff<Tag> {
-  TagDiff(List<Tag> a, List<Tag> b): super(a,b);
+  TagDiff(List<Tag> a, List<Tag> b) : super(a, b);
 }

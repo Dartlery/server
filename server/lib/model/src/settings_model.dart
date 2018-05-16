@@ -11,7 +11,8 @@ class SettingsModel extends AModel {
 
   final ASettingsDataSource _settingsDataSource;
 
-  SettingsModel(this._settingsDataSource, AUserDataSource userDataSource): super(userDataSource);
+  SettingsModel(this._settingsDataSource, AUserDataSource userDataSource)
+      : super(userDataSource);
 
 //  Future<Map<String,String>> get() async {
 //    await validateGetPrivileges();

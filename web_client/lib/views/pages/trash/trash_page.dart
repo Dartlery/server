@@ -23,7 +23,7 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
     selector: 'item-browse',
     providers: const [materialProviders],
     directives: const [
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
@@ -153,8 +153,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
         this.refresh();
         break;
       case PageAction.delete:
-        if(e.value??false)
-          this.deleteSelected();
+        if (e.value ?? false) this.deleteSelected();
         break;
       case PageAction.openInNew:
         this.openSelectedItemsInNewWindow();

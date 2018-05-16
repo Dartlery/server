@@ -184,7 +184,8 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
     await refresh();
   }
 
-  String getOtherImageId(ExtensionData data) => DeduplicateShared.getOtherImageId(currentItemId, data);
+  String getOtherImageId(ExtensionData data) =>
+      DeduplicateShared.getOtherImageId(currentItemId, data);
 
   Future<Null> mergeItems(String sourceId, String targetId,
       {bool refresh: true}) async {
@@ -229,12 +230,10 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
         animatedComparison = !animatedComparison;
         break;
       case clearSimilarAction:
-        if(e.value??false)
-          clearAll();
+        if (e.value ?? false) clearAll();
         break;
       case PageAction.delete:
-        if(e.value??false)
-          deleteAll();
+        if (e.value ?? false) deleteAll();
         break;
       default:
         throw new Exception(
@@ -324,10 +323,10 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
   setPageActions() {
     final List<PageAction> actions = <PageAction>[];
 
-      actions.add(PageAction.compare);
-      actions.add(_animatePageAction);
-      actions.add(PageAction.delete);
-      actions.add(clearSimilarAction);
+    actions.add(PageAction.compare);
+    actions.add(_animatePageAction);
+    actions.add(PageAction.delete);
+    actions.add(clearSimilarAction);
     actions.add(PageAction.refresh);
 
     pageControl.setAvailablePageActions(actions);

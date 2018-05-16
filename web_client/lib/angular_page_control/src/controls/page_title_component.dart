@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:html';
 
@@ -14,7 +13,11 @@ import '../page_action.dart';
     styles: const [''],
     styleUrls: const [''],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives, ROUTER_DIRECTIVES],
+    directives: const <dynamic>[
+      CORE_DIRECTIVES,
+      materialDirectives,
+      ROUTER_DIRECTIVES
+    ],
     template: '{{pageTitle}}')
 class PageTitleComponent implements OnInit, OnDestroy {
   static final Logger _log = new Logger("PageTitleComponent");
@@ -29,9 +32,8 @@ class PageTitleComponent implements OnInit, OnDestroy {
 
   StreamSubscription<String> _pageTitleSubscription;
 
-
   String get pageTitle {
-    if (_pageTitleOverride?.length??0>0) {
+    if (_pageTitleOverride?.length ?? 0 > 0) {
       return _pageTitleOverride;
     } else {
       return defaultTitle;
@@ -42,15 +44,16 @@ class PageTitleComponent implements OnInit, OnDestroy {
 
   @override
   Future<Null> ngOnInit() async {
-    _pageTitleSubscription = _pageControl.pageTitleChanged.listen(onPageTitleChanged);
+    _pageTitleSubscription =
+        _pageControl.pageTitleChanged.listen(onPageTitleChanged);
   }
+
   @override
   void ngOnDestroy() {
     _pageTitleSubscription.cancel();
   }
+
   void onPageTitleChanged(String title) {
     this._pageTitleOverride = title;
   }
-
-
 }

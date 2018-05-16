@@ -16,9 +16,9 @@ import 'package:angular_forms/angular_forms.dart';
     selector: 'setup-page',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-    CORE_DIRECTIVES,
+      CORE_DIRECTIVES,
       materialDirectives,
-    formDirectives,
+      formDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
       ErrorOutputComponent

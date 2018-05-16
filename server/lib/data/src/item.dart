@@ -18,7 +18,7 @@ class Item extends AIdData {
   List<int> fileData;
   String fileName;
   String downloadName;
-  @ApiProperty(format:  "uint64")
+  @ApiProperty(format: "uint64")
   int length;
   int height;
   int width;
@@ -40,7 +40,7 @@ class Item extends AIdData {
   Item();
 
   Future<String> calculateMimeType() async {
-    if(fileData==null) {
+    if (fileData == null) {
       return await mediaMimeResolver.getMimeTypeForFile(filePath);
     } else {
       return mediaMimeResolver.getMimeType(fileData);
@@ -48,7 +48,7 @@ class Item extends AIdData {
   }
 
   Future<String> calculateHash() async {
-    if(fileData==null) {
+    if (fileData == null) {
       return await generateHashForFile(filePath);
     } else {
       return generateHash(fileData);
@@ -56,7 +56,7 @@ class Item extends AIdData {
   }
 
   Future<int> getDataLength() async {
-    if(fileData==null) {
+    if (fileData == null) {
       return await new File(filePath).length();
     } else {
       return fileData.length;
@@ -64,15 +64,14 @@ class Item extends AIdData {
   }
 
   Future<List<int>> getFileDataSafely() async {
-    if(fileData!=null) {
+    if (fileData != null) {
       return fileData;
     } else {
       return await getFileData(filePath);
     }
   }
 
-  Future<File> writeFileData(String path,
-      {bool deleteExisting: false}) async {
+  Future<File> writeFileData(String path, {bool deleteExisting: false}) async {
     final File file = new File(path);
     bool fileExists = await file.exists();
     int size = 0;
@@ -89,7 +88,7 @@ class Item extends AIdData {
       }
     }
     int newLength;
-    if(fileData==null) {
+    if (fileData == null) {
       newLength = await new File(filePath).length();
     } else {
       newLength = fileData.length;
@@ -97,12 +96,12 @@ class Item extends AIdData {
 
     if (!fileExists) {
       await file.create(recursive: true);
-      if(fileData==null) {
+      if (fileData == null) {
         final File sourceFile = new File(filePath);
         await sourceFile.copy(path);
       } else {
         final RandomAccessFile imageRaf =
-        await file.open(mode: FileMode.WRITE_ONLY);
+            await file.open(mode: FileMode.WRITE_ONLY);
         try {
           _log.fine("Writing to ${file.path}");
           await imageRaf.writeFrom(fileData);
@@ -122,5 +121,4 @@ class Item extends AIdData {
     }
     return file;
   }
-
 }

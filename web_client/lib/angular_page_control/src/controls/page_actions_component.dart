@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:html';
 
@@ -14,8 +13,13 @@ import '../page_action.dart';
     styles: const [''],
     styleUrls: const [''],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives, ROUTER_DIRECTIVES],
-    template: '<material-button *ngFor="let a of availableActions" icon (trigger)="pageActionTriggered(a)"><glyph icon="{{a.icon}}"></glyph></material-button>')
+    directives: const <dynamic>[
+      CORE_DIRECTIVES,
+      materialDirectives,
+      ROUTER_DIRECTIVES
+    ],
+    template:
+        '<material-button *ngFor="let a of availableActions" icon (trigger)="pageActionTriggered(a)"><glyph icon="{{a.icon}}"></glyph></material-button>')
 class PageActionsComponent implements OnInit, OnDestroy {
   static final Logger _log = new Logger("PageActionsComponent");
 
@@ -31,11 +35,11 @@ class PageActionsComponent implements OnInit, OnDestroy {
     _pageActionsSubscription =
         _pageControl.availablePageActionsSet.listen(onPageActionsSet);
   }
+
   @override
   void ngOnDestroy() {
     _pageActionsSubscription.cancel();
   }
-
 
   void onPageActionsSet(List<PageAction> actions) {
     this.availableActions.clear();
@@ -44,9 +48,10 @@ class PageActionsComponent implements OnInit, OnDestroy {
 
   Future<Null> pageActionTriggered(PageAction action) async {
     PageActionEventArgs e;
-    if(action.message!=null) {
+    if (action.message != null) {
       String id = _pageControl.sendMessage(action.message);
-      ResponseEventArgs response = await _pageControl.responseSent.firstWhere((ResponseEventArgs e) => e.id==id);
+      ResponseEventArgs response = await _pageControl.responseSent
+          .firstWhere((ResponseEventArgs e) => e.id == id);
       e = new PageActionEventArgs(action, value: response.value);
     } else {
       e = new PageActionEventArgs(action);

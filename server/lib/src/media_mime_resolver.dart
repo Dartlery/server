@@ -282,7 +282,6 @@ class MediaMimeResolver extends MimeTypeResolver {
           0xFF,
         ]);
 
-
     addMagicNumber(const <int>[0x43, 0x57, 0x53], MimeTypes.swf);
     addMagicNumber(const <int>[0x46, 0x57, 0x53], MimeTypes.swf);
     addMagicNumber(const <int>[0x46, 0x4C, 0x56, 0x01], MimeTypes.flv);
@@ -349,14 +348,40 @@ class MediaMimeResolver extends MimeTypeResolver {
         mask: const <int>[0xFF, 0xFF, 0xFF, 0xF0]);
 
     //25 50 44 46
-    addMagicNumber(const<int>[0x25,0x50,0x44,0x46], MimeTypes.pdf);
+    addMagicNumber(const <int>[0x25, 0x50, 0x44, 0x46], MimeTypes.pdf);
 
     // 52 49 46 46 xx xx xx xx
     // 57 45 42 50
-    addMagicNumber(const<int>[0x52,0x49,0x46,0x46, 0x00, 0x00, 0x00, 0x00,
-                              0x57, 0x45, 0x42, 0x50], MimeTypes.webp,
-    mask: const <int>[0xFF,0xFF,0xFF,0xFF, 0x00, 0x00, 0x00, 0x00,
-    0xFF, 0xFF, 0xFF, 0xFF]);
+    addMagicNumber(
+        const <int>[
+          0x52,
+          0x49,
+          0x46,
+          0x46,
+          0x00,
+          0x00,
+          0x00,
+          0x00,
+          0x57,
+          0x45,
+          0x42,
+          0x50
+        ],
+        MimeTypes.webp,
+        mask: const <int>[
+          0xFF,
+          0xFF,
+          0xFF,
+          0xFF,
+          0x00,
+          0x00,
+          0x00,
+          0x00,
+          0xFF,
+          0xFF,
+          0xFF,
+          0xFF
+        ]);
   }
 
   String getMimeType(List<int> data) {

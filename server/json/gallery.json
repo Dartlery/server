@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "f71924619ab4798c5f0f0a12136861d919421086",
+ "etag": "2b0f60342ea3d1fae98571d6d401e0342942ab54",
  "discoveryVersion": "v1",
  "id": "gallery:v0.1",
  "name": "gallery",
@@ -395,6 +395,9 @@
      "type": "boolean"
     },
     "mergeExisting": {
+     "type": "boolean"
+    },
+    "deleteImportedFiles": {
      "type": "boolean"
     }
    }

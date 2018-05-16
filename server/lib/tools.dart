@@ -30,15 +30,15 @@ String generateHash(List<int> bytes) {
 }
 
 Future<String> generateHashForFile(String path) async {
-  if (isNullOrWhitespace(path))
-    throw new ArgumentError.notNull("path");
+  if (isNullOrWhitespace(path)) throw new ArgumentError.notNull("path");
   final File f = new File(path);
   if (!f.existsSync()) throw new Exception("File not found");
   final Digest hash = await sha256.bind(f.openRead()).first;
   return hash.toString();
 }
 
-Future<Uint8List> getFileData(String path, {int maxLength:-1, int chunkSize = 100000000}) async {
+Future<Uint8List> getFileData(String path,
+    {int maxLength: -1, int chunkSize = 100000000}) async {
   final File f = new File(path);
   if (!f.existsSync()) throw new Exception("File not found");
   RandomAccessFile raf;
@@ -47,11 +47,10 @@ Future<Uint8List> getFileData(String path, {int maxLength:-1, int chunkSize = 10
     final int length = await f.length();
     final Uint8List output = new Uint8List(length);
     int toRead = length;
-    if(maxLength!=-1&&maxLength<toRead)
-      toRead = maxLength;
+    if (maxLength != -1 && maxLength < toRead) toRead = maxLength;
 
     int i = 0;
-    await for(List<int> data in f.openRead(0, toRead)) {
+    await for (List<int> data in f.openRead(0, toRead)) {
       output.setAll(i, data);
       i += data.length;
     }
@@ -72,5 +71,3 @@ String normalizeReadableId(String input) {
 
   return output;
 }
-
-

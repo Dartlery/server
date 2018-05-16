@@ -29,7 +29,6 @@ abstract class AExtensionDataSource extends ADataSource {
       int page: 0,
       int perPage});
 
-
   Future<bool> hasData(String extensionId, String key,
       {String primaryId, String secondaryId, bool useNullIds: false});
 }

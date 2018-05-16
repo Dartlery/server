@@ -7,6 +7,7 @@ import 'package:dartlery/routes.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery/client.dart';
+
 @Injectable()
 class ItemSearchService {
   // TODO: Make searching persistent
@@ -23,15 +24,16 @@ class ItemSearchService {
 
   final Map<int, List<String>> _results = new Map<int, List<String>>();
 
-  Future<PaginatedItemResponse> performSearch({int page: 0, bool inTrash: false}) async {
+  Future<PaginatedItemResponse> performSearch(
+      {int page: 0, bool inTrash: false}) async {
     PaginatedItemResponse response;
     if (_tags.isEmpty)
       response = await _api.items.getVisibleIds(page: page, inTrash: inTrash);
     else {
-      response = await _api.items.searchVisible(_tags.toJson(), page: page, inTrash: inTrash);
+      response = await _api.items
+          .searchVisible(_tags.toJson(), page: page, inTrash: inTrash);
       _tags.clear();
       _tags.addTags(response.queryTags);
-
     }
     _response = response;
     _results[page] = response.items;
@@ -149,19 +151,21 @@ class ItemSearchService {
   }
 
   String getCurrentFeedUrl() {
-    Uri url = Uri.parse(urlPath.join(getServerRoot(), apiPrefix, feedApiName, feedApiVersion,"items/"));
+    Uri url = Uri.parse(urlPath.join(
+        getServerRoot(), apiPrefix, feedApiName, feedApiVersion, "items/"));
 
-    if(_tags!=null&&_tags.isNotEmpty)
-      url = url.replace(queryParameters:{"tags":_tags.toJson()});
+    if (_tags != null && _tags.isNotEmpty)
+      url = url.replace(queryParameters: {"tags": _tags.toJson()});
 
     return url.toString();
   }
+
   String getCurrentRandomFeedUrl() {
-    Uri url = Uri.parse(urlPath.join(getServerRoot(), apiPrefix, feedApiName, feedApiVersion,"items","random/"));
+    Uri url = Uri.parse(urlPath.join(getServerRoot(), apiPrefix, feedApiName,
+        feedApiVersion, "items", "random/"));
 
-
-    if(_tags!=null&&_tags.isNotEmpty)
-      url = url.replace(queryParameters:{"tags":_tags.toJson()});
+    if (_tags != null && _tags.isNotEmpty)
+      url = url.replace(queryParameters: {"tags": _tags.toJson()});
 
     return url.toString();
   }
