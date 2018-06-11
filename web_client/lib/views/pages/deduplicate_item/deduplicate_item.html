@@ -25,17 +25,17 @@
                     <br/>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="chevron_left" (trigger)="mergeItems(secondComparisonItem.id, firstComparisonItem.id)"
+                    <confirm-button icon="chevron_left" (trigger)="mergeLeft()"
                                     materialTooltip="Merge right item into left item"></confirm-button>
                 </td>
                 <td style="width: 100px;text-align: center;">
                     {{model.value}}%
                     <confirm-button icon="remove_circle" orientation="horizontal"
-                                    (trigger)="clearSimilarity(model)"
+                                    (trigger)="clearCurrentSimilarity()"
                                     materialTooltip="Leave items unchanged and remove duplicate indicator"></confirm-button>
                 </td>
                 <td style="width: 40px;">
-                    <confirm-button icon="chevron_right" (trigger)="mergeItems(firstComparisonItem.id, secondComparisonItem.id)"
+                    <confirm-button icon="chevron_right" (trigger)="mergeRight()"
                                     materialTooltip="Merge left item into right item"></confirm-button>
                 </td>
                 <td>
@@ -57,7 +57,7 @@
     </div>
 
     <div class="similarItems">
-        <div *ngFor="let ed of otherComparisons" (mouseover)="selectComparison(ed)" [ngClass]="{'selectedItem': secondComparisonItem.id==getOtherImageId(ed)}">
+        <div *ngFor="let ed of otherComparisons; let i = index" (mouseover)="selectComparison(i)" [ngClass]="{'selectedItem': secondComparisonItem.id==getOtherImageId(ed)}">
             <table>
                 <tr>
                     <td>

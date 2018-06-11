@@ -29,16 +29,28 @@ class PageActionsComponent implements OnInit, OnDestroy {
   final List<PageAction> availableActions = <PageAction>[];
 
   PageActionsComponent(this._pageControl);
+  StreamSubscription<KeyboardEvent> _keyboardSubscription;
 
   @override
   Future<Null> ngOnInit() async {
+    _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
     _pageActionsSubscription =
         _pageControl.availablePageActionsSet.listen(onPageActionsSet);
+  }
+
+  void onKeyboardEvent(KeyboardEvent e) {
+    for(PageAction action in availableActions.where((action) => action.shortcut!=null)) {
+      if (e.ctrlKey==action.shortcutCtrl && e.altKey==action.shortcutAlt && e.shiftKey==action.shortcutShit && e.keyCode == action.shortcut) {
+        pageActionTriggered(action);
+        break;
+      }
+    }
   }
 
   @override
   void ngOnDestroy() {
     _pageActionsSubscription.cancel();
+    _keyboardSubscription.cancel();
   }
 
   void onPageActionsSet(List<PageAction> actions) {

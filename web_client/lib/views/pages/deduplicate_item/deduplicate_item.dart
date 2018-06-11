@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:async';
 
 import 'package:angular/angular.dart';
@@ -38,7 +39,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("DeduplicateItemPage");
 
   static const PageAction _animatePageAction =
-      const PageAction("animate", "av_timer");
+      const PageAction("animate", "av_timer", shortcut: KeyCode.SPACE);
 
   String currentItemId;
 
@@ -71,6 +72,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
   TagList differentTags = new TagList();
 
   int totalItems = 0;
+  StreamSubscription<KeyboardEvent> _keyboardSubscription;
 
   DeduplicateItemPage(PageControlService pageControl, this._api, this._auth,
       this._router, this._params, this._location)
@@ -135,6 +137,10 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
       }
       await refresh();
     });
+  }
+
+  Future<Null> clearCurrentSimilarity() async {
+    await clearSimilarity(model);
   }
 
   Future<Null> clearSimilarity(ExtensionData data) async {
@@ -203,16 +209,70 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
 
   @override
   void ngOnDestroy() {
+    _keyboardSubscription.cancel();
     _pageActionSubscription?.cancel();
+  }
+
+  int lastKeyHit;
+  DateTime lastKeyTime;
+  final Duration keyTimeout = new Duration(milliseconds: 1000);
+
+  Future<Null> mergeRight()  async {
+    await mergeItems(firstComparisonItem.id, secondComparisonItem.id);
+  }
+  Future<Null> mergeLeft() async {
+    await mergeItems(secondComparisonItem.id, firstComparisonItem.id);
+  }
+
+  void onKeyboardEvent(KeyboardEvent e) {
+    DateTime newKeyTime = new DateTime.now();
+
+    switch(e.keyCode) {
+      case KeyCode.UP:
+        if(currentImage==0) {
+          selectComparison(otherComparisons.length-1);
+        } else {
+          selectComparison(currentImage-1);
+        }
+        return;
+      case KeyCode.DOWN:
+        if(currentImage==(otherComparisons.length-1)) {
+          selectComparison(0);
+        } else {
+          selectComparison(currentImage+1);
+        }
+        return;
+    }
+
+    if(lastKeyTime!=null) {
+      if(e.keyCode==lastKeyHit&&(newKeyTime.difference(lastKeyTime))<keyTimeout) {
+        switch(e.keyCode) {
+          case KeyCode.RIGHT:
+            mergeRight();
+            break;
+          case KeyCode.LEFT:
+            mergeLeft();
+            break;
+          case KeyCode.K:
+            clearCurrentSimilarity();
+            break;
+        }
+      }
+    }
+
+    lastKeyHit = e.keyCode;
+    lastKeyTime = newKeyTime;
   }
 
   @override
   void ngOnInit() {
+
     final String _id = _params.get(idRouteParameter);
     currentItemId = _id;
 
     setPageActions();
 
+    _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
     _pageActionSubscription =
         pageControl.pageActionRequested.listen(onPageActionRequested);
     refresh();
@@ -258,7 +318,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
           if (response.items.isNotEmpty) {
             this.currentItemId = currentItemId;
             otherComparisons = response.items;
-            await selectComparison(response.items.first);
+            await selectComparison(0);
             return;
           }
         }
@@ -282,7 +342,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
               orderDescending: true,
               perPage: 100);
           otherComparisons = response.items;
-          await selectComparison(response.items.first);
+          await selectComparison(0);
         }
       } on DetailedApiRequestError catch (e) {
         if (e.status != 404) throw e;
@@ -292,7 +352,10 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
     });
   }
 
-  Future<Null> selectComparison(ExtensionData ed) async {
+  Future<Null> selectComparison(int index) async {
+    ExtensionData ed = otherComparisons[index];
+
+    currentImage = index;
     pageControl.setIndeterminateProgress();
     await performApiCall(() async {
       model = ed;

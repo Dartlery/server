@@ -1,3 +1,5 @@
+import 'dart:html';
+
 class PageMessage {
   final String title;
   final String message;
@@ -19,22 +21,23 @@ class PageMessageButtons {
   static const PageMessageButtons yesNo = const PageMessageButtons(
       const <PageMessageButton>[PageMessageButton.yes, PageMessageButton.no]);
 
-  final List<PageMessageButton> text;
-  const PageMessageButtons(this.text);
+  final List<PageMessageButton> buttons;
+  const PageMessageButtons(this.buttons);
 }
 
 class PageMessageButton<T> {
   static const PageMessageButton<bool> ok =
-      const PageMessageButton<bool>("OK", true);
+      const PageMessageButton<bool>("OK", true, shortcut: KeyCode.ENTER);
   static const PageMessageButton<bool> cancel =
-      const PageMessageButton<bool>("Cancel", false);
+      const PageMessageButton<bool>("Cancel", false, shortcut: KeyCode.ESC);
   static const PageMessageButton<bool> yes =
-      const PageMessageButton<bool>("Yes", true);
+      const PageMessageButton<bool>("Yes", true, shortcut: KeyCode.ENTER);
   static const PageMessageButton<bool> no =
-      const PageMessageButton<bool>("No", false);
+      const PageMessageButton<bool>("No", false, shortcut: KeyCode.ESC);
 
   final T value;
   final String text;
+  final int shortcut;
 
-  const PageMessageButton(this.text, this.value);
+  const PageMessageButton(this.text, this.value, {this.shortcut});
 }

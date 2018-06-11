@@ -36,15 +36,17 @@ dependencies:
   hex: ^0.1.1
   exif: ^0.1.1
   image_hash:
-    git: https://github.com/dartninja/image_hash.git
+    git:
+      url: https://github.com/dartninja/image_hash.git
+      ref: 16b4f42633d08760d65c8034b6fdf31e27cee9a4
 
 dev_dependencies:
   test: any
 dependency_overrides:
-  image:
-    git: https://github.com/brendan-duncan/image.git
-  rpc:
-    git: git://github.com/dart-lang/rpc.git
+#  image:
+#    git: https://github.com/brendan-duncan/image.git
+#  rpc:
+#    git: git://github.com/dart-lang/rpc.git
 #  image_hash:
 #    path: ../../image_hash/
 executables:
