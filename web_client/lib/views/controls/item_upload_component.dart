@@ -6,7 +6,7 @@ import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
-import 'package:dartlery/routes.dart';
+import 'package:dartlery/routes/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
@@ -21,7 +21,7 @@ import 'common_controls.dart';
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-      CORE_DIRECTIVES,
+      coreDirectives,
       formDirectives,
       materialDirectives,
       commonControls
@@ -64,8 +64,10 @@ class ItemUploadComponent extends AApiErrorThing {
     this.tags = event;
   }
 
+  final StreamController<bool> _visibleChangeController = new StreamController<bool>();
   @Output()
-  EventEmitter<bool> visibleChange = new EventEmitter<bool>();
+  Stream<bool> get visibleChange => _visibleChangeController.stream;
+
 
   final ApiService _api;
 
@@ -84,7 +86,7 @@ class ItemUploadComponent extends AApiErrorThing {
       processing = false;
     }
     _visible = value;
-    visibleChange.emit(_visible);
+    _visibleChangeController.add(_visible);
   }
 
   Future<Null> fileChanged(Event e) async {

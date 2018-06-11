@@ -13,6 +13,8 @@ import 'a_mongo_id_data_source.dart';
 import 'constants.dart';
 import 'mongo_tag_data_source.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class MongoItemDataSource extends AMongoIdDataSource<Item>
     with AItemDataSource {
   static final Logger _log = new Logger('MongoItemDataSource');
@@ -38,6 +40,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   final MongoTagDataSource _tagDataSource;
 
+  @inject
   MongoItemDataSource(MongoDbConnectionPool pool, this._tagDataSource)
       : super(pool);
 
@@ -258,35 +261,37 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  void updateMap(Item item, Map<String, dynamic> data) {
-    super.updateMap(item, data);
-    data[metadataField] = item.metadata;
-    data[mimeField] = item.mime;
-    data[uploadedField] = item.uploaded;
-    data[uploaderField] = item.uploader;
-    data[fileNameField] = item.fileName;
-    data[lengthField] = item.length;
-    data[extensionField] = item.extension;
-    data[sourceField] = item.source;
-    data[errorsField] = item.errors;
-    data[fullFileAvailableField] = item.fullFileAvailable;
+  void updateMap(AIdData item, Map<String, dynamic> data) {
+    if(item is Item) {
+      super.updateMap(item, data);
+      data[metadataField] = item.metadata;
+      data[mimeField] = item.mime;
+      data[uploadedField] = item.uploaded;
+      data[uploaderField] = item.uploader;
+      data[fileNameField] = item.fileName;
+      data[lengthField] = item.length;
+      data[extensionField] = item.extension;
+      data[sourceField] = item.source;
+      data[errorsField] = item.errors;
+      data[fullFileAvailableField] = item.fullFileAvailable;
 
-    data[heightField] = item.height;
-    data[widthField] = item.width;
-    data[videoField] = item.video;
-    data[audioField] = item.audio;
-    data[inTrashField] = item.inTrash;
-    data[durationField] = item.duration;
+      data[heightField] = item.height;
+      data[widthField] = item.width;
+      data[videoField] = item.video;
+      data[audioField] = item.audio;
+      data[inTrashField] = item.inTrash;
+      data[durationField] = item.duration;
 
-    if (item.tags != null) {
-      final List<dynamic> tagsList = new List<dynamic>();
-      for (Tag tag in item.tags) {
-        if (tag.internalId == null) {
-          throw new Exception("Internal ID for tag not found");
+      if (item.tags != null) {
+        final List<dynamic> tagsList = new List<dynamic>();
+        for (Tag tag in item.tags) {
+          if (tag.internalId == null) {
+            throw new Exception("Internal ID for tag not found");
+          }
+          tagsList.add(tag.internalId);
         }
-        tagsList.add(tag.internalId);
+        data[tagsField] = tagsList;
       }
-      data[tagsField] = tagsList;
     }
   }
 

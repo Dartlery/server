@@ -3,7 +3,7 @@ import 'package:angular/angular.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/api/api.dart';
 import 'api_service.dart';
-import 'package:dartlery/routes.dart';
+import 'package:dartlery/routes/routes.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery/client.dart';

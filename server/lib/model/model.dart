@@ -1,5 +1,5 @@
 import 'package:dartlery_shared/tools.dart';
-import 'package:di/di.dart';
+import 'package:dice/dice.dart';
 import 'src/user_model.dart';
 import 'src/setup_model.dart';
 //import 'src/settings_model.dart';
@@ -25,24 +25,17 @@ import 'package:dartlery/services/extension_service.dart';
 import 'package:dartlery/services/background_service.dart';
 export 'src/extension_data_model.dart';
 
-ModuleInjector createModelModuleInjector(String connectionString,
-    {ModuleInjector parent}) {
-  final Module module = new Module()
-    ..bind(UserModel)
-    ..bind(ItemModel)
-    ..bind(TagModel)
-    ..bind(TagCategoryModel)
-    ..bind(ImportModel)
-    ..bind(SetupModel)
-    ..bind(BackgroundService)
-    ..bind(ExtensionDataModel)
-    ..bind(ExtensionService);
-
-  final ModuleInjector parent =
-      createDataSourceModuleInjector(connectionString);
-  final ModuleInjector injector = new ModuleInjector([module], parent);
-
-  instantiateExtensions(injector);
-
-  return injector;
+class ModelModule extends Module {
+  @override
+  void configure() {
+    register(UserModel).asSingleton();
+    register(ItemModel).asSingleton();
+    register(TagModel).asSingleton();
+    register(TagCategoryModel).asSingleton();
+    register(ImportModel).asSingleton();
+    register(SetupModel).asSingleton();
+    register(BackgroundService).asSingleton();
+    register(ExtensionDataModel).asSingleton();
+    register(ExtensionService).asSingleton();
+  }
 }

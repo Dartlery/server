@@ -14,7 +14,7 @@ import '../src/a_maintenance_page.dart';
 @Component(
     selector: 'collections-page',
     directives: const [
-      CORE_DIRECTIVES,
+      coreDirectives,
       formDirectives,
       materialDirectives,
       commonControls

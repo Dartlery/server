@@ -4,7 +4,7 @@ import 'dart:html';
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:dartlery/api/api.dart';
-import 'package:dartlery/routes.dart';
+import 'package:dartlery/routes/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';

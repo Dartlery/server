@@ -11,11 +11,14 @@ import 'package:dartlery/data_sources/data_sources.dart' as data_sources;
 import 'a_id_based_model.dart';
 import 'a_model.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class TagCategoryModel extends AIdBasedModel<TagCategory> {
   static final Logger _log = new Logger('TagCategoryModel');
 
   ATagCategoryDataSource _tagCategoryDataSource;
 
+  @inject
   TagCategoryModel(this._tagCategoryDataSource, AUserDataSource userDataSource)
       : super(userDataSource);
 

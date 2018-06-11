@@ -56,5 +56,5 @@ class Tag extends AIdData {
   String toString() => fullName;
 
   @override
-  bool operator ==(Tag other) => equals(other);
+  bool operator ==(dynamic other) => equals(other);
 }

@@ -14,6 +14,8 @@ import 'package:option/option.dart';
 
 import 'a_extension.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ItemReprocessExtension extends AExtension {
   static final Logger _log = new Logger('ItemReprocessExtension');
 
@@ -22,6 +24,7 @@ class ItemReprocessExtension extends AExtension {
   final ItemModel _itemModel;
   final AItemDataSource _itemDataSource;
 
+  @inject
   ItemReprocessExtension(this._itemModel, this._itemDataSource);
   @override
   String get extensionId => pluginIdStatic;

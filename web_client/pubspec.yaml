@@ -5,7 +5,7 @@ version: 0.0.1
 #author: Matthew <email@example.com>
 
 environment:
-  sdk: '>=1.23.0 <2.0.0'
+  sdk: '>=2.0.0-dev.51.0 <2.0.0'
 
 dependencies:
   dartlery_shared:
@@ -13,10 +13,10 @@ dependencies:
   api_client:
     path: ../api_client
 
-  angular: ^4.0.0
-  angular_components: ^0.7.0
-  angular_router: ^1.0.2
-  angular_forms: ^1.0.0
+  angular: ^5.0.0-alpha+11
+  angular_components: ^0.9.0-alpha+11
+  angular_router: any
+  angular_forms: any
 
 
   logging_handlers: ^0.8.0
@@ -25,21 +25,12 @@ dependencies:
   mime: 0.9.5
 
   angular_image_compare:
-    #path: ../../angular_image_compare
-    git: https://github.com/dartninja/angular_image_compare.git
+    path: ../../angular_image_compare
+    #git: https://github.com/dartninja/angular_image_compare.git
 
 dev_dependencies:
-  browser: ^0.10.0
-  dart_to_js_script_rewriter: ^1.0.1
-
-transformers:
-- angular:
-    entry_points: web/main.dart
-- dart_to_js_script_rewriter
-- $dart2js:
-    commandLineOptions:
-    - --enable-experimental-mirrors
-
-#web:
-#  compiler:
-#    debug: dartdevc
+  angular_test: ^2.0.0-alpha+9
+  angular_compiler: any
+  build_runner: ^0.8.8
+  build_test: ^0.10.2
+  build_web_compilers: ^0.4.0

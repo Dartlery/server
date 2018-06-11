@@ -12,7 +12,7 @@ import 'package:dartlery/api/api.dart';
     styles: const ['.error_output li { font-size:smaller; }'],
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
-    directives: const <dynamic>[CORE_DIRECTIVES, materialDirectives],
+    directives: const <dynamic>[coreDirectives, materialDirectives],
     template: '''<span class="error_output" *ngIf="hasError">
         <glyph icon="error_outline"  tooltipTarget   #ref="tooltipTarget"></glyph>
       {{message}}

@@ -49,7 +49,6 @@ linter:
     - prefer_final_fields
     - prefer_final_locals
     - prefer_is_not_empty
-    #- public_member_api_docs
     - slash_for_doc_comments
     - sort_constructors_first
     - sort_unnamed_constructors_first
@@ -59,7 +58,6 @@ linter:
     - type_annotate_public_apis
     - type_init_formals
     - unawaited_futures
-    - unnecessary_brace_in_string_interp
     - unnecessary_getters_setters
     - unrelated_type_equality_checks
     - valid_regexps

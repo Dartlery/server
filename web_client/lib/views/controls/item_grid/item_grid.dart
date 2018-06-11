@@ -13,9 +13,9 @@ import 'package:dartlery/data/data.dart';
     selector: 'item-grid',
     providers: const [materialProviders],
     directives: const [
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
-      ROUTER_DIRECTIVES,
+      routerDirectives,
     ],
     styleUrls: const ["../../shared.css", "item_grid.css"],
     template: '''
@@ -25,7 +25,7 @@ import 'package:dartlery/data/data.dart';
         <img src="{{getThumbnailFileUrl(i.id)}}" />
     </a>
     <div class="item-menu">
-        <material-checkbox [(checked)]="i.selected" (checkedChange)="itemSelectChanged(\$event, i.id)" class="item-select-check" data-id="{{i.id}}"></material-checkbox>
+        <material-checkbox [checked]="i.selected" (checkedChange)="itemSelectChanged(\$event, i)" class="item-select-check" data-id="{{i.id}}"></material-checkbox>
         <span style="float: right;">
             <a href="{{getOriginalFileUrl(i.id)}}" target="_blank" download="{{i.id}}"><glyph icon="file_download"></glyph></a>
             <a href="{{getOriginalFileUrl(i.id)}}" target="_blank" id="original_link_{{i.id}}"><glyph icon="open_in_new"></glyph></a>
@@ -73,7 +73,8 @@ class ItemGrid extends AApiErrorThing with AView, OnDestroy {
     _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
   }
 
-  void itemSelectChanged(bool checked, String id) {
+  void itemSelectChanged(bool checked, dynamic item) {
+    item.selected = checked;
     _selectedItemsChangedStreamController.add(selectedItems.length);
   }
 

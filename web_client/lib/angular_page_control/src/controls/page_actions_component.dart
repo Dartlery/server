@@ -14,9 +14,9 @@ import '../page_action.dart';
     styleUrls: const [''],
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
-      ROUTER_DIRECTIVES
+      routerDirectives
     ],
     template:
         '<material-button *ngFor="let a of availableActions" icon (trigger)="pageActionTriggered(a)"><glyph icon="{{a.icon}}"></glyph></material-button>')

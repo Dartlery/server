@@ -12,6 +12,8 @@ import 'a_mongo_data_source.dart';
 import 'a_mongo_id_data_source.dart';
 import 'constants.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class MongoImportBatchDataSource extends AMongoIdDataSource<ImportBatch>
     with AImportBatchDataSource {
   static final Logger _log = new Logger('MongoImportBatchDataSource');
@@ -21,6 +23,7 @@ class MongoImportBatchDataSource extends AMongoIdDataSource<ImportBatch>
   static const String sourceField = "source";
   static const String finishedField = "finished";
 
+  @inject
   MongoImportBatchDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override

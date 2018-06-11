@@ -17,6 +17,8 @@ import '../requests/update_item_request.dart';
 import 'dart:convert';
 import '../responses/paginated_import_results_response.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class SettingsResource extends AResource {
   static final Logger _log = new Logger('SettingsResource');
   static const String _apiPath = "settings";
@@ -26,6 +28,7 @@ class SettingsResource extends AResource {
 
   final ImportModel _settingsModel;
 
+  @inject
   SettingsResource(this._settingsModel);
 //
 //  @ApiMethod(method: HttpMethod.get, path: '$_apiPath/')

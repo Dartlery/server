@@ -14,11 +14,14 @@ import 'package:logging/logging.dart';
 import 'a_model.dart';
 import 'a_typed_model.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ExtensionDataModel extends ATypedModel<ExtensionData> {
   static final Logger _log = new Logger('ExtensionDataModel');
 
   AExtensionDataSource _extensionDataSource;
 
+  @inject
   ExtensionDataModel(this._extensionDataSource, AUserDataSource userDataSource)
       : super(userDataSource);
 

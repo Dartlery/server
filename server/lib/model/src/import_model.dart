@@ -17,6 +17,8 @@ import 'a_id_based_model.dart';
 import 'item_model.dart';
 import 'tag_category_model.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ImportModel extends AIdBasedModel<ImportBatch> {
   static final Logger _log = new Logger('ImportModel');
 
@@ -31,6 +33,7 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
   final RegExp tagSplitterRegExp =
       new RegExp("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
 
+  @inject
   ImportModel(
       this.itemModel,
       this.tagCategoryModel,
@@ -126,106 +129,105 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
       _log.info("Path import end");
     }
   }
-
-  Future<Null> importFromShimmie(String imagePath, String mysqlHost,
-      String mysqlUser, String mysqlPassword, String mysqlDb,
-      {int startAt: -1,
-      bool stopOnError: false,
-      bool interpretTagCategories: true,
-      bool mergeExisting: true}) async {
-    final ConnectionPool pool = new ConnectionPool(
-        host: mysqlHost, user: mysqlUser, password: mysqlPassword, db: mysqlDb);
-
-    final int batchSize = 100;
-    int lastId = startAt;
-
-    final ImportBatch importBatch = new ImportBatch();
-    importBatch.source = "shimmie";
-    importBatch.timestamp = new DateTime.now();
-    await _importBatchDataSource.create(importBatch);
-
-    try {
-      final Results results = await pool.query(
-          "SELECT * FROM images WHERE ID >= $lastId ORDER BY ID ASC LIMIT $batchSize");
-      List<Row> rows = await results.toList();
-
-      while (rows.length > 0) {
-        for (Row row in rows) {
-          lastId = row.id;
-          final ImportResult result = new ImportResult();
-          result.batchId = importBatch.id;
-          result.fileName = "${row.id} - ${row.filename}";
-          try {
-            final Item newItem = new Item();
-            newItem.fileName = row.filename;
-            newItem.source = row.source;
-
-            final String filename = row.hash;
-            _log.info(
-                "Importing file #${row.id} (${row.hash}) (${row.ext}) (${row
-                    .filename})");
-
-            newItem.filePath =
-                path.join(imagePath, filename.substring(0, 2), filename);
-
-            final Query tagsQuery = await pool.prepare(
-                "SELECT t.* FROM image_tags it INNER JOIN tags t ON t.id = it.tag_id WHERE image_id = ?");
-            final Results tagsResult = await tagsQuery.execute([row.id]);
-
-            final List<Row> tagRows = await tagsResult.toList();
-            _log.info("Found tags: ${tagRows.length}");
-
-            for (Row tagRow in tagRows) {
-              final Tag tag = new Tag();
-              final String tagText = tagRow.tag;
-              if (interpretTagCategories && tagText.contains(":")) {
-                tag.category = tagText.substring(0, tagText.indexOf(":"));
-                tag.id = tagText.substring(tagText.indexOf(":") + 1);
-                if (isNullOrWhitespace(tag.id)) continue;
-              } else {
-                tag.id = tagText;
-              }
-              newItem.tags.add(tag);
-            }
-
-            // We support pools too, TODO: add fallback code for lack of pools table
-            final Query poolsQuery = await pool.prepare(
-                "SELECT p.* FROM pools p INNER JOIN pool_images pi ON p.id = pi.pool_id WHERE pi.image_id = ?");
-            final Results poolsResult = await poolsQuery.execute([row.id]);
-
-            final List<Row> poolsRows = await poolsResult.toList();
-            _log.info("Found pools: ${poolsRows.length}");
-
-            for (Row poolRow in poolsRows) {
-              final Tag tag = new Tag();
-              tag.id = poolRow.title;
-              tag.category = "Pool";
-              newItem.tags.add(tag);
-            }
-            _log.info(newItem.tags);
-
-            await _createItem(newItem, result, mergeExisting);
-          } catch (e, st) {
-            _log.severe(e, st);
-            result.result = "error";
-            result.error = e.toString();
-
-            if (stopOnError) {
-              rethrow;
-            }
-          } finally {
-            await _recordResult(result);
-          }
-        }
-        final Results results = await pool.query(
-            "SELECT * FROM images WHERE ID > $lastId ORDER BY ID ASC LIMIT $batchSize");
-        rows = await results.toList();
-      }
-    } finally {
-      await _importBatchDataSource.markBatchFinished(importBatch.id);
-      _log.info("Shimmie import end");
-    }
-  }
+//
+//  Future<Null> importFromShimmie(String imagePath, String mysqlHost,
+//      String mysqlUser, String mysqlPassword, String mysqlDb,
+//      {int startAt: -1,
+//      bool stopOnError: false,
+//      bool interpretTagCategories: true,
+//      bool mergeExisting: true}) async {
+//    final ConnectionPool pool = new ConnectionPool(
+//        host: mysqlHost, user: mysqlUser, password: mysqlPassword, db: mysqlDb);
+//
+//    final int batchSize = 100;
+//    int lastId = startAt;
+//
+//    final ImportBatch importBatch = new ImportBatch();
+//    importBatch.source = "shimmie";
+//    importBatch.timestamp = new DateTime.now();
+//    await _importBatchDataSource.create(importBatch);
+//
+//    try {
+//      final Results results = await pool.query(
+//          "SELECT * FROM images WHERE ID >= $lastId ORDER BY ID ASC LIMIT $batchSize");
+//      List<Row> rows = await results.toList();
+//
+//      while (rows.length > 0) {
+//        for (dynamic row in rows) {
+//          lastId = row.id;
+//          final ImportResult result = new ImportResult();
+//          result.batchId = importBatch.id;
+//          result.fileName = "${row.id} - ${row.filename}";
+//          try {
+//            final Item newItem = new Item();
+//            newItem.fileName = row.filename;
+//            newItem.source = row.source;
+//
+//            final String filename = row.hash;
+//            _log.info(
+//                "Importing file #${row.id} (${row.hash}) (${row.ext}) (${row
+//                    .filename})");
+//
+//            newItem.filePath =
+//                path.join(imagePath, filename.substring(0, 2), filename);
+//
+//            final Query tagsQuery = await pool.prepare(
+//                "SELECT t.* FROM image_tags it INNER JOIN tags t ON t.id = it.tag_id WHERE image_id = ?");
+//            final Results tagsResult = await tagsQuery.execute([row.id]);
+//
+//            await for (Row tagRow in tagsResult) {
+//              final Tag tag = new Tag();
+//              final String tagText = tagRow.tag;
+//              if (interpretTagCategories && tagText.contains(":")) {
+//                tag.category = tagText.substring(0, tagText.indexOf(":"));
+//                tag.id = tagText.substring(tagText.indexOf(":") + 1);
+//                if (isNullOrWhitespace(tag.id)) continue;
+//              } else {
+//                tag.id = tagText;
+//              }
+//              newItem.tags.add(tag);
+//            }
+//            _log.info("Found tags: ${newItem.tags.length}");
+//
+//
+//            // We support pools too, TODO: add fallback code for lack of pools table
+//            final Query poolsQuery = await pool.prepare(
+//                "SELECT p.* FROM pools p INNER JOIN pool_images pi ON p.id = pi.pool_id WHERE pi.image_id = ?");
+//            final Results poolsResult = await poolsQuery.execute([row.id]);
+//
+//            final List<Row> poolsRows = await poolsResult.toList();
+//            _log.info("Found pools: ${poolsRows.length}");
+//
+//            for (Row poolRow in poolsRows) {
+//              final Tag tag = new Tag();
+//              tag.id = poolRow.title;
+//              tag.category = "Pool";
+//              newItem.tags.add(tag);
+//            }
+//            _log.info(newItem.tags);
+//
+//            await _createItem(newItem, result, mergeExisting);
+//          } catch (e, st) {
+//            _log.severe(e, st);
+//            result.result = "error";
+//            result.error = e.toString();
+//
+//            if (stopOnError) {
+//              rethrow;
+//            }
+//          } finally {
+//            await _recordResult(result);
+//          }
+//        }
+//        final Results results = await pool.query(
+//            "SELECT * FROM images WHERE ID > $lastId ORDER BY ID ASC LIMIT $batchSize");
+//        rows = await results.toList();
+//      }
+//    } finally {
+//      await _importBatchDataSource.markBatchFinished(importBatch.id);
+//      _log.info("Shimmie import end");
+//    }
+//  }
 
   List<String> _breakDownTagString(String input) {
     final List<String> output = <String>[];

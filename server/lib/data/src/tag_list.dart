@@ -52,7 +52,7 @@ class TagList extends Iterable<Tag> {
   }
 
   @override
-  bool contains(Tag t) => indexOf(t) != -1;
+  bool contains(dynamic t) => indexOf(t) != -1;
 }
 
 class TagDiff extends Diff<Tag> {

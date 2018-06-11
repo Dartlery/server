@@ -18,6 +18,8 @@ import 'dart:convert';
 import '../responses/paginated_import_results_response.dart';
 import '../requests/import_path_request.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ImportResource extends AResource {
   static final Logger _log = new Logger('ItemResource');
   static const String _apiPath = "import";
@@ -27,6 +29,7 @@ class ImportResource extends AResource {
 
   final ImportModel _importModel;
 
+  @inject
   ImportResource(this._importModel);
 
   @ApiMethod(method: HttpMethod.post, path: '$_apiPath/')

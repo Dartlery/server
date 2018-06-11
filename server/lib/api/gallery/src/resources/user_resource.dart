@@ -10,10 +10,14 @@ import 'package:rpc/rpc.dart';
 import '../../gallery_api.dart';
 import '../requests/password_change_request.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class UserResource extends AIdResource<User> {
   static final Logger _log = new Logger('UserResource');
 
   final UserModel _userModel;
+
+  @inject
   UserResource(this._userModel);
 
   @override

@@ -4,6 +4,8 @@ import 'package:dartlery/data/data.dart';
 import 'package:option/option.dart';
 import 'a_id_based_data_source.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 abstract class AUserDataSource extends AIdBasedDataSource<User> {
   static final Logger _log = new Logger('AUserDataSource');
 

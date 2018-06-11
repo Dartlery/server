@@ -16,7 +16,7 @@ import '../../../src/a_api_error_thing.dart';
     selector: 'replace-tab',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
       commonControls
     ],

@@ -4,6 +4,8 @@ import 'package:dartlery/data/data.dart';
 import 'package:logging/logging.dart';
 import 'package:dartlery/model/model.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ImportPathExtension extends AExtension {
   static final Logger _log = new Logger('ImportPathExtension');
 
@@ -11,6 +13,7 @@ class ImportPathExtension extends AExtension {
 
   final ImportModel _importModel;
 
+  @inject
   ImportPathExtension(this._importModel);
 
   @override

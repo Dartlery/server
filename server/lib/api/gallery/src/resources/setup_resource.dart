@@ -7,6 +7,8 @@ import 'package:rpc/rpc.dart';
 import '../responses/setup_response.dart';
 import '../requests/setup_request.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class SetupResource extends AResource {
   static final Logger _log = new Logger('SetupResource');
 
@@ -17,6 +19,8 @@ class SetupResource extends AResource {
   Logger get childLogger => _log;
 
   final SetupModel setupModel;
+
+  @inject
   SetupResource(this.setupModel);
 
   @ApiMethod(method: 'PUT', path: '$setupApiPath/')

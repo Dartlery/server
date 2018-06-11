@@ -1,5 +1,5 @@
 import 'package:dartlery_shared/global.dart';
-import 'package:di/di.dart';
+import 'package:dice/dice.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:rpc/rpc.dart';
 
@@ -25,6 +25,8 @@ import 'package:dartlery/model/model.dart';
 export 'src/requests/password_change_request.dart';
 export 'src/requests/replace_tags_requst.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 @ApiClass(
     version: galleryApiVersion,
     name: galleryApiName,
@@ -55,16 +57,23 @@ class GalleryApi {
   @ApiResource()
   final ExtensionDataResource extensionData;
 
+  @inject
   GalleryApi(this.items, this.users, this.setup, this.tagCategories, this.tags,
       this.extensionData, this.import);
 
-  static final Module injectorModules = new Module()
-    ..bind(ItemResource)
-    ..bind(UserResource)
-    ..bind(SetupResource)
-    ..bind(TagResource)
-    ..bind(ImportResource)
-    ..bind(TagCategoriesResource)
-    ..bind(ExtensionDataResource)
-    ..bind(GalleryApi);
+}
+
+
+class GalleryModule extends Module{
+  @override
+  void configure() {
+    register(ItemResource).asSingleton();
+    register(UserResource).asSingleton();
+    register(SetupResource).asSingleton();
+    register(TagResource).asSingleton();
+    register(ImportResource).asSingleton();
+    register(TagCategoriesResource).asSingleton();
+    register(ExtensionDataResource).asSingleton();
+    register(GalleryApi).asSingleton();
+  }
 }

@@ -11,10 +11,14 @@ import '../../gallery_api.dart';
 import '../requests/password_change_request.dart';
 import 'package:dartlery_shared/global.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class TagCategoriesResource extends AIdResource<TagCategory> {
   static final Logger _log = new Logger('UserResource');
 
   final TagCategoryModel _tagCategoryModel;
+
+  @inject
   TagCategoriesResource(this._tagCategoryModel);
 
   @override

@@ -10,7 +10,7 @@ import 'package:angular_forms/angular_forms.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
-import 'package:dartlery/routes.dart';
+import 'package:dartlery/routes/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery/views/controls/error_output.dart';
@@ -23,9 +23,9 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
     selector: 'item-view',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
-      ROUTER_DIRECTIVES,
+      routerDirectives,
       AuthStatusComponent,
       ErrorOutputComponent,
       commonControls

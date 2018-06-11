@@ -10,6 +10,8 @@ import 'package:option/option.dart';
 import 'a_mongo_id_data_source.dart';
 import 'constants.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class MongoUserDataSource extends AMongoIdDataSource<User>
     with AUserDataSource {
   static final Logger _log = new Logger('MongoUserDataSource');
@@ -20,6 +22,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   static const String emailField = "email";
   static const String passwordField = "password";
 
+  @inject
   MongoUserDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
@@ -44,7 +47,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   Future<Option<String>> getPasswordHash(String username) async {
     final SelectorBuilder selector = where.eq(idField, username);
     final Option<Map> data = await genericFindOne(selector);
-    return data.map((Map user) {
+    return data.map((dynamic user) {
       if (user.containsKey(passwordField)) return user[passwordField];
     });
   }
@@ -58,9 +61,11 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   }
 
   @override
-  void updateMap(User user, Map data) {
-    super.updateMap(user, data);
-    data[nameField] = user.name;
-    data[typeField] = user.type;
+  void updateMap(AIdData user, Map data) {
+    if(user is User) {
+      super.updateMap(user, data);
+      data[nameField] = user.name;
+      data[typeField] = user.type;
+    }
   }
 }

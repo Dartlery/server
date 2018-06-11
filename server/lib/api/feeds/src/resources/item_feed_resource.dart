@@ -12,6 +12,8 @@ import 'package:dartlery_shared/tools.dart';
 import '../../feed_api.dart';
 import '../../../api_tools.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ItemFeedResource extends AResource {
   static final Logger _log = new Logger('ItemResource');
   static const String _apiPath = "import";
@@ -21,6 +23,7 @@ class ItemFeedResource extends AResource {
 
   final ItemModel _itemModel;
 
+  @inject
   ItemFeedResource(this._itemModel);
 
   @ApiMethod(path: 'items/')

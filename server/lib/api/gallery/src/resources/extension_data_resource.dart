@@ -9,11 +9,14 @@ import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 import '../responses/paginated_extension_data_response.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ExtensionDataResource extends AResource {
   static final Logger _log = new Logger('ExtensionDataResource');
 
   final ExtensionDataModel _extensionDataModel;
 
+  @inject
   ExtensionDataResource(this._extensionDataModel);
 
   @override

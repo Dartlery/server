@@ -10,7 +10,7 @@ import 'package:angular_router/angular_router.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/client.dart';
 import 'package:dartlery/data/data.dart';
-import 'package:dartlery/routes.dart';
+import 'package:dartlery/routes/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
@@ -29,9 +29,9 @@ import '../src/deduplicate_shared.dart';
     selector: 'deduplicate-page',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
-      ROUTER_DIRECTIVES,
+      routerDirectives,
       AuthStatusComponent,
       ErrorOutputComponent,
       ImageCompareComponent,
@@ -209,7 +209,7 @@ class DeduplicatePage extends APage implements OnInit, OnDestroy {
     });
   }
 
-  setPageActions() {
+  void setPageActions() {
     final List<PageAction> actions = <PageAction>[];
 
     if (selectedItems.length > 0) {
@@ -236,6 +236,7 @@ class ItemComparison {
     for (ExtensionData ed in comparisons) {
       if (ed.secondaryId == id || ed.primaryId == id) return true;
     }
+    return false;
   }
 
   Iterable<String> get secondaryIds =>

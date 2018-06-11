@@ -6,7 +6,7 @@ import 'package:angular_image_compare/image_compare_component.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
-import 'package:dartlery/routes.dart';
+import 'package:dartlery/routes/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery/views/controls/common_controls.dart';
@@ -23,9 +23,9 @@ import '../src/a_page.dart';
     selector: 'deduplicate-item-page',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
-      ROUTER_DIRECTIVES,
+      routerDirectives,
       AuthStatusComponent,
       ErrorOutputComponent,
       ImageCompareComponent,
@@ -285,7 +285,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
           await selectComparison(response.items.first);
         }
       } on DetailedApiRequestError catch (e) {
-        if (e.status != 404) throw e;
+        if (e.status !=  404) throw e;
       }
     }, after: () async {
       pageControl.clearProgress();
@@ -320,7 +320,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
     await refresh();
   }
 
-  setPageActions() {
+  void setPageActions() {
     final List<PageAction> actions = <PageAction>[];
 
     actions.add(PageAction.compare);

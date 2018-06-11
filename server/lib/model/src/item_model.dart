@@ -15,7 +15,8 @@ import 'package:image/image.dart' as image;
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:path/path.dart' as path;
-
+import 'package:dice/dice.dart';
+@Injectable()
 class ItemModel extends AIdBasedModel<Item> {
   static final Logger _log = new Logger('ItemModel');
   static final RegExp legalIdCharacters = new RegExp("[a-zA-Z0-9_\-]");
@@ -78,6 +79,7 @@ class ItemModel extends AIdBasedModel<Item> {
   final RegExp _videoFrameRateRegex =
       new RegExp(r"^avg_frame_rate=(\d+)\/(\d+)$", multiLine: true);
 
+  @inject
   ItemModel(this.itemDataSource, this.tagDataSource, this.tagCategoryDataSource,
       this._extensionServices, this._tagModel, AUserDataSource userDataSource)
       : super(userDataSource);

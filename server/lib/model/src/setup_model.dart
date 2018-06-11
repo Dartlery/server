@@ -13,6 +13,8 @@ import 'package:logging/logging.dart';
 
 import 'a_model.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class SetupModel extends AModel {
   static final Logger _log = new Logger('UserModel');
 
@@ -21,6 +23,7 @@ class SetupModel extends AModel {
 
   final UserModel userModel;
 
+  @inject
   SetupModel(this.userModel, AUserDataSource userDataSource)
       : super(userDataSource);
 

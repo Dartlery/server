@@ -3,11 +3,13 @@ import 'dart:async';
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:dartlery/model/model.dart';
-import 'package:di/di.dart';
+import 'package:dice/dice.dart';
+import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart'
     as server_logging;
 import 'package:options_file/options_file.dart';
+import 'import.template.dart' as ng;
 
 Future<Null> main(List<String> args) async {
   Logger.root.level = Level.INFO;
@@ -28,51 +30,53 @@ Future<Null> main(List<String> args) async {
 
   final ArgResults argResults = parser.parse(args);
 
+  ng.initReflector();
+
   // Currently only supports importing from shimmie. Yay!
 
   // TODO: Set up a function for loading settings data
   final String connectionString = argResults["mongo"];
 
-  final ModuleInjector parentInjector =
-      createModelModuleInjector(connectionString);
+  final Injector parentInjector =
+      new Injector.fromModules([new ModelModule(), new DataSourceModule(connectionString)]);
 
   final ImportModel importModel = parentInjector.get(ImportModel);
 
   final bool stopOnError = argResults["stopOnError"].toLowerCase() != 'false';
 
   switch (argResults["sourceType"]) {
-    case "shimmie":
-      if (isNullOrWhitespace(argResults["path"]))
-        throw new Exception("path is required");
-      if (isNullOrWhitespace(argResults["sourceDbHost"]))
-        throw new Exception("sourceDbHost is required");
-      if (isNullOrWhitespace(argResults["sourceDb"]))
-        throw new Exception("sourceDb is required");
-      if (isNullOrWhitespace(argResults["sourceDbUser"]))
-        throw new Exception("sourceDbUser is required");
-      if (isNullOrWhitespace(argResults["sourceDbPassword"]))
-        throw new Exception("sourceDbPassword is required");
-
-      if (isNotNullOrWhitespace(argResults["start"])) {
-        final int start = int.parse(argResults["start"]);
-        await importModel.importFromShimmie(
-            argResults["path"],
-            argResults["sourceDbHost"],
-            argResults["sourceDbUser"],
-            argResults["sourceDbPassword"],
-            argResults["sourceDb"],
-            stopOnError: stopOnError,
-            startAt: start);
-      } else {
-        await importModel.importFromShimmie(
-            argResults["path"],
-            argResults["sourceDbHost"],
-            argResults["sourceDbUser"],
-            argResults["sourceDbPassword"],
-            argResults["sourceDb"],
-            stopOnError: stopOnError);
-      }
-      break;
+//    case "shimmie":
+//      if (isNullOrWhitespace(argResults["path"]))
+//        throw new Exception("path is required");
+//      if (isNullOrWhitespace(argResults["sourceDbHost"]))
+//        throw new Exception("sourceDbHost is required");
+//      if (isNullOrWhitespace(argResults["sourceDb"]))
+//        throw new Exception("sourceDb is required");
+//      if (isNullOrWhitespace(argResults["sourceDbUser"]))
+//        throw new Exception("sourceDbUser is required");
+//      if (isNullOrWhitespace(argResults["sourceDbPassword"]))
+//        throw new Exception("sourceDbPassword is required");
+//
+//      if (isNotNullOrWhitespace(argResults["start"])) {
+//        final int start = int.parse(argResults["start"]);
+//        await importModel.importFromShimmie(
+//            argResults["path"],
+//            argResults["sourceDbHost"],
+//            argResults["sourceDbUser"],
+//            argResults["sourceDbPassword"],
+//            argResults["sourceDb"],
+//            stopOnError: stopOnError,
+//            startAt: start);
+//      } else {
+//        await importModel.importFromShimmie(
+//            argResults["path"],
+//            argResults["sourceDbHost"],
+//            argResults["sourceDbUser"],
+//            argResults["sourceDbPassword"],
+//            argResults["sourceDb"],
+//            stopOnError: stopOnError);
+//      }
+//      break;
     case "path":
       if (isNullOrWhitespace(argResults["path"]))
         throw new Exception("Path is required");

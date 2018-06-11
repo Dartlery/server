@@ -14,12 +14,15 @@ import '../requests/create_item_request.dart';
 import '../requests/item_search_request.dart';
 import '../responses/paginated_item_response.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ItemResource extends AIdResource<Item> {
   static final Logger _log = new Logger('ItemResource');
   static const String _apiPath = GalleryApi.itemsPath;
 
   final ItemModel itemModel;
 
+  @inject
   ItemResource(this.itemModel);
   @override
   Logger get childLogger => _log;
@@ -88,7 +91,7 @@ class ItemResource extends AIdResource<Item> {
         return new PaginatedItemResponse.convertPaginatedData(
             await itemModel.getVisible(
                 page: page, perPage: perPage, cutoffDate: dt, inTrash: inTrash),
-            (Item item) => item.id);
+            (dynamic item) => item.id);
       });
 
   @ApiMethod(
@@ -119,7 +122,7 @@ class ItemResource extends AIdResource<Item> {
                 perPage: perPage,
                 cutoffDate: cutoffDateParsed,
                 inTrash: inTrash),
-            (Item item) => item.id)
+            (dynamic item) => item.id)
           ..queryTags = queryTags;
       });
 

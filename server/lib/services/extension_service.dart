@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/extensions/extensions.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ExtensionService {
   final Map<String, AExtension> _extensions = <String, AExtension>{};
 

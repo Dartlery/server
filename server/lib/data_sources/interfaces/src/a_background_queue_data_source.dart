@@ -4,6 +4,8 @@ import 'a_data_source.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:option/option.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 abstract class ABackgroundQueueDataSource extends ADataSource {
   static final Logger _log = new Logger('ABackgroundQueueDataSource');
 

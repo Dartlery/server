@@ -14,6 +14,8 @@ import 'package:option/option.dart';
 
 import 'a_typed_model.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class TagModel extends ATypedModel<TagInfo> {
   static final Logger _log = new Logger('TagModel');
 
@@ -21,6 +23,7 @@ class TagModel extends ATypedModel<TagInfo> {
   final AItemDataSource _itemDataSource;
 
   final ATagCategoryDataSource _tagCategoryDataSource;
+  @inject
   TagModel(this._tagDataSource, this._tagCategoryDataSource,
       this._itemDataSource, AUserDataSource userDataSource)
       : super(userDataSource);
@@ -48,7 +51,7 @@ class TagModel extends ATypedModel<TagInfo> {
     await validateDeletePrivileges();
 
     final TagInfo t = new TagInfo.withValues(id, category);
-    validate(t);
+    await validate(t);
 
     final Option<TagInfo> dbTag = await _tagDataSource.getById(id, category);
 
@@ -61,8 +64,8 @@ class TagModel extends ATypedModel<TagInfo> {
   }
 
   Future<PaginatedData<TagInfo>> getAllInfo(
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
-    return await _tagDataSource.getAllPaginated(
+      {int page: 0, int perPage: defaultPerPage, bool countAsc}) async {
+    return await _tagDataSource.getAllPaginatedTags(
         page: page, perPage: perPage, countAsc: countAsc);
   }
 
@@ -179,7 +182,7 @@ class TagModel extends ATypedModel<TagInfo> {
     await validateTag(redirect.redirect);
 
     await DataValidationException
-        .performValidation<int>((Map<String, String> fieldErrors) async {
+        .performValidation((Map<String, String> fieldErrors) async {
       if (redirect == redirect.redirect) {
         fieldErrors["redirect"] = "Cannot be the same as start";
       }

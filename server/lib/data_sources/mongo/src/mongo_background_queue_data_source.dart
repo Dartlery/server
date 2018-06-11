@@ -10,6 +10,8 @@ import 'constants.dart';
 import 'package:option/option.dart';
 import 'a_mongo_data_source.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class MongoBackgroundQueueDataSource
     extends AMongoObjectDataSource<BackgroundQueueItem>
     with ABackgroundQueueDataSource {
@@ -23,6 +25,7 @@ class MongoBackgroundQueueDataSource
   static const String priorityField = "priority";
   static const int _defaultPriority = 50;
 
+  @inject
   MongoBackgroundQueueDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override

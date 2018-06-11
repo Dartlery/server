@@ -7,12 +7,16 @@ import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/services/background_service.dart';
 import 'package:dartlery_shared/tools.dart';
-import 'package:di/di.dart';
+import 'package:dice/dice.dart';
+import 'package:dartlery/extensions/extensions.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart'
     as server_logging;
 
 import 'package:dartlery/data_sources/data_sources.dart';
+//import 'server.template.dart' as ng;
+
+
 
 Future<Null> main(List<String> args) async {
   // Add a simple log handler to log information to a server side file.
@@ -29,6 +33,8 @@ Future<Null> main(List<String> args) async {
 
   final ArgResults result = parser.parse(args);
 
+  //ng.initReflector();
+
   String logLevelString = result["log"];
   if (isNullOrWhitespace(logLevelString)) {
     logLevelString = Platform.environment["DARTLERY_LOG"];
@@ -43,10 +49,11 @@ Future<Null> main(List<String> args) async {
     }
   }
 
-  final int port = int.parse(result['port'], onError: (String val) {
-    _log.severe('Could not parse port value "$val" into a number.');
+  final int port = int.tryParse(result['port']);
+  if(port==null) {
+    _log.severe('Could not parse port value "${result['port']}" into a number.');
     exit(1);
-  });
+  }
 
   String connectionString = result['mongo'];
   if (isNullOrWhitespace(connectionString)) {
@@ -80,8 +87,9 @@ void startBackgroundIsolate(BackgroundConfig config) {
   Logger.root.level = config.loggingLevel;
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
 
-  final ModuleInjector injector =
-      createModelModuleInjector(config.connectionString);
+
+
+  final Injector injector = createInjector(config.connectionString);
 
   final DbLoggingHandler dbLoggingHandler =
       new DbLoggingHandler(injector.get(ALogDataSource));
@@ -90,6 +98,10 @@ void startBackgroundIsolate(BackgroundConfig config) {
   final BackgroundService service = injector.get(BackgroundService);
   service.start();
 }
+
+Injector createInjector(String connectionString) =>
+new Injector.fromModules([new ModelModule(), new DataSourceModule(connectionString), new ExtensionsModule()]);
+
 
 class BackgroundConfig {
   String connectionString;

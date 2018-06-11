@@ -4,6 +4,8 @@ import 'package:logging/logging.dart';
 import 'package:dartlery/data/data.dart';
 import 'a_two_id_based_data_source.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 abstract class ATagDataSource extends ATwoIdBasedDataSource<TagInfo> {
   static final Logger _log = new Logger('ATagDataSource');
 
@@ -11,19 +13,17 @@ abstract class ATagDataSource extends ATwoIdBasedDataSource<TagInfo> {
 //  Future<List<TagInfo>> getByRedirect(String id, String category);
   Future<Null> deleteByRedirect(String id, String category);
 
-  @override
-  Future<PaginatedData<TagInfo>> getAllPaginated(
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: null});
+  Future<PaginatedData<TagInfo>> getAllPaginatedTags(
+      {int page: 0, int perPage: defaultPerPage, bool countAsc});
 
-  @override
-  Future<IdDataList<TagInfo>> search(String query,
-      {int limit: defaultPerPage, bool countAsc: null, bool redirects: null});
+  Future<IdDataList<TagInfo>> searchTags(String query,
+      {int limit: defaultPerPage, bool countAsc, bool redirects});
 
   Future<PaginatedData<TagInfo>> searchPaginated(String query,
       {int page: 0,
       int perPage: defaultPerPage,
-      bool countAsc: null,
-      bool redirects: null});
+      bool countAsc,
+      bool redirects});
 
   /// This function should cause all tags to be re-counted
   /// and unused tags to be deleted.

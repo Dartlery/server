@@ -7,6 +7,8 @@ import 'package:dartlery/extensions/extensions.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'extension_service.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class BackgroundService {
   static final Logger _log = new Logger('BackgroundService');
 

@@ -26,15 +26,15 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
       super.exists(where.eq(idField, id).eq(secondIdField, id2));
 
   @override
-  Future<IdDataList<T>> getAll({String sortField: null}) =>
+  Future<IdDataList<T>> getAll({String sortField}) =>
       getListFromDb(where.sortBy(sortField ?? idField));
 
   @override
   Future<PaginatedIdData<T>> getAllPaginated(
-      {int page: 0, int perPage: defaultPerPage});
+      {int page: 0, int perPage: defaultPerPage}) => getPaginated(offset: page * perPage, limit: perPage);
 
   Future<PaginatedIdData<T>> getPaginated(
-          {String sortField: null,
+          {String sortField,
           int offset: 0,
           int limit: paginatedDataLimit}) =>
       getPaginatedListFromDb(where.sortBy(sortField ?? idField),
@@ -96,7 +96,7 @@ abstract class AMongoTwoIdDataSource<T extends AIdData>
   @override
   Future<IdDataList<T>> search(String query,
       {SelectorBuilder selector, String sortBy}) async {
-    final List<dynamic> data =
+    final List<T> data =
         await super.searchAndSort(query, selector: selector, sortBy: sortBy);
     return new IdDataList<T>.copy(data);
   }

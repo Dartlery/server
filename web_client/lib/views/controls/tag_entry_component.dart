@@ -19,9 +19,9 @@ import '../src/a_api_error_thing.dart';
     styleUrls: const ['../shared.css'],
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
-      ROUTER_DIRECTIVES
+      routerDirectives
     ],
     template: '''
     <div style="width: 100%;white-space: nowrap;">

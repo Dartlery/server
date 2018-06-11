@@ -76,5 +76,5 @@ class TagWrapper {
   }
 
   @override
-  bool operator ==(TagWrapper other) => equals(other);
+  bool operator ==(dynamic other) => equals(other);
 }

@@ -8,7 +8,7 @@ import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/client.dart';
 import 'package:dartlery/data/data.dart';
-import 'package:dartlery/routes.dart';
+import 'package:dartlery/routes/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery_shared/global.dart';
@@ -23,9 +23,9 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
     selector: 'item-browse',
     providers: const [materialProviders],
     directives: const [
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
-      ROUTER_DIRECTIVES,
+      routerDirectives,
       AuthStatusComponent,
       TagEntryComponent,
       ItemGrid
@@ -36,8 +36,6 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
 
     <div *ngIf="noItemsFound&&!processing" class="no-items">No Items Found</div>
     <item-grid [items]="items" (selectedItemsChanged)="itemSelectChanged()"></item-grid>
-
-    <div class="sidebar">
     ''')
 class TrashPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("TrashPage");
@@ -212,9 +210,7 @@ class TrashPage extends APage implements OnInit, OnDestroy {
       int page = 0;
       final String routeName = trashPageRoute.name;
       if (_routeParams.params.containsKey(pageRouteParameter)) {
-        page = int.parse(_routeParams.get(pageRouteParameter) ?? '1',
-                onError: (_) => 1) -
-            1;
+        page = int.tryParse(_routeParams.get(pageRouteParameter)) ?? 0;
       }
 
       final PaginatedItemResponse response =

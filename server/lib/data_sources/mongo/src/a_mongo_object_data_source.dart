@@ -66,7 +66,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   }
 
   Future<Stream<T>> streamToObject(Stream str) async {
-    return str.asyncMap<T>((Map data) async {
+    return str.asyncMap<T>((dynamic data) async {
       if (data.containsKey("\$err"))
         throw new Exception("Database error: $data['\$err']");
       return await createObject(data);

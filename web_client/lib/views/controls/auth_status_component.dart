@@ -5,7 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:dartlery_shared/global.dart';
 
 @Component(
-    directives: CORE_DIRECTIVES,
+    directives: coreDirectives,
     selector: 'auth-status',
     styleUrls: const ['../shared.css'],
     template:
@@ -19,8 +19,10 @@ class AuthStatusComponent implements OnInit, OnDestroy {
   @Input()
   String required = UserPrivilege.normal;
 
+  final StreamController<bool> _authorizedChangeController = new StreamController<bool>();
   @Output()
-  EventEmitter<bool> authorizedChanged = new EventEmitter<bool>();
+  Stream<bool> get authorizedChanged => _authorizedChangeController.stream;
+
 
   final AuthenticationService _auth;
 
@@ -31,7 +33,7 @@ class AuthStatusComponent implements OnInit, OnDestroy {
   }
 
   void onAuthStatusChange(bool status) {
-    authorizedChanged.emit(authorized);
+    _authorizedChangeController.add(authorized);
   }
 
   bool get authorized {
@@ -41,7 +43,7 @@ class AuthStatusComponent implements OnInit, OnDestroy {
 
   @override
   void ngOnInit() {
-    authorizedChanged.emit(authorized);
+    _authorizedChangeController.add(authorized);
   }
 
   @override

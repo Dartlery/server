@@ -22,11 +22,11 @@ abstract class AMongoIdDataSource<T extends AIdData>
   Future<bool> existsById(String id) => super.exists(where.eq(idField, id));
 
   @override
-  Future<IdDataList<T>> getAll({String sortField: null}) =>
+  Future<IdDataList<T>> getAll({String sortField}) =>
       getListFromDb(where.sortBy(sortField ?? idField));
 
   Future<PaginatedIdData<T>> getPaginated(
-          {String sortField: null,
+          {String sortField,
           int offset: 0,
           int limit: paginatedDataLimit}) =>
       getPaginatedListFromDb(where.sortBy(sortField ?? idField),
@@ -49,7 +49,7 @@ abstract class AMongoIdDataSource<T extends AIdData>
   }
 
   @override
-  void updateMap(AIdData item, Map<String, dynamic> data) {
+  void updateMap(T item, Map<String, dynamic> data) {
     staticUpdateMap(item, data);
   }
 
@@ -89,7 +89,7 @@ abstract class AMongoIdDataSource<T extends AIdData>
   @override
   Future<IdDataList<T>> search(String query,
       {SelectorBuilder selector, String sortBy}) async {
-    final List<dynamic> data =
+    final List<T> data =
         await super.searchAndSort(query, selector: selector, sortBy: sortBy);
     return new IdDataList<T>.copy(data);
   }

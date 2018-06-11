@@ -10,6 +10,8 @@ import 'constants.dart';
 import 'package:option/option.dart';
 import 'a_mongo_data_source.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
     with AExtensionDataSource {
   static final Logger _log = new Logger('MongoExtensionDataSource');
@@ -23,6 +25,7 @@ class MongoExtensionDataSource extends AMongoObjectDataSource<ExtensionData>
   static const String valueField = "value";
   static const String inTrashField = "inTrash";
 
+  @inject
   MongoExtensionDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override

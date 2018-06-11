@@ -14,9 +14,9 @@ import '../page_message.dart';
     styleUrls: const [''],
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
-      ROUTER_DIRECTIVES
+      routerDirectives
     ],
     template: '''
 <modal [visible]="visible">

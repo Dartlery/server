@@ -18,13 +18,13 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
 @Component(
     selector: 'tags-page',
     directives: const [
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
       commonControls,
       formDirectives,
       RedirectsTab,
       ReplaceTab,
-      ROUTER_DIRECTIVES
+      routerDirectives
     ],
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css", "tags_page.css"],

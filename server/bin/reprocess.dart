@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:dartlery/model/model.dart';
-import 'package:di/di.dart';
+import 'package:dice/dice.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart'
     as server_logging;
@@ -11,6 +11,7 @@ import 'package:options_file/options_file.dart';
 import 'package:dartlery/extensions/extensions.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/data/data.dart';
+import 'reprocess.template.dart' as ng;
 
 Future<Null> main(List<String> args) async {
   Logger.root.level = Level.INFO;
@@ -20,6 +21,9 @@ Future<Null> main(List<String> args) async {
   final ArgParser parser = new ArgParser();
   parser.addOption("mimeType", abbr: 'm');
   final ArgResults argResults = parser.parse(args);
+
+  ng.initReflector();
+
 
   // TODO: Set up a function for loading settings data
   String connectionString = "mongodb://localhost:27017/dartlery";
@@ -32,14 +36,11 @@ Future<Null> main(List<String> args) async {
     _log.info("server.options not found, using all default settings", e);
   }
 
-  final ModuleInjector parentInjector =
-      createModelModuleInjector(connectionString);
-
-  final ModuleInjector extensionInjector =
-      instantiateExtensions(parentInjector);
+  final Injector parentInjector =
+  new Injector.fromModules([new ModelModule(), new DataSourceModule(connectionString), new ExtensionsModule()]);
 
   final ItemReprocessExtension reprocessExtension =
-      extensionInjector.get(ItemReprocessExtension);
+  parentInjector.get(ItemReprocessExtension);
   final AItemDataSource _itemDataSource = parentInjector.get(AItemDataSource);
 
   final String type = argResults["mimeType"];

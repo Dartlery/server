@@ -18,7 +18,7 @@ import '../../../src/a_api_error_thing.dart';
     selector: 'redirects-tab',
     providers: const <dynamic>[materialProviders],
     directives: const <dynamic>[
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
       commonControls
     ],

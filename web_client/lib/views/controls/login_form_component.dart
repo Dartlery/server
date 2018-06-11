@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:html';
-import 'package:dartlery/routes.dart';
+import 'package:dartlery/routes/routes.dart';
 import 'package:angular/angular.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/services/services.dart';
@@ -14,7 +14,7 @@ import 'package:angular_forms/angular_forms.dart';
 @Component(
     selector: 'login-form',
     styleUrls: const ["../shared.css"],
-    directives: const [CORE_DIRECTIVES, formDirectives, materialDirectives],
+    directives: const [coreDirectives, formDirectives, materialDirectives],
     providers: const [materialProviders],
     template: '''<modal [visible]="visible">
       <material-dialog class="basic-dialog">
@@ -44,8 +44,9 @@ class LoginFormComponent extends AErrorThing {
   String password = "";
   bool _visible = false;
 
+  final StreamController<bool> _visibleChangeController = new StreamController<bool>();
   @Output()
-  EventEmitter<bool> visibleChange = new EventEmitter<bool>();
+  Stream<bool> get visibleChange => _visibleChangeController.stream;
 
   final Router _router;
   final AuthenticationService _auth;
@@ -54,6 +55,7 @@ class LoginFormComponent extends AErrorThing {
 
   LoginFormComponent(this._auth, this._router);
 
+  @override
   bool get hasErrorMessage => isNotNullOrWhitespace(errorMessage);
 
   @override
@@ -68,7 +70,7 @@ class LoginFormComponent extends AErrorThing {
       processing = false;
     }
     _visible = value;
-    visibleChange.emit(_visible);
+    _visibleChangeController.add(_visible);
   }
 
   Future<Null> onSubmit() async {

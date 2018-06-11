@@ -9,9 +9,9 @@ import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/extensions/extensions.dart';
+import 'package:dice/dice.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
-import 'package:di/di.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:option/option.dart';
@@ -94,6 +94,7 @@ Future<Map<String, dynamic>> loadJSONFile(String path) async {
   return output;
 }
 
+@Injectable()
 class Server {
   final Logger _log = new Logger('Server');
   final GalleryApi galleryApi;
@@ -111,6 +112,7 @@ class Server {
 
   HttpServer _server;
 
+  @inject
   Server(this.galleryApi, this.userDataSource, this.userModel, this.feedApi) {
     _log.fine("new Server($galleryApi, $userDataSource, $userModel)");
   }
@@ -254,14 +256,9 @@ class Server {
 
   static Server createInstance(String connectionString,
       {String instanceUuid, String dataPath = null}) {
-    final ModuleInjector parentInjector =
-        createModelModuleInjector(connectionString);
 
-    final ModuleInjector injector = new ModuleInjector(<Module>[
-      GalleryApi.injectorModules,
-      FeedApi.injectorModules,
-      new Module()..bind(DbLoggingHandler)..bind(Server)
-    ], parentInjector);
+    final Injector injector =
+        new Injector.fromModules([new ModelModule(), new DataSourceModule(connectionString), new ExtensionsModule(), new GalleryModule(), new FeedModule(), new LoggingModule(), new ServerModule()]);
 
     final DbLoggingHandler dbLoggingHandler = injector.get(DbLoggingHandler);
     Logger.root.onRecord.listen(dbLoggingHandler);
@@ -282,4 +279,12 @@ class Server {
   }
 }
 
+class ServerModule extends Module {
+@override
+void configure() {
+register(Server).asSingleton();
+}
+}
+
 enum SettingNames { itemNameFormat }
+

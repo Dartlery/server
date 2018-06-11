@@ -1,4 +1,4 @@
 class PaginationInfo {
-  List<List<dynamic>> pageParams = <dynamic>[];
+  List<List<dynamic>> pageParams = <List<dynamic>>[];
   int currentPage = 0;
 }

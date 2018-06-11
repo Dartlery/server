@@ -40,6 +40,7 @@ final Matcher isNotImplementedException =
 
 class _NotImplementedException extends TypeMatcher {
   const _NotImplementedException() : super("NotImplementedException");
+  @override
   bool matches(item, Map matchState) => item is NotImplementedException;
 }
 
@@ -82,7 +83,7 @@ Future<Server> setUpServer() async {
 
 Future<Null> tearDownServer(Server server) async {
   final MongoDbConnectionPool pool = server.injector.get(MongoDbConnectionPool);
-  await pool.closeConnections();
+  await pool.close();
   await _nukeDatabase(server.connectionString);
 }
 

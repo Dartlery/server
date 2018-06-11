@@ -10,10 +10,12 @@ import 'package:dartlery/data_sources/interfaces/interfaces.dart';
 import 'package:dartlery/data_sources/data_sources.dart' as data_sources;
 import 'a_id_based_model.dart';
 import 'a_model.dart';
-
+import 'package:dice/dice.dart';
+@Injectable()
 class UserModel extends AIdBasedModel<User> {
   static final Logger _log = new Logger('UserModel');
 
+  @inject
   UserModel(AUserDataSource userDataSource) : super(userDataSource);
 
   @override

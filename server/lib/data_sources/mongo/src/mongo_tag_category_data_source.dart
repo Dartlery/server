@@ -8,6 +8,8 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'a_mongo_id_data_source.dart';
 import 'constants.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory>
     with ATagCategoryDataSource {
   static final Logger _log = new Logger('MongoTagCategoryDataSource');
@@ -16,6 +18,7 @@ class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory>
 
   static const String colorField = "color";
 
+  @inject
   MongoTagCategoryDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
@@ -35,8 +38,10 @@ class MongoTagCategoryDataSource extends AMongoIdDataSource<TagCategory>
       con.getTagCategoriesCollection();
 
   @override
-  void updateMap(TagCategory tag, Map data) {
-    super.updateMap(tag, data);
-    data[colorField] = tag.color;
+  void updateMap(AIdData tag, Map data) {
+    if(tag is TagCategory) {
+      super.updateMap(tag, data);
+      data[colorField] = tag.color;
+    }
   }
 }

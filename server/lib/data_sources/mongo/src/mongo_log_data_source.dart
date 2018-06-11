@@ -10,6 +10,8 @@ import 'constants.dart';
 import 'package:option/option.dart';
 import 'a_mongo_data_source.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class MongoLogDataSource extends AMongoObjectDataSource<LogEntry>
     with ALogDataSource {
   static final Logger _log = new Logger('MongoLogDataSource');
@@ -23,6 +25,7 @@ class MongoLogDataSource extends AMongoObjectDataSource<LogEntry>
   static const String stackTraceField = 'stackTrace';
   static const String errorField = 'error';
 
+  @inject
   MongoLogDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override

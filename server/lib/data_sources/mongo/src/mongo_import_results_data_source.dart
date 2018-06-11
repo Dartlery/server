@@ -12,6 +12,8 @@ import 'a_mongo_data_source.dart';
 import 'a_mongo_two_id_data_source.dart';
 import 'constants.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
     with AImportResultsDataSource {
   static final Logger _log = new Logger('MongoImportResultsDataSource');
@@ -25,11 +27,14 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
   static const String timestampField = "timestamp";
   static const String batchTimestampField = "batchTimestamp";
   static const String thumbnailCreatedField = "thumbnailCreated";
+
+  @inject
   MongoImportResultsDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
   Logger get childLogger => _log;
 
+  @override
   Future<Null> clear(String batchId, [bool everything = false]) async {
     if (!everything) {
       await deleteFromDb(where
@@ -53,6 +58,7 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
     return output;
   }
 
+  @override
   Future<PaginatedData<ImportResult>> get(String batchId,
       {int page: 0, int perPage}) async {
     return await getPaginatedFromDb(where

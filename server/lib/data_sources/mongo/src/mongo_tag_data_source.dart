@@ -11,6 +11,8 @@ import 'package:option/option.dart';
 import 'a_mongo_two_id_data_source.dart';
 import 'constants.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
     with ATagDataSource {
   static final Logger _log = new Logger('MongoTagDataSource');
@@ -20,6 +22,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   static const String fullNameField = "fullName";
   static const String redirectField = "redirect";
   static const String countField = "count";
+
+  @inject
   MongoTagDataSource(MongoDbConnectionPool pool) : super(pool);
 
   @override
@@ -105,8 +109,8 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   }
 
   @override
-  Future<PaginatedData<TagInfo>> getAllPaginated(
-      {int page: 0, int perPage: defaultPerPage, bool countAsc: null}) async {
+  Future<PaginatedData<TagInfo>> getAllPaginatedTags(
+      {int page: 0, int perPage: defaultPerPage, bool countAsc}) async {
     final SelectorBuilder sb = where;
     if (countAsc != null) sb.sortBy(countField, descending: !countAsc);
     return await getPaginatedFromDb(sb,
@@ -169,12 +173,12 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   }
 
   @override
-  Future<IdDataList<TagInfo>> search(String query,
+  Future<IdDataList<TagInfo>> searchTags(String query,
       {SelectorBuilder selector,
       String sortBy,
       int limit: defaultPerPage,
-      bool countAsc: null,
-      bool redirects: null}) async {
+      bool countAsc,
+      bool redirects}) async {
     SelectorBuilder sb;
     if (selector == null)
       sb = where;
@@ -204,7 +208,7 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
       {int page: 0,
       int perPage: defaultPerPage,
       bool countAsc: true,
-      bool redirects: null}) async {
+      bool redirects}) async {
     final SelectorBuilder sb = where.match(
         fullNameField, ".*${escapeAll(query)}.*",
         multiLine: false, caseInsensitive: true);
@@ -238,24 +242,26 @@ class MongoTagDataSource extends AMongoTwoIdDataSource<TagInfo>
   }
 
   @override
-  void updateMap(TagInfo tag, Map data) {
-    AMongoTwoIdDataSource.staticUpdateMap(tag, data);
-    if (isNullOrWhitespace(tag.category))
-      data[categoryField] = null;
-    else
-      data[categoryField] = tag.category;
+  void updateMap(AIdData tag, Map data) {
+    if(tag is TagInfo) {
+      AMongoTwoIdDataSource.staticUpdateMap(tag, data);
+      if (isNullOrWhitespace(tag.category))
+        data[categoryField] = null;
+      else
+        data[categoryField] = tag.category;
 
-    data[fullNameField] = tag.fullName;
+      data[fullNameField] = tag.fullName;
 
-    if (tag is TagInfo && tag.redirect != null) {
-      if (tag.redirect.internalId == null)
-        throw new Exception("Redirect tag internal ID not found");
+      if (tag is TagInfo && tag.redirect != null) {
+        if (tag.redirect.internalId == null)
+          throw new Exception("Redirect tag internal ID not found");
 
-      data[redirectField] = tag.redirect.internalId;
-    } else if (data.containsKey(redirectField)) {
-      data.remove(redirectField);
+        data[redirectField] = tag.redirect.internalId;
+      } else if (data.containsKey(redirectField)) {
+        data.remove(redirectField);
+      }
+      // Note: We do not update the tag count, that is only done by increment functions
     }
-    // Note: We do not update the tag count, that is only done by increment functions
   }
 
   SelectorBuilder _createTagCriteria(String id, String category,

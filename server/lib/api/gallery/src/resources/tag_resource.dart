@@ -10,11 +10,14 @@ import 'package:rpc/rpc.dart';
 import '../requests/replace_tags_requst.dart';
 import '../responses/paginated_tag_response.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class TagResource extends AResource {
   static final Logger _log = new Logger('TagResource');
 
   final TagModel _tagModel;
 
+  @inject
   TagResource(this._tagModel);
 
   @override

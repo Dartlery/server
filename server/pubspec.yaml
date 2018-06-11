@@ -10,18 +10,18 @@ environment:
 dependencies:
   dartlery_shared:
     path: ../shared
-  args: ^0.13.7
+  dice: "^1.8.0"
+  args: any
   connection_pool: ^0.1.2
   crypt: ^1.0.2
   http_server: ^0.9.6
-  image: ^1.1.27
-  di: ^3.0.0
+  image: ^2.0.3
   logging_handlers: ^0.8.0
   meta: ^1.0.5
-  mongo_dart: ^0.2.10
+  mongo_dart: ^0.3.1
   option: ^1.2.0
   options_file: ^0.11.0
-  rpc: ^0.5.7
+  rpc: ^0.5.9
   shelf: ^0.6.5
   shelf_auth: ^0.7.3
   shelf_exception_handler: ^0.1.0
@@ -31,21 +31,22 @@ dependencies:
   plugin: ^0.2.0
 #  version: any
   sqljocky:
-    git: https://github.com/mnordine/sqljocky.git
+    git: https://github.com/dart-drivers/mysql.git
   mime: 0.9.5
   hex: ^0.1.1
-  exif: ^0.1.1
+  exif:
+    git: https://github.com/dartninja/dartexif.git
   image_hash:
     git: https://github.com/dartninja/image_hash.git
 
 dev_dependencies:
+  build_runner: ^0.8.7
+  build_test: ^0.10.0
   test: any
 dependency_overrides:
-  image:
-    git: https://github.com/brendan-duncan/image.git
-  rpc:
-    git: git://github.com/dart-lang/rpc.git
 #  image_hash:
 #    path: ../../image_hash/
+#  dart_jwt: "^0.6.0"
+#  fixnum: ^0.10.0
 executables:
   dartalog-server: server

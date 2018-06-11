@@ -19,5 +19,6 @@ class PageAction {
   final PageMessage message;
   const PageAction(this.name, this.icon, {this.message: null});
 
+  @override
   String toString() => "Page Action: $name";
 }

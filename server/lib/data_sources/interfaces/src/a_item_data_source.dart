@@ -4,6 +4,8 @@ import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/data/data.dart';
 import 'a_id_based_data_source.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 abstract class AItemDataSource extends AIdBasedDataSource<Item> {
   static final Logger _log = new Logger('AItemDataSource');
 
@@ -45,5 +47,5 @@ abstract class AItemDataSource extends AIdBasedDataSource<Item> {
   Future<Stream<Item>> streamAll(
       {bool addedDesc: true, DateTime startDate, int limit});
 
-  Future<Null> replaceTags(List<Tag> originalTags, List<Tag> newTags);
+  Future<int> replaceTags(List<Tag> originalTags, List<Tag> newTags);
 }

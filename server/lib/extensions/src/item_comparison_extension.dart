@@ -14,6 +14,8 @@ import 'package:option/option.dart';
 
 import 'a_extension.dart';
 
+import 'package:dice/dice.dart';
+@Injectable()
 class ItemComparisonExtension extends AExtension {
   static final Logger _log = new Logger('ItemComparisonPlugin');
 
@@ -28,6 +30,7 @@ class ItemComparisonExtension extends AExtension {
   final ExtensionDataModel _extensionDataModel;
   final ABackgroundQueueDataSource _backgroundQueueDataSource;
 
+  @inject
   ItemComparisonExtension(this._itemDataSource, this._backgroundQueueDataSource,
       this._extensionDataModel);
   @override

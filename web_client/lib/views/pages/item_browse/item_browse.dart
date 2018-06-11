@@ -8,7 +8,7 @@ import 'package:angular_components/angular_components.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/client.dart';
 import 'package:dartlery/data/data.dart';
-import 'package:dartlery/routes.dart';
+import 'package:dartlery/routes/routes.dart';
 import 'package:dartlery/services/services.dart';
 import 'package:dartlery/views/controls/auth_status_component.dart';
 import 'package:dartlery_shared/global.dart';
@@ -23,9 +23,9 @@ import 'package:dartlery/angular_page_control/angular_page_control.dart';
     selector: 'item-browse',
     providers: const [materialProviders],
     directives: const [
-      CORE_DIRECTIVES,
+      coreDirectives,
       materialDirectives,
-      ROUTER_DIRECTIVES,
+      routerDirectives,
       AuthStatusComponent,
       TagEntryComponent,
       ItemGrid
@@ -207,11 +207,9 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       int page = 0;
       String query = "";
       String routeName = itemsPageRoute.name;
-      if (_routeParams.params.containsKey(pageRouteParameter)) {
-        page = int.parse(_routeParams.get(pageRouteParameter) ?? '1',
-                onError: (_) => 1) -
-            1;
-      }
+      if (_routeParams.params.containsKey(pageRouteParameter))
+        page = int.tryParse(_routeParams.get(pageRouteParameter))??1;
+
       if (_routeParams.params.containsKey(queryRouteParameter)) {
         query = _routeParams.get(queryRouteParameter);
       }

@@ -32,7 +32,7 @@ abstract class AModel {
 
   @protected
   String get currentUserId =>
-      userPrincipal.map((Principal p) => p.name).getOrDefault("");
+      userPrincipal.map((p) => p.name).getOrDefault("");
 
   @protected
   String get defaultCreatePrivilegeRequirement =>
@@ -62,7 +62,7 @@ abstract class AModel {
   Option<Principal> get userPrincipal {
     if (_authenticationOverride == null) {
       return authenticatedContext()
-          .map((AuthenticatedContext<Principal> context) => context.principal);
+          .map((context) => context.principal);
     } else {
       return _authenticationOverride;
     }
