@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'dart:html' as html;
 import 'dart:async';
 
 import 'package:angular/angular.dart';
@@ -39,7 +39,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("DeduplicateItemPage");
 
   static const PageAction _animatePageAction =
-      const PageAction("animate", "av_timer", shortcut: KeyCode.SPACE);
+      const PageAction("animate", "av_timer", shortcut: html.KeyCode.SPACE);
 
   String currentItemId;
 
@@ -72,7 +72,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
   TagList differentTags = new TagList();
 
   int totalItems = 0;
-  StreamSubscription<KeyboardEvent> _keyboardSubscription;
+  StreamSubscription<html.KeyboardEvent> _keyboardSubscription;
 
   DeduplicateItemPage(PageControlService pageControl, this._api, this._auth,
       this._router, this._params, this._location)
@@ -224,18 +224,18 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
     await mergeItems(secondComparisonItem.id, firstComparisonItem.id);
   }
 
-  void onKeyboardEvent(KeyboardEvent e) {
+  void onKeyboardEvent(html.KeyboardEvent e) {
     DateTime newKeyTime = new DateTime.now();
 
     switch(e.keyCode) {
-      case KeyCode.UP:
+      case html.KeyCode.UP:
         if(currentImage==0) {
           selectComparison(otherComparisons.length-1);
         } else {
           selectComparison(currentImage-1);
         }
         return;
-      case KeyCode.DOWN:
+      case html.KeyCode.DOWN:
         if(currentImage==(otherComparisons.length-1)) {
           selectComparison(0);
         } else {
@@ -247,13 +247,13 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
     if(lastKeyTime!=null) {
       if(e.keyCode==lastKeyHit&&(newKeyTime.difference(lastKeyTime))<keyTimeout) {
         switch(e.keyCode) {
-          case KeyCode.RIGHT:
+          case html.KeyCode.RIGHT:
             mergeRight();
             break;
-          case KeyCode.LEFT:
+          case html.KeyCode.LEFT:
             mergeLeft();
             break;
-          case KeyCode.K:
+          case html.KeyCode.K:
             clearCurrentSimilarity();
             break;
         }
@@ -272,7 +272,7 @@ class DeduplicateItemPage extends APage implements OnInit, OnDestroy {
 
     setPageActions();
 
-    _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
+    _keyboardSubscription = html.window.onKeyUp.listen(onKeyboardEvent);
     _pageActionSubscription =
         pageControl.pageActionRequested.listen(onPageActionRequested);
     refresh();

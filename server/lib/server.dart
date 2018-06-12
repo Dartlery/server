@@ -31,11 +31,13 @@ import 'src/exceptions/setup_required_exception.dart';
 import 'src/db_logging_handler.dart';
 import 'tools.dart';
 import 'package:dartlery/services/background_service.dart';
+import 'src/database_info.dart';
 
 export 'src/exceptions/setup_disabled_exception.dart';
 export 'src/exceptions/setup_required_exception.dart';
 export 'src/db_logging_handler.dart';
 export 'src/settings.dart';
+export 'src/database_info.dart';
 
 final String rootDirectory = Directory.current.path;
 String serverRoot, serverApiRoot;
@@ -102,7 +104,7 @@ class Server {
   final UserModel userModel;
 
   String instanceUuid;
-  String connectionString;
+  DatabaseInfo dbInfo;
   String dataPath;
   ModuleInjector injector;
 
@@ -172,7 +174,7 @@ class Server {
         ..add('/discovery/', <String>['GET', 'HEAD', 'OPTIONS'], apiPipeline,
             exactMatch: false);
 
-      String pathToBuild = join(rootDirectory, 'web/');
+      final String pathToBuild = join(rootDirectory, 'web/');
       final Directory siteDir = new Directory(pathToBuild);
       if (siteDir.existsSync()) {
         final Handler staticSiteHandler = createStaticHandler(pathToBuild,
@@ -213,8 +215,9 @@ class Server {
     }
   }
 
-  dynamic stop() async {
+  Future<Null> stop() async {
     if (_server == null) throw new Exception("Server has not been started");
+    _log.info("Closing server connection");
     await _server.close();
     _server = null;
   }
@@ -252,10 +255,10 @@ class Server {
     return new Some<Principal>(new Principal(user.get().id));
   }
 
-  static Server createInstance(String connectionString,
+  static Server createInstance(DatabaseInfo dbInfo,
       {String instanceUuid, String dataPath = null}) {
     final ModuleInjector parentInjector =
-        createModelModuleInjector(connectionString);
+        createModelModuleInjector(dbInfo);
 
     final ModuleInjector injector = new ModuleInjector(<Module>[
       GalleryApi.injectorModules,
@@ -268,7 +271,7 @@ class Server {
 
     final Server server = injector.get(Server);
     server.instanceUuid = instanceUuid ?? generateUuid();
-    server.connectionString = connectionString;
+    server.dbInfo = dbInfo;
     server.injector = injector;
 
     if (dataPath == null) {

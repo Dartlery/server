@@ -8,6 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart'
     as server_logging;
 import 'package:options_file/options_file.dart';
+import 'package:dartlery/server.dart';
 
 Future<Null> main(List<String> args) async {
   Logger.root.level = Level.INFO;
@@ -24,17 +25,17 @@ Future<Null> main(List<String> args) async {
   parser.addOption("sourceDbUser");
   parser.addOption("sourceDbPassword");
   parser.addOption('mongo',
-      abbr: 'm', defaultsTo: '"mongodb://localhost:27017/dartlery"');
+      abbr: 'm');
 
   final ArgResults argResults = parser.parse(args);
 
   // Currently only supports importing from shimmie. Yay!
 
   // TODO: Set up a function for loading settings data
-  final String connectionString = argResults["mongo"];
+  final DatabaseInfo dbInfo = DatabaseInfo.prepare(argResults);
 
   final ModuleInjector parentInjector =
-      createModelModuleInjector(connectionString);
+      createModelModuleInjector(dbInfo);
 
   final ImportModel importModel = parentInjector.get(ImportModel);
 

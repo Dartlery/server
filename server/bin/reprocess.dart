@@ -11,6 +11,7 @@ import 'package:options_file/options_file.dart';
 import 'package:dartlery/extensions/extensions.dart';
 import 'package:dartlery/data_sources/data_sources.dart';
 import 'package:dartlery/data/data.dart';
+import 'package:dartlery/server.dart';
 
 Future<Null> main(List<String> args) async {
   Logger.root.level = Level.INFO;
@@ -22,18 +23,10 @@ Future<Null> main(List<String> args) async {
   final ArgResults argResults = parser.parse(args);
 
   // TODO: Set up a function for loading settings data
-  String connectionString = "mongodb://localhost:27017/dartlery";
-
-  try {
-    final OptionsFile optionsFile = new OptionsFile('server.options');
-    connectionString =
-        optionsFile.getString("connection_string", connectionString);
-  } on FileSystemException catch (e) {
-    _log.info("server.options not found, using all default settings", e);
-  }
+  final DatabaseInfo dbInfo = DatabaseInfo.prepare(argResults);
 
   final ModuleInjector parentInjector =
-      createModelModuleInjector(connectionString);
+      createModelModuleInjector(dbInfo);
 
   final ModuleInjector extensionInjector =
       instantiateExtensions(parentInjector);

@@ -19,6 +19,7 @@ dependencies:
   logging_handlers: ^0.8.0
   meta: ^1.0.5
   mongo_dart: ^0.2.10
+  postgres: any
   option: ^1.2.0
   options_file: ^0.11.0
   rpc: ^0.5.7

@@ -23,9 +23,10 @@ export 'src/tag_category_model.dart';
 export 'src/import_model.dart';
 import 'package:dartlery/services/extension_service.dart';
 import 'package:dartlery/services/background_service.dart';
+import '../src/database_info.dart';
 export 'src/extension_data_model.dart';
 
-ModuleInjector createModelModuleInjector(String connectionString,
+ModuleInjector createModelModuleInjector(DatabaseInfo dbInfo,
     {ModuleInjector parent}) {
   final Module module = new Module()
     ..bind(UserModel)
@@ -39,7 +40,7 @@ ModuleInjector createModelModuleInjector(String connectionString,
     ..bind(ExtensionService);
 
   final ModuleInjector parent =
-      createDataSourceModuleInjector(connectionString);
+      createDataSourceModuleInjector(dbInfo);
   final ModuleInjector injector = new ModuleInjector([module], parent);
 
   instantiateExtensions(injector);

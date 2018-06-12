@@ -11,6 +11,7 @@ import 'package:image/image.dart';
 import 'package:image_hash/image_hash.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
+import 'package:dartlery/services/background_service.dart';
 
 import 'a_extension.dart';
 
@@ -63,10 +64,20 @@ class ItemComparisonExtension extends AExtension {
 
       final ImageHash sourceHash = await _getPerceptualHash(itemId);
 
+      if(sourceHash==null) {
+        _log.warning("Start image does not have a perceptual hash, skipping");
+        return;
+      }
+
       final Stream<Item> itemStream = await _itemDataSource.streamAll(
-          limit: 500, startDate: startPoint, addedDesc: true);
+          limit: 50, startDate: startPoint, addedDesc: true);
       DateTime lastProcessedDate;
       await for (Item targetItem in itemStream) {
+        if(BackgroundService.stopping) {
+          _log.warning("Backgorund services have stopper, exiting loop");
+          break;
+        }
+
         lastProcessedDate = targetItem.uploaded;
         if (sourceItem.first.id == targetItem.id) continue;
         if (!MimeTypes.imageTypes.contains(targetItem.mime)) continue;
