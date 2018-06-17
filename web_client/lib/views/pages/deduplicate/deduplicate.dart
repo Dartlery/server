@@ -236,6 +236,7 @@ class ItemComparison {
     for (ExtensionData ed in comparisons) {
       if (ed.secondaryId == id || ed.primaryId == id) return true;
     }
+    return false;
   }
 
   Iterable<String> get secondaryIds =>

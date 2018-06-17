@@ -276,7 +276,6 @@ class Server {
 
     if (dataPath == null) {
       server.dataPath = join(rootDirectory, hostedFilesPath);
-      ;
     } else {
       server.dataPath = dataPath;
     }

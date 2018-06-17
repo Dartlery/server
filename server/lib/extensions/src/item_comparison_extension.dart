@@ -139,8 +139,8 @@ class ItemComparisonExtension extends AExtension {
   @override
   Future<Null> onTrashingItem(String itemId) => _deleteExtensionData(itemId);
 
-  @override
-  Future<Null> onDeletingItem(String itemId) => _deleteExtensionData(itemId);
+//  @override
+//  Future<Null> onDeletingItem(String itemId) => _deleteExtensionData(itemId);
 
   @override
   Future<Null> onCreatingItem(Item item) => _enqueueBackgroundComparison(item);

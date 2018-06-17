@@ -30,6 +30,7 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
   @override
   Logger get childLogger => _log;
 
+  @override
   Future<Null> clear(String batchId, [bool everything = false]) async {
     if (!everything) {
       await deleteFromDb(where
@@ -53,6 +54,7 @@ class MongoImportResultsDataSource extends AMongoObjectDataSource<ImportResult>
     return output;
   }
 
+  @override
   Future<PaginatedData<ImportResult>> get(String batchId,
       {int page: 0, int perPage}) async {
     return await getPaginatedFromDb(where

@@ -141,7 +141,7 @@ class ItemModel extends AIdBasedModel<Item> {
 
     await _extensionServices.sendDeletingItem(id);
 
-    Option<Item> existingItem = await itemDataSource.getById(id);
+    final Option<Item> existingItem = await itemDataSource.getById(id);
     if (existingItem.isEmpty) throw new NotFoundException("Item $id not found");
 
     final String output = await super.delete(id);

@@ -40,6 +40,7 @@ final Matcher isNotImplementedException =
 
 class _NotImplementedException extends TypeMatcher {
   const _NotImplementedException() : super("NotImplementedException");
+  @override
   bool matches(item, Map matchState) => item is NotImplementedException;
 }
 

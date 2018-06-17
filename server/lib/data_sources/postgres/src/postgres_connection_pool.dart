@@ -27,41 +27,41 @@ class PostgresConnectionPool extends ConnectionPool<PostgreSQLConnection> {
     else
       throw new Exception("Could not open connection");
   }
-//
-//  Future<T> databaseWrapper<T>(Future<T> statement(PostgreSQLConnection db),
-//      {int retries: 5}) async {
-//    // The number of retries should be at least as much as the number of connections in the connection pool.
-//    // Otherwise it might run out of retries before invalidating every potentially disconnected connection in the pool.
-//    for (int i = 0; i < retries; i++) {
-//      bool closeConnection = false;
-//      final ManagedConnection<PostgreSQLConnection> conn = await _getConnection();
-//
-//      try {
-//        return await statement(new MongoDatabase(conn.conn));
-//      } on ConnectionException catch (e, st) {
-//        if (i >= retries) {
-//          _log.severe(
-//              "ConnectionException while operating on mongo database", e, st);
-//          rethrow;
-//        } else {
-//          _log.warning(
-//              "ConnectionException while operating on mongo database, retrying",
-//              e,
-//              st);
-//        }
-//        closeConnection = true;
-//      } catch (e, st) {
-//        _log.fine("Error while operating on mongo dataabase", e, st);
-//        if (e.toString().contains("duplicate key")) {
-//          throw new DuplicateItemException("Item already exists in database");
-//        }
-//        rethrow;
-//      } finally {
-//        this.releaseConnection(conn, markAsInvalid: closeConnection);
-//      }
-//    }
-//    throw new Exception("Reached unreachable code");
-//  }
+
+  Future<T> databaseWrapper<T>(Future<T> statement(PostgreSQLConnection db),
+      {int retries: 5}) async {
+    // The number of retries should be at least as much as the number of connections in the connection pool.
+    // Otherwise it might run out of retries before invalidating every potentially disconnected connection in the pool.
+    for (int i = 0; i < retries; i++) {
+      bool closeConnection = false;
+      final ManagedConnection<PostgreSQLConnection> conn = await _getConnection();
+
+      try {
+        return await statement(conn.conn);
+      } on PostgreSQLException catch (e, st) {
+        if (i >= retries) {
+          _log.severe(
+              "ConnectionException while operating on postgres database", e, st);
+          rethrow;
+        } else {
+          _log.warning(
+              "ConnectionException while operating on postgres database, retrying",
+              e,
+              st);
+        }
+        closeConnection = true;
+      } catch (e, st) {
+        _log.fine("Error while operating on postgres database", e, st);
+        if (e.toString().contains("duplicate key")) {
+          throw new DuplicateItemException("Item already exists in database");
+        }
+        rethrow;
+      } finally {
+        this.releaseConnection(conn, markAsInvalid: closeConnection);
+      }
+    }
+    throw new Exception("Reached unreachable code");
+  }
 
   Future<ManagedConnection<PostgreSQLConnection>> _getConnection() async {
     ManagedConnection<PostgreSQLConnection> con = await this.getConnection();

@@ -94,7 +94,7 @@ List<T> createTagListFromJson<T>(String json, T createTag(String id, String cate
           json, "json", "Non-map entry in list encountered");
     }
     final Map tagSubData = subData;
-    String id = tagSubData["id"];
+    final String id = tagSubData["id"];
     String category;
     if (tagSubData.containsKey("category")) {
       category = tagSubData["category"];

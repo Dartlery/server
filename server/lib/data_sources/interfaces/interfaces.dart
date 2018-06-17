@@ -1,3 +1,4 @@
+export 'src/a_data_source.dart';
 export 'src/a_id_based_data_source.dart';
 export 'src/a_item_data_source.dart';
 export 'src/a_user_data_source.dart';

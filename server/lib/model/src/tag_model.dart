@@ -48,7 +48,7 @@ class TagModel extends ATypedModel<TagInfo> {
     await validateDeletePrivileges();
 
     final TagInfo t = new TagInfo.withValues(id, category);
-    validate(t);
+    await validate(t);
 
     final Option<TagInfo> dbTag = await _tagDataSource.getById(id, category);
 
@@ -179,7 +179,7 @@ class TagModel extends ATypedModel<TagInfo> {
     await validateTag(redirect.redirect);
 
     await DataValidationException
-        .performValidation<int>((Map<String, String> fieldErrors) async {
+        .performValidation((Map<String, String> fieldErrors) async {
       if (redirect == redirect.redirect) {
         fieldErrors["redirect"] = "Cannot be the same as start";
       }
