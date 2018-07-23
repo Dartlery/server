@@ -137,11 +137,12 @@ class ItemModel extends AIdBasedModel<Item> {
 
   @override
   Future<String> delete(String id) async {
+    _log.info("delete($id)");
     await validateDeletePrivileges(id);
 
     await _extensionServices.sendDeletingItem(id);
 
-    Option<Item> existingItem = await itemDataSource.getById(id);
+    final Option<Item> existingItem = await itemDataSource.getById(id);
     if (existingItem.isEmpty) throw new NotFoundException("Item $id not found");
 
     final String output = await super.delete(id);
