@@ -68,7 +68,9 @@ final String thumbnailFilePath =
 final String originalFilePath =
 path.join(rootDirectory, hostedFilesOriginalPath);
 final String loggingFilePath =
-  path.join(rootDirectory, hostedFilesPath, "logs");
+path.join(rootDirectory, hostedFilesPath, "logs");
+final String deletedFilePath =
+path.join(rootDirectory, hostedFilesPath, "deleted");
 
 final Directory originalDir = new Directory(originalFilePath);
 final Directory fullFileDir = new Directory(fullFilePath);
@@ -89,7 +91,15 @@ String getThumbnailFilePathForHash(String hash) =>
 // Instead of actually deleting the file, this will move it to another
 // folder and make a log entry into a text file.
 Future<Null> deleteFile(File file, String reason) async {
-  final String deletedPath = path.join(fullFilePath, path.basename(file.path));
+  final String name = path.basename(file.path);
+  final Directory deletedDir = new Directory(deletedFilePath)
+  if(!deletedDir.existsSync()) {
+    deletedDir.createSync();
+  }
+
+  final String deletedPath = path.join(deletedFilePath,
+      name.substring(0, fileHashPrefixLength), name);
+
   File deletedFile = new File(deletedPath);
   int i = 0;
   while(await deletedFile.exists()) {
