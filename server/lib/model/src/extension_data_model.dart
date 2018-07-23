@@ -10,6 +10,7 @@ import 'package:dartlery/server.dart';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
+import 'package:orm/orm.dart';
 
 import 'a_model.dart';
 import 'a_typed_model.dart';
@@ -19,8 +20,8 @@ class ExtensionDataModel extends ATypedModel<ExtensionData> {
 
   AExtensionDataSource _extensionDataSource;
 
-  ExtensionDataModel(this._extensionDataSource, AUserDataSource userDataSource)
-      : super(userDataSource);
+  ExtensionDataModel(this._extensionDataSource, DatabaseContext db)
+      : super(db);
 
   @override
   Logger get loggerImpl => _log;

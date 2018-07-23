@@ -52,21 +52,13 @@ Future<Null> _nukeDatabase(String connectionString) async {
 
 Future<Server> setUpServer() async {
   final String serverUuid = generateUuid();
-  String connectionString =
-      "mongodb://127.0.0.1:27017/dartlery_test_$serverUuid";
+  final MongoDatabaseInfo dbInfo = new MongoDatabaseInfo("mongodb://127.0.0.1:27017/dartlery_test_$serverUuid");
 
-  try {
-    final OptionsFile optionsFile = new OptionsFile('test/test.options');
-    connectionString =
-        optionsFile.getString("connection_string", connectionString) +
-            "_$serverUuid";
-  } on FileSystemException {}
-
-  await _nukeDatabase(connectionString);
+  await _nukeDatabase(dbInfo.connectionString);
   disableSetup();
 
   final Server server =
-      Server.createInstance(connectionString, instanceUuid: serverUuid);
+      Server.createInstance(dbInfo, instanceUuid: serverUuid);
 
   final String password = testAdminPassword;
   final String uuid = await server.userModel.createUserWith(

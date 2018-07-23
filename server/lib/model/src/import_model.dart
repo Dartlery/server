@@ -11,6 +11,8 @@ import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:path/path.dart' as path;
+import 'package:orm/orm.dart' as orm;
+
 import 'package:sqljocky/sqljocky.dart';
 
 import 'a_id_based_model.dart';
@@ -37,8 +39,8 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
       this._importResultsDataSource,
       this._backgroundQueueDataSource,
       this._importBatchDataSource,
-      AUserDataSource userDataSource)
-      : super(userDataSource);
+      orm.DatabaseContext db)
+      : super(db);
 
   @override
   AImportBatchDataSource get dataSource => _importBatchDataSource;

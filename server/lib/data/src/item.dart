@@ -7,8 +7,10 @@ import 'package:rpc/rpc.dart';
 import 'package:logging/logging.dart';
 import 'a_id_data.dart';
 import 'tag.dart';
+import 'package:orm/orm.dart';
 
 @ApiMessage(includeSuper: true)
+@DbStorage("items")
 class Item extends AIdData {
   static final Logger _log = new Logger('Item');
 

@@ -7,20 +7,20 @@ import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery/data/data.dart';
 import 'package:dartlery/data_sources/interfaces/interfaces.dart';
-import 'package:dartlery/data_sources/data_sources.dart' as data_sources;
+import 'package:orm/orm.dart';
 import 'a_id_based_model.dart';
 import 'a_model.dart';
 
-class UserModel extends AIdBasedModel<User> {
+class UserModel extends AIdBasedModel<User, String> {
   static final Logger _log = new Logger('UserModel');
 
-  UserModel(AUserDataSource userDataSource) : super(userDataSource);
+  UserModel(DatabaseContext db) : super(db);
 
   @override
   Logger get loggerImpl => _log;
 
   @override
-  AUserDataSource get dataSource => userDataSource;
+  AUserDataSource get dataSource => null;
 
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.moderator;
@@ -57,10 +57,12 @@ class UserModel extends AIdBasedModel<User> {
   Future<User> getMe() async {
     if (!userAuthenticated) throw new UnauthorizedException();
 
-    final Option<User> output =
-        await dataSource.getById(userPrincipal.get().name);
-    return output.getOrElse(() =>
-        throw new Exception("Authenticated user not present in database"));
+    try {
+      final User output = await _getUser(currentUserId);
+      return output;
+    } on NotFoundException {
+      throw new Exception("Authenticated user not present in database");
+    }
   }
 
   Future<String> createUserWith(String username, String password, String type,
@@ -118,9 +120,7 @@ class UserModel extends AIdBasedModel<User> {
       throw new ForbiddenException(
           "You do not have permission to change another user's password");
 
-    final String userPassword = (await userDataSource.getPasswordHash(username))
-        .getOrElse(() => throw new Exception(
-            "User $username does not have a current password"));
+    final String userPassword = await _getPasswordHash(username);
 
     await DataValidationException
         .performValidation((Map<String, String> fieldErrors) async {
@@ -134,6 +134,17 @@ class UserModel extends AIdBasedModel<User> {
     await _setPassword(username, newPassword);
   }
 
+  Future<String> _getPasswordHash(String username) async {
+    final User user =
+        await db.getOneByQuery(User, where..equals(User.nameField, username));
+    if (isNullOrWhitespace(user?.password))
+      throw new Exception("User $username does not have a current password");
+    return user.password;
+  }
+
+  Future<User> _getUser(String username) =>
+      db.getOneByQuery<User>(User, select..equals(User.nameField, username));
+
   Future<Null> _setPassword(String username, String newPassword) async {
     await DataValidationException
         .performValidation((Map<String, String> fieldErrors) async {
@@ -141,7 +152,9 @@ class UserModel extends AIdBasedModel<User> {
     });
 
     final String passwordHash = hashPassword(newPassword);
-    await dataSource.setPassword(username, passwordHash);
+    final User user = await _getUser(username);
+    user.password = passwordHash;
+    await db.update(user);
   }
 
   String hashPassword(String password) {

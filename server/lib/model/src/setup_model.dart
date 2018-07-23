@@ -4,12 +4,11 @@ import 'dart:io';
 import 'package:dartlery_shared/global.dart';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery/data/data.dart';
-import 'package:dartlery/data_sources/data_sources.dart';
-import 'package:dartlery/data_sources/mongo/mongo.dart' as mongo;
 import 'package:dartlery/model/model.dart';
 import 'package:dartlery/server.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:logging/logging.dart';
+import 'package:orm/orm.dart';
 
 import 'a_model.dart';
 
@@ -21,8 +20,8 @@ class SetupModel extends AModel {
 
   final UserModel userModel;
 
-  SetupModel(this.userModel, AUserDataSource userDataSource)
-      : super(userDataSource);
+  SetupModel(this.userModel, DatabaseContext db)
+      : super(db);
 
   Future<SetupResponse> apply(SetupRequest request) async {
     await _checkIfSetupEnabled();
@@ -69,8 +68,7 @@ class SetupModel extends AModel {
 
   Future<bool> checkForAdminUsers() async {
     await _checkIfSetupEnabled();
-    final List<User> admins = await userDataSource.getAdmins();
-    return admins.isNotEmpty;
+    return await db.existsByCriteria(User, where..equals(User.typeField, UserPrivilege.admin));
   }
 
   Future<SetupResponse> checkSetup() async {

@@ -31,25 +31,7 @@ ModuleInjector createDataSourceModuleInjector(DatabaseInfo dbInfo) {
       ..bind(MongoDbConnectionPool,
           toFactory: () => new MongoDbConnectionPool(dbInfo.connectionString));
   } else {
-    module
-//      ..bind(AItemDataSource, toImplementation: MongoItemDataSource)
-//      ..bind(AUserDataSource, toImplementation: MongoUserDataSource)
-//      ..bind(ATagDataSource, toImplementation: MongoTagDataSource)
-//      ..bind(ATagCategoryDataSource,
-//          toImplementation: MongoTagCategoryDataSource)
-//      ..bind(ABackgroundQueueDataSource,
-//          toImplementation: MongoBackgroundQueueDataSource)
-//      ..bind(AExtensionDataSource, toImplementation: MongoExtensionDataSource)
-//      ..bind(AImportResultsDataSource,
-//          toImplementation: MongoImportResultsDataSource)
-//      ..bind(AImportBatchDataSource,
-//          toImplementation: MongoImportBatchDataSource)
-//      ..bind(MongoTagDataSource)
-//      ..bind(ALogDataSource, toImplementation: MongoLogDataSource)
-      ..bind(MongoDbConnectionPool,
-          toFactory: () => new PostgresConnectionPool(dbInfo));
-
-
+    throw new Exception("Legacy does not support PostgreSQL, use Mongo");
   }
   return new ModuleInjector(<Module>[module]);
 }

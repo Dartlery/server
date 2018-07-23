@@ -193,14 +193,15 @@ class Server {
         'Access-Control-Expose-Headers': 'Authorization',
         'Access-Control-Allow-Origin': '*'
       };
-      Response _cors(Response response) =>
-          response.change(headers: extraHeaders);
-      final Middleware _fixCORS = createMiddleware(responseHandler: _cors);
+
+      final Middleware _fixCORS = createMiddleware(responseHandler: (Response response) {
+        return response.change(headers: extraHeaders);
+      });
 
       final Handler handler = const Pipeline()
           .addMiddleware(logRequests())
-          .addMiddleware(exceptionHandler())
           .addMiddleware(_fixCORS)
+          .addMiddleware(exceptionHandler())
           .addHandler(root.handler);
 
       _server = await io.serve(handler, bindIp, port);

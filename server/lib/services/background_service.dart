@@ -48,7 +48,7 @@ class BackgroundService {
     _log.finest("_backgroundThread start");
     while (!_stop) {
       try {
-        _log.info("Starting background service cycle");
+        _log.fine("Starting background service cycle");
         Option<BackgroundQueueItem> nextItem =
             await _backgroundQueueDataSource.getNextItem();
 

@@ -1,7 +1,10 @@
 import 'a_data.dart';
 
 class AIdData extends AData {
-  String id = "";
+  static const String idField = "id";
+
+  @DbField(name: AIdData.idField)
+  String id;
 
   AIdData();
 

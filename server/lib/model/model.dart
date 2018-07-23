@@ -24,6 +24,9 @@ export 'src/import_model.dart';
 import 'package:dartlery/services/extension_service.dart';
 import 'package:dartlery/services/background_service.dart';
 import '../src/database_info.dart';
+import 'package:orm/orm.dart';
+import 'package:orm_postgres/orm_postgres.dart';
+import 'package:orm_mongo/orm_mongo.dart';
 export 'src/extension_data_model.dart';
 
 ModuleInjector createModelModuleInjector(DatabaseInfo dbInfo,
@@ -37,10 +40,20 @@ ModuleInjector createModelModuleInjector(DatabaseInfo dbInfo,
     ..bind(SetupModel)
     ..bind(BackgroundService)
     ..bind(ExtensionDataModel)
-    ..bind(ExtensionService);
+    ..bind(ExtensionService)
+    ..bind(DatabaseContext, toFactory: () {
+      if (dbInfo is PostgresDatabaseInfo) {
+        return new PostgresDatabaseContext(
+            dbInfo.host, dbInfo.port, dbInfo.databaseName,
+            username: dbInfo.username,
+            password: dbInfo.password,
+            useSSL: dbInfo.useSSL);
+      } else if (dbInfo is MongoDatabaseInfo) {
+        return new MongoDatabaseContext(dbInfo.connectionString);
+      }
+    });
 
-  final ModuleInjector parent =
-      createDataSourceModuleInjector(dbInfo);
+  final ModuleInjector parent = createDataSourceModuleInjector(dbInfo);
   final ModuleInjector injector = new ModuleInjector([module], parent);
 
   instantiateExtensions(injector);
