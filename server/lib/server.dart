@@ -92,13 +92,12 @@ String getThumbnailFilePathForHash(String hash) =>
 // folder and make a log entry into a text file.
 Future<Null> deleteFile(File file, String reason) async {
   final String name = path.basename(file.path);
-  final Directory deletedDir = new Directory(deletedFilePath);
+  final Directory deletedDir = new Directory(path.join(deletedFilePath,name.substring(0, fileHashPrefixLength)));
   if(!deletedDir.existsSync()) {
     deletedDir.createSync();
   }
 
-  final String deletedPath = path.join(deletedFilePath,
-      name.substring(0, fileHashPrefixLength), name);
+  final String deletedPath = path.join(deletedDir.path,name);
 
   File deletedFile = new File(deletedPath);
   int i = 0;
