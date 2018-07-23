@@ -142,8 +142,12 @@ class ItemComparisonExtension extends AExtension {
   @override
   Future<Null> onDeletingItem(String itemId) => _deleteExtensionData(itemId);
 
-  @override
-  Future<Null> onCreatingItem(Item item) => _enqueueBackgroundComparison(item);
+  // No longer auto-enqueueing. Unless drastic optimizations can happen,
+  // the system currently can't handle the volume I'm throwing at it in a timely
+  // manner. Will be switching to manually triggered, intentional comparisons.
+  // Likely going to use a faster third-party program eventually.
+  //@override
+  //Future<Null> onCreatingItem(Item item) => _enqueueBackgroundComparison(item);
 
   @override
   Future<Null> onRestoringItem(String itemId) async {

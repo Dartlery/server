@@ -39,6 +39,8 @@ export 'src/db_logging_handler.dart';
 export 'src/settings.dart';
 export 'src/database_info.dart';
 
+final Logger _log = new Logger('lib/server.dart');
+
 final String rootDirectory = Directory.current.path;
 String serverRoot, serverApiRoot;
 
@@ -64,7 +66,9 @@ final String fullFilePath = path.join(rootDirectory, hostedFilesFullPath);
 final String thumbnailFilePath =
     path.join(rootDirectory, hostedFilesThumbnailsPath);
 final String originalFilePath =
-    path.join(rootDirectory, hostedFilesOriginalPath);
+path.join(rootDirectory, hostedFilesOriginalPath);
+final String loggingFilePath =
+  path.join(rootDirectory, hostedFilesPath, "logs");
 
 final Directory originalDir = new Directory(originalFilePath);
 final Directory fullFileDir = new Directory(fullFilePath);
@@ -78,6 +82,23 @@ String getOriginalFilePathForHash(String hash) =>
     path.join(originalFilePath, hash.substring(0, fileHashPrefixLength), hash);
 String getThumbnailFilePathForHash(String hash) =>
     path.join(thumbnailFilePath, hash.substring(0, fileHashPrefixLength), hash);
+
+
+// This function was written to help with troubleshooting an issue
+// where items are apparently being deleted by the system.
+// Instead of actually deleting the file, this will move it to another
+// folder and make a log entry into a text file.
+Future<Null> deleteFile(File file, String reason) async {
+  final String deletedPath = path.join(fullFilePath, path.basename(file.path));
+  File deletedFile = new File(deletedPath);
+  int i = 0;
+  while(await deletedFile.exists()) {
+    i++;
+    deletedFile = new File("$deletedPath.$i");
+  }
+  _log.info("Deleting file: ${file.path}, moving to : ${deletedFile.path}");
+  await file.rename(deletedFile.path);
+}
 
 Future<bool> isSetupAvailable() async {
   if (_setupDisabled) return false;
@@ -123,6 +144,7 @@ class Server {
       if (_server != null)
         throw new Exception("Server has already been started");
 
+      // TODO: Filter out the log folder
       final Handler staticImagesHandler = createStaticHandler(dataPath,
           listDirectories: false,
           serveFilesOutsidePath: false,
@@ -164,6 +186,10 @@ class Server {
 
       final Router<dynamic> root = router()
         ..add('/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)
+        ..add("/data/", <String>['GET', 'OPTIONS'], staticImagesHandler,
+            exactMatch: false)
+        ..add("/data/", <String>['GET', 'OPTIONS'], staticImagesHandler,
+            exactMatch: false)
         ..add("/data/", <String>['GET', 'OPTIONS'], staticImagesHandler,
             exactMatch: false)
         ..add(

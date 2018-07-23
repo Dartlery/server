@@ -12,6 +12,8 @@ import 'src/media_mime_resolver.dart';
 
 final MediaMimeResolver mediaMimeResolver = new MediaMimeResolver();
 
+
+
 List<List<int>> convertMediaMessagesToIntLists(List<MediaMessage> input) {
   final List<List<int>> output = <List<int>>[];
   for (MediaMessage mm in input) {

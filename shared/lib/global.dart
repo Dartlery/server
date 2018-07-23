@@ -31,7 +31,7 @@ final String hostedFilesFullPath =
 final String hostedFilesThumbnailsPath =
     path.join(hostedFilesPath, thumbnailFileFolderName);
 final String hostedFilesOriginalPath =
-    path.join(hostedFilesPath, originalFileFolderName);
+path.join(hostedFilesPath, originalFileFolderName);
 const int httpStatusServerNeedsSetup = 555;
 
 const int paginatedDataLimit = 60;

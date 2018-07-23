@@ -9,6 +9,7 @@ import 'package:dartlery/services/background_service.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:di/di.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' as path;
 import 'package:logging_handlers/server_logging_handlers.dart'
     as server_logging;
 
@@ -18,6 +19,14 @@ Future<Null> main(List<String> args) async {
   // Add a simple log handler to log information to a server side file.
   Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
+
+  final Directory loggingDir = new Directory(loggingFilePath);
+  if(!loggingDir.existsSync()) {
+    await loggingDir.create(recursive: true);
+  }
+  final String startTime = new DateTime.now().toString().replaceAll(":","");
+  Logger.root.onRecord.listen(new server_logging.SyncFileLoggingHandler(path.join(loggingFilePath,"$startTime.log")));
+
   final Logger _log = new Logger("server.main()");
 
   final ArgParser parser = new ArgParser()
@@ -77,7 +86,7 @@ Future<Null> main(List<String> args) async {
       [new BackgroundConfig()
         ..loggingLevel = Logger.root.level
         ..dbInfo = dbInfo,
-      receivePort.sendPort]);
+      receivePort.sendPort, startTime]);
 
   SendPort sendPort;
   receivePort.listen((dynamic data) {
@@ -126,19 +135,24 @@ Future<Null> shutdown(Logger _log, SendPort sendPort, ReceivePort receivePort, S
 void startBackgroundIsolate(List<dynamic> data) {
   final BackgroundConfig config = data[0];
   final SendPort sendPort = data[1];
+  final String startTime = data[2];
   final ReceivePort response = new ReceivePort();
   sendPort.send(response.sendPort);
 
   Logger.root.level = config.loggingLevel;
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
+  Logger.root.onRecord.listen(new server_logging.SyncFileLoggingHandler(path.join(loggingFilePath,"$startTime.background.log")));
+
   final Logger _log = new Logger('startBackgroundIsolate');
 
   final ModuleInjector injector =
       createModelModuleInjector(config.dbInfo);
 
+
+
   final DbLoggingHandler dbLoggingHandler =
       new DbLoggingHandler(injector.get(ALogDataSource));
-  Logger.root.onRecord.listen(dbLoggingHandler);
+//  Logger.root.onRecord.listen(dbLoggingHandler);
 
   final BackgroundService service = injector.get(BackgroundService);
   service.start();

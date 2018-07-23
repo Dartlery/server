@@ -7,6 +7,7 @@ import 'package:rpc/rpc.dart';
 import 'package:logging/logging.dart';
 import 'a_id_data.dart';
 import 'tag.dart';
+import 'package:dartlery/server.dart';
 
 @ApiMessage(includeSuper: true)
 class Item extends AIdData {
@@ -77,12 +78,12 @@ class Item extends AIdData {
     int size = 0;
     if (fileExists) {
       if (deleteExisting) {
-        await file.delete();
+        await deleteFile(file, "writeFileData($path, {deleteExisting:$deleteExisting}) File Exists ");
         fileExists = file.existsSync();
       } else {
         size = file.lengthSync();
         if (size == 0) {
-          file.deleteSync();
+          await deleteFile(file, "writeFileData($path, {deleteExisting:$deleteExisting}) Zero-length File Exists ");
           fileExists = file.existsSync();
         }
       }

@@ -153,7 +153,7 @@ class ItemModel extends AIdBasedModel<Item> {
     try {
       final File file = new File(getOriginalFilePathForHash(id));
       if (file.existsSync()) {
-        await file.delete();
+        await deleteFile(file, "ItemModel.Delete($id) Original File: ${file.path}");
       }
     } catch (e, st) {
       _log.warning("Error while deleting original file", e, st);
@@ -161,7 +161,7 @@ class ItemModel extends AIdBasedModel<Item> {
     try {
       final File file = new File(getFullFilePathForHash(id));
       if (file.existsSync()) {
-        await file.delete();
+        await deleteFile(file, "ItemModel.Delete($id) File: ${file.path}");
       }
     } catch (e, st) {
       _log.warning("Error while deleting full file", e, st);
@@ -169,7 +169,7 @@ class ItemModel extends AIdBasedModel<Item> {
     try {
       final File file = new File(getThumbnailFilePathForHash(id));
       if (file.existsSync()) {
-        await file.delete();
+        await deleteFile(file, "ItemModel.Delete($id) Thumbnail: ${file.path}");
       }
     } catch (e, st) {
       _log.warning("Error while deleting thumbnail file", e, st);
@@ -790,8 +790,10 @@ class ItemModel extends AIdBasedModel<Item> {
         if (fse == null) continue;
 
         try {
-          final bool exists = await fse.exists();
-          if (exists) await fse.delete();
+          if(fse is File) {
+            final bool exists = await fse.exists();
+            if (exists) await deleteFile(fse, "_handleFileUpload($item) error cleanup");
+          }
         } catch (e2, st) {
           _log.warning(e2, st);
         }
@@ -816,6 +818,8 @@ class ItemModel extends AIdBasedModel<Item> {
     return image.encodeJpg(thumbnail, quality: jpegQuality);
   }
 
+
+
   Future<File> _writeBytes(String path, List<int> bytes,
       {bool deleteExisting: false}) async {
     final File file = new File(path);
@@ -823,12 +827,12 @@ class ItemModel extends AIdBasedModel<Item> {
     int size = 0;
     if (fileExists) {
       if (deleteExisting) {
-        await file.delete();
+        await deleteFile(file, "_writeBytes($path,bytes,deleteExisting:$deleteExisting), File Exists");
         fileExists = file.existsSync();
       } else {
         size = file.lengthSync();
         if (size == 0) {
-          file.deleteSync();
+          await deleteFile(file, "_writeBytes($path,bytes,deleteExisting:$deleteExisting) Zero-length file exists");
           fileExists = file.existsSync();
         }
       }
