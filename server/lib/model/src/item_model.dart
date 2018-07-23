@@ -169,7 +169,7 @@ class ItemModel extends AIdBasedModel<Item> {
     try {
       final File file = new File(getThumbnailFilePathForHash(id));
       if (file.existsSync()) {
-        await deleteFile(file, "ItemModel.Delete($id) Thumbnail: ${file.path}");
+        await file.delete();
       }
     } catch (e, st) {
       _log.warning("Error while deleting thumbnail file", e, st);
