@@ -15,7 +15,7 @@ final Logger _log = new Logger('Model');
 
 ModuleInjector createDataSourceModuleInjector(String connectionString) {
   final Module module = new Module()
-    ..bind(ADatabaseContext, toFactory: () => new MongoDatabaseContext(connectionString))
+    ..bind(DatabaseContext, toFactory: () => new MongoDatabaseContext(connectionString))
     ..bind(TagDataSource)
 
     ..bind(AItemDataSource, toImplementation: MongoItemDataSource)

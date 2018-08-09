@@ -1,1 +1,1 @@
-abstract class AData extends OrmDa {}
+abstract class AData  {}

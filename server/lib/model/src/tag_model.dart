@@ -33,7 +33,7 @@ class TagModel extends ATypedModel<TagInfo> {
           id, category);
       tag.redirect = null;
 
-      await _tagDataSource.update(id, category, tag);
+      await _tagDataSource.update(tag);
 
     } on orm.ItemNotFoundException catch (e) {
       throw new NotFoundException(
@@ -49,7 +49,7 @@ class TagModel extends ATypedModel<TagInfo> {
     validate(t);
 try {
     final TagInfo dbTag = await _tagDataSource.getByIdAndCategory(id, category);
-    await _tagDataSource.deleteById(dbTag.first.id, dbTag.first.category);
+    await _tagDataSource.deleteByIdAndCategory(dbTag.first.id, dbTag.first.category);
     return await _itemDataSource.replaceTags([dbTag], []);
 } on orm.ItemNotFoundException catch (e) {
   throw new NotFoundException(
@@ -65,7 +65,7 @@ try {
   }
 
   Future<TagInfo> getInfo(String id, [String category]) async {
-    final Option<TagInfo> output = await _tagDataSource.getById(id, category);
+    final Option<TagInfo> output = await _tagDataSource.getByIdAndCategory(id, category);
     if (output.isEmpty)
       throw new NotFoundException(
           "Tag not found: ${Tag.formatTag(id, category)}");
@@ -82,7 +82,7 @@ try {
     final TagList output = new TagList.from(tags);
     for (Tag tag in tags) {
       Option<TagInfo> dbTag =
-          await _tagDataSource.getById(tag.id, tag.category);
+          await _tagDataSource.getByIdAndCategory(tag.id, tag.category);
       if (dbTag.isEmpty) {
         if (!createTags) throw new Exception("Unknown tag: $tag");
 
@@ -97,11 +97,11 @@ try {
           }
         }
         try {
-          await _tagDataSource.create(new TagInfo.copy(tag));
+          await _tagDataSource.add(new TagInfo.copy(tag));
         } on DuplicateItemException catch (e, st) {
           rethrow;
         }
-        dbTag = await _tagDataSource.getById(tag.id, tag.category);
+        dbTag = await _tagDataSource.getByIdAndCategory(tag.id, tag.category);
       }
 
       if (dbTag.isEmpty) throw new Exception("dbTag is empty: $tag");
@@ -115,7 +115,7 @@ try {
         if (pastRedirects.contains(redirect))
           throw new Exception("Tag redirect loop detected: $pastRedirects");
         pastRedirects.add(redirect);
-        dbTag = await _tagDataSource.getById(redirect.id, redirect.category);
+        dbTag = await _tagDataSource.getByIdAndCategory(redirect.id, redirect.category);
         if (dbTag.isEmpty)
           throw new Exception("Redirect target not found: $redirect");
       }
@@ -183,10 +183,10 @@ try {
 
     Tag end = redirect.redirect;
 
-    Option<TagInfo> dbEnd = await _tagDataSource.getById(end.id, end.category);
+    Option<TagInfo> dbEnd = await _tagDataSource.getByIdAndCategory(end.id, end.category);
     if (dbEnd.isEmpty) {
-      await _tagDataSource.create(new TagInfo.copy(end));
-      dbEnd = await _tagDataSource.getById(end.id, end.category);
+      await _tagDataSource.add(new TagInfo.copy(end));
+      dbEnd = await _tagDataSource.getByIdAndCategory(end.id, end.category);
     }
 
     redirect.redirect = dbEnd.first;
@@ -200,7 +200,7 @@ try {
         throw new InvalidInputException(
             "Specified redirect would cause a redirect loop: ");
       pastRedirects.add(end);
-      dbEnd = await _tagDataSource.getById(end.id, end.category);
+      dbEnd = await _tagDataSource.getByIdAndCategory(end.id, end.category);
       if (dbEnd.isEmpty)
         throw new Exception("Tag in redirect chain not found: $end");
       if (!(dbEnd.first is TagInfo)) break;
@@ -209,10 +209,10 @@ try {
 
     redirect.count = 0;
 
-    if (!await _tagDataSource.existsById(redirect.id, redirect.category)) {
-      await _tagDataSource.create(redirect);
+    if (!await _tagDataSource.existsByIdAndCategory(redirect.id, redirect.category)) {
+      await _tagDataSource.add(redirect);
     } else {
-      await _tagDataSource.update(redirect.id, redirect.category, redirect);
+      await _tagDataSource.update(redirect);
     }
 
     final TagInfo newTag =

@@ -21,7 +21,7 @@ dependencies:
   mongo_dart: ^0.2.10
   option: ^1.2.0
   options_file: ^0.11.0
-  rpc: ^0.5.7
+  rpc: ^0.5.8
   shelf: ^0.6.5
   shelf_auth: ^0.7.3
   shelf_exception_handler: ^0.1.0
@@ -44,8 +44,6 @@ dev_dependencies:
 dependency_overrides:
   image:
     git: https://github.com/brendan-duncan/image.git
-  rpc:
-    git: git://github.com/dart-lang/rpc.git
 #  image_hash:
 #    path: ../../image_hash/
 executables:
