@@ -26,5 +26,7 @@ class ExtensionService {
   Future<Null> triggerBackgroundServiceCycle(BackgroundQueueItem item) async {
     if (!_extensions.containsKey(item.extensionId)) return;
     await _extensions[item.extensionId].onBackgroundCycle(item);
+
+
   }
 }

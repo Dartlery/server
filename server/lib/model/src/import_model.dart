@@ -343,7 +343,7 @@ class ImportModel extends AIdBasedModel<ImportBatch> {
             try {
               // Successful import, delete file
               await entity.delete();
-              _log.fine("Deleted file ${result.fileName}");
+              _log.info("Deleted file ${result.fileName}");
             } catch (e, st) {
               _log.warning(
                   "Unable to delete file after import: ${result.fileName}");

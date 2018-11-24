@@ -31,11 +31,15 @@ import 'src/exceptions/setup_required_exception.dart';
 import 'src/db_logging_handler.dart';
 import 'tools.dart';
 import 'package:dartlery/services/background_service.dart';
+import 'src/database_info.dart';
 
 export 'src/exceptions/setup_disabled_exception.dart';
 export 'src/exceptions/setup_required_exception.dart';
 export 'src/db_logging_handler.dart';
 export 'src/settings.dart';
+export 'src/database_info.dart';
+
+final Logger _log = new Logger('lib/server.dart');
 
 final String rootDirectory = Directory.current.path;
 String serverRoot, serverApiRoot;
@@ -62,7 +66,11 @@ final String fullFilePath = path.join(rootDirectory, hostedFilesFullPath);
 final String thumbnailFilePath =
     path.join(rootDirectory, hostedFilesThumbnailsPath);
 final String originalFilePath =
-    path.join(rootDirectory, hostedFilesOriginalPath);
+path.join(rootDirectory, hostedFilesOriginalPath);
+final String loggingFilePath =
+path.join(rootDirectory, hostedFilesPath, "logs");
+final String deletedFilePath =
+path.join(rootDirectory, hostedFilesPath, "deleted");
 
 final Directory originalDir = new Directory(originalFilePath);
 final Directory fullFileDir = new Directory(fullFilePath);
@@ -76,6 +84,30 @@ String getOriginalFilePathForHash(String hash) =>
     path.join(originalFilePath, hash.substring(0, fileHashPrefixLength), hash);
 String getThumbnailFilePathForHash(String hash) =>
     path.join(thumbnailFilePath, hash.substring(0, fileHashPrefixLength), hash);
+
+
+// This function was written to help with troubleshooting an issue
+// where items are apparently being deleted by the system.
+// Instead of actually deleting the file, this will move it to another
+// folder and make a log entry into a text file.
+Future<Null> deleteFile(File file, String reason) async {
+  final String name = path.basename(file.path);
+  final Directory deletedDir = new Directory(path.join(deletedFilePath,name.substring(0, fileHashPrefixLength)));
+  if(!deletedDir.existsSync()) {
+    deletedDir.createSync();
+  }
+
+  final String deletedPath = path.join(deletedDir.path,name);
+
+  File deletedFile = new File(deletedPath);
+  int i = 0;
+  while(await deletedFile.exists()) {
+    i++;
+    deletedFile = new File("$deletedPath.$i");
+  }
+  _log.info("Deleting file: ${file.path}, moving to : ${deletedFile.path}");
+  await file.rename(deletedFile.path);
+}
 
 Future<bool> isSetupAvailable() async {
   if (_setupDisabled) return false;
@@ -103,7 +135,7 @@ class Server {
   final UserModel userModel;
 
   String instanceUuid;
-  String connectionString;
+  DatabaseInfo dbInfo;
   String dataPath;
   ModuleInjector injector;
 
@@ -123,6 +155,7 @@ class Server {
       if (_server != null)
         throw new Exception("Server has already been started");
 
+      // TODO: Filter out the log folder
       final Handler staticImagesHandler = createStaticHandler(dataPath,
           listDirectories: false,
           serveFilesOutsidePath: false,
@@ -166,6 +199,10 @@ class Server {
         ..add('/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)
         ..add("/data/", <String>['GET', 'OPTIONS'], staticImagesHandler,
             exactMatch: false)
+        ..add("/data/", <String>['GET', 'OPTIONS'], staticImagesHandler,
+            exactMatch: false)
+        ..add("/data/", <String>['GET', 'OPTIONS'], staticImagesHandler,
+            exactMatch: false)
         ..add(
             '/$apiPrefix/',
             <String>['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
@@ -174,7 +211,7 @@ class Server {
         ..add('/discovery/', <String>['GET', 'HEAD', 'OPTIONS'], apiPipeline,
             exactMatch: false);
 
-      String pathToBuild = join(rootDirectory, 'web/');
+      final String pathToBuild = join(rootDirectory, 'web/');
       final Directory siteDir = new Directory(pathToBuild);
       if (siteDir.existsSync()) {
         final Handler staticSiteHandler = createStaticHandler(pathToBuild,
@@ -215,8 +252,9 @@ class Server {
     }
   }
 
-  dynamic stop() async {
+  Future<Null> stop() async {
     if (_server == null) throw new Exception("Server has not been started");
+    _log.info("Closing server connection");
     await _server.close();
     _server = null;
   }
@@ -254,8 +292,13 @@ class Server {
     return new Some<Principal>(new Principal(user.get().id));
   }
 
-  static Server createInstance(String connectionString,
+  static Server createInstance(DatabaseInfo dbInfo,
       {String instanceUuid, String dataPath = null}) {
+<<<<<<< HEAD
+=======
+    final ModuleInjector parentInjector =
+        createModelModuleInjector(dbInfo);
+>>>>>>> master
 
     final Injector injector =
         new Injector.fromModules([new ModelModule(), new DataSourceModule(connectionString), new ExtensionsModule(), new GalleryModule(), new FeedModule(), new LoggingModule(), new ServerModule()]);
@@ -265,7 +308,7 @@ class Server {
 
     final Server server = injector.get(Server);
     server.instanceUuid = instanceUuid ?? generateUuid();
-    server.connectionString = connectionString;
+    server.dbInfo = dbInfo;
     server.injector = injector;
 
     if (dataPath == null) {

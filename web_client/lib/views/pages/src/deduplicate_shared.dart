@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'package:dartlery/api/api.dart';
 import 'package:dartlery_shared/tools.dart';
 import 'package:dartlery/angular_page_control/angular_page_control.dart';
@@ -6,7 +7,7 @@ const PageAction clearSimilarAction = const PageAction(
     "clearSimilar", "clear_all",
     message: const PageMessage(
         "Clear", "Are you sure you want to clear similarities?",
-        buttons: PageMessageButtons.yesNo));
+        buttons: PageMessageButtons.yesNo), shortcut: KeyCode.K, shortcutAlt: true);
 
 class DeduplicateShared {
   static String getOtherImageId(String currentItemId, ExtensionData data) {

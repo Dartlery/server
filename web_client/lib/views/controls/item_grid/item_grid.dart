@@ -34,7 +34,7 @@ import 'package:dartlery/data/data.dart';
 </div>
 </div>
     ''')
-class ItemGrid extends AApiErrorThing with AView, OnDestroy {
+class ItemGrid extends AApiErrorThing with AView, OnDestroy, OnInit {
   static final Logger _log = new Logger("ItemGrid");
 
   @override
@@ -70,6 +70,9 @@ class ItemGrid extends AApiErrorThing with AView, OnDestroy {
   StreamSubscription<KeyboardEvent> _keyboardSubscription;
 
   ItemGrid(Router router, AuthenticationService auth) : super(router, auth) {
+  }
+
+  void ngOnInit() {
     _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
   }
 

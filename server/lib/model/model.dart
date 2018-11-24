@@ -23,8 +23,10 @@ export 'src/tag_category_model.dart';
 export 'src/import_model.dart';
 import 'package:dartlery/services/extension_service.dart';
 import 'package:dartlery/services/background_service.dart';
+import '../src/database_info.dart';
 export 'src/extension_data_model.dart';
 
+<<<<<<< HEAD
 class ModelModule extends Module {
   @override
   void configure() {
@@ -38,4 +40,26 @@ class ModelModule extends Module {
     register(ExtensionDataModel).asSingleton();
     register(ExtensionService).asSingleton();
   }
+=======
+ModuleInjector createModelModuleInjector(DatabaseInfo dbInfo,
+    {ModuleInjector parent}) {
+  final Module module = new Module()
+    ..bind(UserModel)
+    ..bind(ItemModel)
+    ..bind(TagModel)
+    ..bind(TagCategoryModel)
+    ..bind(ImportModel)
+    ..bind(SetupModel)
+    ..bind(BackgroundService)
+    ..bind(ExtensionDataModel)
+    ..bind(ExtensionService);
+
+  final ModuleInjector parent =
+      createDataSourceModuleInjector(dbInfo);
+  final ModuleInjector injector = new ModuleInjector([module], parent);
+
+  instantiateExtensions(injector);
+
+  return injector;
+>>>>>>> master
 }

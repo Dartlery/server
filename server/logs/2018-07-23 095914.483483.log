@@ -1,0 +1,13 @@
+2018.59.23 09:59:14.718	rpc	[INFO]:	Adding /gallery/v0.1 to set of valid APIs.
+2018.59.23 09:59:14.764	rpc	[INFO]:	Adding /feeds/1 to set of valid APIs.
+2018.59.23 09:59:14.768	rpc	[INFO]:	Enabling Discovery API Service for api: /gallery/v0.1
+2018.59.23 09:59:14.773	rpc	[INFO]:	Enabling Discovery API Service for api: /feeds/1
+2018.59.23 09:59:14.797	rpc	[INFO]:	Adding /discovery/v1 to set of valid APIs.
+2018.59.23 09:59:14.801	Server	[INFO]:	Data path: D:\Source\dartlery_clean\server\data
+2018.59.23 09:59:14.841	_MongoDbConnectionPool	[INFO]:	Opening mongo connection
+2018.59.23 09:59:14.854	_MongoDbConnectionPool	[INFO]:	Opening mongo connection
+2018.59.23 09:59:14.858	_MongoDbConnectionPool	[INFO]:	Opening mongo connection
+2018.59.23 09:59:14.863	_MongoDbConnectionPool	[INFO]:	Opening mongo connection
+2018.59.23 09:59:14.867	_MongoDbConnectionPool	[INFO]:	Opening mongo connection
+2018.59.23 09:59:14.914	Server	[INFO]:	Serving at http://0.0.0.0:8080/
+2018.59.23 09:59:15.290	server.main()	[INFO]:	Data received: SendPort

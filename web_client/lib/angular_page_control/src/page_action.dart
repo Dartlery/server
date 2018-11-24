@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'page_message.dart';
 
 class PageAction {
@@ -7,7 +8,7 @@ class PageAction {
   static const PageAction edit = const PageAction("edit", "edit");
   static const PageAction delete = const PageAction("delete", "delete",
       message: const PageMessage("Delete", "Are you sure you want to delete?",
-          buttons: PageMessageButtons.yesNo));
+          buttons: PageMessageButtons.yesNo), shortcut: KeyCode.DELETE);
   static const PageAction compare = const PageAction("compare", "compare");
   static const PageAction tag = const PageAction("tag", "label");
   static const PageAction restore = const PageAction("restore", "restore");
@@ -17,7 +18,10 @@ class PageAction {
   final String icon;
   final String name;
   final PageMessage message;
-  const PageAction(this.name, this.icon, {this.message: null});
+  final int shortcut;
+  final bool shortcutCtrl, shortcutAlt, shortcutShit;
+  const PageAction(this.name, this.icon,
+      {this.message, this.shortcut, this.shortcutCtrl= false, this.shortcutAlt= false, this.shortcutShit=false});
 
   @override
   String toString() => "Page Action: $name";

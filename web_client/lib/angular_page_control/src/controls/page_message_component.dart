@@ -26,7 +26,7 @@ import '../page_message.dart';
             {{message?.message}}
         </p>
         <div footer style="text-align: right">
-            <material-button *ngFor="let b of message?.buttons?.text; let i=index" (trigger)="buttonPress(i)">{{b.text}}</material-button>
+            <material-button *ngFor="let b of message?.buttons?.buttons; let i=index" (trigger)="buttonPress(i)">{{b.text}}</material-button>
         </div>
     </material-dialog>
 </modal>    ''')
@@ -38,6 +38,9 @@ class PageMessageComponent implements OnInit, OnDestroy {
   PageMessage message;
   String messageId;
   bool visible = false;
+
+  StreamSubscription<KeyboardEvent> _keyboardSubscription;
+
 
   void onMessageSent(MessageEventArgs e) {
     this.message = e.message;
@@ -52,17 +55,31 @@ class PageMessageComponent implements OnInit, OnDestroy {
   @override
   Future<Null> ngOnInit() async {
     _messageSubscription = _pageControl.messageSent.listen(onMessageSent);
+    _keyboardSubscription = window.onKeyUp.listen(onKeyboardEvent);
+  }
+
+  void onKeyboardEvent(KeyboardEvent e) {
+    if(visible) {
+      for(int i = 0; i <= message.buttons.buttons.length; i++) {
+        PageMessageButton button = message.buttons.buttons[i];
+        if(button.shortcut==e.keyCode) {
+          buttonPress(i);
+          break;
+        }
+      }
+    }
   }
 
   @override
   void ngOnDestroy() {
     _messageSubscription.cancel();
+    _keyboardSubscription.cancel();
   }
 
   void buttonPress(int index) {
     visible = false;
     ResponseEventArgs e = new ResponseEventArgs(
-        message, messageId, message.buttons.text[index].value);
+        message, messageId, message.buttons.buttons[index].value);
     _pageControl.sendResponse(e);
   }
 }

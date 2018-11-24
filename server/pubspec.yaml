@@ -18,7 +18,12 @@ dependencies:
   image: ^2.0.3
   logging_handlers: ^0.8.0
   meta: ^1.0.5
+<<<<<<< HEAD
   mongo_dart: ^0.3.1
+=======
+  mongo_dart: ^0.2.10
+  postgres: any
+>>>>>>> master
   option: ^1.2.0
   options_file: ^0.11.0
   rpc: ^0.5.9
@@ -37,13 +42,22 @@ dependencies:
   exif:
     git: https://github.com/dartninja/dartexif.git
   image_hash:
-    git: https://github.com/dartninja/image_hash.git
+    git:
+      url: https://github.com/dartninja/image_hash.git
+      ref: 16b4f42633d08760d65c8034b6fdf31e27cee9a4
 
 dev_dependencies:
   build_runner: ^0.8.7
   build_test: ^0.10.0
   test: any
 dependency_overrides:
+<<<<<<< HEAD
+=======
+#  image:
+#    git: https://github.com/brendan-duncan/image.git
+#  rpc:
+#    git: git://github.com/dart-lang/rpc.git
+>>>>>>> master
 #  image_hash:
 #    path: ../../image_hash/
 #  dart_jwt: "^0.6.0"
